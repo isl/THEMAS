@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+-->
+<TMS_DB_ADMIN_COFIGURATIONS>
+    <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS_DB_Folder</Neo4j_DB_FOLDER_PATH>
+    <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
+    <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
+    <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
+    <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
+    <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
+    
+    <PrimaryLanguage>Greek</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
+    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
+
+    <!--    
+    <PrimaryLanguage>English</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
+    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
+    
+    -->
+	
+    <CreatorInAlphabeticalTerm>
+    <!-- If <DisplayCreator>true</DisplayCreator> add the following line in labels.xml -->
+    <!--
+        <message id="CREATED_BY" name_el="Δημ/ός" name_en="Creator" legend_descr_el="Δημιουργός του Όρου" legend_descr_en="Creator of Term" order="20"/> 
+    -->
+        <DisplayCreator>false</DisplayCreator>  
+    </CreatorInAlphabeticalTerm>
+    
+    <UserRolesConfigs>
+        <ThesaurusTeam>
+            <EditOnlyCreatedByTerms>false</EditOnlyCreatedByTerms>
+        </ThesaurusTeam>
+    </UserRolesConfigs>
+    
+</TMS_DB_ADMIN_COFIGURATIONS>

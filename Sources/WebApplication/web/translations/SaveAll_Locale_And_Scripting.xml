@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+ -->
+
+<!--
+    Document   : SaveAll_Locale_And_Scripting.xml
+    Created on : 7 Μάϊος 2010, 4:14 μμ
+    Author     : tzortzak
+    Description:
+        Purpose of the document follows.
+-->
+
+<root>
+    <waitfordownload>
+        <headerimage>
+            <src>
+                <option lang="en">images/thesaurus_header_en.jpg</option>
+                <option lang="el">images/thesaurus_header_gr.jpg</option>
+            </src>
+            <title>
+                <option lang="en">Thesaurus Management System</option>
+                <option lang="el">Σύστημα Διαχείρισης Θησαυρών</option>
+            </title>
+        </headerimage>
+        <pagetitle>
+            <option lang="en">Wait for results preparation</option>
+            <option lang="el">Αναμονή λήψης αποτελεσμάτων</option>
+        </pagetitle>
+        <pleasewaitimage>
+            <src>
+                <option lang="en">images/pleasewait.gif</option>
+                <option lang="el">images/pleasewait.gif</option>
+            </src>
+            <title>
+                <option lang="en">Please wait...</option>
+                <option lang="el">Παρακαλώ περιμένετε...</option>
+            </title>
+        </pleasewaitimage>
+        <pleasewaitmessage>
+            <option lang="en">&lt;b&gt;Please wait...&lt;br/&gt;The results file is being prepared for downloading.&lt;/b&gt;</option>
+            <option lang="el">&lt;b&gt;Παρακαλώ περιμένετε...&lt;br/&gt;Το αρχείο αποτελεσμάτων ετοιμάζεται για λήψη.&lt;/b&gt;</option>
+        </pleasewaitmessage>
+    </waitfordownload>
+    <common>
+        <browserdetectionsaveasscript>
+            <option lang="en">function saveAscode(arg1,arg2,arg3){if(navigator.appVersion.indexOf('MSIE')!=-1){ document.execCommand(arg1,arg2,new String(arg3));}else{alert('In order to save this page use the relevant function of your browser.\n\nTry the available actions on right click or the shortcut CTRL+S.');}}</option>
+            <option lang="el">function saveAscode(arg1,arg2,arg3){if(navigator.appVersion.indexOf('MSIE')!=-1){ document.execCommand(arg1,arg2,new String(arg3));}else{alert('Για την αποθήκευση της σελίδας χρησιμοποιήστε την αντίστοιχη λειτουργία του φυλλομετρητή σας.\n\nΔοκιμάστε τις διαθέσιμες ενέργειες στο δεξί κλικ ή την συντόμευση CTRL+S.');}}</option>
+        </browserdetectionsaveasscript>
+        <saveas>
+            <option lang="en">Save file as...</option>
+            <option lang="el">Αποθήκευση αρχείου ως..</option>
+        </saveas>
+        <print>
+            <option lang="en">Print file...</option>
+            <option lang="el">Εκτύπωση αρχείου..</option>
+        </print>
+        <searchcriteria>
+            <option lang="en">&lt;b&gt;Search criteria: &lt;/b&gt;</option>
+            <option lang="el">&lt;b&gt;Κριτήρια αναζήτησης: &lt;/b&gt;</option>
+        </searchcriteria>
+        <statuses>
+            <forinsertion>
+                <option lang="en">For insertion</option>
+                <option lang="el">Για εισαγωγή</option>
+            </forinsertion>
+            <underconstruction>
+                <option lang="en">Under construction</option>
+                <option lang="el">Υπό επεξεργασία</option>
+            </underconstruction>
+            <underapproval>
+                <option lang="en">For approval</option>
+                <option lang="el">Υπό έγκριση</option>
+            </underapproval>
+            <forreinspection>
+                <option lang="en">Για αναθεώρηση</option>
+                <option lang="el">For Reinspection</option>
+            </forreinspection>
+            <approved>
+                <option lang="en">Approved</option>
+                <option lang="el">Εκδοθείς</option>
+            </approved>
+        </statuses>
+    </common>
+    <saveallterms>
+        <titleprefix>
+            <option lang="en">Terms Search Results  </option>
+            <option lang="el">Αποτελέσματα Aναζήτησης Όρων </option>
+        </titleprefix>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <term>
+            <option lang="en">Term</option>
+            <option lang="el">Όρος</option>
+        </term>
+        <translations>
+            <option lang="en">Translations</option>
+            <option lang="el">Μεταφράσεις</option>
+        </translations>
+        <bt>
+            <option lang="en">BT</option>
+            <option lang="el">ΠΟ</option>
+        </bt>
+        <nt>
+            <option lang="en">NT</option>
+            <option lang="el">ΕΟ</option>
+        </nt>
+        <rt>
+            <option lang="en">RT</option>
+            <option lang="el">ΣΟ</option>
+        </rt>
+        <uf>
+            <option lang="en">UF</option>
+            <option lang="el">ΧΑ</option>
+        </uf>
+        <uf_translations>
+            <option lang="en">UF (Tra.)</option>
+            <option lang="el">XA (Μετ.)</option>
+        </uf_translations>
+        <tc>
+            <option lang="en">TC</option>
+            <option lang="el">Ταξ. Κωδ.</option>
+        </tc>
+        <primarysource>
+            <option lang="en">Source</option>
+            <option lang="el">Πηγή</option>
+        </primarysource>
+        <trsource>
+            <option lang="en">Translations Source</option>
+            <option lang="el">Πηγή (Μετ.)</option>
+        </trsource>
+        <facet>
+            <option lang="en">Facet</option>
+            <option lang="el">Μικροθησαυρός</option>
+        </facet>
+        <topterm>
+            <option lang="en">TT</option>
+            <option lang="el">OK</option>
+        </topterm>
+        <creator>
+            <option lang="en">Creator</option>
+            <option lang="el">Δημιουργός</option>
+        </creator>
+        <modificator>
+            <option lang="en">Modificator</option>
+            <option lang="el">Τροποποιητής</option>
+        </modificator>
+        <creationdate>
+            <option lang="en">Cr.Date</option>
+            <option lang="el">Ημερ.Δημ.</option>
+        </creationdate>
+        <modificationdate>
+            <option lang="en">Mod.Date</option>
+            <option lang="el">Ημερ.Τροπ.</option>
+        </modificationdate>
+        <status>
+            <option lang="en">Term Status</option>
+            <option lang="el">Κατάσταση Όρου</option>
+        </status>
+        <sn>
+            <option lang="en">SN</option>
+            <option lang="el">ΔΣ</option>
+        </sn>
+        <sn_tr>
+            <option lang="en">SN (Tra.)</option>
+            <option lang="el">ΔΣ (Mετ.)</option>
+        </sn_tr>
+        <hn>
+            <option lang="en">HN</option>
+            <option lang="el">IΣ</option>
+        </hn>
+        <!--<statuses>
+            <forinsertion>
+                <option lang="en">For insertion</option>
+                <option lang="el">Για εισαγωγή</option>
+            </forinsertion>
+            <underconstruction>
+                 <option lang="en">Under construction</option>
+                 <option lang="el">Υπό επεξεργασία</option>
+            </underconstruction>
+            <underapproval>
+                <option lang="en">For approval</option>
+                <option lang="el">Υπό έγκριση</option>
+            </underapproval>
+            <forreinspection>
+                <option lang="en">Για αναθεώρηση</option>
+                <option lang="el">For Reinspection</option>
+            </forreinspection>
+            <approved>
+                <option lang="en">Approved</option>
+                <option lang="el">Εκδοθείς</option>
+            </approved>
+        </statuses>-->
+    </saveallterms>
+    <savealltermssystematic>
+        <titleprefix>
+            <option lang="en">Terms Search Results (Systematic Presentation) </option>
+            <option lang="el">Αποτελέσματα Αναζήτησης Όρων (Συστηματική Παρουσίαση) </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Systematic display of terms of hierarchy: </option>
+            <option lang="el">Συστηματική παρουσίαση όρων της ιεραρχίας: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <term>
+            <option lang="en">Term</option>
+            <option lang="el">Όρος</option>
+        </term>
+        <tc>
+            <option lang="en">Taxonomical Code</option>
+            <option lang="el">Ταξινομικός Κωδικός</option>
+        </tc>
+    </savealltermssystematic>
+    <savealltermsalphabetical>
+        <titleprefix>
+            <option lang="en">Terms Search Results (Alphabetical Presentation) </option>
+            <option lang="el">Αποτελέσματα Αναζήτησης Όρων (Αλφαβητική Παρουσίαση) </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Alphabetical display of terms of hierarchy: </option>
+            <option lang="el">Αλφαβητική παρουσίαση όρων της ιεραρχίας: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+    </savealltermsalphabetical>
+    <savealltermshierarchicaltree>
+        <titleprefix>
+            <option lang="en">Terms Search Results (Hierarchical Tree Presentation) </option>
+            <option lang="el">Αποτελέσματα Αναζήτησης Όρων (Δενδρική Ιεραρχική Παρουσίαση) </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Hierarchical display of terms of hierarchy: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <linktotypical>
+            <option lang="en">Hierarchical Simple Presentation</option>
+            <option lang="el">Τυπική Ιεραρχική Αναπαράσταση</option>
+        </linktotypical>
+    </savealltermshierarchicaltree>
+    <savealltermshierarchicalsimple>
+        <titleprefix>
+            <option lang="en">Terms Search Results (Hierarchical Simple Presentation) </option>
+            <option lang="el">Αποτελέσματα Αναζήτησης Όρων (Τυπική Ιεραρχική Παρουσίαση) </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Hierarchical display of terms of hierarchy: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <linktotree>
+            <option lang="en">Hierarchical Tree Presentation</option>
+            <option lang="el">Δενδρική Ιεραρχική Αναπαράσταση</option>
+        </linktotree>
+    </savealltermshierarchicalsimple>
+    <statistics>
+        <terms>
+            <legendprefix>
+                <option lang="en">Statistics of Terms of thesaurus: </option>
+                <option lang="el">Στατιστικά για τους Όρους του θησαυρού: </option>
+            </legendprefix>
+            <description>
+                <option lang="en">Description</option>
+                <option lang="el">Περιγραφή</option>
+            </description>
+            <number>
+                <option lang="en">Number</option>
+                <option lang="el">Αριθμός</option>
+            </number>
+            <totalterms>
+                <option lang="en">Total number of Terms (preferred terms)</option>
+                <option lang="el">Συνολικός αριθμός Όρων (προτιμώμενων όρων)</option>
+            </totalterms>
+            <totaltranslationterms>
+                <option lang="en">Total number of Translations</option>
+                <option lang="el">Συνολικός αριθμός Μεταφράσεων</option>
+            </totaltranslationterms>
+            <totalufterms>
+                <option lang="en">Total number of UFs (non-preferred terms)</option>
+                <option lang="el">Συνολικός αριθμός ΧΑ (μη προτιμώμενων όρων)</option>
+            </totalufterms>
+            <totaluftranslationterms>
+                <option lang="en">Total number of UF Translations (non-preferred translations)</option>
+                <option lang="el">Συνολικός αριθμός XA Μεταφράσεων (μη προτιμώμενων μεταφράσεων)</option>
+            </totaluftranslationterms>
+        </terms>
+        <hierarchies>
+            <legendprefix>
+                <option lang="en">Statistics of Hierarchies of thesaurus: </option>
+                <option lang="el">Στατιστικά για τις Ιεραρχίες του θησαυρού: </option>
+            </legendprefix>
+            <totalhiers>
+                <option lang="en">Total number of Hierarchies: </option>
+                <option lang="el">Συνολικός αριθμός Ιεραρχιών: </option>
+            </totalhiers>
+            <subfieldlegend>
+                <option lang="en">Number of Terms, Non-Preferred Terms, Translations and UF Translations per hierarchy</option>
+                <option lang="el">Αριθμός Όρων, XA, Μεταφράσεων και XA Μεταφράσεων ανά Ιεραρχία</option>
+            </subfieldlegend>
+            <hierarchy>
+                <option lang="en">Hierarchy</option>
+                <option lang="el">Ιεραρχία</option>
+            </hierarchy>
+            <terms>
+                <option lang="en">Terms</option>
+                <option lang="el">Όροι</option>
+            </terms>
+            <ufs>
+                <option lang="en">UFs</option>
+                <option lang="el">XA</option>
+            </ufs>
+            <translations>
+                <option lang="en">Translations</option>
+                <option lang="el">Μεταφράσεις</option>
+            </translations>
+            <uf_translations>
+                <option lang="en">UF (Tra.)</option>
+                <option lang="el">ΧΑ (Μετ.)</option>
+            </uf_translations>
+        </hierarchies>
+        <facets>
+            <legendprefix>
+                <option lang="en">Statistics of Facets of thesaurus: </option>
+                <option lang="el">Στατιστικά για τους Μικροθησαυρούς του θησαυρού: </option>
+            </legendprefix>
+            <totalfacets>
+                <option lang="en">Total number of Facets: </option>
+                <option lang="el">Συνολικός αριθμός Μικροθησαυρών: </option>
+            </totalfacets>
+            <subfieldlegend>
+                <option lang="en">Number of Hierarchies, Terms, Non-Preferred Terms, Translations and UF Translations per facet</option>
+                <option lang="el">Αριθμός Ιεραρχιών, Όρων, XA, Μεταφράσεων και XA Μεταφράσεων ανά μικροθησαυρό</option>
+            </subfieldlegend>
+            <facet>
+                <option lang="en">Facet</option>
+                <option lang="el">Μικροθησαυρός</option>
+            </facet>
+            <hierarchies>
+                <option lang="en">Hierarchies</option>
+                <option lang="el">Ιεραρχίες</option>
+            </hierarchies>
+            <terms>
+                <option lang="en">Terms</option>
+                <option lang="el">Όροι</option>
+            </terms>
+            <ufs>
+                <option lang="en">UFs</option>
+                <option lang="el">XA</option>
+            </ufs>
+            <translations>
+                <option lang="en">Translations</option>
+                <option lang="el">Μεταφράσεις</option>
+            </translations>
+            <uf_translations>
+                <option lang="en">UF (Tra.)</option>
+                <option lang="el">ΧΑ (Μετ.)</option>
+            </uf_translations>
+        </facets>
+        <sources>
+            <legendprefix>
+                <option lang="en">Statistics of Sources of thesaurus: </option>
+                <option lang="el">Στατιστικά για τις Πηγές του θησαυρού: </option>
+            </legendprefix>
+            <totalsources>
+                <option lang="en">Total Number of Sources: </option>
+                <option lang="el">Συνολικός αριθμός Πηγών: </option>
+            </totalsources>
+            <subfieldlegend>
+
+                <option lang="en">Number of terms-translations per Source</option>
+                <option lang="el">Αριθμός όρων-μεταφράσεων ανά Πηγή</option>
+            </subfieldlegend>
+            <source>
+                <option lang="en">Source</option>
+                <option lang="el">Πηγή</option>
+            </source>
+            <primarysource>
+                <option lang="en">Number of Terms per Source</option>
+                <option lang="el">Αριθμός όρων ανά Πηγή</option>
+            </primarysource>
+            <translationssource>
+                <option lang="en">Number of translations per Source</option>
+                <option lang="el">Αριθμός μεταφράσεων ανά Πηγή</option>
+            </translationssource>
+        </sources>
+        <users>
+            <legendprefix>
+                <option lang="en">Statistics of Users of thesaurus: </option>
+                <option lang="el">Στατιστικά για τους Χρήστες του θησαυρού: </option>
+            </legendprefix>
+            <totalusers>
+                <option lang="en">Total Number of Users (Creators/Modificators): </option>
+                <option lang="el">Συνολικός αριθμός Χρηστών (Δημιουργοί/Τροποποιητές): </option>
+            </totalusers>
+            <subfieldlegend>
+                <option lang="en">Number of Terms, created and last modifed per user</option>
+                <option lang="el">Αριθμός όρων δημιουργίας και τελευταίας τροποποίησης ανά χρήστη</option>
+            </subfieldlegend>
+            <user>
+                <option lang="en">User</option>
+                <option lang="el">Χρήστης</option>
+            </user>
+            <created>
+                <option lang="en">Number of created terms</option>
+                <option lang="el">Αριθμός όρων δημιουργίας</option>
+            </created>
+            <lastmodified>
+                <option lang="en">Number of last modified terms</option>
+                <option lang="el">Αριθμός όρων τελευταίας τροποποίησης</option>
+            </lastmodified>
+        </users>
+    </statistics>
+    <saveallsources>
+        <titleprefix>
+            <option lang="en">Sources Search Results </option>
+            <option lang="el">Αποτελέσματα Aναζήτησης Πηγών </option>
+        </titleprefix>
+        <noresults>
+            <option lang="en">No Sources were found.</option>
+            <option lang="el">Δεν βρέθηκαν πηγές.</option>
+        </noresults>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <source>
+            <option lang="en">Source</option>
+            <option lang="el">Πηγή</option>
+        </source>
+        <sourcenote>
+            <option lang="en">Source note</option>
+            <option lang="el">Σημείωση πηγής</option>
+        </sourcenote>
+        <primarysource>
+            <option lang="en">Term Source</option>
+            <option lang="el">Πηγή όρου</option>
+        </primarysource>
+        <trsource>
+            <option lang="en">Translations Source</option>
+            <option lang="el">Πηγή (Μετ.)</option>
+        </trsource>
+    </saveallsources>
+    <saveallhierarchies>
+        <titleprefix>
+            <option lang="en">Hierarchies Search Results </option>
+            <option lang="el">Αποτελέσματα Aναζήτησης Iεραρχιών </option>
+        </titleprefix>
+        <noresults>
+            <option lang="en">No Hierarchies were found.</option>
+            <option lang="el">Δεν βρέθηκαν ιεραρχίες.</option>
+        </noresults>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <hierarchy>
+            <option lang="en">Hierarchy</option>
+            <option lang="el">Ιεραρχία</option>
+        </hierarchy>
+        <facets>
+            <option lang="en">Facets</option>
+            <option lang="el">Μικροθησαυροί</option>
+        </facets>
+    </saveallhierarchies>
+    <saveallfacets>
+        <titleprefix>
+            <option lang="en">Facets Search Results </option>
+            <option lang="el">Αποτελέσματα Aναζήτησης Μικροθησαυρών </option>
+        </titleprefix>
+        <noresults>
+            <option lang="en">No Facets were found.</option>
+            <option lang="el">Δεν βρέθηκαν μικροθησαυροί.</option>
+        </noresults>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <facet>
+            <option lang="en">Facet</option>
+            <option lang="el">Μικροθησαυρός</option>
+        </facet>
+        <hierarchies>
+            <option lang="en">Hierarchies</option>
+            <option lang="el">Ιεραρχίες</option>
+        </hierarchies>
+    </saveallfacets>
+    <primary2translationsindex>
+        <titleprefix>
+            <option lang="en">Terms-Translations Index </option>
+            <option lang="el">Eυρετήριο Όρων-Μεταφράσεων</option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Index of terms of hierarchy: </option>
+            <option lang="el">Ευρετήριο όρων της ιεραρχίας: </option>
+        </baselabel>
+        <linktotranslations2primaryindex>
+            <option lang="en">Translations-Terms Index </option>
+            <option lang="el">Ευρετήριο Μεταφράσεων-Όρων</option>
+        </linktotranslations2primaryindex>
+        <noresults>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noresults>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <term>
+            <option lang="en">Term</option>
+            <option lang="el">Όρος</option>
+        </term>
+        <translationterm>
+            <option lang="en">Translation</option>
+            <option lang="el">Μετάφραση</option>
+        </translationterm>
+    </primary2translationsindex>
+    <translations2primaryindex>
+        <titleprefix>
+            <option lang="en">Translations-Terms Index </option>
+            <option lang="el">Eυρετήριο Μεταφράσεων-Όρων</option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Index of terms of hierarchy: </option>
+            <option lang="el">Ευρετήριο όρων της ιεραρχίας: </option>
+        </baselabel>
+        <linktoprimary2translationsindex>
+            <option lang="en">Terms-Translations Index </option>
+            <option lang="el">Eυρετήριο Όρων-Μεταφράσεων</option>
+        </linktoprimary2translationsindex>
+        <noresults>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noresults>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <term>
+            <option lang="en">Term</option>
+            <option lang="el">Όρος</option>
+        </term>
+        <translationterm>
+            <option lang="en">Translation</option>
+            <option lang="el">Μετάφραση</option>
+        </translationterm>
+    </translations2primaryindex>
+    <importcopymerge>
+        <importreporttitle>
+            <option lang="en">Report of operation import data to thesaurus %s %s</option>
+            <option lang="el">Αναφορά εισαγωγής δεδομένων στον θησαυρό %s %s</option>
+        </importreporttitle>
+        <reporttitle>
+            <option lang="en">Report of differences from initial data.</option>
+            <option lang="el">Αναφορά διαφοροποιήσεων από τα αρχικά δεδομένα.</option>
+        </reporttitle>
+        <nodiffs>
+            <option lang="en">No differences occured.</option>
+            <option lang="el">Δεν παρουσιάστηκαν διαφοροποιήσεις.</option>
+        </nodiffs>
+        <number>
+            <option lang="en">Num.</option>
+            <option lang="el">A./A.</option>
+        </number>
+        <termhier>
+            <option lang="en">Term/Hierarchy</option>
+            <option lang="el">Όρος/Ιεραρχία</option>
+        </termhier>
+        <relation>
+            <option lang="en">Relation</option>
+            <option lang="el">Σχέση</option>
+        </relation>
+        <value>
+            <option lang="en">Value (newly assigned or deleted)</option>
+            <option lang="el">Τιμή (νέα ή διαγραφή)</option>
+        </value>
+        <reason>
+            <option lang="en">Reason</option>
+            <option lang="el">Λόγος</option>
+        </reason>
+        <rename>
+            <option lang="en">Rename</option>
+            <option lang="el">Μετονομασία</option>
+        </rename>
+        <termname>
+            <option lang="en">Term name</option>
+            <option lang="el">Όνομα όρου</option>
+        </termname>
+        <sourcename>
+            <option lang="en">Source name</option>
+            <option lang="el">Όνομα πηγής</option>
+        </sourcename>
+        <source_note>
+            <option lang="en">Source Note</option>
+            <option lang="el">Σημείωση πηγής</option>
+        </source_note>
+        <facet>
+            <option lang="en">Facet</option>
+            <option lang="el">Μικροθησαυρός</option>
+        </facet>
+        <bt>
+            <option lang="en">BT</option>
+            <option lang="el">ΠΟ</option>
+        </bt>
+        <tc>
+            <option lang="en">Tax. Code</option>
+            <option lang="el">Ταξ. Κωδικός</option>
+        </tc>
+        <rt>
+            <option lang="en">RT</option>
+            <option lang="el">ΣΟ</option>
+        </rt>
+        <uf>
+            <option lang="en">UF</option>
+            <option lang="el">ΧΑ</option>
+        </uf>
+        <translations>
+            <option lang="en">Translations</option>
+            <option lang="el">Μεταφράσεις</option>
+        </translations>
+        <uf_translations>
+            <option lang="en">UF (Tra.)</option>
+            <option lang="el">XA (Μετ.)</option>
+        </uf_translations>
+        <status>
+            <option lang="en">Status</option>
+            <option lang="el">Κατάσταση</option>
+        </status>
+        <sn>
+            <option lang="en">SN</option>
+            <option lang="el">ΔΣ</option>
+        </sn>
+        <translations_scope_note>
+            <option lang="en">SN (Tra.)</option>
+            <option lang="el">ΔΣ (Mετ.)</option>
+        </translations_scope_note>
+        <primary_found_in>
+            <option lang="en">Source</option>
+            <option lang="el">Πηγή</option>
+        </primary_found_in>
+        <translations_found_in>
+            <option lang="en">Source (Tra.)</option>
+            <option lang="el">Πηγή (Mετ.)</option>
+        </translations_found_in>
+        <hn>
+            <option lang="en">HN</option>
+            <option lang="el">IΣ</option>
+        </hn>
+        <sourcenote>
+            <option lang="en">Source note</option>
+            <option lang="el">Σημείωση πηγής</option>
+        </sourcenote>
+        <guide_term>
+            <option lang="en">Node Label</option>
+            <option lang="el">Ετικέτα δεσμού</option>
+        </guide_term>
+        <abortresultmsg>
+            <option lang="en">Import data failure. %s</option>
+            <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. %s</option>
+        </abortresultmsg>
+        <sucessresultmsg>
+            <option lang="en">Import data operation completed successfully.</option>
+            <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία.</option>
+        </sucessresultmsg>
+        <creationinfomsg>
+            <option lang="en">Import data operation to thesaurus %s from file %s completed successfully.</option>
+            <option lang="el">Η διαδικασία εισαγωγής δεδομένων στον θησαυρό %s από το αρχείο %s ολοκληρώθηκε με επιτυχία.</option>
+        </creationinfomsg>
+    </importcopymerge>
+    <termhierarchical>
+        <titleprefix>
+            <option lang="en">Term hierarchical presentation </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρου </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Hierarchical presentation of term: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρου: </option>
+        </baselabel>
+        <notopterms>
+            <option lang="en">No Top Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι κορυφής.</option>
+        </notopterms>
+        <refs>
+            <option lang="en">The following references were found: </option>
+            <option lang="el">Βρέθηκαν oι παρακάτω αναφορές: </option>
+        </refs>
+        <oneref>
+            <option lang="en"> 1 reference in hierarchy: </option>
+            <option lang="el"> 1 αναφορά  στην ιεραρχία: </option>
+        </oneref>
+        <multiplerefs>
+            <option lang="en"> references in hierarchies: </option>
+            <option lang="el"> αναφορές στην ιεραρχία: </option>
+        </multiplerefs>
+        <movetoref>
+            <option lang="en">Move to reference: </option>
+            <option lang="el">Μετάβαση στην αναφορά: </option>
+        </movetoref>
+        <returntopagestart>
+            <option lang="en">(return to page start)</option>
+            <option lang="el">(επιστροφή στην αρχή της σελίδας)</option>
+        </returntopagestart>
+    </termhierarchical>
+    <fixdata>
+        <checkorphan>
+            <titleprefix>
+                <option lang="en">Terms with bts in and out of Orphan Terms hierarchy </option>
+                <option lang="el">Όροι με ΠΟ τόσο εντός όσο και εκτός της ιεραρχίας Ορφανών όρων </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Terms with bts in and out of Orphan Terms hierarchy: </option>
+                <option lang="el">Όροι με ΠΟ τόσο εντός όσο και εκτός της ιεραρχίας Ορφανών όρων: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <term>
+                <option lang="en">Term</option>
+                <option lang="el">Όρος</option>
+            </term>
+            <orphanbts>
+                <option lang="en">Wrong Bts belonging in Orphan Terms Hierarchy</option>
+                <option lang="el">Εσφαλμένοι ΠΟ που ανήκουν στους Ορφανούς όρους</option>
+            </orphanbts>
+            <nonorphanbts>
+                <option lang="en">Correct Bts NOT belonging in Orphan Terms Hierarchy</option>
+                <option lang="el">Έγκυροι ΠΟ που ΔΕΝ ανήκουν στους Ορφανούς όρους</option>
+            </nonorphanbts>
+        </checkorphan>
+        <classesbts>
+            <titleprefix>
+                <option lang="en">Hierarchical relations and BTs consistency errors </option>
+                <option lang="el">Έλεγχος σχέσεων Ιεραρχίας και ΠΟ </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Terms that belong to hierarchies incosistently to their recursive BTs: </option>
+                <option lang="el">Όροι των οποίων οι ιεραρχίες και οι αναδρομικά ΠΟ δεν βρίσκονται σε συμφωνία: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <termname>
+                <option lang="en">Term Name</option>
+                <option lang="el">Όνομα Όρου</option>
+            </termname>
+            <addtohier>
+                <option lang="en">Add to hierarchy</option>
+                <option lang="el">Πρόσθεση στην ιεραρχία</option>
+            </addtohier>
+            <removefromhier>
+                <option lang="en">Delete from hierarchy</option>
+                <option lang="el">Διαγραφή από την ιεραρχία</option>
+            </removefromhier>
+        </classesbts>
+        <nobt>
+            <titleprefix>
+                <option lang="en">Terms that are not classified in any hierarchical branch </option>
+                <option lang="el">Όροι που δεν έχουν ενταχθεί σε ιεραρχικό κλαδί </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Terms that are not classified in any hierarchical branch: </option>
+                <option lang="el">Όροι που δεν έχουν ενταχθεί σε ιεραρχικό κλαδί: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <name>
+                <option lang="en">Name</option>
+                <option lang="el">Όνομα</option>
+            </name>
+            <hashiers>
+                <option lang="en">Belongs in hierarchies</option>
+                <option lang="el">Ιεραρχίες στις οποίες υπάγεται</option>
+            </hashiers>
+            <addbt>
+                <option lang="en">Add BT</option>
+                <option lang="el">Πρόσθήκη ΠΟ</option>
+            </addbt>
+        </nobt>
+        <garbadge>
+            <titleprefix>
+                <option lang="en">Terms that are not referenced </option>
+                <option lang="el">Όροι που δεν αναφέρονται </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Terms that are not referenced: </option>
+                <option lang="el">Όροι που δεν αναφέρονται: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <targetlink>
+                <option lang="en">Unclassified concept</option>
+                <option lang="el">Αταξινόμητος σύνδεσμος</option>
+            </targetlink>
+            <class>
+                <option lang="en">Class</option>
+                <option lang="el">Κλάση</option>
+            </class>
+            <enword>
+                <option lang="en">English Word</option>
+                <option lang="el">Αγγλική λέξη</option>
+            </enword>
+            <frword>
+                <option lang="en">French Word</option>
+                <option lang="el">Γαλλική λέξη</option>
+            </frword>
+            <itword>
+                <option lang="en">Italian Word</option>
+                <option lang="el">Ιταλική λέξη</option>
+            </itword>
+            <uf>
+                <option lang="en">UF</option>
+                <option lang="el">XA</option>
+            </uf>
+            <alt>
+                <option lang="en">Alternate Term</option>
+                <option lang="el">Εναλλ.όρος</option>
+            </alt>
+            <tc>
+                <option lang="en">Taxonomical code</option>
+                <option lang="el">Ταξινομικός κωδικός</option>
+            </tc>
+        </garbadge>
+        <multipleeditors>
+            <titleprefix>
+                <option lang="en">Multiple editors or dates </option>
+                <option lang="el">Πολλαπλοί συντάκτες ή ημερομηνίες </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Multiple editors or dates: </option>
+                <option lang="el">Πολλαπλοί συντάκτες ή ημερομηνίες: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <name>
+                <option lang="en">Name</option>
+                <option lang="el">Όνομα</option>
+            </name>
+            <creator>
+                <option lang="en">Creator</option>
+                <option lang="el">Δημιουργός</option>
+            </creator>
+            <modificator>
+                <option lang="en">Modificator</option>
+                <option lang="el">Τροποποιητής</option>
+            </modificator>
+            <creationdate>
+                <option lang="en">Creation Date</option>
+                <option lang="el">Ημερομ.Δημιουργίας</option>
+            </creationdate>
+            <modificationdate>
+                <option lang="en">Modification Date</option>
+                <option lang="el">Ημερομ.Τροποποίησης</option>
+            </modificationdate>
+        </multipleeditors>
+        <multipleusage>
+            <titleprefix>
+                <option lang="en">Wrong multiple usage of terms </option>
+                <option lang="el">Εσφαλμένη πολλαπλή χρήση όρων </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Wrong multiple usage of terms: </option>
+                <option lang="el">Εσφαλμένη πολλαπλή χρήση όρων: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <link>
+                <option lang="en">Link</option>
+                <option lang="el">Σύνδεσμος</option>
+            </link>
+            <usedas>
+                <option lang="en">Used as</option>
+                <option lang="el">Χρησιμοποιείται ως</option>
+            </usedas>
+            <dxa>
+                <option lang="en">Term, UF, ALT</option>
+                <option lang="el">Όρος, ΧΑ, Εναλλ.Όρος</option>
+            </dxa>
+            <dx>
+                <option lang="en">Term, UF</option>
+                <option lang="el">Όρος, ΧΑ</option>
+            </dx>
+            <xa>
+                <option lang="en">UF, ALT</option>
+                <option lang="el">ΧΑ, Εναλλ.Όρος</option>
+            </xa>
+            <da>
+                <option lang="en">Term, ALT</option>
+                <option lang="el">Όρος, Εναλλ.Όρος</option>
+            </da>
+            <tua>
+                <option lang="en">Translation, uk_UF, uk_ALT</option>
+                <option lang="el">Μετάφραση, UF, ALT</option>
+            </tua>
+            <tu>
+                <option lang="en">Translation, uk_UF</option>
+                <option lang="el">Μετάφραση, UF</option>
+            </tu>
+            <ua>
+                <option lang="en">uk_UF, uk_ALT</option>
+                <option lang="el">UF, ALT</option>
+            </ua>
+            <ta>
+                <option lang="en">Translation, uk_ALT</option>
+                <option lang="el">Μετάφραση, ALT</option>
+            </ta>
+        </multipleusage>
+        <rts>
+            <titleprefix>
+                <option lang="en">Terms with RTs that are included in their hierarchical branches </option>
+                <option lang="el">Όροι των οποίων οι ΣΟ υπάγονται στα ιεραρχικά κλαδιά τους </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Terms with RTs that are included in their hierarchical branches: </option>
+                <option lang="el">Όροι των οποίων οι ΣΟ υπάγονται στα ιεραρχικά κλαδιά τους: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <name>
+                <option lang="en">Name</option>
+                <option lang="el">Όνομα</option>
+            </name>
+            <deletert>
+                <option lang="en">Delete RT</option>
+                <option lang="el">Διαγραφή ΣΟ</option>
+            </deletert>
+        </rts>
+        <toptermswithbts>
+            <titleprefix>
+                <option lang="en">Top Terms Errors </option>
+                <option lang="el">Σφάλματα Όρων Κορυφής </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Top Terms for which one or more BTs are defined: </option>
+                <option lang="el">Όροι κορυφής για τους οποίους ορίσθηκε ΠΟ: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <topterm>
+                <option lang="en">TT</option>
+                <option lang="el">OK</option>
+            </topterm>
+            <delbt>
+                <option lang="en">Delete BT</option>
+                <option lang="el">Διαγραφή ΠΟ</option>
+            </delbt>
+            <delhier>
+                <option lang="en">Delete from Hierarchy</option>
+                <option lang="el">Διαγραφή από την ιεραρχία</option>
+            </delhier>
+            <relevanthier>
+                <option lang="en">Relevant Hierarchy</option>
+                <option lang="el">Σχετική Ιεραρχία</option>
+            </relevanthier>
+        </toptermswithbts>
+        <dates>
+            <titleprefix>
+                <option lang="en">Dates Correction </option>
+                <option lang="el">Διόρθωση Hμερομηνιών </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Dates Correction: </option>
+                <option lang="el">Διόρθωση Hμερομηνιών: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <oldname>
+                <option lang="en">Initial Name</option>
+                <option lang="el">Αρχικό Όνομα</option>
+            </oldname>
+            <newname>
+                <option lang="en">New Name</option>
+                <option lang="el">Νέο Όνομα</option>
+            </newname>
+        </dates>
+        <unclassifiedbts>
+            <titleprefix>
+                <option lang="en">Errors in relations with Orphan Term </option>
+                <option lang="el">Εσφαλμένες σχέσεις με τον Ορφανό όρο </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Errors in relations with Orphan Term: </option>
+                <option lang="el">Εσφαλμένες σχέσεις με τον Ορφανό όρο: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <termname>
+                <option lang="en">Term Name</option>
+                <option lang="el">Όνομα Όρου</option>
+            </termname>
+        </unclassifiedbts>
+        <unclassifiededitor>
+            <titleprefix>
+                <option lang="en">Unclassified editor links </option>
+                <option lang="el">Αταξινόμητοι σύνδεσμοι συντακτών </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Unclassified editor links: </option>
+                <option lang="el">Αταξινόμητοι σύνδεσμοι συντακτών: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <editorname>
+                <option lang="en">Editor name</option>
+                <option lang="el">Όνομα συντάκτη</option>
+            </editorname>
+            <unclassifiedlink>
+                <option lang="en">Unclassified link</option>
+                <option lang="el">Αταξινόμητος σύνδεσμος</option>
+            </unclassifiedlink>
+            <creator>
+                <option lang="en">Creator</option>
+                <option lang="el">Δημιουργός</option>
+            </creator>
+            <creationdate>
+                <option lang="en">Creation Date</option>
+                <option lang="el">Ημερ.Δημιουργίας</option>
+            </creationdate>
+            <modificator>
+                <option lang="en">Modificator</option>
+                <option lang="el">Τροποποιητής</option>
+            </modificator>
+            <modificationdate>
+                <option lang="en">Modification Date</option>
+                <option lang="el">Ημερ.Τροποποίησης</option>
+            </modificationdate>
+        </unclassifiededitor>
+        <unclassifiedhierarchyterm>
+            <titleprefix>
+                <option lang="en">Unclassified Terms of superclass </option>
+                <option lang="el">Αταξινόμητοι όροι της υπερκλάσης </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Unclassified Terms: </option>
+                <option lang="el">Αταξινόμητοι Όροι: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <termname>
+                <option lang="en">Term Name</option>
+                <option lang="el">Όνομα Όρου</option>
+            </termname>
+        </unclassifiedhierarchyterm>
+        <unclassifiedsources>
+            <titleprefix>
+                <option lang="en">Unclassified sources links </option>
+                <option lang="el">Αταξινόμητοι σύνδεσμοι πηγών </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Unclassified sources links: </option>
+                <option lang="el">Αταξινόμητοι σύνδεσμοι πηγών: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <sourcename>
+                <option lang="en">Source name</option>
+                <option lang="el">Όνομα πηγής</option>
+            </sourcename>
+            <unclassifiedlink>
+                <option lang="en">Unclassified link</option>
+                <option lang="el">Αταξινόμητος σύνδεσμος</option>
+            </unclassifiedlink>
+            <primarysource>
+                <option lang="en">Source</option>
+                <option lang="el">Πηγή</option>
+            </primarysource>
+            <trsource>
+                <option lang="en">Translation source</option>
+                <option lang="el">Πηγή μεταφράσεων</option>
+            </trsource>
+            <enterm>
+                <option lang="en">En</option>
+                <option lang="el">AO</option>
+            </enterm>
+        </unclassifiedsources>
+        <wrongnames>
+            <titleprefix>
+                <option lang="en">Naming Errors </option>
+                <option lang="el">Σφάλματα Ονοματολογίας </option>
+            </titleprefix>
+            <intro>
+                <option lang="en">Naming Errors: </option>
+                <option lang="el">Σφάλματα Ονοματολογίας: </option>
+            </intro>
+            <noerrors>
+                <option lang="en">No such errors were retrieved.</option>
+                <option lang="el">Δεν βρέθηκαν εσφαλμένα δεδομένα.</option>
+            </noerrors>
+            <number>
+                <option lang="en">Num.</option>
+                <option lang="el">A./A.</option>
+            </number>
+            <kind>
+                <option lang="en">Kind</option>
+                <option lang="el">Είδος</option>
+            </kind>
+            <oldname>
+                <option lang="en">Initial Name</option>
+                <option lang="el">Αρχικό Όνομα</option>
+            </oldname>
+            <newname>
+                <option lang="en">New Name</option>
+                <option lang="el">Νέο Όνομα</option>
+            </newname>
+            <newnameexists>
+                <option lang="en">New name existence</option>
+                <option lang="el">Ύπαρξη νέου ονόματος</option>
+            </newnameexists>
+        </wrongnames>
+    </fixdata>
+</root>

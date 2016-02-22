@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+ -->
+<locale>
+	<messages>
+          <message id="ΤK" name_el="TK" name_en="TC" legend_descr_el="Ταξινομικός κωδικός" legend_descr_en="Taxonomical Code" order="0"/>
+	  <message id="TR" name_el="Μετ." name_en="Tra." name_fr="Tra." name_it="Tra." name_ar="Tra." legend_descr_el="Μεταφράσεις" legend_descr_en="Translations" legend_descr_fr="Traductions" legend_descr_it="Traduzioni" legend_descr_ar="Translations" order="1"/>
+	  <message id="SN" name_el="ΔΣ" name_en="SN" name_fr="NE" name_it="SN" name_ar="SN" legend_descr_el="Διευκρινιστική Σημείωση" legend_descr_en="Scope Note" legend_descr_fr="Note Explanative" legend_descr_it="Scope Note" legend_descr_ar="Scope Note" order="2"/>
+          <message id="tr_SN" name_el="ΔΣ (Μετ.)" name_en="SN (Tra.)" name_fr="NE (Tra.)" name_it="SN (Tra.)" name_ar="SN (Tra.)" legend_descr_el="Διευκρινιστική Σημείωση Μεταφράσεων" legend_descr_en="Translations Scope Note" legend_descr_fr="Traductions Note Explanative" legend_descr_it="Traduzioni English Scope Note" legend_descr_ar="Translations Scope Note" order="3"/>          
+          
+		<message id="USE" name_el="ΧΡ" name_en="USE" name_fr="EM" name_it="USE"  name_ar="USE" legend_descr_el="Χρησιμοποίησε" legend_descr_en="Use" legend_descr_fr="Employer" legend_descr_it="Use"  legend_descr_ar="Use"   order="4"/>
+		<message id="UF" name_el="ΧΑ" name_en="UF" name_fr="EP" name_it="UF" name_ar="UF" legend_descr_el="Χρησιμοποίησε Αντί: Μη Προτιμώμενος, Συνώνυμο" legend_descr_en="Non-Preferred, Equivalent Term" legend_descr_fr="Employé pour" legend_descr_it="Non-Preferred, Equivalent Term" legend_descr_ar="Non-Preferred, Equivalent Term" order="5"/>
+		<message id="UF (Tra.)" name_el="XA (Μετ.)" name_en="UF (Tra.)" name_fr="EP (Tra.)" name_it="UF (Tra.)" name_ar="UF (Tra.)" legend_descr_el="Συνώνυμα μεταφράσεων" legend_descr_en="Non-Preferred, Equivalent Translations" legend_descr_fr="Employé pour traductions" legend_descr_it="Non-Preferred, Equivalent Traduzioni" legend_descr_ar="Non-Preferred, Equivalent Translations" order="6"/>
+		<message id="TT" name_el="ΟΚ" name_en="TT" name_fr="MV" name_it="TT"  name_ar="TT"  legend_descr_el="Όρος 'Κορυφή', δηλώνει Ιεραρχία" legend_descr_en="Top Term" legend_descr_fr="Nom de la classe la plus Générale" legend_descr_it="Top Term"  legend_descr_ar="Top Term"  order="7"/>
+		<message id="BT" name_el="ΠΟ" name_en="BT" name_fr="TG"  name_it="BT"   name_ar="BT" legend_descr_el="Πλατύτερος Όρος" legend_descr_en="Broader Term" legend_descr_fr="Terme Générique" legend_descr_it="Broader Term" legend_descr_ar="Broader Term"  order="8"/>
+		<message id="BT1" name_el="ΠΟ1" name_en="BT1" name_fr="TG1" name_it="BT1"   name_ar="BT1" legend_descr_el="Πλατύτερος Όρος - 1" legend_descr_en="Broader Term 1" legend_descr_fr="Terme Générique 1" legend_descr_it="Broader Term 1" legend_descr_ar="Broader Term 1"  order="9"/>
+		<message id="BT2" name_el="ΠΟ2" name_en="BT2" name_fr="TG2" name_it="BT2" name_ar="BT2" legend_descr_el="Πλατύτερος Όρος - 2" legend_descr_en="Broader Term 2" legend_descr_fr="Terme Générique 2" legend_descr_it="Broader Term 2" legend_descr_ar="Broader Term 2"  order="10"/>
+		<message id="BT3" name_el="ΠΟ3" name_en="BT3" name_fr="TG3"  name_it="BT3" name_ar="BT3" legend_descr_el="Πλατύτερος Όρος - 3" legend_descr_en="Broader Term 3" legend_descr_fr="Terme Générique 3" legend_descr_it="Broader Term 3" legend_descr_ar="Broader Term 3" order="11"/>
+		<message id="NT" name_el="ΕΟ" name_en="NT" name_fr="TS" name_it="NT"   name_ar="NT" legend_descr_el="Ειδικότερος Όρος" legend_descr_en="Narrower Term" legend_descr_fr="Terme Spécifique" legend_descr_it="Narrower Term" legend_descr_ar="Narrower Term" order="12"/>
+		<message id="NT1" name_el="ΕΟ1" name_en="NT1" name_fr="TS1" name_it="NT1"   name_ar="NT1"  legend_descr_el="Ειδικότερος Όρος - 1" legend_descr_en="Narrower Term 1" legend_descr_fr="Terme Spécifique 1" legend_descr_it="Narrower Term 1" legend_descr_ar="Narrower Term 1" order="13"/>
+		<message id="NT2" name_el="ΕΟ2" name_en="NT2" name_fr="TS2" name_it="NT2"   name_ar="NT2" legend_descr_el="Ειδικότερος Όρος - 2" legend_descr_en="Narrower Term 2" legend_descr_fr="Terme Spécifique 2" legend_descr_it="Narrower Term 2" legend_descr_ar="Narrower Term 2" order="14"/>
+		<message id="NT3" name_el="ΕΟ3" name_en="NT3" name_fr="TS3"  name_it="NT3"   name_ar="NT3"  legend_descr_el="Ειδικότερος Όρος - 3" legend_descr_en="Narrower Term 3" legend_descr_fr="Terme Spécifique 3" legend_descr_it="Narrower Term 3" legend_descr_ar="Narrower Term 3"  order="15"/>
+		<message id="RT" name_el="ΣΟ" name_en="RT" name_fr="VA" name_it="RT" name_ar="RT"  legend_descr_el="Σχετικός Όρος" legend_descr_en="Related Term" legend_descr_fr="Voir Aussi" legend_descr_it="Related Term" legend_descr_ar="Related Term" order="16"/>
+		<!--<message id="ALT" name_el="ALT" name_en="ALT" name_fr="ALT" name_it="ALT" name_ar="ALT"  legend_descr_el="Εναλλακτική μορφή όρου" legend_descr_en="Alternative Term" legend_descr_fr="Alternative Term" legend_descr_it="Alternative Term" legend_descr_ar="Alternative Term" order="14"/>-->
+		<message id="Source" name_el="Πηγή" name_en="Source" name_fr="Source" name_it="Source" name_ar="Source"  legend_descr_el="Πηγή" legend_descr_en="Source" legend_descr_fr="Source" legend_descr_it="Fonte" legend_descr_ar="Source" order="17"/>
+		<!--<message id="Source_el" name_el="Πηγή (ελλ.)" name_en="Source (el)" name_fr="Source (el)" name_it="Source (el)" name_ar="Source"  legend_descr_el="Πηγή (ελληνικού όρου)" legend_descr_en="Source (Greek term)" legend_descr_fr="Source du terme grec et anglais" legend_descr_it="Fonte di greco e inglese termine" legend_descr_ar="Source of Greek and English term" order="18"/>-->
+		<message id="Source_tr" name_el="Πηγή (Μετ.)" name_en="Source (Tra.)" name_fr="Source (Tra.)" name_it="Source (Tra.)" name_ar="Source (Tra.)"  legend_descr_el="Πηγή Μεταφράσεων" legend_descr_en="Source of Translations" legend_descr_fr="Source du Traductions terme" legend_descr_it="Fonte di Traduzioni termine" legend_descr_ar="Source of Translation terms" order="19"/>
+                
+<!-- General Labels  -->		
+
+		<message id="thesaurus" name_el="Θησαυρός Όρων" name_en="Catalogue of Monument Types" name_fr="Catalogue des types de Monuments" name_it="Catalogue of Monument Types"  name_ar="Catalogue of Monument Types" />
+		<message id="closeLegend" name_el="κλείσιμο" name_en="close" name_fr="fermer" name_it="close" name_ar="close"/>
+		<message id="legendText" name_el="Υπόμνημα" name_en="Legend" name_fr="Légende"  name_it="Legend"  name_ar="Legend"  />
+		<message id="showLegend" name_el="Υπόμνημα" name_en="See the legend" name_fr="Voir la légende" name_it="See the legend" name_ar="See the legend"/>
+             
+        
+        </messages>
+	<vars>
+                <var id="SN" name="_scope_note"/>
+                <var id="tr_SN" name="_translations_scope_note"/>
+		<var id="UF" name="_UF"/>
+                <var id="UF (Tra.)" name="_uf_translations"/>
+		<var id="BT" name="_BT"/>
+		<var id="RT" name="_RT"/>
+		<var id="dewey" name="_dewey"/>
+                <var id="tc" name="_taxonomic_code"/>
+		<var id="ThesaurusClass" name="ThesaurusClass"/>
+		<var id="NewThesaurusClass" name="NewThesaurusClass"/>
+		<var id="Facet" name="Facet"/>
+		<var id="Hierarchy" name="Hierarchy"/>
+		<var id="hyperText" name="hyperText"/>
+		<var id="Descriptor" name="Descriptor"/>
+		<var id="NewDescriptor" name="NewDescriptor"/>
+		<var id="TopTerm" name="TopTerm"/>
+		<var id="GuideTerm" name="GuideTerm"/>
+		<var id="UsedForTerm" name="UsedForTerm"/>
+		<var id="HierarchyTerm" name="HierarchyTerm"/>
+		<var id="AlternativeTerm" name="AlternativeTerm"/>
+		<!--<var id="EnTransl" name="_translation, to_EN"/>
+		<var id="FrTransl" name="_translation, to_FR"/>
+		<var id="DeTransl" name="_translation, to_DE"/>
+		<var id="ItTransl"    name="_translation, to_IT"/>
+		<var id="ArTransl" name="_translation, to_AR"/>-->
+		<var id="ALT" name="_ALT"/>
+		<!--<var id="Source" name="_found_in"/>-->
+		<var id="Source" name="_primary_found_in"/>
+		<var id="Source_tr" name="_translations_found_in"/>               
+	</vars>
+</locale>
+

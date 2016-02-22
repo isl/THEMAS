@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+ -->
+<!--
+    Document   : Consistencies_Error_Codes.xml
+    Created on : 12 Νοέμβριος 2008, 2:04 μμ
+    Author     : tzortzak
+    Description:
+        Purpose of the document follows.
+-->
+<!--<CONSISTENCIES_CHECKS currLang="el">-->
+<CONSISTENCIES_CHECKS>
+    <CREATE_MODIFY>
+        
+        <TEST id="1">
+            <errorcase id="1">
+                <option lang="en">Please specify a term name.</option>
+                <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του όρου.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="2">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Δεν έχει δηλωθεί αγγλική μετάφραση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="3">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Η δήλωση μίας μοναδικής μετάφρασης για κάθε περιγραφέα είναι υποχρεωτική.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="4">
+            
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Δεν έχει δηλωθεί ταξινομικός κωδικός.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="5">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Δεν έχει δηλωθεί πηγή του ελληνικού όρου.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="6">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Δεν έχει δηλωθεί πηγή της αγγλικής μετάφρασης του όρου.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="7">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Δεν επιτρέπεται η δημιουργία σχέσης ενός όρου με τον εαυτό του.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="8">
+           <errorcase id="1">
+                <option lang="en">BT : '%s' which was declared gor the creation of new term does not exist in database.</option>
+                <option lang="el">Ο ΠΟ : '%s' που δηλώθηκε για την δημιουργία του νέου όρου δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="9">
+            <errorcase id="1">
+                <option lang="en">Term '%s' already exists in database.</option>
+                <option lang="el">Ο όρος '%s' υπάρχει ήδη στη βάση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="10">
+            <errorcase id="1">
+                <option lang="en">English word : '%s' already exists in database.</option>
+                <option lang="el">Η αγγλική λέξη : '%s' υπάρχει ήδη στη βάση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="11">
+            <errorcase id="1">
+                <option lang="en">Non approved taxinomical code : '%s'.</option>
+                <option lang="el">Μη αποδεκτός Ταξινομικός κωδικός : '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="12">
+            <errorcase id="1">
+                <option lang="en">Taxinomical codes : '%s' already exist in database and are used for othe terms. </option>
+                <option lang="el">Οι ταξινομικοί κωδικοί : '%s' υπάρχουν ήδη στη βάση και χρησιμοποιούνται από άλλους όρους.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="13">
+            <errorcase id="1">
+                <option lang="en">Source : '%s' does not exists in database.</option>
+                <option lang="el">Η πηγή : '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="14">
+            <errorcase id="1">
+                <option lang="en">Relationship RT between the '%s' and '%s' cannot be implemented because they belong to the same hierarchical branch.</option>
+                <option lang="el">Δεν μπορεί να δημιουργηθεί σχέση ΣΟ μεταξύ των '%s' και '%s' γιατί ανήκουν στο ίδιο ιεραρχικό κλαδί.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="15">
+            <errorcase id="1">
+                <option lang="en">RT '%s' does not exist in database.</option>
+                <option lang="el">Η βάση δεν περιέχει τον ΣΟ '%s'.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">Terms: '%s' do not belong in related terms in condition to be used in the field of RT.</option>
+                <option lang="el">Οι όροι : '%s'  δεν ανήκουν στους σχετικούς όρους ώστε να μπορούν να χρησιμοποιηθούν στο πεδίο ΣΟ.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">BT '%s' does not exist in database.</option>
+                <option lang="el">Η βάση δεν περιέχει τον ΠΟ '%s'.</option>
+            </errorcase>
+            <errorcase id="4">
+                <option lang="en">Terms : '%s' cannot be declared in the field of BT.</option>
+                <option lang="el">Οι όροι : '%s'  δεν μπορούν να χρησιμοποιηθούν στο πεδίο των ΠΟ.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="16">
+            <errorcase id="1">
+                <option lang="en">The UF Terms : '%s' , are used in database beyond of the set of the inappropriate terms.</option>
+                <option lang="el">Οι XA όροι : '%s' που δηλώθηκαν, χρησιμοποιούνται στην βάση πέρα από το σύνολο των αδόκιμων όρων.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="17">
+            <errorcase id="1">
+                <option lang="en">The Alternative terms : '%s', are used in database beyond of the set of the alternative terms.</option>
+                <option lang="el">Οι εναλλακτικοί όροι : '%s' που δηλώθηκαν, χρησιμοποιούνται στην βάση πέρα από το σύνολο των εναλλακτικών όρων.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="18">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Οι UF όροι : '%s' που δηλώθηκαν, χρησιμοποιούνται ήδη στον θησαυρό σαν ΑΟ.</option>
+            </errorcase>
+             <errorcase id="2">
+                <option lang="en"></option>
+                <option lang="el">Οι UF όροι : '%s' που δηλώθηκαν, χρησιμοποιούνται ήδη στον θησαυρό σαν ALT όροι.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="19">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Οι ALT όροι : '%s' που δηλώθηκαν, χρησιμοποιούνται στην βάση πέρα από το σύνολο των ALT όρων.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="20">
+            <errorcase id="1">
+                <option lang="en">Term '%s' not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">Term '%s' not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot has as RT the '%s' due to the existance of recursive relationships with BT and NT.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να έχει ΣΟ τους '%s' λόγω των προϋπαρχόντων αναδρομικών σχέσεων του με ΠΟ και ΕΟ.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="21">
+            
+            <errorcase id="1">
+                <option lang="en">Dewey code was not declared.</option>
+                <option lang="el">Δεν έχει δηλωθεί κωδικός dewey.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="22">
+            <errorcase id="1">
+                <option lang="en">Not acceptable dewey code : '%s'.</option>
+                <option lang="el">Μη αποδεκτός κωδικός dewey: '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="23">
+            <errorcase id="1">
+                <option lang="en">Dewey code : '%s' already exists in database.</option>
+                <option lang="el">Ο dewey κωδικός : '%s' υπάρχει ήδη στη βάση.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="24">
+            <errorcase id="1">
+                <option lang="en">Inappropriate use of BT : '%s'. This term is used only for terms that are not shorted for other BT.</option>
+                <option lang="el">Εσφαλμένη χρήση του ΠΟ : '%s'. Ο όρος αυτός χρησιμοποιείται μόνο για όρους που δεν έχουν ταξινομηθεί σε άλλον ΠΟ.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="25">
+            <errorcase id="1">
+                <option lang="en">Terms : '%s' and '%s' cannot be used at the same time as BT of term: '%s' because they have hierarchical relationship.</option>
+                <option lang="el">Οι όροι: '%s' και '%s' δεν μπορούν να χρησιμοποιηθούν ταυτόχρονα σαν ΠΟ του νέου όρου: '%s' καθώς παρουσιάζουν ιεραρχική σχέση μεταξύ τους.</option>
+            </errorcase>
+        </TEST>
+        
+         <TEST id="26">
+            <errorcase id="1">
+                <option lang="en"></option>
+                <option lang="el">Οι AO : '%s' που δηλώθηκαν, χρησιμοποιούνται ήδη στον θησαυρό σαν UF όροι.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en"></option>
+                <option lang="el">Οι AO : '%s' που δηλώθηκαν, χρησιμοποιούνται ήδη στον θησαυρό σαν ALT όροι.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="27">
+            <errorcase id="1">
+                <option lang="en">For the term '%s' there are declared as BT the following terms of hierarchy of Unclassified terms: '%s'. These relationship are avoided, due to the BT relationships of term: '%s' with the following non Unclassified terms: '%s'.</option>
+                <option lang="el">Για τον όρο '%s' έχουν δηλωθεί ως ΠΟ οι ακόλουθοι όροι της ιεραρχίας των  Ορφανών όρων: '%s'. Οι σχέσεις αυτές παραλείπονται, λόγω των σχέσεων ΠΟ του όρου: '%s' με τους ακόλουθους μη Ορφανούς όρους: '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+         <TEST id="27">
+            <errorcase id="2">
+                <option lang="en">For the term '%s' the declared BTs are: '%s' that do not belong in hierarchy of Unclassified terms. Due to these relationships , the BT relationships with the following terms of Unclassified terms cannot be created: '%s'.</option>
+                <option lang="el">Για τον όρο '%s' δηλώθηκαν οι εξής ΠΟ: '%s' οι οποίοι δεν ανήκουν στην ιεραρχία των Ορφανών όρων. Λόγω των σχέσεων αυτών οι σχέσεις ΠΟ με του ακόλουθους όρους των Όρφανών όρων δεν μπορούν να δημιουργηθούν: '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="27">
+            <errorcase id="3">
+                <option lang="en">The BTs: '%s' that were declared for the term '%s', belong to hierarchy of Unclassified terms. However some of the recursive NT of tern '%s', belong to other hierarchies apart from Unclassified terms.</option>
+                <option lang="el">Οι ΠΟ: '%s' που δηλώθηκαν για τον όρο '%s', ανήκουν στην ιεραρχία των Ορφανών όρων. Ωστόσο μερικοί από τους αναδρομικά ΕΟ του όρου '%s', ανήκουν και σε άλλες ιεραρχίες πέρα από τους Ορφανούς όρους.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="27">
+            <errorcase id="4">
+                <option lang="en">BTs: '%s' that declared for the term '%s', DO NOT belong to hierarchy of Unclassified Terms. However some of the recursive NT of term '%s', belong to hierarchy of Unclassified terms.</option>
+                <option lang="el">Οι ΠΟ: '%s' που δηλώθηκαν για τον όρο '%s', ΔΕΝ ανήκουν στην ιεραρχία των Ορφανών όρων. Ωστόσο μερικοί από τους αναδρομικά ΕΟ του όρου '%s', ανήκουν στην ιεραρχία των Ορφανών όρων.</option>
+            </errorcase>
+        </TEST>
+        
+    </CREATE_MODIFY>
+    
+    <MOVE_TO_HIERARCHY>
+        
+        <TEST id="1">
+            <errorcase id="1">
+                <option lang="en">Term '%s' is declared as Top Term and cannot be moved from the hierarchy.</option>
+                <option lang="el">Ο όρος '%s' αποτελεί όρο κορυφής (Top Term) και δεν μπορεί να μετακινηθεί από την ιεραρχία.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="2">
+            <errorcase id="1">
+                <option lang="en">Term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">The following RT of term '%s' : '%s' prevent the creation of relationship BT with the term: '%s'.</option>
+                <option lang="el">Οι ακόλουθοι ΣΟ του όρου '%s' : '%s' εμποδίζουν την δημιουργία σχέσης ΠΟ με τον όρο : '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="3">
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>     
+            <errorcase id="2">
+                <option lang="en">Term '%s' cannot be moved due to the relationships that will be created from the NTs of the terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί λόγω των σχέσεων που θα δημιουργηθούν από τους ΕΟ του προς τους όρους : '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="4">
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the preexistance of direct hierarchical relationships of the NT of '%s' and of '%s', with terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των προϋπαρχόντων άμεσων σχέσεων ιεραρχίας των ΕΟ του '%s' και του '%s', με τους όρους : '%s'.</option>
+            </errorcase>
+            <errorcase id="4">
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the preexistance of associative relationships of '%s' and its NT, from/to terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των προϋπαρχόντων σχέσεων συχέτισης του '%s' και των ΕΟ του, από/προς τους όρους : '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="5">
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot be connected with BT '%s' due to the preexistance of recursive hierarchical relationships of term '%s', to terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των προϋπαρχόντων αναδρομικών σχέσεων ιεραρχίας του όρου '%s', προς τους όρους : '%s'.</option>
+            </errorcase>
+            <errorcase id="4">
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the preexistance of associative relationships and its recursive BT, to terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των προϋπαρχόντων σχέσεων συσχέτισης  του '%s' και των αναδρομικά ΠΟ του, προς τους όρους : '%s'.</option>
+            </errorcase>
+        </TEST>
+        
+        
+        <TEST id="6">
+            
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            
+            <errorcase id="2">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot be moved under to the BT '%s' due to the preexistance of hierarchical relationships of '%s' and its NT, from/to the terms: '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των προϋπαρχόντων σχέσεων ιεραρχίας του '%s' και των ΕΟ του, από/προς τους όρους : '%s'.</option>
+            </errorcase>
+            
+            <errorcase id="4">
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the preexistance of associative relationships of '%s' and its NT, from/to terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των προϋπαρχόντων σχέσεων συχέτισης του '%s' και των ΕΟ του, από/προς τους όρους : '%s'.</option>
+            </errorcase>
+            
+        </TEST>
+        
+        <TEST id="7">
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">The BT '%s' was not found in database.</option>
+                <option lang="el">Ο ΠΟ που δηλώθηκε '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the hierarchical relationships that already exist or are going to be created between term '%s', and terms: '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων ιεραρχίας που υπάρχουν ή θα δημιουργηθούν μεταξύ των όρων '%s', και των όρων: '%s'.</option>
+            </errorcase>
+            <errorcase id="4">
+                <option lang="en">Term '%s' cannot be connected wi the BT '%s' due to </option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων συσχέτισης που υπάρχουν ή θα δημιουργηθούν μεταξύ των όρων '%s' και των αναδρομικά ΠΟ του, και των όρων: '%s'.</option>
+            </errorcase>
+            <errorcase id="5"><!--just like 3 but 3rd argument is null-->
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the hierarchical relationships that already exist or are going to be created between these terms and their recursive BTs and NTs.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων ιεραρχίας που υπάρχουν ή θα δημιουργηθούν μεταξύ αυτών των όρων και των αναδρομικά ΠΟ και ΕΟ τους.</option>
+            </errorcase>
+            <errorcase id="6"><!--just like 4 but 3rd argument is null-->
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the associative relationships that already exist or are going to be created between these terms and their recursive BTs and RTs.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων συσχέτισης που υπάρχουν ή θα δημιουργηθούν μεταξύ αυτών των όρων και των αναδρομικά ΠΟ και ΕΟ τους.</option>
+            </errorcase>
+        </TEST>
+        
+        <TEST id="8">
+            
+            <errorcase id="1">
+                <option lang="en">The term '%s' was not found in database.</option>
+                <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            
+            <errorcase id="2">
+                <option lang="en">The declared BT '%s' was not found in database.</option>
+                <option lang="el">Ο ΠΟ που δηλώθηκε '%s' δεν βρέθηκε στην βάση.</option>
+            </errorcase>
+            
+            <errorcase id="3">
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the hierarchical relationships that already existos or going to be created between the term '%s and its recursive NTs, from/to the terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των σχέσεων ιεραρχίας που υπάρχουν ή θα δημιουργηθούν μεταξύ του όρου '%s' και των αναδρομικά ΕΟ του, από/προς τους όρους : '%s'.</option>
+            </errorcase>
+            
+            <errorcase id="4">
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the associative relationships that already exist or are going to be created between the term '%s' and its recursive NT, from/to the terms : '%s'.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των σχέσεων συχέτισης  που υπάρχουν ή θα δημιουργηθούν μεταξύ του όρου  '%s' και των αναδρομικά ΕΟ του, από/προς τους όρους : '%s'.</option>
+            </errorcase>
+            
+            <errorcase id="5"><!--just like 3 but 3rd argument is null-->
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the hierarchical relationships that already exists or are going to be created between these terms and their recursive BT and NT.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων ιεραρχίας που υπάρχουν ή θα δημιουργηθούν μεταξύ αυτών των όρων και των αναδρομικά ΠΟ και ΕΟ τους.</option>
+            </errorcase>
+            <errorcase id="6"><!--just like 4 but 3rd argument is null-->
+                <option lang="en">Term '%s' cannot be connected with the BT '%s' due to the associative relationships that already exist or are going to be created between these terms and their recursive BTs and NTs.</option>
+                <option lang="el">Ο όρος '%s' δεν μπορεί να συνδεθεί με τον ΠΟ '%s' λόγω των σχέσεων συσχέτισης που υπάρχουν ή θα δημιουργηθούν μεταξύ αυτών των όρων και των αναδρομικά ΠΟ και ΕΟ τους.</option>
+            </errorcase>
+            
+        </TEST>
+
+
+        <TEST id="9">
+
+            <errorcase id="1">
+                <option lang="en">Term for removal '%s' is the same as the BT destination. The removal of one term with itself can not be performed.</option>
+                <option lang="el">Ο όρος προς μετακίνηση '%s' είναι ίδιος με τον ΠΟ προορισμού. Η μετακίνηση ενός όρου στον εαυτό του δεν μπορεί να πραγματοποιηθεί.</option>
+            </errorcase>
+            
+        </TEST>
+        
+    </MOVE_TO_HIERARCHY>
+    
+</CONSISTENCIES_CHECKS>

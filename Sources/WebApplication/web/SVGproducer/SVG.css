@@ -1,0 +1,185 @@
+/* 
+ * Copyright 2015 Institute of Computer Science,
+ *                Foundation for Research and Technology - Hellas.
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ *      http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations
+ * under the Licence.
+ * 
+ * =============================================================================
+ * Contact: 
+ * =============================================================================
+ * Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+ *     Tel: +30-2810-391632
+ *     Fax: +30-2810-391638
+ *  E-mail: isl@ics.forth.gr
+ * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * 
+ * =============================================================================
+ * Authors: 
+ * =============================================================================
+ * Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ * 
+ * This file is part of the THEMAS system.
+ */
+/* ------------------------- ATTENTION!!!!!!!!!!!! do NOT use underscore ( _ ) inside style names -------------------------*/
+td.CategName {
+	font-family: Arial;
+	font-size: 9pt;
+}
+/* ---------------- styleGR ------------- */
+rect.styleGR {
+	fill:#E9E9C6;
+	stroke:brown;
+}
+td.styleGR {
+	background:#E9E9C6;
+	width:15px;
+	height:15px;
+}
+
+/* ---------------- STYLES defined for each translation category ------------- */
+/* ---------------- styleEN ------------- */
+rect.styleTR {
+	fill:#CC9966;
+	stroke:brown;
+}
+td.styleTR {
+	background:#CC9966;
+	width:15px;
+	height:15px;
+}
+
+/* ---------------- styleEN -------------
+rect.styleEN {
+	fill:#E9E9C6;
+	stroke:brown;
+}
+td.styleEN {
+	background:#E9E9C6;
+	width:15px;
+	height:15px;
+}
+
+
+/ ---------------- styleGR ------------- /
+rect.styleGR {
+	fill:#E9E9C6;
+	stroke:brown;
+}
+td.styleGR {
+	background:#E9E9C6;
+	width:15px;
+	height:15px;
+}
+/ ---------------- styleFR ------------- /
+rect.styleFR {
+	fill:#99CC33;
+	stroke:brown;
+}
+td.styleFR {
+	background:#99CC33;
+	width:15px;
+	height:15px;
+}
+/ ---------------- styleDE ------------- /
+rect.styleDE {
+	fill:#FFCC33;
+	stroke:brown;
+}
+td.styleDE {
+	background:#FFCC33;
+	width:15px;
+	height:15px;
+}
+*/
+/* ---------------- STYLES defined for each specific category to be traversed ------------- */
+/* ---------------- styleBTofTarget ------------- */
+rect.styleBTofTarget {
+	fill:#D4D0C8;
+	stroke:brown;
+}
+td.styleBTofTarget {
+	background:#D4D0C8;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleBT ------------- */
+rect.styleBT {
+	fill:#E9E9C6;
+	stroke:brown;
+}
+td.styleBT {
+	background:#E9E9C6;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleUF ------------- */
+rect.styleUF {
+	fill:#FFB6C1;
+	stroke:brown;
+}
+td.styleUF {
+	background:#FFB6C1;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleALT ------------- */
+rect.styleALT {
+	fill:#CCFF66;
+	stroke:brown;
+}
+td.styleALT {
+	background:#CCFF66;
+	width:15px;
+	height:15px;
+}
+/* ---------------- stylestyleUFTranslations ------------- */
+rect.styleUFTranslations {
+	fill:#E2CE1F;
+	stroke:brown;
+}
+td.styleUFTranslations {
+	background:#E2CE1F;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleUKALT ------------- */
+rect.styleUKALT {
+	fill:#FF7C80;
+	stroke:brown;
+}
+td.styleUKALT {
+	background:#FF7C80;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleDewey ------------- */
+rect.styleDewey {
+	fill:#40E0D0;
+	stroke:brown;
+}
+td.styleDewey {
+	background:#40E0D0;
+	width:15px;
+	height:15px;
+}
+/* ---------------- styleRT ------------- */
+rect.styleRT {
+	fill:#D4D0C8;
+	stroke:brown;
+}
+td.styleRT {
+	background:#D4D0C8;
+	width:15px;
+	height:15px;
+}

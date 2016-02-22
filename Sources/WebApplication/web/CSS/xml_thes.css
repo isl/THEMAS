@@ -1,0 +1,84 @@
+/* 
+ * Copyright 2015 Institute of Computer Science,
+ *                Foundation for Research and Technology - Hellas.
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ *      http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations
+ * under the Licence.
+ * 
+ * =============================================================================
+ * Contact: 
+ * =============================================================================
+ * Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+ *     Tel: +30-2810-391632
+ *     Fax: +30-2810-391638
+ *  E-mail: isl@ics.forth.gr
+ * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * 
+ * =============================================================================
+ * Authors: 
+ * =============================================================================
+ * Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ * 
+ * This file is part of the THEMAS system.
+ */
+body { font-size:12px; font-family:  verdana, arial, helvetica, sans-serif;}
+table {margin:0; padding:0;}
+
+h3.titleThes {font-size:12px; font-weight:bold;}
+
+hr.hrThes {width:300px;text-align:left; color:grey;padding:0px;margin-top:10px;display:none;}
+
+tr.rowThes {padding:0; }
+
+a {text-decoration:none; color:black;}
+
+a.aHeaderAnchorThes { text-decoration:none; color:black;}
+
+span.headerThes { font-size: 12px; font-weight:bold;font-family:  verdana, arial, helvetica, sans-serif;}
+span.headerThes_normal { font-size: 12px; font-weight:normal;font-family:  verdana, arial, helvetica, sans-serif;}
+
+span.deweyThes {font-size:12px; font-weight:bold; font-style:italic;}
+span.deweyHeaderThes {font-size: 12px; font-weight:bold; font-style:normal;}
+
+span.typeThes {font-size: 12px; font-weight:normal; padding:0; width:50px; display:block; }
+span.typeThes_normal {font-size:12px;font-weight:normal;padding:0;width:50px; display:block;}
+
+span.valueThes {font-size: 12px; font-weight:normal; font-family: verdana, arial, helvetica, sans-serif;}
+span.valueThes_bold {font-size: 12px; font-weight:bold;font-family:  verdana, arial, helvetica, sans-serif;}
+span.valueThes_italic {font-size: 12px; font-weight:normal; font-style:italic;font-family:  verdana, arial, helvetica, sans-serif;}
+
+td.typeColThes {width:50px;padding:0;}
+td.valueColThes {width:650px;padding:0;}
+td.emptyFirstCellThes {width:20px;}
+td.typeColSecondThes {width:60px;padding:0;}
+td.valueColSecondThes {width:620px;padding:0;}
+
+div.legendThes { background-color: #F2F2F2; border: 2px solid black; display: none; position: absolute; top: 410px; left: -110px;
+					z-index: 1000; font-weight: normal; font-size: 12px; padding: 2px; }
+div.legendThes2 { background-color: #FFFFFF; border: 2px solid black; display: block; position: absolute; top: 200px; left: 650px; 
+					z-index: 900; font-weight: bold; font-size: 12px; padding: 4px;cursor:pointer;white-space: nowrap;}
+td.closeLegendThes { font-weight: normal; font-size: 12px; position: relative; top: -2px; cursor: pointer;  
+					padding: 3px 3px 0 0px; text-align:right; cursor:pointer;}
+
+td.legendEntryThes { text-align:left;padding:5px 0 5px 0;font-weight: bold;  font-size: 12px; }
+span.headerLegendThes {font-weight:bold;padding:0 0 0 7px;font-size: 12px;white-space: nowrap;}
+
+td.style1Thes { font-size: 12px;padding: 0 10px 0 2px;font-weight:bold;white-space: nowrap;}
+td.style3Thes { font-size: 12px;padding: 0 10px 0 0px;font-weight:bold;white-space: nowrap;}
+td.style2Thes { font-size: 12px;white-space: nowrap;padding: 0 15px 0 0;}
+
+
+
+
+
+

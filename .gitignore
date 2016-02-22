@@ -1,0 +1,21 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+DoNotPublish/
+Sources/WebApplication/web/third-party-javascript/
+releases/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+#.gitignore
+

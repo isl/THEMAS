@@ -1,0 +1,793 @@
+/* 
+ * Copyright 2015 Institute of Computer Science,
+ *                Foundation for Research and Technology - Hellas.
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ *      http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations
+ * under the Licence.
+ * 
+ * =============================================================================
+ * Contact: 
+ * =============================================================================
+ * Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+ *     Tel: +30-2810-391632
+ *     Fax: +30-2810-391638
+ *  E-mail: isl@ics.forth.gr
+ * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * 
+ * =============================================================================
+ * Authors: 
+ * =============================================================================
+ * Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ * 
+ * This file is part of the THEMAS system.
+ */
+body{
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+    font-size: 11pt;
+    background-color:#FFFFFF;
+    font-weight: normal;
+    line-height: normal;
+    word-spacing: normal;
+}
+
+#all{
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+    background-color:#343839;
+    
+}
+
+#loginwrapper {
+    position:relative;
+    height:497px;
+    width: 1024px;  
+    background-color: #FFFFFF;
+     
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:5px;
+}
+
+#header {    
+    background-color: #E2E2E2;
+    height:77px;    
+}
+
+#headerLogin {    
+    background-color: #FFFFFF;
+    height:77px;    
+}
+
+#pleasewaitScreen{
+    visibility:hidden;
+    position:absolute;
+    top:30%;
+    left:45%;
+    z-index:500;
+}
+
+#content-primary {
+    float:left;
+    width: 844px;
+    height:610px;
+    position:absolute;
+    top:77px;
+    left:180px;
+    background-color: #FFFFFF;
+
+
+}
+#admin_content{
+    padding-top:12px;
+    float:left;
+    width: 1022px;
+    height:610px;
+    position:absolute;
+    top:77px;
+    left:0px;
+    border-bottom: 1px solid #898b5e;
+    border-left: 0px;
+    border-right: 0px;    
+}
+
+
+#content {
+    float:left;    
+    position:absolute;       
+    width:100%;
+    height:575px;
+    top: 30px;
+    left:0px;
+    background-color: #FFFFFF; 
+}
+
+#footer {
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    width: 1018px;
+    height:38px;  
+    background-color: #FFFFFF;
+    padding-left:3px;
+    padding-right:3px;
+
+} 
+.hrrow{
+    background-image: url(../images/hr.png);
+    background-repeat:repeat-x;
+}
+
+#logindiv {
+    position:relative;
+    /*height:382px;*/
+    height:400px;
+    width: 100%;
+    background-color: #FFFFFF;   
+    border-top-width: 1px;
+    border-top-style: none;
+    border-right-style: none;
+    border-bottom-style: none;
+    border-left-style: none;
+       
+}
+
+fieldset {
+    text-align:left;
+    border: 1px solid  #666666;
+}
+@-moz-document url-prefix() {
+    a {
+        margin: 0;
+    }
+}
+
+table.leftMenuTable{
+    width:100%; 
+    margin-top:1px;
+}
+@-moz-document url-prefix() {
+    table.leftMenuTable{
+        width:100%; 
+        margin-top:2px;
+    }
+}
+fieldset.index {
+    position:relative;
+    margin-left:auto;
+    margin-right:auto;
+    
+}
+
+legend {
+    /*background-color: #F2F2F2;*/
+    background-color: #FFFFFF;
+    border: 1px solid  #FFFFFF;
+    padding: 1px 6px;
+    font-size: 12px; 
+    font-weight:bold;
+    /*border: 1px solid  #999966;*/
+}
+
+
+#page {
+    position:relative;
+    top:5px;
+    height:720px;
+    width: 1024px;  
+    background-color: #FFFFFF;
+    border: 1px solid #898a5e;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#maintenancepage {
+    position:relative;
+    top:5px;
+    height:497px;
+    width: 1024px;  
+    background-color: #FFFFFF;   
+    border: 1px solid #898a5e;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+
+#content-secondary {
+    float:left;
+    text-align:left;
+    position:absolute;
+    display:block;
+    top:77px;
+    left:0px;
+    width: 180px;
+    height: 600px;
+    background-image: url(../images/leftmenu.jpg);
+    background-repeat:repeat;
+    padding-top: 18px;
+    /*padding-left: px;*/
+    margin:0px;
+    text-decoration: none;
+} 
+
+#bottomImg{
+	display:block;
+	position:absolute;
+	bottom:20px;
+	right:5px;
+}
+
+.contentHeadText{
+    background-color: #F2F2F2;
+}
+
+input{
+    background: #FFFFFF;
+    border: 1px solid #999966
+}
+
+.button{
+    color:#FFFFFF;
+	padding: 4px;
+	padding-left:8px;
+	padding-right:8px;
+    background-color:#3D75BF;
+	
+    cursor:pointer;
+}
+
+.disabledbutton{
+    background-color:#F2F2F2;
+    color:#000000;
+    border-color:grey;
+}
+
+select  {
+    background:#FFFFFF;
+    border: 1px solid #999966
+}
+
+textarea{
+    background: #FFFFFF;
+    border: 1px solid #999966;
+     
+}
+
+td {
+    font-size: 12px;
+}
+
+.submit input {
+    margin-left: 4.5em;
+    background:#FFFFFF;
+}
+
+
+.disabled{
+    color:#777777;
+}
+
+#DisplayCardArea{ /*div defined inside content-primary as a placeholder for cards*/
+    top:0px;
+    left:-50px; 
+    max-height:400px;
+    position:absolute; 
+    visibility:hidden; 
+    z-index:200; 
+    
+}
+
+#EditCardArea{
+    top:180px; 
+    left:-10px; 
+    max-height:400px;
+    position:absolute; 
+    visibility:hidden;        
+    z-index:201;
+}
+
+#prompt{
+    max-height:400px;
+    width:840px;    
+    visibility:visible;    
+}
+
+#Editprompt{
+    visibility:visible;
+    max-height:400px;   
+    width:840px;    
+}
+
+div.popUpCard{ /*characterizes the centralDiv placeholder*/
+    padding:10px; 
+    background-color: #FFFFFF; 
+    border:1px #999999 solid;
+    max-height:400px;
+    width:822px;/*controls the width of popUp card. Max height is defined in #promp*/     
+    overflow:auto;    
+}
+
+.editmodecard{
+    height:400px;/*used as additional class to popUpCard so that height is by default 400 when descriptor is edited*/  
+}
+
+div.popUpEditCardLarge {
+    padding:10px; 
+    background-color: #FFFFFF; 
+    border:1px #999999 solid;
+    max-height:380px;
+    width:835px;/*controls the width of popUp card. Max height is defined in #promp*/     
+    overflow:auto;     
+}
+
+div.popUpEditCardLarge fieldset{
+    width:800px;
+}
+div.popUpEditCardLarge table{
+    width:795px;
+}
+
+textarea.trscopenotesclass{
+    width:98%;
+}
+div.popUpEditCardSmall {
+    padding:10px;
+    background-color: #FFFFFF; 
+    border:1px #999999 solid;    
+    width:825px; 
+    height:200px;
+}
+
+.notetextarea{
+    font-style:italic; 
+    height:205px;
+    max-height:205px;
+    width:790px;
+    max-width:790px;
+}
+
+.renametextarea{
+    height:65px;
+    max-height:65px;
+    width:630px;
+    max-width:630px;
+}
+
+.admintextarea{
+    height:38px;
+    max-height:38px;
+    width:700px;
+    max-width:700px;
+}
+
+.thesaurustextarea{
+    height:50px;
+    max-height:50px;
+    width:340px;
+    max-width:340px;
+}
+
+
+
+td.criteriaInSaves{ 
+  font-size: 12px; 
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration:none; 
+  color:black;
+}
+
+a.SaveAsAndPrintLinks{
+      font-size: 11px; 
+      font-family: verdana, arial, helvetica, sans-serif;
+      font-style:italic; 
+      text-decoration:underline;
+      color:black;
+}
+
+#resultOf_Edit{
+  text-align: justify;
+}
+
+
+
+#displaytabmenu{
+    z-index: 1;
+    height:30px;
+    width:100%;
+    float:left;
+    display:block;
+    text-decoration: none; 
+    font-size: 12px;
+    font-weight:bold;
+    vertical-align:middle;
+}
+
+/*
+#displaytabmenu li{
+    display: inline;
+    overflow: hidden;
+    list-style-type: none;
+    border: 0px;
+}
+*/
+
+
+
+#displaytabmenu a.inactive{
+    color: #000000;
+    background-image: url(../images/leftmenu.jpg);
+    background-repeat:repeat;
+    padding: 1px 10px 3px 10px;     
+    display:block;
+    white-space:nowrap;
+}
+
+#displaytabmenu a.active {
+    color: #000000;
+    background-image: none;
+    background-color: #FFFFFF; 
+    padding: 1px 10px 3px 10px;     
+    display:block;
+    white-space:nowrap;
+}
+
+tr.resultRow {
+    background: #FFFFFF;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 20pt;
+    border-color: #FFFFFF;
+        
+}
+tr.resultRow td{
+    border-color: #FFFFFF; ;        
+}
+
+td.PagingInfo {
+    font-size: 8pt;
+    background: #FFFFFF;
+    vertical-align:middle;
+    height:20px;
+    
+}
+.img_link{
+    vertical-align:middle;
+}
+a.click{
+    color:#000000;
+    text-decoration:none;
+}
+
+
+/*
+
+
+#displaytabmenu a:hover{
+color: #fff;
+background: #ADC09F; }
+#page #content-primary #displaytabmenu a:hover{
+background-color: #adc09f;
+}
+
+
+#displaytabmenu a.active:hover{
+background: #000000;
+color: #DEDECF; 
+}
+
+#displaytabmenu li{
+display: inline;
+overflow: hidden;
+list-style-type: none;
+border: 0px;
+}
+*/
+
+.tab-body { 
+    padding: 1px;    
+    position: absolute;
+    top:5px; 
+    left:2px; 
+    width:837px;
+    height:565px;
+    z-index:1; 
+    background: #FFFFFF; 
+    overflow: auto;
+
+}
+
+.admintab-body {
+    padding: 1px;
+    position: absolute;
+    top:5px;
+    left:2px;
+    /*width:837px;*/
+    height:565px;
+    z-index:1;
+    background: #FFFFFF;
+    overflow: auto;
+
+}
+
+/*********** type ahead starts **********/
+div.suggestions {
+    text-align:left;
+    border: 1px solid black;
+    position:absolute;
+    height:15%;
+    top: 0px;
+    background: #FFFFFF;
+    z-index: 1;
+    overflow:auto;    
+}
+
+div.suggestions div {
+    text-align:left;
+    cursor: pointer;
+    padding: 2px 2px;
+    
+}
+
+div.suggestions div.current {
+    text-align:left;
+    background-color: #FFFFFF;
+    color: black;
+    
+}
+/*********** type ahead ends ***********/
+
+
+
+
+/*
+
+
+*/
+
+
+
+/*
+.content{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000000;
+    text-decoration: underline;
+    height:60px;
+}
+*/
+/*
+.fullTable{
+border-spacing: 0px;
+padding-bottom: 0px;
+padding-right: 109px;
+right: 100px;
+height: 550px;
+
+}
+
+.contentTable{
+border-width: 1px;
+border-spacing: 0px;
+border-style: outset;
+border-color: black;
+border-collapse: separate;
+background-color: white;	
+}
+
+
+
+.contentText {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 12px;
+}
+.hyperlink {
+font-family: Arial, Helvetica, sans-serif;
+color: #FF0000;
+font-size: 12px;
+
+}
+.limmatext {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 12px;
+}
+
+.redunderlined {
+font-family: Arial, Helvetica, sans-serif;
+font-style: italic;
+color: #FF0000;
+text-decoration: underline;
+font-size: 12px;
+
+}
+.greenunderlined {
+
+font-family: Arial, Helvetica, sans-serif;
+font-style: italic;
+color: #006633;
+text-decoration: underline;
+font-size: 12px;
+}
+.contentTitle {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 24px;
+font-weight: bold;
+text-decoration: underline;
+text-align: center;
+}
+.contentTitlesmaller {
+
+font-family: Arial, Helvetica, sans-serif;
+font-size: 16px;
+font-weight: bold;
+text-decoration: underline;
+text-align: center;
+}
+.contentTitlesmallest {
+
+
+font-family: Arial, Helvetica, sans-serif;
+font-size: 12px;
+font-weight: bold;
+text-decoration: underline;
+text-align: center;
+}
+.contentTextblue {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 12px;
+}
+*/
+
+/*********************************************************************/
+/******************************TAB CSS********************************/
+/*********************************************************************/
+/*.shadetabs{
+padding: 3px 0;
+margin-left: 0;
+margin-top: 1px;
+margin-bottom: 0;
+font: bold 12px Verdana;
+list-style-type: none;
+text-align: left; /*set to left, center, or right to align the menu as desired*//*
+}
+
+.shadetabs li{
+display: inline;
+margin: 0;
+}
+
+.shadetabs td a{
+text-decoration: none;
+padding: 3px 7px;
+margin-right: 3px;
+border: 1px solid #778;
+color: #2d2b2b;
+background: white url(shade.gif) top left repeat-x;
+}
+
+.shadetabs td a:visited{
+color: #2d2b2b;
+}
+
+.shadetabs td a:hover{
+text-decoration: underline;
+color: #2d2b2b;
+}
+
+.shadetabs td.selected{
+position: relative;
+top: 1px;
+}
+
+.shadetabs td.selected a{ /*selected main tab style *//*
+background-image: url(shadeactive.gif);
+border-bottom-color: white;
+}
+
+.shadetabs td.selected a:hover{ /*selected main tab style *//*
+text-decoration: none;
+}
+
+.contentstyle{
+border: 1px solid gray;
+width: 450px;
+margin-bottom: 1em; padding: 10px;
+}
+*/
+
+
+/*
+#edittabmenu a, a.active {
+color: #dedecf;
+background: #898b5e;
+font: bold 10pt Verdana, Arial, Helvetica, sans-serif;
+border: 1px solid #898b5e;
+padding: 2px 5px 0px 5px;
+margin: 0;
+text-decoration: none; }
+*/
+
+
+
+/*********************************************************************/
+/************************RIGHT CLICK MENU CSS*************************/
+/*********************************************************************/
+/*
+.skin0{
+position:absolute;
+width:165px;
+border:2px solid black;
+background-color:menu;
+font-family:Verdana;
+line-height:20px;
+cursor:default;
+font-size:14px;
+z-index:100;
+visibility:hidden;
+}
+*/
+
+
+
+/**/ 
+
+
+/****************Field Set////////////////////////////////////////////////*/
+
+
+
+
+
+
+
+
+/*
+
+input[type=text]:focus, textarea:focus { border: 1px solid #886
+border-color: lightyellow;
+}
+
+*/
+
+/*
+
+
+#fieldset { 
+    float:left; 
+    margin: 4em 6em 6em 2em;  
+    padding: 10px;
+}
+
+#legend {  
+    margin-left: 1em;  
+    color: #000000;  
+    font-weight: bold;
+    left: -7px;  
+    top: -0.75em;
+    color:#336699;
+} 
+
+*/
+.translationstable{
+    margin-left: 100px;
+}
+
+.translationstablerow{
+   
+}
+
+.translationstablecolumn{
+    width:160px;
+    text-align: center;
+}

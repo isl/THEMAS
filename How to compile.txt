@@ -1,0 +1,150 @@
+﻿Copyright 2015 Institute of Computer Science,
+               Foundation for Research and Technology - Hellas.
+
+Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+You may obtain a copy of the Licence at:
+
+http://ec.europa.eu/idabc/eupl
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations
+under the Licence.
+
+Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
+Tel:+30-2810-391632
+Fax: +30-2810-391638
+E-mail: isl@ics.forth.gr
+http://www.ics.forth.gr/isl
+
+Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
+
+
+This file is part of the THEMAS system.
+
+
+-----------------------------------------------------------------------------
+How to compile
+-----------------------------------------------------------------------------
+Create a java web application project (JEE 7 Web)
+until now we used java jdk1.7.0_51 64 bit
+and Apache Tomcat 8.0.23
+
+- Use the sources included in the /Sources/WebApplication/ 
+  folder of this repository
+  
+- Create the following empty folders in case they do not exist
+  -- web\help-files
+  -- web\LogFiles
+  -- web\MonitorAutomaticBackups
+  -- web\Save_Results_Displays\Save_Results_temporary_files
+  -- web\SVGproducer\SVG_temporary_files
+  -- web\third-party-javascript
+  -- web\third-party-javascript\mktree
+  -- web\third-party-javascript\wztooltip
+  -- web\third-party-javascript\ckeditor
+  -- web\Uploads
+  -- web\WEB-INF\SystemLogs
+
+
+- Download the third party javascript files or use the copies provided at 
+  libs\Javascript folder and place them in:
+   
+  -- web/third-party-javascript/mktree and 
+  -- web/third-party-javascript/wztooltip and
+  -- web/third-party-javascript/ckeditor  respectively
+     
+- Configure wz_tooltip.js:
+     var ttBorderColor = "#000000";
+     var ttFontColor   = "#898B5E";
+     var ttWidth       = 250;
+
+- Get all the jar files included in THEMAS-Dependencies-LicensesUsed.txt
+  -- For neo4j jar files you can just obtain the zip file of 
+     Neo4j Community edition version 2.2.5 or perhaps later 
+     and get the jar files from it's lib folder
+     
+  -- Neo4j-sisapi-1.0.jar, commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
+     copies can be found in libs folder 
+     Neo4j-sisapi-1.0.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.0)
+  
+- create project references to these libraries
+
+
+- Apply jvm option -Dfile.encoding=UTF8
+
+
+You must now be able to compile
+
+
+The neo4j database needs no installation. 
+Copy contents of /Sources/THEMAS_DB_FOLDER
+to any folder of your machine and refer to it 
+in file:
+
+"/Sources/WebApplication/web/DBadmin/tms_db_admin_config_files/config.xml"
+
+by changing the "Neo4j_DB_FOLDER_PATH" xml element text
+
+
+
+In order to define as primary language the English language
+then you also need to make the folowing confugurations:
+
+In File:
+"/Sources/WebApplication/web/DBadmin/tms_db_admin_config_files/config.xml"
+replace:
+
+    <PrimaryLanguage>Greek</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
+    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
+with 
+
+		<PrimaryLanguage>English</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
+    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
+    
+
+
+In order to change the UIlanguage to english (It is irrelevant to the 
+language used as primary in the database) you should edit file: 
+"Sources/WebApplication/web/WEB-INF/web.xml" 
+and replace:
+
+		<context-param>
+        <param-name>UILanguage</param-name>
+        <param-value>el</param-value>
+    </context-param>
+    
+with:
+
+		<context-param>
+        <param-name>UILanguage</param-name>
+        <param-value>en</param-value>
+    </context-param>
+
+
+
+Finally Edit File "Sources/WebApplication/web/WEB-INF/classes/logging.properties
+so that logfile folder and log file prefix are correctly set
+
+e.g.
+org.apache.juli.FileHandler.directory = ${catalina.base}/webapps/THEMAS/WEB-INF/SystemLogs/
+org.apache.juli.FileHandler.prefix = THEMASLogs_
+
+
+
+In order to save Greek data in viewable format for XML files in fields that we use CKEditor
+we have to add one parameter to ckeditor config file.
+- Path for the config file is : "ckeditor/config.js"
+- Parameter to add in the end of file (parameter without quotes in config file): "config.entities_greek = false;" 
+
+Behavior of the Enter key while typing in CKEditor is set to mode CKEDITOR.ENTER_BR (2) which means that lines are broken with <br> elements. To use this mode or any mode have to add a parameter in ckeditor config file.
+- Path for the config file is : "ckeditor/config.js"
+- Parameter to add in the end of file (parameter without quotes in config file): "config.enterMode = 2;" 
+
