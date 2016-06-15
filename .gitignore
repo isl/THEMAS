@@ -19,3 +19,4 @@ releases/
 *.msp
 #.gitignore
 
+/NetBeans/

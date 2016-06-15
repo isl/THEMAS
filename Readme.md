@@ -23,6 +23,13 @@ http://www.ics.forth.gr/isl
 Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
 This file is part of the THEMAS system.
+
+# Current Branch Creation Reason
+
+Current Branch was created in order to add a feature that will allow
+Direct links to terms in the system to be used by external sytems, 
+projects or sources for readonly access to the thesaurus system.
+
  
 # THEMAS
 
