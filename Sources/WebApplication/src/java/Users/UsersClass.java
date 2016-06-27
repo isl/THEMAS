@@ -79,8 +79,8 @@ import org.w3c.dom.NodeList;
 ----------------------------------------------------------------------*/
 public class UsersClass {
     public static final String WebAppUsersXMLFilePath = "\\WEB-INF\\WebAppUSERS.xml";
-    public final String[] UsersGroups = {"READER", "LIBRARY", "THESAURUS_TEAM", "THESAURUS_COMMITTEE", "ADMINISTRATOR"};
-    public final String[] UsersGroupsGR = {"Χρήστης Αναγνώστης", "Χρήστης Βιβλιοθήκης", "Ομάδα Θησαυρού", "Επιτροπή Θησαυρού", "Διαχειριστής"};
+    public final String[] UsersGroups = {"READER", "LIBRARY", "THESAURUS_TEAM", "THESAURUS_COMMITTEE", "ADMINISTRATOR",ConstantParameters.Group_External_Reader};
+    public final String[] UsersGroupsGR = {"Χρήστης Αναγνώστης", "Χρήστης Βιβλιοθήκης", "Ομάδα Θησαυρού", "Επιτροπή Θησαυρού", "Διαχειριστής","Εξωτερικός Αναγνώστης"};
         
     /*---------------------------------------------------------------------
                             UsersClass()

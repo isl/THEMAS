@@ -89,6 +89,9 @@
                                                 </img>
                                             </a>
                                     </xsl:when>
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'EXTERNALREADER'">
+                                        
+                                    </xsl:when>
                                     <xsl:otherwise>
                                         <a>
                                             <xsl:attribute name="href">
@@ -171,6 +174,9 @@
                                                     </xsl:attribute>
                                                 </img>
                                             </a>
+                                    </xsl:when>
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'EXTERNALREADER'">
+                                        
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <a href="#">
@@ -261,6 +267,9 @@
                                                     </xsl:attribute>
                                                 </img>
                                             </a>
+                                    </xsl:when>
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'EXTERNALREADER'">
+                                        
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <a href="#">
@@ -357,6 +366,9 @@
                                                     </xsl:attribute>
                                                 </img>
                                             </a>
+                                    </xsl:when>
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'EXTERNALREADER'">
+                                        
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <a href="#">
@@ -483,6 +495,7 @@
                
             </tr> 
             
+            <xsl:if test="$THEMASUserInfo_userGroup != 'EXTERNALREADER'">
             <tr><!--SEPERATOR-->
                 <td colspan="2" style="padding-left:7px;">
                     <hr/>
@@ -758,7 +771,7 @@
                     </table>
                 </td>
             </tr> 
-            
+            </xsl:if>
             <tr><!--SEPERATOR-->
                 <td colspan="2" style="padding-left:7px;">
                     <hr/>

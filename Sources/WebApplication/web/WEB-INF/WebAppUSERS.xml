@@ -62,6 +62,12 @@
         <name>reader</name>
         <password/>
         <thesaurus group="READER">AAA</thesaurus>
-        <description>Reder user for thesaurus AAA, viewing only Published Terms</description>
+        <description>Reader user for thesaurus AAA, viewing only Published Terms</description>
+    </user>
+    <user>
+        <name>ExternalReader</name>
+        <password/>
+        <thesaurus group="EXTERNALREADER">THEMASDEMO</thesaurus>
+        <description>External Read only user for thesaurus THEMASDEMO (no login required - all non published terms included)</description>
     </user>
 </WebAppUsers>

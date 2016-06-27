@@ -251,7 +251,7 @@
                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/facet/option[@lang=$lang]"/>
                                 </td>
                                 <td>
-                                    <xsl:if test="$UserGroup!='READER' ">
+                                    <xsl:if test="$UserGroup!='READER'  ">
                                         <input type="checkbox" name="output_term4" value="created_on" onclick="if(this.checked)document.getElementById('nooutputs').checked=false; else document.getElementById('alloutputs').checked=false;"/>
                                         <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/creationdate/option[@lang=$lang]"/>
                                     </xsl:if>
@@ -271,7 +271,7 @@
                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/primarysource/option[@lang=$lang]"/>
                                 </td>
                                 <td>
-                                    <xsl:if test="$UserGroup!='READER' ">
+                                    <xsl:if test="$UserGroup!='READER'  ">
                                         <input type="checkbox" name="output_term4" value="modified_on" onclick="if(this.checked)document.getElementById('nooutputs').checked=false; else document.getElementById('alloutputs').checked=false;"/>
                                         <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/modificationdate/option[@lang=$lang]"/>
                                     </xsl:if>

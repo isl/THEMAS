@@ -52,18 +52,26 @@
                             <xsl:when test="//THEMASUserInfo/name">
                                  <i>
                                      <xsl:choose>
-                                            <xsl:when test="//THEMASUserInfo/userGroup = 'READER' ">
+                                            <xsl:when test="//THEMASUserInfo/userGroup = 'READER'">
                                                     <xsl:value-of select="//THEMASUserInfo/name"/>
+                                                    <xsl:text>, </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="//THEMASUserInfo/userGroup = 'EXTERNALREADER'">
+                                                    
                                             </xsl:when>
                                             <xsl:otherwise>
                                                     <a href="#" style="color:#898a5e; text-decoration:underline;" title="Αλλαγή κωδικού">
                                                             <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('','change_password','EditDisplays_User');</xsl:text></xsl:attribute>
                                                             <xsl:value-of select="//THEMASUserInfo/name"/>
                                                     </a>
+                                                    <xsl:text>, </xsl:text>
                                             </xsl:otherwise>
                                     </xsl:choose>					
-                                   <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
-                                    <xsl:text>, </xsl:text><xsl:value-of select="$locale/usergroups/node()[name()=$THEMASUserInfo_userGroup]/option[@lang=$lang]"/><xsl:text> </xsl:text><xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
+                                    <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
+                                    
+                                    <xsl:value-of select="$locale/usergroups/node()[name()=$THEMASUserInfo_userGroup]/option[@lang=$lang]"/>
+                                    <xsl:text> </xsl:text>
+                                    <xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
                                 </i>
                             </xsl:when>
                             

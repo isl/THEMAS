@@ -118,6 +118,8 @@ public class ConstantParameters {
     
     public static boolean DEVELOPING = true;
     
+    public static final String Group_External_Reader = "EXTERNALREADER";
+    
     public static final String hierarchytermClass = "HierarchyTerm";
     public static final String termClass = "Term";
     public static final String individualClass = "Individual";

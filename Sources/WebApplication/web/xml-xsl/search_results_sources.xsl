@@ -110,7 +110,7 @@
                                 
                         </xsl:for-each>
                             
-                        <xsl:if test="$THEMASUserInfo_userGroup != 'READER' "> 
+                        <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> 
                             <td>
                                 <strong>
                                     <xsl:value-of select="$sourceslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
@@ -225,7 +225,7 @@
                         </xsl:call-template>                                
                     </xsl:if>
 
-                    <xsl:if test="$THEMASUserInfo_userGroup != 'READER' "> 
+                    <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> 
 
                         <td align="center" width="10%">
                                 

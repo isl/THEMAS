@@ -84,7 +84,7 @@
                             <td colspan="2" align="right" width="100%" >
                                 <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
                                 <!-- Tropopoihsh -->
-                                <xsl:if test="$THEMASUserInfo_userGroup != 'READER' ">
+                                <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER' ">
                                     <xsl:variable name="Slash">
                                         <xsl:text>\</xsl:text>
                                     </xsl:variable>
@@ -157,7 +157,7 @@
                                     <xsl:with-param name="prefferedWidth" select="'440'"/>
                                 </xsl:call-template>
                             </td>
-                            <xsl:if test="//THEMASUserInfo/userGroup != 'READER' ">
+                            <xsl:if test="//THEMASUserInfo/userGroup != 'READER'">
                                 <td width="362" valign="top" style="padding-right:20px; padding-left:20px; border-style:solid; border-left-width:thin; border-left-color:#CCCCCC; border-bottom:0; border-top:0; border-right:0;">
                                 
                                     <table >
