@@ -577,10 +577,12 @@
                                 <a href="#">
                                     <img width="16" height="16" border="0">
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>
+                                            <xsl:value-of select="$locale/leftmenu/thesauri/actions/globalthesaurusview/image/src/option[@lang=$lang]"/>
+                                            <!--<xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>-->
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/title/option[@lang=$lang]"/>
+                                            <xsl:value-of select="$locale/leftmenu/thesauri/actions/globalthesaurusview/image/title/option[@lang=$lang]"/>
+                                            <!--<xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/title/option[@lang=$lang]"/>-->
                                         </xsl:attribute>
                                         <xsl:attribute name="onClick">
                                             <!--<xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','GlobalThesarusHierarchical','true');</xsl:text>-->

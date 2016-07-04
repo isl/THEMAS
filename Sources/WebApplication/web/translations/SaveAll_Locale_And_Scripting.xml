@@ -307,11 +307,11 @@
     </savealltermshierarchicalsimple>
     <GlobalThesaurusSimpleHierarchicalView>
         <titleprefix>
-            <option lang="en">Hierarchical Simple Presentation of Thesarus </option>
+            <option lang="en">Hierarchical Simple Presentation of Thesaurus </option>
             <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού </option>
         </titleprefix>
         <baselabel>
-            <option lang="en">Hierarchical Simple Presentation of Thesarus: </option>
+            <option lang="en">Hierarchical Simple Presentation of Thesaurus: </option>
             <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
         <noterms>
@@ -325,11 +325,11 @@
     </GlobalThesaurusSimpleHierarchicalView>
     <GlobalThesaurusTreeView>
         <titleprefix>
-            <option lang="en">Tree Presentation of Thesarus </option>
+            <option lang="en">Tree Presentation of Thesaurus </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού </option>
         </titleprefix>
         <baselabel>
-            <option lang="en">Tree Presentation of Thesarus: </option>
+            <option lang="en">Tree Presentation of Thesaurus: </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
         <noterms>
