@@ -86,12 +86,11 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
             
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 return;
             }
-
-            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();

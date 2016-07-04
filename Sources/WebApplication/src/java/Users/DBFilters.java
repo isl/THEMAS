@@ -59,7 +59,7 @@ public class DBFilters {
     public int FilterTermsResults(UserInfoClass SessionUserInfo, int termsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             termsSet = dbrf.FilterTermsResults(SessionUserInfo, termsSet, Q, sis_session);
         }        
@@ -73,7 +73,7 @@ public class DBFilters {
     public void FilterTermsResultsLinks(UserInfoClass SessionUserInfo, int termsLinksSetFrom, int termsLinksSetTo, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             dbrf.FilterTermsResultsLinks(SessionUserInfo.selectedThesaurus, termsLinksSetFrom, termsLinksSetTo, Q, sis_session);
         }        
@@ -87,7 +87,7 @@ public class DBFilters {
     public int FilterHierResults(UserInfoClass SessionUserInfo, int hiersSet, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             hiersSet = dbrf.FilterHierResults(SessionUserInfo, hiersSet, Q, sis_session);
         }        
@@ -101,7 +101,7 @@ public class DBFilters {
     public boolean FilterHierarchy(UserInfoClass SessionUserInfo, StringObject hierarchy, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             return dbrf.FilterHierarchy(SessionUserInfo, hierarchy, Q, sis_session);
         }
@@ -114,7 +114,7 @@ public class DBFilters {
     public int FilterFacetResults(UserInfoClass SessionUserInfo, int facetsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             facetsSet = dbrf.FilterFacetResults(SessionUserInfo, facetsSet, Q, sis_session);
         }
@@ -128,7 +128,7 @@ public class DBFilters {
     public int FilterToValuesOfTerms(UserInfoClass SessionUserInfo, int ToValuesOfTermsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             ToValuesOfTermsSet = dbrf.FilterToValuesOfTerms(SessionUserInfo, ToValuesOfTermsSet, Q, sis_session);
         }
@@ -143,7 +143,7 @@ public class DBFilters {
     public int FilterBTLinksSet(UserInfoClass SessionUserInfo, int BTLinksSet, QClass Q, IntegerObject sis_session) {
         
         // in case of reader user
-        if (SessionUserInfo.userGroup.equals("READER") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true) {
             DBReaderFilters dbrf = new DBReaderFilters();
             BTLinksSet = dbrf.FilterBTLinksSet(SessionUserInfo, BTLinksSet, Q, sis_session);
         }

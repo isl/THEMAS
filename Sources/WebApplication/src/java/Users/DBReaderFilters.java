@@ -46,7 +46,7 @@ import neo4j_sisapi.*;
 /*---------------------------------------------------------------------
                             DBReaderFilters
 -----------------------------------------------------------------------
-  Class for handling the DB filtering for users of group "READER"
+  //Class for handling the DB filtering for users of group "READER"
 ----------------------------------------------------------------------*/
 public class DBReaderFilters {
     
@@ -59,16 +59,16 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterTermsResults()
     -----------------------------------------------------------------------
-    INPUT: - termsSet: the given set of terms to be filtered
-    OUTPUT: - termsSet: a subset of the given set of terms containing only 
-              those that are instances of class AAAStatusApproved
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, the initial set is returned
+    //INPUT: - termsSet: the given set of terms to be filtered
+    //OUTPUT: - termsSet: a subset of the given set of terms containing only 
+    //          those that are instances of class AAAStatusApproved
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, the initial set is returned
     ----------------------------------------------------------------------*/
     public int FilterTermsResults(UserInfoClass SessionUserInfo, int termsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return termsSet;
         }        
         // in case of reader user
@@ -135,16 +135,16 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterHierResults()
     -----------------------------------------------------------------------
-    INPUT: - hiersSet: the given set of hierarchies to be filtered
-    OUTPUT: - hiersSetFiltered: a subset of the given set of hierarchies containing only 
-              the hierarchies with approved TopTerms (instances of class AAAStatusApproved)
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, the initial set is returned
+    //INPUT: - hiersSet: the given set of hierarchies to be filtered
+    //OUTPUT: - hiersSetFiltered: a subset of the given set of hierarchies containing only 
+    //          the hierarchies with approved TopTerms (instances of class AAAStatusApproved)
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, the initial set is returned
     ----------------------------------------------------------------------*/
     public int FilterHierResults(UserInfoClass SessionUserInfo, int hiersSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return hiersSet;
         }
         // in case of reader user
@@ -190,16 +190,16 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterHierarchy()
     -----------------------------------------------------------------------
-    INPUT: - hierarchy: the given hierarchy to be checked
-    OUTPUT: - true: in case the given hierarchy is approved (with approved TopTerm)
-            - false, otherwise
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, true is returned
+    //INPUT: - hierarchy: the given hierarchy to be checked
+    //OUTPUT: - true: in case the given hierarchy is approved (with approved TopTerm)
+    //        - false, otherwise
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, true is returned
     ----------------------------------------------------------------------*/
     public boolean FilterHierarchy(UserInfoClass SessionUserInfo, StringObject hierarchy, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return true;
         }
         // in case of reader user
@@ -243,16 +243,16 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterFacetResults()
     -----------------------------------------------------------------------
-    INPUT: - facetsSet: the given set of facets to be filtered
-    OUTPUT: - facetsSetFiltered: a subset of the given set of facets containing only 
-              the facets with at least 1 approved hierarchy (with approved TopTerm)
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, the initial set is returned
+    //INPUT: - facetsSet: the given set of facets to be filtered
+    //OUTPUT: - facetsSetFiltered: a subset of the given set of facets containing only 
+    //          the facets with at least 1 approved hierarchy (with approved TopTerm)
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, the initial set is returned
     ----------------------------------------------------------------------*/
     public int FilterFacetResults(UserInfoClass SessionUserInfo, int facetsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return facetsSet;
         }
         // in case of reader user
@@ -292,16 +292,16 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterToValuesOfTerms()
     -----------------------------------------------------------------------
-    INPUT: - ToValuesOfTermsSet: the given set of ToValuesOfTerms to be filtered
-    OUTPUT: - ToValuesOfTermsFiltered: a subset of the given set of ToValuesOfTerms containing only 
-              the ToValuesOfTerms of approved terms
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, the initial set is returned
+    //INPUT: - ToValuesOfTermsSet: the given set of ToValuesOfTerms to be filtered
+    //OUTPUT: - ToValuesOfTermsFiltered: a subset of the given set of ToValuesOfTerms containing only 
+    //          the ToValuesOfTerms of approved terms
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, the initial set is returned
     ----------------------------------------------------------------------*/
     public int FilterToValuesOfTerms(UserInfoClass SessionUserInfo, int ToValuesOfTermsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return ToValuesOfTermsSet;
         }
         // in case of reader user
@@ -388,15 +388,15 @@ public class DBReaderFilters {
     /*---------------------------------------------------------------------
                     FilterBTLinksSet()
     -----------------------------------------------------------------------
-    INPUT: - BTLinksSet: the given link set containing BT links (and maybe of other category) to be filtered
-    OUTPUT: - 
-    FUNCTION: the above filtering is done only in case of a user of group "READER"
-              Otherwise, the initial set is returned
+    //INPUT: - BTLinksSet: the given link set containing BT links (and maybe of other category) to be filtered
+    //OUTPUT: - 
+    //FUNCTION: the above filtering is done only in case of a user of group "READER"
+    //          Otherwise, the initial set is returned
     ----------------------------------------------------------------------*/
     public int FilterBTLinksSet(UserInfoClass SessionUserInfo, int BTLinksSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return BTLinksSet;
         }
         // in case of reader user

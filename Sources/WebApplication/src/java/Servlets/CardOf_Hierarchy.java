@@ -85,7 +85,7 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             String outputMode   = request.getParameter("mode");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(outputMode==null){
                     out.println("Session Invalidate");                
                 }

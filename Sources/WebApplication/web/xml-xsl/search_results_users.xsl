@@ -101,13 +101,15 @@
                                         </xsl:choose>
                                     </strong>
                                 </td>
-                            </xsl:for-each>
-                            <td>
-                                <strong>
-                                    <xsl:value-of select="$userslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
-                                </strong>
-                                <!-- <strong>Actions</strong> -->
-                            </td>
+                            </xsl:for-each>                            
+                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
+                                <td>
+                                    <strong>
+                                        <xsl:value-of select="$userslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
+                                    </strong>
+                                    <!-- <strong>Actions</strong> -->
+                                </td>
+                            </xsl:if>
                         </xsl:otherwise>
                     </xsl:choose>
                 </tr>
@@ -204,39 +206,41 @@
                                 </xsl:choose>
                             </td>
                         </xsl:for-each>
-                        <td align="center" width="10%">
-                            <xsl:variable name="currentJS0">
-                                <xsl:call-template name="replace-string">
-                                    <xsl:with-param name="text" select="./node()"/>
-                                    <xsl:with-param name="replace" select="$Slash"/>
-                                    <xsl:with-param name="with" select="$SlashJS"/>
-                                </xsl:call-template>
-                            </xsl:variable>
-                            <xsl:variable name="currentJS">
-                                <xsl:call-template name="replace-string">
-                                    <xsl:with-param name="text" select="$currentJS0"/>
-                                    <xsl:with-param name="replace" select="$Apos"/>
-                                    <xsl:with-param name="with" select="$AposJS"/>
-                                </xsl:call-template>
-                            </xsl:variable>
-                            <!-- Τροποποίηση -->
-                            <a href="#">
-                                <xsl:attribute name="onClick">
-                                    <xsl:text>showEditFieldCard('</xsl:text>
-                                    <xsl:value-of select="$currentJS"/>
-                                    <xsl:text>','user_edit', 'EditDisplays_User');</xsl:text>
-                                </xsl:attribute>
-                                <img width="16" height="16" border="0" >
-                                    <xsl:attribute name="src">
-                                        <xsl:value-of select="$userslocale/tableresults/columns/actions/edit/src/option[@lang=$lang]"/>
+                        <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
+                            <td align="center" width="10%">
+                                <xsl:variable name="currentJS0">
+                                    <xsl:call-template name="replace-string">
+                                        <xsl:with-param name="text" select="./node()"/>
+                                        <xsl:with-param name="replace" select="$Slash"/>
+                                        <xsl:with-param name="with" select="$SlashJS"/>
+                                    </xsl:call-template>
+                                </xsl:variable>
+                                <xsl:variable name="currentJS">
+                                    <xsl:call-template name="replace-string">
+                                        <xsl:with-param name="text" select="$currentJS0"/>
+                                        <xsl:with-param name="replace" select="$Apos"/>
+                                        <xsl:with-param name="with" select="$AposJS"/>
+                                    </xsl:call-template>
+                                </xsl:variable>
+                                <!-- Τροποποίηση -->
+                                <a href="#">
+                                    <xsl:attribute name="onClick">
+                                        <xsl:text>showEditFieldCard('</xsl:text>
+                                        <xsl:value-of select="$currentJS"/>
+                                        <xsl:text>','user_edit', 'EditDisplays_User');</xsl:text>
                                     </xsl:attribute>
-                                    <xsl:attribute name="title">
-                                        <xsl:value-of select="$userslocale/tableresults/columns/actions/edit/title/option[@lang=$lang]"/>
-                                    </xsl:attribute>
-								
-                                </img>
-                            </a>
-                        </td>
+                                    <img width="16" height="16" border="0" >
+                                        <xsl:attribute name="src">
+                                            <xsl:value-of select="$userslocale/tableresults/columns/actions/edit/src/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                        <xsl:attribute name="title">
+                                            <xsl:value-of select="$userslocale/tableresults/columns/actions/edit/title/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+
+                                    </img>
+                                </a>
+                            </td>
+                        </xsl:if>
                     </tr>
                 </xsl:for-each>
             </table>

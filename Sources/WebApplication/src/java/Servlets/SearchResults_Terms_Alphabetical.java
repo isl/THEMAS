@@ -85,7 +85,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(startRecord!=null && startRecord.matches("SaveAll")){
                     out.println("Session Invalidate");
                 }

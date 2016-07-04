@@ -74,7 +74,7 @@ public class Create_Modify_Hierarchy extends ApplicationBasicServlet {
             // check for previous logon
             
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 
                 response.sendRedirect("Index"); 

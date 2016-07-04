@@ -86,7 +86,7 @@ public class AjaxDBQuery extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             
             // check for previous logon
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            if (sessionInstance.getAttribute("SessionUser") == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 //response.sendRedirect("Index");
                 return;

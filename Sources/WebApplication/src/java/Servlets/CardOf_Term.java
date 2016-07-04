@@ -92,7 +92,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             String outputMode = request.getParameter("mode"); // popup display card or edit mode
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(outputMode==null){
                     out.println("Session Invalidate");                
                 }

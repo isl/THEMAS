@@ -286,6 +286,7 @@
             <option lang="el">Τυπική Ιεραρχική Αναπαράσταση</option>
         </linktotypical>
     </savealltermshierarchicaltree>
+    
     <savealltermshierarchicalsimple>
         <titleprefix>
             <option lang="en">Terms Search Results (Hierarchical Simple Presentation) </option>
@@ -304,6 +305,43 @@
             <option lang="el">Δενδρική Ιεραρχική Αναπαράσταση</option>
         </linktotree>
     </savealltermshierarchicalsimple>
+    <GlobalThesaurusSimpleHierarchicalView>
+        <titleprefix>
+            <option lang="en">Hierarchical Simple Presentation of Thesarus </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Hierarchical Simple Presentation of Thesarus: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <linktotree>
+            <option lang="en">Thesaurus Tree Presentation</option>
+            <option lang="el">Δενδρική Παρουσίαση Θησαυρού</option>
+        </linktotree>
+    </GlobalThesaurusSimpleHierarchicalView>
+    <GlobalThesaurusTreeView>
+        <titleprefix>
+            <option lang="en">Tree Presentation of Thesarus </option>
+            <option lang="el">Δενδρική Παρουσίαση του Θησαυρού </option>
+        </titleprefix>
+        <baselabel>
+            <option lang="en">Tree Presentation of Thesarus: </option>
+            <option lang="el">Δενδρική Παρουσίαση του Θησαυρού: </option>
+        </baselabel>
+        <noterms>
+            <option lang="en">No Terms were found.</option>
+            <option lang="el">Δεν βρέθηκαν όροι.</option>
+        </noterms>
+        <linktotypical>
+            <option lang="en">Thesaurus Hierarchical Simple Presentation</option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού</option>
+        </linktotypical>
+    </GlobalThesaurusTreeView>
+    
     <statistics>
         <terms>
             <legendprefix>

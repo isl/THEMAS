@@ -71,7 +71,7 @@ public class StartExportImportToXML extends ApplicationBasicServlet {
         try{
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null || SessionUserInfo.userGroup.equals("ADMINISTRATOR")==false) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName()) || SessionUserInfo.userGroup.equals(ConstantParameters.Group_Administrator)==false) {
                 response.sendRedirect("Index");
                 return;
             }

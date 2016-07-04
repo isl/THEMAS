@@ -95,7 +95,8 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             IntegerObject sis_session = new IntegerObject();
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(startRecord!=null && startRecord.matches("SaveAll")){
                     out.println("Session Invalidate");
                 }
@@ -105,7 +106,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                 return;
             }
 
-            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            
 
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();

@@ -82,7 +82,8 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
         try {
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if (startRecord != null && startRecord.matches("SaveAll")) {
                     out.println("Session Invalidate");
                 } else {
@@ -91,7 +92,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                 return;
             }
 
-            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            
 
             String updateTermsCirteria = (String) request.getParameter("updateTermCriteria");
             String ListStepStr = getServletContext().getInitParameter("ListStep");

@@ -495,7 +495,7 @@
                
             </tr> 
             
-            <xsl:if test="$THEMASUserInfo_userGroup != 'EXTERNALREADER'">
+            
             <tr><!--SEPERATOR-->
                 <td colspan="2" style="padding-left:7px;">
                     <hr/>
@@ -508,143 +508,169 @@
                         <xsl:text> background-color: #FFFFFF; </xsl:text>
                     </xsl:attribute>
                 </xsl:if>
+                
                 <td style="padding-left:7px;">
                     <b>
                         <xsl:value-of select="$locale/leftmenu/thesauri/label/option[@lang=$lang]"/>
                     </b>
                 </td>
+                
                 <td align="right">
                     <table>
                         <tr>
-                            <td align="right">
+                            <xsl:if test="$THEMASUserInfo_userGroup != 'EXTERNALREADER'">
+                                <td align="right">
+                                    <a href="#">
+                                        <xsl:attribute name="onClick">
+                                            <xsl:text>showEditFieldCard('','change_thesaurus','EditDisplays_User');</xsl:text>
+                                        </xsl:attribute>
+                                        <img width="16" height="16" border="0">
+                                            <xsl:attribute name="src">
+                                                <xsl:value-of select="$locale/leftmenu/thesauri/actions/changethesaurus/image/src/option[@lang=$lang]"/>
+                                            </xsl:attribute>
+                                            <xsl:attribute name="title">
+                                                <xsl:value-of select="$locale/leftmenu/thesauri/actions/changethesaurus/image/title/option[@lang=$lang]"/>
+                                            </xsl:attribute>
+                                        </img>
+                                    </a>
+                                </td>
+
+                                <xsl:choose>
+                                    <!-- only admin and thesaurus commitee have access to these operations-->
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' or $THEMASUserInfo_userGroup = 'THESAURUS_TEAM'">
+                                        <td>
+                                            <a href="#" >
+                                                <xsl:attribute name="onclick">
+                                                        <xsl:text>alert('</xsl:text>
+                                                        <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
+                                                         <xsl:text>');</xsl:text>
+                                                    </xsl:attribute>
+                                                <img width="16" height="16" border="0">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </td>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <td>
+                                            <a href="Admin_Thesaurus?DIV=ImportExport_Data_DIV">
+                                                <img width="16" height="16" border="0">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </td>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:if>
+                            <!-- Thesaurus global View -->
+                            <td>
                                 <a href="#">
-                                    <xsl:attribute name="onClick">
-                                        <xsl:text>showEditFieldCard('','change_thesaurus','EditDisplays_User');</xsl:text>
-                                    </xsl:attribute>
                                     <img width="16" height="16" border="0">
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$locale/leftmenu/thesauri/actions/changethesaurus/image/src/option[@lang=$lang]"/>
+                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$locale/leftmenu/thesauri/actions/changethesaurus/image/title/option[@lang=$lang]"/>
+                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/title/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                        <xsl:attribute name="onClick">
+                                            <!--<xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','GlobalThesarusHierarchical','true');</xsl:text>-->
+                                                <xsl:text>prepareResults('hierarchysTermsShortcuts','GlobalThesarusHierarchical','GlobalThesarusHierarchical','true');</xsl:text>
+                                            
                                         </xsl:attribute>
                                     </img>
-                                </a>
+                                </a>                                
                             </td>
-                            <xsl:choose>
-                                <!-- only admin and thesaurus commitee have access to these operations-->
-                                <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' or $THEMASUserInfo_userGroup = 'THESAURUS_TEAM'">
-                                    <td>
-                                        <a href="#" >
-                                            <xsl:attribute name="onclick">
-                                                    <xsl:text>alert('</xsl:text>
-                                                    <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
-                                                     <xsl:text>');</xsl:text>
-                                                </xsl:attribute>
-                                            <img width="16" height="16" border="0">
-                                                <xsl:attribute name="src">
-                                                    <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                                <xsl:attribute name="title">
-                                                    <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                            </img>
-                                        </a>
-                                    </td>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <td>
-                                        <a href="Admin_Thesaurus?DIV=ImportExport_Data_DIV">
-                                            <img width="16" height="16" border="0">
-                                                <xsl:attribute name="src">
-                                                    <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                                <xsl:attribute name="title">
-                                                    <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                            </img>
-                                        </a>
-                                    </td>
-                                </xsl:otherwise>
-                            </xsl:choose>
                         </tr>
                     </table>
                 </td>
             </tr>   
             
-            <tr id="dbleftmenu"><!--DATABASE MANAGEMENT-->
-                <xsl:if test="$leftmenumode = 'LMENU_DATABASE'">
-                    <xsl:attribute name="style">
-                        <xsl:text> background-color: #FFFFFF; </xsl:text>
-                    </xsl:attribute>
-                </xsl:if>
-                <xsl:if test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY'">
-                    <xsl:attribute name="disabled">
-                        <xsl:text>disabled</xsl:text>
-                    </xsl:attribute>
-                    <xsl:attribute name="class">
-                        <xsl:text>disabled</xsl:text>
-                    </xsl:attribute>                        
-                </xsl:if>
-                <td style="padding-left:7px;">
-                    <b>
-                        <xsl:value-of select="$locale/leftmenu/db/label/option[@lang=$lang]"/>
-                    </b>
-                </td>
-                <td align="right">
-                    <table>
-                        <tr>
-                            <td>
-                                <xsl:choose>
-                                    <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' ">
-                                        <a href="#" >
-                                            <xsl:attribute name="onclick">
-                                                    <xsl:text>alert('</xsl:text>
-                                                    <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
-                                                     <xsl:text>');</xsl:text>
-                                                </xsl:attribute>
-                                            <img width="16" height="16" border="0">
-                                                <xsl:attribute name="src">
-                                                    <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                                <xsl:attribute name="title">
-                                                    <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/title/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                            </img>
-                                        </a>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <a>
-                                            <!-- Η Ομάδα Θησαυρού (THESAURUS_TEAM) από τις διαχειριστικές λειτουργίες μπορεί να κάνει μόνο Επιδιόρθωση Βάσης -->
-                                            <xsl:choose>
-                                                <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_TEAM'">
-                                                    <xsl:attribute name="href">
-                                                        <xsl:text>DBadmin?DIV=Create_Restore_DB_backup_DIV</xsl:text>
+            <xsl:if test="$THEMASUserInfo_userGroup != 'EXTERNALREADER'">
+                <tr id="dbleftmenu"><!--DATABASE MANAGEMENT-->
+                    <xsl:if test="$leftmenumode = 'LMENU_DATABASE'">
+                        <xsl:attribute name="style">
+                            <xsl:text> background-color: #FFFFFF; </xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                    <xsl:if test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY'">
+                        <xsl:attribute name="disabled">
+                            <xsl:text>disabled</xsl:text>
+                        </xsl:attribute>
+                        <xsl:attribute name="class">
+                            <xsl:text>disabled</xsl:text>
+                        </xsl:attribute>                        
+                    </xsl:if>
+                    <td style="padding-left:7px;">
+                        <b>
+                            <xsl:value-of select="$locale/leftmenu/db/label/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td align="right">
+                        <table>
+                            <tr>
+                                <td>
+                                    <xsl:choose>
+                                        <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' ">
+                                            <a href="#" >
+                                                <xsl:attribute name="onclick">
+                                                        <xsl:text>alert('</xsl:text>
+                                                        <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
+                                                         <xsl:text>');</xsl:text>
                                                     </xsl:attribute>
-                                                </xsl:when>
-                                                <xsl:otherwise>
-                                                    <xsl:attribute name="href">
-                                                        <xsl:text>DBadmin?DIV=Fix_DB_DIV</xsl:text>
+                                                <img width="16" height="16" border="0">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
                                                     </xsl:attribute>
-                                                </xsl:otherwise>
-                                            </xsl:choose>
-                                            <img width="16" height="16" border="0">
-                                                <xsl:attribute name="src">
-                                                    <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                                <xsl:attribute name="title">
-                                                    <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/title/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                            </img>
-                                        </a>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr> 
+                                                    <xsl:attribute name="title">
+                                                        <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/title/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <a>
+                                                <!-- Η Ομάδα Θησαυρού (THESAURUS_TEAM) από τις διαχειριστικές λειτουργίες μπορεί να κάνει μόνο Επιδιόρθωση Βάσης -->
+                                                <xsl:choose>
+                                                    <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_TEAM'">
+                                                        <xsl:attribute name="href">
+                                                            <xsl:text>DBadmin?DIV=Create_Restore_DB_backup_DIV</xsl:text>
+                                                        </xsl:attribute>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:attribute name="href">
+                                                            <xsl:text>DBadmin?DIV=Fix_DB_DIV</xsl:text>
+                                                        </xsl:attribute>
+                                                    </xsl:otherwise>
+                                                </xsl:choose>
+                                                <img width="16" height="16" border="0">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/title/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr> 
+            </xsl:if>
             
+            <xsl:if test="$THEMASUserInfo_userGroup != 'EXTERNALREADER'">
             <tr id="usersleftmenu"><!--USERS-->
                 <xsl:if test="$leftmenumode = 'LMENU_USERS'">
                     <xsl:attribute name="style">

@@ -68,6 +68,69 @@
         <ThesaurusTeam>
             <EditOnlyCreatedByTerms>false</EditOnlyCreatedByTerms>
         </ThesaurusTeam>
+        <!-- Only the following servlets will be allowed to Reader or External Reader via java filtering -->
+        <ReaderPermittedServlets>
+            <!--<ClassName>Admin_Thesaurus.Admin_Thesaurus</ClassName>
+            <ClassName>Admin_Thesaurus.CopyThesaurus</ClassName>
+            <ClassName>Admin_Thesaurus.CreateThesaurus</ClassName>
+            <ClassName>Admin_Thesaurus.DeleteThesaurus</ClassName>
+            <ClassName>Admin_Thesaurus.EditGuideTerms</ClassName>
+            <ClassName>Admin_Thesaurus.ExportData</ClassName>
+            <ClassName>Admin_Thesaurus.FixCurrentData</ClassName>
+            <ClassName>Admin_Thesaurus.ImportData</ClassName>
+            <ClassName>Admin_Thesaurus.MergeThesauri</ClassName>
+            <ClassName>DB_Admin.CreateDBbackup</ClassName>
+            <ClassName>DB_Admin.DBadmin</ClassName>
+            <ClassName>DB_Admin.FixDB</ClassName>
+            <ClassName>DB_Admin.RestoreDBbackup</ClassName>
+            <ClassName>LoginAdmin.FixAdminData</ClassName>
+            <ClassName>LoginAdmin.HiddenActions</ClassName>
+            <ClassName>LoginAdmin.Lock_UnlockSystem</ClassName>-->
+            <ClassName>LoginAdmin.LoginAdmin</ClassName>
+            <!--<ClassName>LoginAdmin.Start_StopNeo4j</ClassName>
+            <ClassName>LoginAdmin.StartExportImportToXML</ClassName>
+            <ClassName>LoginAdmin.SystemConfigurations</ClassName>
+            <ClassName>LoginAdmin.Translations</ClassName>-->
+            <ClassName>Servlets.AjaxDBQuery</ClassName>
+            <ClassName>Servlets.CardOf_Facet</ClassName>
+            <ClassName>Servlets.CardOf_Hierarchy</ClassName>
+            <ClassName>Servlets.CardOf_Source</ClassName>
+            <ClassName>Servlets.CardOf_Term</ClassName>
+            <ClassName>Servlets.DownloadFile</ClassName>
+            <!--<ClassName>Servlets.EditActions_Facet</ClassName>
+            <ClassName>Servlets.EditActions_Hierarchy</ClassName>
+            <ClassName>Servlets.EditActions_Source</ClassName>
+            <ClassName>Servlets.EditActions_Term</ClassName>
+            <ClassName>Servlets.EditDisplays_Facet</ClassName>
+            <ClassName>Servlets.EditDisplays_Hierarchy</ClassName>
+            <ClassName>Servlets.EditDisplays_Source</ClassName>
+            <ClassName>Servlets.EditDisplays_Term</ClassName>
+            <ClassName>Servlets.EditDisplays_User</ClassName>-->
+            <ClassName>Servlets.GraphicalView</ClassName>
+            <ClassName>Servlets.hierarchysTermsShortcuts</ClassName>
+            <ClassName>Servlets.Index</ClassName>
+            <ClassName>Servlets.Links</ClassName>
+            <!--<ClassName>Servlets.MoveToHierarchy</ClassName>
+            <ClassName>Servlets.MoveToHierarchyResults</ClassName>-->
+            <ClassName>Servlets.nicajax</ClassName>
+            <!--<ClassName>Servlets.Preview_Available_Facets</ClassName>
+            <ClassName>Servlets.Rename_Facet</ClassName>
+            <ClassName>Servlets.Rename_Hierarchy</ClassName>
+            <ClassName>Servlets.Rename_Term</ClassName>
+            <ClassName>Servlets.RenameInfo_Term</ClassName>-->
+            <ClassName>Servlets.SearchResults_Facets</ClassName>
+            <ClassName>Servlets.SearchResults_Hierarchies</ClassName>
+            <ClassName>Servlets.SearchResults_Sources</ClassName>
+            <ClassName>Servlets.SearchResults_Terms</ClassName>
+            <ClassName>Servlets.SearchResults_Terms_Alphabetical</ClassName>
+            <ClassName>Servlets.SearchResults_Terms_Hierarchical</ClassName>
+            <ClassName>Servlets.SearchResults_Terms_Systematic</ClassName>
+            <!--<ClassName>Servlets.SearchResults_Users</ClassName>-->
+            <ClassName>Servlets.Statistics</ClassName>
+            <ClassName>Servlets.SystemIsUnderMaintenance</ClassName>
+            <!--<ClassName>Servlets.UndoRenameResults</ClassName>-->
+            <ClassName>Servlets.WaitForDownload</ClassName>
+        </ReaderPermittedServlets>        
     </UserRolesConfigs>
     
 </TMS_DB_ADMIN_COFIGURATIONS>

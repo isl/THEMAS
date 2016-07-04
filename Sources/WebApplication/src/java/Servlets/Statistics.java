@@ -79,7 +79,7 @@ public class Statistics extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
         
         UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-        if (SessionUserInfo == null) {
+        if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
             response.sendRedirect("Index");
             return;
         }

@@ -80,7 +80,7 @@ public class Create_Modify_Facet extends ApplicationBasicServlet {
             // check for previous logon
             
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            if (sessionInstance.getAttribute("SessionUser") == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 
                 response.sendRedirect("Index");

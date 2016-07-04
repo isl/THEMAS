@@ -85,8 +85,9 @@ public class EditGuideTerms extends ApplicationBasicServlet {
 
             //check if user is valid
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
+                response.sendRedirect("Index");
                 return;
             }
 

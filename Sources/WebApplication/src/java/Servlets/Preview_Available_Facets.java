@@ -78,7 +78,7 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
 
             // check for correct user login
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 response.sendRedirect("Index");
                 
                 return;

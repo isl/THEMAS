@@ -121,16 +121,14 @@ public class ExportData extends ApplicationBasicServlet {
 
         // check for previous logon but because of ajax usage respond with Session Invalidate str
 
-        UserInfoClass refSessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
 
-        if (refSessionUserInfo == null) {
-
+        if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
             out.println("Session Invalidate");
-
             response.sendRedirect("Index");
             return;
         }
-
+     
 
 
         String oldSchemePrefix = ConstantParameters.SchemePrefix;
@@ -155,11 +153,11 @@ public class ExportData extends ApplicationBasicServlet {
 
 
 
-            String initiallySelectedThes = refSessionUserInfo.selectedThesaurus;
+            String initiallySelectedThes = SessionUserInfo.selectedThesaurus;
 
 
-            UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
-            webappusers.UpdateSessionUserSessionAttribute(refSessionUserInfo, exprortThesaurus);
+            UserInfoClass otherSessionUserInfo = new UserInfoClass(SessionUserInfo);
+            webappusers.UpdateSessionUserSessionAttribute(SessionUserInfo, exprortThesaurus);
 
             //data storage
             StringBuffer xml = new StringBuffer();
@@ -207,7 +205,7 @@ public class ExportData extends ApplicationBasicServlet {
             Vector<String> allHierarchies = new Vector<String>();
             Vector<String> allGuideTerms = new Vector<String>();
             
-            exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+            exp.exportThesaurusActions(otherSessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "exported in time " + Utilities.stopTimer(startTime) + " sec.");
@@ -217,7 +215,7 @@ public class ExportData extends ApplicationBasicServlet {
             xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
             xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
             xml.append(getXMLMiddle(thesauriNames, Filename));
-            xml.append(u.getXMLUserInfo(SessionUserInfo));
+            xml.append(u.getXMLUserInfo(otherSessionUserInfo));
             xml.append(u.getXMLEnd());
 
             u.XmlPrintWriterTransform(out, xml, sessionInstance.path + "/xml-xsl/page_contents.xsl");
