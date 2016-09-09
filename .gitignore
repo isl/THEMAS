@@ -10,7 +10,11 @@ $RECYCLE.BIN/
 
 DoNotPublish/
 Sources/WebApplication/web/third-party-javascript/
-releases/
+src/main/webapp/third-party-javascript/
+/releases/
+/target/
+nbactions.xml
+nb-configuration.xml
 
 # Windows Installer files
 *.cab

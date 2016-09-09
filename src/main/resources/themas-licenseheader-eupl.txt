@@ -1,0 +1,37 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Copyright 2015 Institute of Computer Science,
+${licensePrefix}               Foundation for Research and Technology - Hellas.
+${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+${licensePrefix}by the European Commission - subsequent versions of the EUPL (the "Licence");
+${licensePrefix}You may not use this work except in compliance with the Licence.
+${licensePrefix}You may obtain a copy of the Licence at:
+${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}     http://ec.europa.eu/idabc/eupl
+${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}Unless required by applicable law or agreed to in writing, software distributed
+${licensePrefix}under the Licence is distributed on an "AS IS" basis,
+${licensePrefix}WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+${licensePrefix}See the Licence for the specific language governing permissions and limitations
+${licensePrefix}under the Licence.
+${licensePrefix}
+${licensePrefix}=============================================================================
+${licensePrefix}Contact: 
+${licensePrefix}=============================================================================
+${licensePrefix}Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+${licensePrefix}    Tel: +30-2810-391632
+${licensePrefix}    Fax: +30-2810-391638
+${licensePrefix} E-mail: isl@ics.forth.gr
+${licensePrefix}WebSite: http://www.ics.forth.gr/isl/cci.html
+${licensePrefix}
+${licensePrefix}=============================================================================
+${licensePrefix}Authors: 
+${licensePrefix}=============================================================================
+${licensePrefix}Elias Tzortzakakis <tzortzak@ics.forth.gr>
+${licensePrefix}
+${licensePrefix}This file is part of the THEMAS system.
+<#if licenseLast??>
+${licenseLast}
+</#if>
