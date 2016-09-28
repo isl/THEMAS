@@ -110,6 +110,7 @@ public class Linguist {
             if (chooseLangCode.equals("sl")) { return "Slovenian"; }
             if (chooseLangCode.equals("fi")) { return "Finnish"; }
             if (chooseLangCode.equals("sv")) { return "Swedish"; }
+            if (chooseLangCode.equals("cn")) { return "Chinese"; }
 
             return "";
         } else {
@@ -150,7 +151,7 @@ Finnish	    fi
 Swedish	    sv
      */
     private static String[] acceptableTHEMASLangCodes = {"bg", "es", "cs", "da", "de", "et", "el", "en", "fr",
-    "ga", "it", "lv", "lt", "hu", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "fi", "sv"};
+    "ga", "it", "lv", "lt", "hu", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "fi", "sv", "cn"};
 
 
     public static String SupportedTHEMASLangcodes(String langCode){
@@ -201,6 +202,7 @@ Swedish	    sv
             if (temp.contains("Slovenian"))  { return "sl";}
             if (temp.contains("Finnish"))    { return "fi";}
             if (temp.contains("Swedish"))    { return "sv";}
+            if (temp.contains("Chinese"))    { return "cn";}
              /*else {
                 newLanguages.put(temp, "");
                 temp = "";

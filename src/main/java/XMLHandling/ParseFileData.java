@@ -57,7 +57,9 @@ import java.util.Enumeration;
 import XMLHandling.AAT_SubjectClass.AAT_Subject_Kind_Enum;
 import XMLHandling.AAT_TermLanguage.AAT_TermLanguage_Preferred_Enum;
 import XMLHandling.AAT_TermLanguage.AAT_TermLanguage_Term_Type_Enum;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -86,7 +88,7 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
 
@@ -108,7 +110,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
                 boolean insideConceptScheme = false;
@@ -134,7 +136,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
 
@@ -179,7 +181,7 @@ public class ParseFileData {
             factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
             factory.setNamespaceAware(false);
             XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new FileReader(xmlFilePath));
+            xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
             boolean insideSubject = false;
             String targetSubjectId = "";
             String targetFacetName = "";
@@ -285,7 +287,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 boolean insideSubject = false;
 
@@ -452,7 +454,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 this.parseFacetNodes(xpp, xmlSchemaType, xmlFacets);
 
@@ -462,7 +464,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
 
@@ -821,7 +823,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
 
@@ -888,7 +890,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 this.parseTermNodes(xpp, xmlSchemaType, termsInfo, Parameters.TRANSLATION_SEPERATOR, output, idsToNames, languageSelections);
                 // </editor-fold>
@@ -907,7 +909,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 int eventType = xpp.getEventType();
@@ -935,7 +937,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(true);
                 xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 eventType = xpp.getEventType();
@@ -987,7 +989,7 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 boolean insideSubject = false;
                 boolean insideHierarchy = false;
@@ -1140,7 +1142,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
 
@@ -1221,7 +1223,7 @@ public class ParseFileData {
                 Hashtable<String, Vector<String>> hierarchyFacetsIds = new Hashtable<String, Vector<String>>();
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
                 this.parseHierarchyNodes(xpp, xmlSchemaType, hierarchyFacetsIds, xmlFacets);
 
                 //now replace ids with values
@@ -1262,7 +1264,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 int eventType = xpp.getEventType();
@@ -1306,7 +1308,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 int eventType = xpp.getEventType();
@@ -1408,7 +1410,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 boolean insideSubject = false;
@@ -2151,7 +2153,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
 
@@ -2210,7 +2212,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 int eventType = xpp.getEventType();
 
@@ -2278,7 +2280,7 @@ public class ParseFileData {
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 String targetTermName = "";
@@ -2408,7 +2410,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 int eventType = xpp.getEventType();
@@ -3979,7 +3981,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
                 boolean insideSubject = false;
                 boolean insideDescriptiveNote = false;
@@ -4060,7 +4062,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 Vector<String> langCodes = new Vector<String>();
@@ -4098,7 +4100,7 @@ public class ParseFileData {
 
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(new FileReader(xmlFilePath));
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
                 int eventType = xpp.getEventType();

@@ -39,19 +39,19 @@
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
-    
+     <!--    
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
 
-    <!--    
+   -->
     <PrimaryLanguage>English</PrimaryLanguage>
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
     
-    -->
+    
 	
     <CreatorInAlphabeticalTerm>
     <!-- If <DisplayCreator>true</DisplayCreator> add the following line in labels.xml -->
