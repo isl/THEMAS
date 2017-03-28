@@ -38,6 +38,7 @@ package DB_Admin;
 import Utils.Parameters;
 import org.w3c.dom.*;
 import javax.servlet.http.*;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 /*-----------------------------------------------------
@@ -51,8 +52,8 @@ public class ConfigDBadmin {
                       Config()
     -------------------------------------------------------*/
     public ConfigDBadmin(String basePath) {
-        String configFileName = basePath+"\\DBadmin\\tms_db_admin_config_files\\config.xml";
-        String translationsFileName = basePath+"\\translations\\DBAdminTranslations.xml";
+        String configFileName = Paths.get(basePath).resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
+        String translationsFileName = Paths.get(basePath).resolve("translations").resolve("DBAdminTranslations.xml").toString();
 
         // initialize configXmlParser
         configXmlParser = new XML_parserDBadmin();
