@@ -545,6 +545,141 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 return;
             //</editor-fold>    
             }
+            
+            else if (action.compareTo("GlobalThesarusHierarchical")==0){
+                //DISPLAY FACETS AND HIERARCHIES
+                 //<editor-fold defaultstate="collapsed" desc="GlobalThesarusHierarchical display computations..."> 
+
+                Vector<String> facetNames = dbGen.getFacets(SessionUserInfo.selectedThesaurus, Q, sis_session, targetLocale);
+                
+                Hashtable<String,Vector<String>> facetToHierarhchies = new Hashtable<String,Vector<String>>();
+                Vector<String> hierarchyNames = new Vector<String>();
+                Vector<String> allTermsVec = new Vector<String>();
+                Hashtable<String, Vector<String>> ntsOfHierDesciptor = new Hashtable<String, Vector<String>>();
+                
+                for(int k=0; k< facetNames.size(); k++){
+                    String fName = facetNames.get(k);
+                    Vector<String> facetHiers = dbGen.returnResults_Facet(SessionUserInfo,fName,"hierarchy",Q,sis_session, targetLocale);
+                    facetToHierarhchies.put(fName, facetHiers);
+                    
+                    for(int n=0;n<facetHiers.size();n++){
+                        String hierName = facetHiers.get(n);
+                        if(hierarchyNames.contains(hierName)==false){
+                            hierarchyNames.add(hierName);
+                        }
+                    }
+                }
+                
+                StringObject BT_NTClassObj = new StringObject();
+                StringObject BT_NTLinkObj = new StringObject();
+                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.nt_kwd, BT_NTClassObj, BT_NTLinkObj, Q, sis_session);
+                
+                
+                
+                for(int k=0; k< hierarchyNames.size(); k++){
+                
+                    StringObject currentHierarchyObj = new StringObject(prefix_class.concat(hierarchyNames.get(k)));
+                    Q.reset_name_scope();
+                    Q.set_current_node(currentHierarchyObj);
+                    int set_all_hier_terms = Q.get_all_instances(0);
+                    Q.reset_set(set_all_hier_terms);
+
+                    //find all bt/nt relations among terms of current hierarchy
+                    int set_bt_labels_from = Q.get_link_from_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
+                    Q.reset_set(set_bt_labels_from);
+
+                    int set_bt_labels_to = Q.get_link_to_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
+                    Q.reset_set(set_bt_labels_to);
+
+                    //this should preserve all bt links established between terms of the selected hierarchy
+                    Q.set_intersect(set_bt_labels_from, set_bt_labels_to);
+                    Q.reset_set(set_bt_labels_from);
+
+                    // FILTER bt links set depending on user group
+                    DBFilters dbf = new DBFilters();
+                    set_bt_labels_from = dbf.FilterBTLinksSet(SessionUserInfo, set_bt_labels_from, Q, sis_session);
+
+                    
+
+                    Vector<String> newTopTermNtsVec = new Vector<String>();
+                    String topterm = dbGen.removePrefix(currentHierarchyObj.getValue());
+                    ntsOfHierDesciptor.put(topterm, newTopTermNtsVec);
+
+                    
+                    Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                    Q.reset_set(set_bt_labels_from);
+                    if(Q.bulk_return_link(set_bt_labels_from, retVals)!=QClass.APIFail){
+                        for(Return_Link_Row row:retVals){
+                            //while (Q.retur_link(set_bt_labels_from, cls, label, cmv) != QClass.APIFail) {
+
+                            String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
+                            String nt = dbGen.removePrefix(row.get_v1_cls());
+                            if (allTermsVec.contains(bt) == false) {
+                                allTermsVec.add(bt);
+                            }
+                            if (allTermsVec.contains(nt) == false) {
+                                allTermsVec.add(nt);
+                            }                    
+                            Vector<String> btNts = ntsOfHierDesciptor.get(bt);
+                            if (btNts == null) {
+                                Vector<String> newNtsVec = new Vector<String>();
+                                newNtsVec.add(nt);
+                                ntsOfHierDesciptor.put(bt, newNtsVec);
+                            } else {
+                                if (btNts.contains(nt) == false) {
+
+                                    btNts.add(nt);
+                                    ntsOfHierDesciptor.put(bt, btNts);
+                                }
+                            }
+
+                            if (ntsOfHierDesciptor.containsKey(nt) == false) {
+                                Vector<String> newNtsVec = new Vector<String>();
+                                ntsOfHierDesciptor.put(nt, newNtsVec);
+                            }
+                        }
+                    }
+                
+                    
+                }
+                Collections.sort(allTermsVec, new StringLocaleComparator(targetLocale));
+
+                    
+
+                //end query and close connection
+                Q.free_all_sets();
+                Q.TEST_end_query();
+                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+
+                String Save_Results_file_name1 = "Thesaurus_Global_Hierarchical_View_" + time;
+                String Save_Results_file_name2 = "Thesaurus_Global_Tree_View_" + time;
+                String XSL1 = webAppSaveResults_AbsolutePath.concat("/Thesaurus_Global_Hierarchical_View.xsl");
+                String XSL2 = webAppSaveResults_AbsolutePath.concat("/Thesaurus_Global_Tree_View.xsl");
+
+                
+                
+
+                String typicalLocation = Save_Results_file_name1.concat(".html");
+                String treeLocation    = Save_Results_file_name2.concat(".html");
+                //Hashtable<String,Vector<String>> facetToHierarhchies = new Hashtable<String,Vector<String>>();
+                //Vector<String> hierarchyNames = new Vector<String>();
+                //Vector<String> allHierTermsVec = new Vector<String>();
+                writeThesarusGlobalViewResultsInXMLFile(facetToHierarhchies, allTermsVec, ntsOfHierDesciptor,SessionUserInfo.selectedThesaurus, u,
+                        time, 
+                        "<typicalHierarchicalLocation>"+typicalLocation+"</typicalHierarchicalLocation><treeHierarchicalLocation>"+treeLocation+"</treeHierarchicalLocation>"
+                        , webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name1 + ".xml",pathToSaveScriptingAndLocale, targetLocale);
+
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name1 + ".xml", XSL1, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name1.concat(".html"));
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name1 + ".xml", XSL2, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name2.concat(".html"));
+                
+                out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name1.concat(".html"));
+                float elapsedTimeSec = Utilities.stopTimer(startTime);
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in Hierarchy terms GlobalThesarus View: " + elapsedTimeSec);
+                //out.println(path + "/" + webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name );
+                out.flush();
+                return;
+            //</editor-fold>    
+            }
             else{
                 //end query and close connection
                 Q.free_all_sets();
@@ -562,6 +697,165 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         }
     }
 
+    public void writeThesarusGlobalViewResultsInXMLFile(
+            Hashtable<String,Vector<String>> facetHiers, 
+            Vector<String> all_hier_terms_vec,  
+            Hashtable<String, Vector<String>> ntsOfHierDesciptor, 
+            String thesaurus, 
+            Utilities u, 
+            String title, 
+            String query,
+            String fileName,
+            String pathToSaveScriptingAndLocale, 
+            Locale targetLocale) {
+        
+        
+        
+        String Full_Save_Results_file_name = fileName;
+        
+        OutputStreamWriter out = null;
+        try {
+            //OutputStream fout = new FileOutputStream(webAppSaveResults_temporary_filesAbsolutePath + "/"+ Save_Results_file_name);
+            OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
+
+            OutputStream bout = new BufferedOutputStream(fout);
+            out = new OutputStreamWriter(bout, "UTF-8");
+
+            out.write(xml_header);
+            //out.write(xslLink);
+            // Fw = new FileWriter(Full_Save_Results_file_name);
+            out.write("<page language=\""+Parameters.UILang+"\">\n" +
+                    "\t<targetThesaurus>" + thesaurus + "</targetThesaurus>\n" +
+                    "\t<title>" + title + "</title>\n" +
+                    "\t<query>\n" + query + "\t</query>\n" +
+                    "\t<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>\n");
+
+
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Error in opening file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+        try {
+        out.write("\r\n<results>\r\n");
+        Vector<String> facets = new Vector<String>(facetHiers.keySet());
+        Collections.sort(facets, new StringLocaleComparator(targetLocale));
+        for(int p=0;p<facets.size();p++){
+            String fname = facets.get(p);
+            out.write("\t<topterm>\r\n");
+
+            out.write("\t\t<name>");
+            out.write(Utilities.escapeXML(fname));
+            out.write("</name>\r\n");
+            
+            Vector<String>hierarhies = facetHiers.get(fname);
+            Collections.sort(hierarhies, new StringLocaleComparator(targetLocale));
+            for(int q = 0; q< hierarhies.size(); q++){
+                String hierName = hierarhies.get(q);
+                out.write("\t\t<nt>");
+                out.write(Utilities.escapeXML(hierName));
+                out.write("</nt>\r\n");
+            }
+            out.write("\t</topterm>\r\n");
+        }
+        
+         int all_hier_terms_vecSize = all_hier_terms_vec.size();
+        for (int i=0; i<all_hier_terms_vecSize; i++) {
+            String term = all_hier_terms_vec.get(i);
+            Vector<String> termNts = new Vector<String>();
+            termNts.addAll(ntsOfHierDesciptor.get(term));  
+            if (termNts.size() > 0) {
+                Collections.sort(termNts, new StringLocaleComparator(targetLocale));
+            }
+
+            out.write("\t<term>\r\n");
+
+            out.write("\t\t<name>");
+            out.write(Utilities.escapeXML(term));
+            out.write("</name>\r\n");
+
+            for (int k = 0; k < termNts.size(); k++) {
+
+                out.write("\t\t<nt>");
+                out.write(Utilities.escapeXML(termNts.get(k)));
+                out.write("</nt>\r\n");
+
+            }
+
+            out.write("\t</term>\r\n");
+        }
+            
+            
+        /*
+            //out.write("<results>");
+            out.write("<topterm>");
+
+            out.write("<name>");
+            out.write(Utilities.escapeXML(hierarchy));
+            out.write("</name>");
+
+            Vector<String> toptermNts = ntsOfHierDesciptor.get(hierarchy);
+            Collections.sort(toptermNts, new StringLocaleComparator(targetLocale));
+
+            for (int i = 0; i < toptermNts.size(); i++) {
+
+                out.write("<nt>");
+                out.write(Utilities.escapeXML(toptermNts.get(i)));
+                out.write("</nt>");
+
+            }
+            out.write("</topterm>");
+            
+            
+
+            ntsOfHierDesciptor.remove(hierarchy);
+            all_hier_terms_vec.remove(hierarchy);
+
+            int all_hier_terms_vecSize = all_hier_terms_vec.size();
+            for (int i=0; i<all_hier_terms_vecSize; i++) {
+                String term = all_hier_terms_vec.get(i);
+                Vector<String> termNts = new Vector<String>();
+                termNts.addAll(ntsOfHierDesciptor.get(term));  
+                if (termNts.size() > 0) {
+                    Collections.sort(termNts, new StringLocaleComparator(targetLocale));
+                }
+
+                out.write("<term>");
+
+                out.write("<name>");
+                out.write(Utilities.escapeXML(term));
+                out.write("</name>");
+
+                for (int k = 0; k < termNts.size(); k++) {
+
+                    out.write("<nt>");
+                    out.write(Utilities.escapeXML(termNts.get(k)));
+                    out.write("</nt>");
+
+                }
+
+                out.write("</term>");
+            }
+
+*/
+
+
+            out.write("</results>");
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Error in writing results " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+        try {
+            out.write("</page>");
+            out.close();
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Error in closing file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+        
+    }
+    
     public String writePrimary2TranslationsIndexResultsInXMLFile(Vector<String> all_hier_terms_vec,Vector<SortItem> all_translations_vec,
             Hashtable<String, Vector<SortItem>> term_translationsOfHierDesciptor, Hashtable<SortItem, Vector<String>> translations_termsOfHierDesciptor, String title, String query/*, String xslLink*/, String fileName, IntegerObject sis_session, QClass Q, String baseURL, String xslBasePath,String pathToSaveScriptingAndLocale, Locale targetLocale) {
 

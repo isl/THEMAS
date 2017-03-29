@@ -1353,8 +1353,6 @@ public class UsersClass {
     public synchronized void UpdateSessionUserSessionAttribute(UserInfoClass SessionUserInfo, String selectedThesaurus) {
         // construct an instance of class UserInfoClass
 
-        //String webXMLFileName = Parameters.BaseRealPath.concat("\\WEB-INF\\web.xml");
-
         // fill it with the given parameters
         SessionUserInfo.selectedThesaurus = selectedThesaurus;
         String SVG_CategoriesFrom_for_traverseStr = Parameters.SVG_CategoriesFrom_for_traverse;

@@ -37,6 +37,10 @@
     <description>This is a simple web application with a source code organization based on the recommendations of the Application Developer's Guide.</description>
     <!-- My variables -->
     <context-param>
+        <param-name>appname</param-name>
+        <param-value>THEMAS</param-value>
+    </context-param>
+    <context-param>
         <param-name>UILanguage</param-name>
         <param-value>en</param-value>
         <!--<param-value>el</param-value>-->

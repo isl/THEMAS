@@ -210,7 +210,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
                 errorArgs.removeAllElements();
                 
                 DeleteThesaurusResultMessage.setValue(resultMessageObj.getValue());
-                //DeleteThesaurusResultMessage.setValue("Η διαγραφή του θησαυρού " + ThesaurusName + " ολοκληρώθηκε με επιτυχία.");
+                //DeleteThesaurusResultMessage.setValue("Thesaurus " + ThesaurusName + " deletion completed successfully");
                 UsersClass tmsUsers = new UsersClass();
                 synchronized (sessionInstance) {
                     if (thesaurusVector.size() > 0) {

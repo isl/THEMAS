@@ -197,7 +197,11 @@ public class Parameters {
             
             UILang = xpath.evaluate("web-app/context-param[param-name='UILanguage']/param-value[1]", document);
 
-            ApplicationName = xpath.evaluate("web-app/display-name", document);
+            
+            //separated web-app/display-name from static variable ApplicationName 
+            //because web-app/display-name may also be used in e.g. tomcat manager for short description
+            //ApplicationName = xpath.evaluate("web-app/display-name", document);
+            ApplicationName = xpath.evaluate("web-app/context-param[param-name='appname']/param-value[1]", document);
             LogFilePrefix = ApplicationName + " Logs: ";
             
             

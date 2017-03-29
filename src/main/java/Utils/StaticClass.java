@@ -249,7 +249,7 @@ public class StaticClass {
                         //.setConfig(GraphDatabaseSettings.allow_store_upgrade, "true")
                         //.setConfig(GraphDatabaseSettings.keep_logical_logs, "2000k txs")
                         .setConfig(GraphDatabaseSettings.keep_logical_logs, "false")
-                        //.setConfig(GraphDatabaseSettings.pagecache_memory, "512000000")                        
+                        .setConfig(GraphDatabaseSettings.pagecache_memory, "128M")                        
                         //.setConfig(GraphDatabaseSettings.cache_type, "none")
                         .newGraphDatabase();
                 while (graphDb.isAvailable(500) == false) {

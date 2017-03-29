@@ -47,6 +47,8 @@ import Utils.Utilities;
 import Utils.TaxonomicCodeItem;
 import Utils.TaxonomicCodeComparator;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -219,18 +221,20 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
                 String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
                 String time = Utilities.GetNow();
-                String Save_Results_file_name = "SearchResults_Terms_Systematic_" + time;String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Terms_Systematic.xsl");
+                String Save_Results_file_name = "SearchResults_Terms_Systematic_" + time;
+                String webAppSaveResults_AbsolutePathStr = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathStr);
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Systematic.xsl").toString();
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
                 writeResultsInXMLFile(descriptors,u, time, searchCriteria, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
             
             
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath +"/"+Save_Results_file_name.concat(".html"));
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
                     
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Systematic View --> time elapsed: " + elapsedTimeSec);
                 
-                out.println(webAppSaveResults_Folder + "/"+webAppSaveResults_temporary_files_Folder +"/"+ Save_Results_file_name.concat(".html"));
+                out.println(webAppSaveResults_Folder + File.separator+webAppSaveResults_temporary_files_Folder +File.separator+ Save_Results_file_name.concat(".html"));
                 out.flush();
                 return;
             }
@@ -264,7 +268,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             xml.append(u.getXMLMiddle(xmlResults, "Systematic"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
-            u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
+            u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");//sessionInstance.path: web path
             //u.XmlPrintWriterTransform(out, xml, path + "/xml-xsl/search_results_terms_systematic.xsl");
 
         } catch (Exception e) {
