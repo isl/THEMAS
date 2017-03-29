@@ -33,6 +33,8 @@
  */
 package Utils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.ServletContext;
 
@@ -135,12 +137,13 @@ public class Parameters {
         initParams(BaseRealPath);
     }
 
-    public static void initParams(String basePath){
-    try {
+    public static void initParams(String basePathString){
+        Path basePath = Paths.get(basePathString);
+        try {
 
-            BaseRealPath =basePath;
+            BaseRealPath = basePathString;
 
-            String pathToXMLForPrimaryLang = basePath.concat("\\DBadmin\\tms_db_admin_config_files\\config.xml");
+            String pathToXMLForPrimaryLang = basePath.resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
             try {
 
                 DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -178,7 +181,7 @@ public class Parameters {
                 Utils.StaticClass.handleException(e);
             }
 
-            String webXMLPath=basePath.concat("\\WEB-INF\\web.xml");
+            String webXMLPath = basePath.resolve("WEB-INF").resolve("web.xml").toString();
             
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new File(webXMLPath));
@@ -331,7 +334,7 @@ public class Parameters {
 
 
 
-        String pathToXMLForStatuses = basePath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
+        String pathToXMLForStatuses = basePath.resolve("translations").resolve("SaveAll_Locale_And_Scripting.xml").toString();
         try {
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -354,7 +357,7 @@ public class Parameters {
 
 
 
-        String pathToXMLForSearchCriteria = basePath.concat("\\translations\\searchcriteria.xml");
+        String pathToXMLForSearchCriteria = basePath.resolve("translations").resolve("searchcriteria.xml").toString();
         try{
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
