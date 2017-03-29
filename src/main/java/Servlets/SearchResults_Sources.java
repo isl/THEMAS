@@ -59,6 +59,9 @@ import java.io.OutputStreamWriter;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -265,9 +268,10 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
                 String time = Utilities.GetNow();
                 String Save_Results_file_name = "SearchResults_Sources_" + time;
-                String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                String webAppSaveResults_AbsolutePathString = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Sources.xsl");
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Sources.xsl").toString();
 
                 if(answerType != null && answerType.compareTo("XML")==0){
                     pathToSaveScriptingAndLocale = null;
@@ -281,14 +285,18 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                 
                 if(answerType != null && answerType.compareTo("XML")==0){
                     if(Parameters.FormatXML){
-                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml");
+                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
                     }
                     out.println(Save_Results_file_name.concat(".xml"));
                 }
                 else{
                     //create html and answer with html link for redirection --> download
-                    u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.concat(".html"));
-                    out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
+                    u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +  File.separator+ Save_Results_file_name + ".xml", 
+                                       XSL, 
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+
+                    //Send HTML relative url to output and return
+                    out.println(webAppSaveResults_Folder + "/"+ webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
                 }
                 
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
@@ -345,7 +353,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, TMSAPIClass TA, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
     
         DBGeneral dbGen = new DBGeneral();
-        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml";
+        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml";
               
         OutputStreamWriter out = null;
         try {

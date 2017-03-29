@@ -76,9 +76,24 @@
                 <td  width="316" valign="middle"  style="color:#898a5e; font-size:9px; text-align:right; padding-left:5px; padding-right:5px;">
                     <!--<b>target="_blank" href="http://www.ics.forth.gr/isl/cci-gr.html"-->
                     <i>
-                        <a style="color:#898B5E;">
-                            <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/><xsl:text> © 2015 </xsl:text>
-                        </a>
+                        <xsl:choose>
+                            <xsl:when test="$locale/footer/appurl/option[@lang=$lang]/text()!=''">
+                                <a style="color:#898B5E; text-decoration:underline;" target="_blank">
+                                    <xsl:attribute name="href">
+                                        <xsl:value-of select="$locale/footer/appurl/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/>
+                                </a>
+                                <a style="color:#898B5E;">
+                                    <xsl:text> © 2015 </xsl:text>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <a style="color:#898B5E;">
+                                    <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/><xsl:text> © 2015 </xsl:text>
+                                </a>
+                            </xsl:otherwise>
+                        </xsl:choose>                        
                     </i>
                     <i>
                         <u>

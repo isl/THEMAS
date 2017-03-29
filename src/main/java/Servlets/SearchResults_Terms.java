@@ -48,6 +48,8 @@ import Utils.StringLocaleComparator;
 import Utils.SortItemLocaleComparator;
 import XMLHandling.WriteFileData;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -325,14 +327,15 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
                 String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
                 String webAppSaveResults_temporary_filesAbsolutePath = context.getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
-                //String webAppSaveResults_temporary_filesAbsolutePath = Parameters.BaseRealPath+"/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder;
+                //String webAppSaveResults_temporary_filesAbsolutePath = Parameters.BaseRealPath+File.separator+webAppSaveResults_Folder + File.separator + webAppSaveResults_temporary_files_Folder;
                 String time = Utilities.GetNow();
                 String Save_Results_file_name = "SearchResults_Terms_" + time;
                 //String webAppSaveResults_AbsolutePath = context.getRealPath("/"+webAppSaveResults_Folder);
-                String webAppSaveResults_AbsolutePath = Parameters.BaseRealPath+"/"+webAppSaveResults_Folder;
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Terms.xsl");
+                String webAppSaveResults_AbsolutePathString = Parameters.BaseRealPath+File.separator+webAppSaveResults_Folder;
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms.xsl").toString();
                 //String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                String pathToSaveScriptingAndLocale = Parameters.BaseRealPath+"/translations/SaveAll_Locale_And_Scripting.xml";
+                String pathToSaveScriptingAndLocale = Parameters.BaseRealPath+File.separator+"translations"+File.separator+"SaveAll_Locale_And_Scripting.xml";
                 //Read Term Ids
                 Vector<String> allTerms = new Vector<String>();
 
@@ -341,7 +344,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
 
                 //Write XML file
-                String startXML = "<page language=\"" + Parameters.UILang + "\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">\n<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
+                String startXML = "<page language=\"" + Parameters.UILang + "\""+
+                                       " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
+                                        + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
                 if (answerType != null && answerType.compareTo("XML") == 0) {
                     //nothing
@@ -366,13 +371,16 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 if (answerType != null && answerType.compareTo("XML") == 0) {
                     if (Parameters.FormatXML) {
 
-                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml");
+                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
 
                     }
                     out.println(Save_Results_file_name.concat(".xml"));
                 } else {
                     //transform XML to HTML
-                    u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.concat(".html"));
+                    u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
+                                       XSL, 
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                    
                     //Send HTML url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
 

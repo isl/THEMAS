@@ -229,12 +229,15 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
                 writeResultsInXMLFile(descriptors,u, time, searchCriteria, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
             
             
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", 
+                                   XSL, 
+                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
                     
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Systematic View --> time elapsed: " + elapsedTimeSec);
-                
-                out.println(webAppSaveResults_Folder + File.separator+webAppSaveResults_temporary_files_Folder +File.separator+ Save_Results_file_name.concat(".html"));
+
+                //Send HTML relative url to output and return
+                out.println(webAppSaveResults_Folder + "/"+webAppSaveResults_temporary_files_Folder +"/"+ Save_Results_file_name.concat(".html"));
                 out.flush();
                 return;
             }
@@ -259,7 +262,11 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Systematic View --> time elapsed: " + elapsedTimeSec);
             
             xmlResults+="<results>";
-            xmlResults+=(u.writePagingInfoXML(systematicPagingListStep,systematicPagingFirst,systematicPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Terms_Systematic"));
+            xmlResults+=(u.writePagingInfoXML(systematicPagingListStep,
+                                              systematicPagingFirst,
+                                              systematicPagingQueryResultsCount, 
+                                              elapsedTimeSec, 
+                                              "SearchResults_Terms_Systematic"));
             xmlResults+="</results>";
               
             

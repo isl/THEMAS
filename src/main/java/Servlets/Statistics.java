@@ -50,6 +50,9 @@ import java.io.OutputStreamWriter;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -106,11 +109,12 @@ public class Statistics extends ApplicationBasicServlet {
                 String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
                 String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
-                String webAppSaveResults_AbsolutePath = context.getRealPath("/"+webAppSaveResults_Folder);
+                String webAppSaveResults_AbsolutePathString = context.getRealPath("/"+webAppSaveResults_Folder);
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
                 
                 String time = Utilities.GetNow();
-                String title = "Στατιστικά ";
+                /*String title = "Στατιστικά ";
                 if (CurrentShownDIV.equals("StatisticsOfTerms_DIV")) {
                     title += "Όρων";
                 }
@@ -125,13 +129,18 @@ public class Statistics extends ApplicationBasicServlet {
                 }                        
                 if (CurrentShownDIV.equals("StatisticsOfUsers_DIV")) {
                     title += "Χρηστών";
-                }   
-                String windowTitle = title + " " + time;
-                String Save_Results_file_name = "Statistics_" + time;                
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Statistics.xsl");                
-                writeResultsInXMLFile(sessionInstance, XMLStatisticResults, u, title, windowTitle, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
+                }   */
+                //String windowTitle = /*title + " " +*/ time;
+                String Save_Results_file_name = "Statistics_" + time;   
+                
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Statistics.xsl").toString();                
+                writeResultsInXMLFile(sessionInstance, XMLStatisticResults, u, time, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
                 //create html and answer with html link for redirection --> download
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.concat(".html"));                
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
+                                   XSL, 
+                                   webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));                
+                
+                
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
                 //out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".xml"));
                 out.flush();                
@@ -177,8 +186,8 @@ public class Statistics extends ApplicationBasicServlet {
     CALLED: in case the servlet is called by the "Save results" icon
     ----------------------------------------------------------------------*/    
     public void writeResultsInXMLFile(SessionWrapperClass sessionInstance, String XMLStatisticResults, Utilities u, String title, String windowTitle, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name,String pathToSaveScriptingAndLocale) {
-        DBGeneral dbGen = new DBGeneral();
-        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml";
+        
+        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml";
               
         OutputStreamWriter out = null;
         try {
