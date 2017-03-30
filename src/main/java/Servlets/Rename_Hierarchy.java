@@ -117,7 +117,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
             /*
             try {
                 Vector<String> errorArgs = new Vector<String>();
-                //String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                //String pathToMessagesXML = Utilities.getMessagesXml();
                 byte[] byteArray = newName.getBytes("UTF-8");
                 int maxTermChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxTermChars) {

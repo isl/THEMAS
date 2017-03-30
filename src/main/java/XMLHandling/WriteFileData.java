@@ -47,13 +47,7 @@ import Utils.Parameters;
 import Utils.SortItem;
 import Utils.Utilities;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -85,7 +79,7 @@ public class WriteFileData {
 
         DBGeneral dbGen = new DBGeneral();
         StringObject msgObj = new StringObject();
-        String pathToTranslationsXml = Parameters.BaseRealPath.concat("\\translations\\translations.xml");
+        String pathToTranslationsXml = Parameters.BaseRealPath + File.separator + "translations" + File.separator + "translations.xml";
         dbGen.Translate(msgObj, "locale/footer/tooltipappnameandversion", null, pathToTranslationsXml);
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"

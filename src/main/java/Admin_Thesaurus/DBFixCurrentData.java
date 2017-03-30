@@ -998,7 +998,7 @@ public class DBFixCurrentData {
         StringObject targetHier = new StringObject(prefixClass + targetHierarchy);
         Q.reset_name_scope();
 
-        String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
         StringObject resultMessageObj = new StringObject();
         Vector<String> errorArgs = new Vector<String>();
 

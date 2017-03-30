@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Paths;
 
 /**
  *
@@ -80,13 +81,13 @@ public class DownloadFile extends ApplicationBasicServlet  {
             String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
             String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
             //String webAppSaveResults_temporary_filesAbsolutePath = Parameters.BaseRealPath+"/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder;        
-            String Save_Results_file_name =request.getParameter("targetFile");            
+            String Save_Results_file_name = request.getParameter("targetFile");
             String Full_Save_Results_file_name = "";
             if(Save_Results_file_name.contains(ConstantParameters.LogFilesFolderName)){
-                Full_Save_Results_file_name = Parameters.BaseRealPath+"\\"+ Save_Results_file_name.replace("/", "\\");
+                Full_Save_Results_file_name = Parameters.BaseRealPath + File.separator + Paths.get(Save_Results_file_name);
             }
             else{
-                Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath.concat("\\" + Save_Results_file_name);
+                Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name;
             }
             
             File srcdoc = new File(Full_Save_Results_file_name);

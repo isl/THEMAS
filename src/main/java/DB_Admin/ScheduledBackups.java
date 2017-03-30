@@ -104,7 +104,7 @@ public class ScheduledBackups extends TimerTask {
         SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         targetLocale = new Locale(language, country);
         pathToErrorsXML = ErrorsXML;
-        MaintananceStatusPath = basePath+"\\MonitorAutomaticBackups";
+        MaintananceStatusPath = basePath + File.separator + "MonitorAutomaticBackups";
         db_Backup_MainFolder = common_utils.DB_BackupFolder.getAbsolutePath();
         Utils.StaticClass.webAppSystemOutPrintln("ScheduledBackups Constructor called for " + sessionInstance.path);
     }
@@ -112,7 +112,7 @@ public class ScheduledBackups extends TimerTask {
     private void setDBBackupSubFolder(){
         
         
-        common_utils.DB_BackupFolder = new File(db_Backup_MainFolder.concat("\\"+db_BackUp_SubFolderName));
+        common_utils.DB_BackupFolder = new File(db_Backup_MainFolder + File.separator + db_BackUp_SubFolderName);
         try {
             FileUtils.deleteRecursively(common_utils.DB_BackupFolder);
         } catch (IOException ex) {
@@ -136,7 +136,7 @@ public class ScheduledBackups extends TimerTask {
         StringObject DBbackupFileNameCreated = new StringObject("");
         Utilities u = new Utilities();
 
-        String NewRestoreBackupTxtFilePath = MaintananceStatusPath + "\\RestorationNeeded.txt";
+        String NewRestoreBackupTxtFilePath = MaintananceStatusPath + File.separator + "RestorationNeeded.txt";
         File MonitorMaintananceFile = new File(NewRestoreBackupTxtFilePath);
         try{
             //Data Storage
@@ -314,7 +314,7 @@ public class ScheduledBackups extends TimerTask {
             //Creating filename and initializing each thesaurus export file
             String exprortThesaurus = thesaurusVector.get(i);
             String Filename = XML_ExportPrefix + exprortThesaurus + ".xml";
-            String logFileNamePath = currentDateFolder.getPath() + "\\" + Filename;
+            String logFileNamePath = currentDateFolder.getPath() + File.separator + Filename;
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Attempting export " + exprortThesaurus + " in file " + logFileNamePath);
             OutputStreamWriter logFileWriter = null;
             OutputStream fout = null;
@@ -432,8 +432,8 @@ public class ScheduledBackups extends TimerTask {
             
             String importThesaurus = thesaurusVector.get(i);
             String Filename = XML_ImportPrefix + importThesaurus + ".xml";
-            String logFileNamePath = common_utils.XML_BackupFolder + "\\" + testName + "\\" + Filename;
-            String XMLFileToImport = common_utils.XML_BackupFolder + "\\" + testName + "\\" + XML_ExportPrefix + importThesaurus + ".xml";
+            String logFileNamePath = common_utils.XML_BackupFolder + File.separator + testName + File.separator + Filename;
+            String XMLFileToImport = common_utils.XML_BackupFolder + File.separator + testName + File.separator + XML_ExportPrefix + importThesaurus + ".xml";
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Import from file: " + logFileNamePath);
 
             OutputStreamWriter logFileWriter = null;

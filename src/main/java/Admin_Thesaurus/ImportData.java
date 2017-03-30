@@ -47,10 +47,7 @@ import Utils.Parameters;
 import Utils.SessionWrapperClass;
 import Utils.SessionListener;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -58,8 +55,6 @@ import java.util.*;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -156,7 +151,7 @@ public class ImportData extends ApplicationBasicServlet {
                     String filename = xmlFilePath;
                     ///String caption = (String) initParams.get("caption");
 
-                    filename = filename.substring(filename.lastIndexOf("\\") + 1);
+                    filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
 
                     String fileType = filename.substring(filename.lastIndexOf(".") + 1);
                     String userFileName = filename.substring(0, filename.lastIndexOf("."));

@@ -364,7 +364,7 @@ public class DBMergeThesauri {
 
         UsersClass wtmsUsers = new UsersClass();
 
-        String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
@@ -475,7 +475,7 @@ public class DBMergeThesauri {
 
     public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, Vector<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή δημιουργίας μικροθησαυρών. Ώρα: " + Utilities.GetNow());
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         DBGeneral dbGen = new DBGeneral();
 
         DBCreate_Modify_Facet creationModificationOfFacet = new DBCreate_Modify_Facet();
@@ -574,7 +574,7 @@ public class DBMergeThesauri {
         boolean HierarchiesSucceeded = true;
         try {
 
-            String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+            String pathToMessagesXML = Utilities.getMessagesXml();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             UsersClass wtmsUsers = new UsersClass();
@@ -2750,7 +2750,7 @@ public class DBMergeThesauri {
         DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
         UsersClass wtmsUsers = new UsersClass();
 
-        String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tCREATION Process Started for thesaurus " + mergedThesaurusName);
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -3189,7 +3189,7 @@ public class DBMergeThesauri {
                 String term1Name = dbGen.removePrefix(row.get_v1_cls());
                 String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 StringObject resultMessageObj_2 = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
@@ -3374,7 +3374,7 @@ public class DBMergeThesauri {
                     String term1Name = dbGen.removePrefix(row.get_v1_cls());
                     String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                    String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                    String pathToMessagesXML = Utilities.getMessagesXml();
                     StringObject resultMessageObj = new StringObject();
                     StringObject resultMessageObj_2 = new StringObject();
                     Vector<String> errorArgs = new Vector<String>();
@@ -3758,7 +3758,7 @@ public class DBMergeThesauri {
                 }
 
                 //HARDCODED GREEKS
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 StringObject resultMessageObj_2 = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
@@ -3825,7 +3825,7 @@ public class DBMergeThesauri {
                  *
                  */
 
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -3861,7 +3861,7 @@ public class DBMergeThesauri {
                      *
                      *
                      */
-                    String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                    String pathToMessagesXML = Utilities.getMessagesXml();
                     StringObject resultMessageObj = new StringObject();
                     Vector<String> errorArgs = new Vector<String>();
 
@@ -3896,7 +3896,7 @@ public class DBMergeThesauri {
                      *
                      *
                      */
-                    String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                    String pathToMessagesXML = Utilities.getMessagesXml();
                     StringObject resultMessageObj = new StringObject();
                     Vector<String> errorArgs = new Vector<String>();
 
@@ -4258,7 +4258,7 @@ public class DBMergeThesauri {
              *
              */
 
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -4284,7 +4284,7 @@ public class DBMergeThesauri {
              *
              *
              */
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -4360,7 +4360,7 @@ public class DBMergeThesauri {
              *
              *
              */
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -4386,7 +4386,7 @@ public class DBMergeThesauri {
              *
              *
              */
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -4472,7 +4472,7 @@ public class DBMergeThesauri {
                  *
                  */
 
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -4498,7 +4498,7 @@ public class DBMergeThesauri {
                  *
                  *
                  */
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -4573,7 +4573,7 @@ public class DBMergeThesauri {
                  *
                  *
                  */
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -4599,7 +4599,7 @@ public class DBMergeThesauri {
                  *
                  *
                  */
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -4921,7 +4921,7 @@ public class DBMergeThesauri {
              *
              *
              */
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -4947,7 +4947,7 @@ public class DBMergeThesauri {
              *
              *
              */
-            String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
 
@@ -5036,7 +5036,7 @@ public class DBMergeThesauri {
                  *
                  *
                  */
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 
@@ -5062,7 +5062,7 @@ public class DBMergeThesauri {
                  *
                  *
                  */
-                String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+                String pathToMessagesXML = Utilities.getMessagesXml();
                 StringObject resultMessageObj = new StringObject();
                 Vector<String> errorArgs = new Vector<String>();
 

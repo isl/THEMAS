@@ -204,7 +204,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
                 String time = Utilities.GetNow();
                 String Save_Results_file_name = "SearchResults_Terms_Alphabetical_" + time;
-                String XML = webAppSaveResults_temporary_filesAbsolutePath + "\\" + Save_Results_file_name + ".xml";
+                String XML = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
                 String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
                 
                 String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Terms_Alphabetical.xsl");
