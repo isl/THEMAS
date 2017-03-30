@@ -84,7 +84,7 @@ public class DownloadFile extends ApplicationBasicServlet  {
             String Save_Results_file_name = request.getParameter("targetFile");
             String Full_Save_Results_file_name = "";
             if(Save_Results_file_name.contains(ConstantParameters.LogFilesFolderName)){
-                Full_Save_Results_file_name = Parameters.BaseRealPath + File.separator + Paths.get(Save_Results_file_name);
+                Full_Save_Results_file_name = Paths.get(Parameters.BaseRealPath).resolve(Save_Results_file_name).toString();
             }
             else{
                 Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name;
