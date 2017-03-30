@@ -95,7 +95,7 @@ public class WriteFileData {
 
         DBGeneral dbGen = new DBGeneral();
         StringObject msgObj = new StringObject();
-        String pathToTranslationsXml = Parameters.BaseRealPath.concat("\\translations\\translations.xml");
+        String pathToTranslationsXml = Utilities.getTranslationsXml("translations.xml");
         dbGen.Translate(msgObj, "locale/footer/tooltipappnameandversion", null, pathToTranslationsXml);
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"

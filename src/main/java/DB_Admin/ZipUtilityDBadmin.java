@@ -111,7 +111,7 @@ public class ZipUtilityDBadmin {
         /*String[] filenames = new File(strSource).list();
         
          for (int i=0; i<filenames.length; i++) {
-         filenames[i] = strSource + "\\" + filenames[i];
+         filenames[i] = strSource + File.separator + filenames[i];
          }
          */
 
@@ -125,7 +125,7 @@ public class ZipUtilityDBadmin {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
 
             for (int i = 0; i < directories.size(); i++) {
-                out.putNextEntry(new ZipEntry(directories.get(i) + "\\"));
+                out.putNextEntry(new ZipEntry(directories.get(i) + File.separator));
                 out.closeEntry();
             }
 

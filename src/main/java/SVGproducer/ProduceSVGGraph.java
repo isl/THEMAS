@@ -96,7 +96,7 @@ public final class ProduceSVGGraph {
                 String tempString = new String();
 
                 SVG_file_name = "SVGtempGraph" + GetNow().replaceAll(":", "-") + ".svg";
-                SVG_file_path = webAppSVG_temporary_filesAbsolutePath + "\\" + SVG_file_name;
+                SVG_file_path = webAppSVG_temporary_filesAbsolutePath + File.separator + SVG_file_name;
                 BufferedWriter out =  new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SVG_file_path), "UTF-8"));
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Start2222222 " + ((UserInfoClass)sessionInstance.getAttribute("SessionUser")).selectedThesaurus) ;
                 tempString = SVGproducer.doJob(SessionUserInfo,hierarchyNames[0], hierarchyNameLang[0], hierarchyNameStyle[0]);

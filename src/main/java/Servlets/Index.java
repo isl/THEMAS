@@ -49,6 +49,7 @@ import java.io.*;
 import neo4j_sisapi.*;
 //import isl.dms.DMSException;
 //import isl.dms.xml.XMLTransform;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,14 +89,8 @@ public class Index extends ApplicationBasicServlet {
         String basePath = request.getSession().getServletContext().getRealPath("");
         ConfigDBadmin config = new ConfigDBadmin(basePath);
         String SystemOutPrefix = getServletContext().getServletContextName()+" Logs: "; //instead of Parameters.LogFilePrefix which is not initialized before Sucessfull login
-        String restoreBackupTxtFilePath = "";
-        if(basePath.replace("/","\\" ).endsWith("\\")){
-            restoreBackupTxtFilePath = basePath.replace("/","\\" )+"MonitorAutomaticBackups\\RestorationNeeded.txt";
-        }
-        else{
-            restoreBackupTxtFilePath = basePath.replace("/","\\" )+"\\MonitorAutomaticBackups\\RestorationNeeded.txt";
-        }
-        
+        String restoreBackupTxtFilePath = Paths.get(basePath).resolve("MonitorAutomaticBackups").resolve("RestorationNeeded.txt").toString();
+
         Utilities u = new Utilities();
         
         try {

@@ -113,28 +113,11 @@ public class Statistics extends ApplicationBasicServlet {
                 Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
                 
-                String time = Utilities.GetNow();
-                /*String title = "Στατιστικά ";
-                if (CurrentShownDIV.equals("StatisticsOfTerms_DIV")) {
-                    title += "Όρων";
-                }
-                if (CurrentShownDIV.equals("StatisticsOfHierarchies_DIV")) {
-                    title += "Ιεραρχιών";
-                }        
-                if (CurrentShownDIV.equals("StatisticsOfFacets_DIV")) {
-                    title += "Μικροθησαυρών";
-                }                
-                if (CurrentShownDIV.equals("StatisticsOfSources_DIV")) {
-                    title += "Πηγών";
-                }                        
-                if (CurrentShownDIV.equals("StatisticsOfUsers_DIV")) {
-                    title += "Χρηστών";
-                }   */
-                //String windowTitle = /*title + " " +*/ time;
+                String time = Utilities.GetNow();                
                 String Save_Results_file_name = "Statistics_" + time;   
                 
                 String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Statistics.xsl").toString();                
-                writeResultsInXMLFile(sessionInstance, XMLStatisticResults, u, time, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
+                writeResultsInXMLFile(sessionInstance, XMLStatisticResults, u, "Statistics "+time, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
                 //create html and answer with html link for redirection --> download
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
                                    XSL, 

@@ -65,7 +65,7 @@ public class DBCreate_Modify_Term {
 
     public void createNewTerm(UserInfoClass SessionUserInfo, String newName, Vector<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath + "\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
         if (Parameters.DEBUG) {
             Utils.StaticClass.webAppSystemOutPrintln("Target NEW Term: " + newName + " Target bts: " + decodedValues.toString());
         }
@@ -219,7 +219,7 @@ public class DBCreate_Modify_Term {
             Vector<Long> guideTermBugFixLinkCategIdsL, Vector<SortItem> guideTermBugFixBtsWithGuideTerms,
             Vector<String> old_bts, StringObject errorMsg) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         DBGeneral dbGen = new DBGeneral();
 
 
@@ -326,7 +326,7 @@ public class DBCreate_Modify_Term {
         DBGeneral dbGen = new DBGeneral();
 
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         Vector<String> errorArgs = new Vector<String>();
 
         StringObject fromClassObj = new StringObject();
@@ -420,7 +420,7 @@ public class DBCreate_Modify_Term {
             Utils.StaticClass.webAppSystemOutPrintln("Target Term: " + targetTerm + " Target relation: " + targetField + " Target Value: " + decodedValues.toString());
         }
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         Vector<String> errorArgs = new Vector<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -1868,7 +1868,7 @@ public class DBCreate_Modify_Term {
 
     int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         Vector<String> errorArgs = new Vector<String>();
 
         // looking for Term prefix
@@ -1912,7 +1912,7 @@ public class DBCreate_Modify_Term {
     ----------------------------------------------------------------------*/
     boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveΤοHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
 
 
 
@@ -2037,7 +2037,7 @@ public class DBCreate_Modify_Term {
     boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg) {
 
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
 
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
@@ -2192,7 +2192,7 @@ public class DBCreate_Modify_Term {
 
     public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, Vector<String> decodedNtsVec, Vector<String> decodedGuideTermsVec) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         Vector<String> errorArgs = new Vector<String>();
 
         //targetTerm

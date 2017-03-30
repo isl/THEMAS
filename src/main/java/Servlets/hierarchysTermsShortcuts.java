@@ -295,8 +295,18 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                         linkValue, 
                         term_translationsOfHierDesciptor,
                         translations_termsOfHierDesciptor, 
-                        time, title, webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
-                        sis_session, Q, baseURL, webAppSaveResults_AbsolutePath.toString(), pathToSaveScriptingAndLocale,targetLocale);
+                        time, 
+                        title, 
+                        //webAppSaveResults_temporary_filesAbsolutePath + File.separator + 
+                        Save_Results_file_name 
+                        //                + ".xml"
+                        , 
+                        sis_session, 
+                        Q, 
+                        baseURL, 
+                        webAppSaveResults_AbsolutePath.toString(), 
+                        webAppSaveResults_temporary_filesAbsolutePath,
+                        pathToSaveScriptingAndLocale,targetLocale);
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in Hierarchy terms PrimarytoTranslations and TranslationstoPrimary: " + elapsedTimeSec);
                 
@@ -763,7 +773,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             out.write(xml_header);
             //out.write(xslLink);
-            // Fw = new FileWriter(Full_Save_Results_file_name);
+            // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
             out.write("<page language=\""+Parameters.UILang+"\">\n" +
                     "\t<targetThesaurus>" + thesaurus + "</targetThesaurus>\n" +
                     "\t<title>" + title + "</title>\n" +
@@ -896,29 +906,44 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         
     }
     
-    public String writePrimary2TranslationsIndexResultsInXMLFile(Vector<String> all_hier_terms_vec,Vector<SortItem> all_translations_vec,
-            Hashtable<String, Vector<SortItem>> term_translationsOfHierDesciptor, Hashtable<SortItem, Vector<String>> translations_termsOfHierDesciptor, String title, String query/*, String xslLink*/, String fileName, IntegerObject sis_session, QClass Q, String baseURL, String xslBasePath,String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    public String writePrimary2TranslationsIndexResultsInXMLFile(Vector<String> all_hier_terms_vec,
+            Vector<SortItem> all_translations_vec,
+            Hashtable<String, Vector<SortItem>> term_translationsOfHierDesciptor, 
+            Hashtable<SortItem, Vector<String>> translations_termsOfHierDesciptor, 
+            String title, 
+            String query, 
+            String fileNameWithoutExtension, 
+            IntegerObject sis_session, 
+            QClass Q, 
+            String baseURL, 
+            String xslBasePath,
+            String temporaryfolderFullPath,
+            String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
-        String Full_Save_Results_file_name = fileName; //webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml";
+        String Save_Results_file_nameWithoutExtension = fileNameWithoutExtension; //webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml";
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
-        String Primary2TranslationsHtmlOutputPath = Full_Save_Results_file_name.split(File.separator+".xml")[0].concat("_primary2translations.html");
-        String Translations2PrimaryHtmlOutputPath = Full_Save_Results_file_name.split(File.separator+".xml")[0].concat("_translations2primary.html");
+        
+        // \\ stands for regex escape not for windows path separator
+        String Primary2TranslationsHtmlOutputPath = Save_Results_file_nameWithoutExtension.concat("_primary2translations.html");
+        String Translations2PrimaryHtmlOutputPath = Save_Results_file_nameWithoutExtension.concat("_translations2primary.html");
 
+
+        
         OutputStreamWriter out = null;
         try {
-            OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
+            OutputStream fout = new FileOutputStream(temporaryfolderFullPath+File.separator+Save_Results_file_nameWithoutExtension.concat(".xml"));
             OutputStream bout = new BufferedOutputStream(fout);
             out = new OutputStreamWriter(bout, "UTF-8");
-
+                    
             //out.write(xml_header);
             //out.write(xslLink);
-            // Fw = new FileWriter(Full_Save_Results_file_name);
+            // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
             out.write("<page language='"+Parameters.UILang+"'>\n" +
                     "<title>" + title + "</title>" +
                     "<query>" + query + "</query>" +
-                    "<primary2transaltionsLocation>" + baseURL.concat(Primary2TranslationsHtmlOutputPath.split("/")[Primary2TranslationsHtmlOutputPath.split("/").length - 1]) + "</primary2transaltionsLocation>" +
-                    "<transaltions2primaryLocation>" + baseURL.concat(Translations2PrimaryHtmlOutputPath.split("/")[Translations2PrimaryHtmlOutputPath.split("/").length - 1]) + "</transaltions2primaryLocation>" +
+                    "<primary2transaltionsLocation>" + baseURL.concat(Primary2TranslationsHtmlOutputPath) + "</primary2transaltionsLocation>" +
+                    "<transaltions2primaryLocation>" + baseURL.concat(Translations2PrimaryHtmlOutputPath) + "</transaltions2primaryLocation>" +                    
                     "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>");
                     
 
@@ -1026,13 +1051,17 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         String primary2translationsXSLPath = xslBasePath.concat("\\Primary2TranslationsIndex.xsl");
         String translations2primaryXSLPath = xslBasePath.concat("\\Translations2PrimaryIndex.xsl");
 
-        //XML STORED IN Full_Save_Results_file_name
+        //XML STORED IN Save_Results_file_nameWithoutExtension
         //XSL STORED IN xslLink
-        u.XmlFileTransform(Full_Save_Results_file_name, primary2translationsXSLPath, Primary2TranslationsHtmlOutputPath);
-        u.XmlFileTransform(Full_Save_Results_file_name, translations2primaryXSLPath, Translations2PrimaryHtmlOutputPath);
+        u.XmlFileTransform(temporaryfolderFullPath+File.separator+Save_Results_file_nameWithoutExtension.concat(".xml"), 
+                           primary2translationsXSLPath,
+                           temporaryfolderFullPath+File.separator+Primary2TranslationsHtmlOutputPath);
+        u.XmlFileTransform(temporaryfolderFullPath+File.separator+Save_Results_file_nameWithoutExtension.concat(".xml"), 
+                           translations2primaryXSLPath, 
+                           temporaryfolderFullPath+File.separator+Translations2PrimaryHtmlOutputPath);
 
         //default index
-        return Primary2TranslationsHtmlOutputPath;
+        return temporaryfolderFullPath+File.separator+Primary2TranslationsHtmlOutputPath;
     }
 
     public void writeSystematicResultsInXMLFile(Vector<TaxonomicCodeItem> allTerms, Utilities u, String title, String query,/*String xslLink,*/ String fileName,String pathToSaveScriptingAndLocale) {
@@ -1117,10 +1146,10 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             out.write(xml_header);
             //out.write(xslLink);
-            // Fw = new FileWriter(Full_Save_Results_file_name);
+            // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
             out.write("<page language=\""+Parameters.UILang+"\">\n" +
                     "<title>" + title + "</title>" +
-                    //"<query>" + "Ιεραρχική παρουσίαση όρων της ιεραρχίας " + hierarchy + "</query>" +
+                    //"<query>" + "Hierarchical presentation of terms of hierarchy: " + hierarchy + "</query>" +
                     "<query>" + query + "</query>" +
                     "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>");
 

@@ -175,7 +175,7 @@ public class DBImportData {
             Vector<String> btOfTerms = new Vector<String>();
             btOfTerms.add(targetHierarchy);
             
-            String pathToMessagesXML = Parameters.BaseRealPath+"\\translations\\Messages.xml";
+            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             StringObject resultMessageObj_2 = new StringObject();
             Vector<String> errorArgs = new Vector<String>();
@@ -254,9 +254,6 @@ public class DBImportData {
             Hashtable<String, Vector<String>> hierarchyFacets,
             Hashtable<String, NodeInfoStringContainer> termsInfo,
             OutputStreamWriter logFileWriter) throws IOException {
-
-
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
 
         DBGeneral dbGen = new DBGeneral();
         UsersClass webappusers = new UsersClass();
@@ -708,7 +705,7 @@ public class DBImportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass webappusers = new UsersClass();
         DBGeneral dbGen = new DBGeneral();
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -882,7 +879,7 @@ public class DBImportData {
                 Utils.StaticClass.webAppSystemOutPrintln(xml.toString());
             }
             else{
-                u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+                u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
             }
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Η λειτουργία δημιουργίας νέου θησαυρού: " + targetThesaurusName + " απέτυχε.");
             return false;
@@ -897,7 +894,7 @@ public class DBImportData {
         boolean serverStarted = common_utils.StartDatabase();
         if (serverStarted == false) {
             String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
-            CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + "\\" + common_utils.DatabaseBatFileName);
+            CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
             common_utils.RestartDatabaseIfNeeded();
         }
         */
@@ -1273,7 +1270,7 @@ public class DBImportData {
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
             //out.println("DONE");
-            u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+            u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Η λειτουργία δημιουργίας νέου θησαυρού: " + targetThesaurusName + " απέτυχε.");
             return false;
         } else {
@@ -1502,7 +1499,7 @@ public class DBImportData {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
         
-        String pathToMessagesXML = Parameters.BaseRealPath+"\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
         StringObject resultMessageObj = new StringObject();
         Vector<String> errorArgs = new Vector<String>();
         
@@ -1527,7 +1524,7 @@ public class DBImportData {
             //Utils.StaticClass.webAppSystemOutPrintln(xml.toString());
         }
         else{
-            u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+            u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
         }
         // ---------------------- UNLOCK SYSTEM ----------------------
         DBAdminUtilities dbAdminUtils = new DBAdminUtilities();
@@ -1558,7 +1555,7 @@ public class DBImportData {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);     
         
-        String pathToMessagesXML = Parameters.BaseRealPath+"\\translations\\Messages.xml";
+        String pathToMessagesXML = Utilities.getMessagesXml();
         StringObject resultMessageObj = new StringObject();
         Vector<String> errorArgs = new Vector<String>();
         
@@ -1574,7 +1571,7 @@ public class DBImportData {
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 
-        u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+        u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
 
         // ---------------------- UNLOCK SYSTEM ----------------------
         DBAdminUtilities dbAdminUtils = new DBAdminUtilities();
@@ -1645,7 +1642,7 @@ public class DBImportData {
             Utils.StaticClass.webAppSystemOutPrintln(xml.toString());
         }
         else{
-            u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+            u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
         }
 
         // ---------------------- UNLOCK SYSTEM ----------------------
@@ -1710,7 +1707,7 @@ public class DBImportData {
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 
-        u.XmlPrintWriterTransform(out, xml, Parameters.BaseRealPath + "\\xml-xsl\\page_contents.xsl");
+        u.XmlPrintWriterTransform(out, xml, getPageContentsXsl());
 
         // ---------------------- UNLOCK SYSTEM ----------------------
         DBAdminUtilities dbAdminUtils = new DBAdminUtilities();
@@ -1847,7 +1844,7 @@ public class DBImportData {
         boolean serverStarted = common_utils.StartDatabase();
         if (serverStarted == false) {
             String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
-            CreateThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + "\\" + common_utils.DatabaseBatFileName);
+            CreateThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
             common_utils.RestartDatabaseIfNeeded();
         }*/
 
@@ -2793,7 +2790,7 @@ public class DBImportData {
         DBFilters dbF = new DBFilters();
         DBGeneral dbGen = new DBGeneral();
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
 
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -3127,7 +3124,7 @@ public class DBImportData {
             Hashtable<String, String> userSelections) {
 
         DBGeneral dbGen = new DBGeneral();
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
 
 
         Hashtable<String, String> currentTranslationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false, true);
@@ -3135,5 +3132,9 @@ public class DBImportData {
         return dbGen.synchronizeTranslationCategories(currentTranslationCategories,
                 userSelections, userSelectedTranslationWords, userSelectedTranslationIdentifiers, selectedThesaurus,
                 resultMessageStrObj, pathToMessagesXML, Q, TA, sis_session, tms_session);
+    }
+
+    private String getPageContentsXsl() {
+        return Parameters.BaseRealPath + File.separator + "xml-xsl" + File.separator + "page_contents.xsl";
     }
 }

@@ -51,6 +51,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.File;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -156,7 +157,7 @@ public class ImportData extends ApplicationBasicServlet {
                     String filename = xmlFilePath;
                     ///String caption = (String) initParams.get("caption");
 
-                    filename = filename.substring(filename.lastIndexOf("\\") + 1);
+                    filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
 
                     String fileType = filename.substring(filename.lastIndexOf(".") + 1);
                     String userFileName = filename.substring(0, filename.lastIndexOf("."));

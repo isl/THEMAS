@@ -134,7 +134,7 @@ public final class SessionListener implements HttpSessionListener, HttpSessionAt
     String[] DirectoryContents = DirectoryContentsFile.list();
     int DirectoryContentsCount = DirectoryContents.length;
     for (int i = 0; i < DirectoryContentsCount; i++) {
-        File SVG_temp_file = new File(webAppSVG_temporary_filesAbsolutePath + "\\" + DirectoryContents[i]);
+        File SVG_temp_file = new File(webAppSVG_temporary_filesAbsolutePath + File.separator + DirectoryContents[i]);
         SVG_temp_file.delete();
     }
   }  
@@ -152,7 +152,7 @@ public final class SessionListener implements HttpSessionListener, HttpSessionAt
     String[] DirectoryContents = new File(webAppSave_temporary_filesAbsolutePath).list();
     int DirectoryContentsCount = DirectoryContents.length;
     for (int i = 0; i < DirectoryContentsCount; i++) {
-        File Save_temp_file = new File(webAppSave_temporary_filesAbsolutePath + "\\" + DirectoryContents[i]);
+        File Save_temp_file = new File(webAppSave_temporary_filesAbsolutePath + File.separator + DirectoryContents[i]);
         Save_temp_file.delete();
     }
     
