@@ -102,7 +102,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
             String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
             String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
-            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath.concat("\\" + webAppSaveResults_temporary_files_Folder);
+            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath + File.separator + webAppSaveResults_temporary_files_Folder;
             String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
             String time = Utilities.GetNow();
             

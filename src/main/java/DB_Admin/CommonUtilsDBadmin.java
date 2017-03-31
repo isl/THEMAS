@@ -168,7 +168,7 @@ public class CommonUtilsDBadmin {
     OUTPUT: true in case DB exists, false otherwise
     ------------------------------------------------------------------------*/
     public boolean DataBaseExists() {
-        File telos_db_obj = new File(DBPath + "\\telos_db.obj");
+        File telos_db_obj = new File(DBPath + File.separator + "telos_db.obj");
         if (telos_db_obj.isFile() == true) {
             return true;
         }
@@ -288,7 +288,7 @@ public class CommonUtilsDBadmin {
         boolean serverStarted = StartDatabase();
         if (serverStarted == false) {
             String StartServerFailure = config.GetTranslation("StartServerFailure");
-            FixDBResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + "\\" + DatabaseBatFileName);
+            FixDBResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + File.separator + DatabaseBatFileName);
             RestartDatabaseIfNeeded();
             return false;
         }*/
@@ -303,8 +303,8 @@ public class CommonUtilsDBadmin {
         
         
         // remove previously found DB_Admin_ExportOutputTelosFile.tls (if any)
-        String exportFileName =Neo4jExportTsvsFileDirectory + "\\TSV_Global_Export_"+GetCurrentDateAndTime()+".tsv";
-        //String TelosFileName = Neo4jExportBatFileDirectory + "\\" + exportFileName;
+        String exportFileName =Neo4jExportTsvsFileDirectory + File.separator + "TSV_Global_Export_"+GetCurrentDateAndTime()+".tsv";
+        //String TelosFileName = Neo4jExportBatFileDirectory + File.separator + exportFileName;
         //File TelosFile = new File(TelosFileName);
         //TelosFile.delete();
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+TelosFileName + " deleted");
@@ -324,7 +324,7 @@ public class CommonUtilsDBadmin {
         /*
         if (exportStarted == false) {
             String StartExportFailure = config.GetTranslation("StartExportFailure");
-            FixDBResultMessage.setValue(StartExportFailure + " " + SISExportBatFileDirectory + "\\" + SISExportBatFileName);
+            FixDBResultMessage.setValue(StartExportFailure + " " + SISExportBatFileDirectory + File.separator + SISExportBatFileName);
             return false;
         }*/
 
@@ -365,7 +365,7 @@ public class CommonUtilsDBadmin {
         /*boolean serverStopped = StopDatabase();
         if (serverStopped == false) {
             String StopServerFailure = config.GetTranslation("StopServerFailure");
-            FixDBResultMessage.setValue(StopServerFailure + " " + DatabaseBatFileDirectory + "\\" + DatabaseBatFileName);
+            FixDBResultMessage.setValue(StopServerFailure + " " + DatabaseBatFileDirectory + File.separator + DatabaseBatFileName);
             return false;
         }
         */
@@ -428,7 +428,7 @@ public class CommonUtilsDBadmin {
         serverStarted = StartWithEmptyDataBase();
         if (serverStarted == false) {
             String StartServerFailure = config.GetTranslation("StartServerFailure");
-            FixDBResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + "\\" + StartWithEmptyDataBaseBatFileName);
+            FixDBResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + File.separator + StartWithEmptyDataBaseBatFileName);
             RestartDatabaseIfNeeded();
             return false;
         }*/
@@ -452,7 +452,7 @@ public class CommonUtilsDBadmin {
             boolean telosStarted = StartSIStelos(tlsFiles, telosOutputObj);
             if (telosStarted == false) {
                 String StartTelosFailure = config.GetTranslation("StartTelosFailure");
-                FixDBResultMessage.setValue(StartTelosFailure + " " + SISTelosBatFileDirectory + "\\" + SISTelosBatFileName);
+                FixDBResultMessage.setValue(StartTelosFailure + " " + SISTelosBatFileDirectory + File.separator + SISTelosBatFileName);
                 return false;
             }
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- sisTelosIs FINISHED "+i+"--------------------");
@@ -479,7 +479,7 @@ public class CommonUtilsDBadmin {
             serverStopped = StopDatabase();
             if (serverStopped == false) {
                 String StopServerFailure = config.GetTranslation("StopServerFailure");
-                FixDBResultMessage.setValue(StopServerFailure + " " + DatabaseBatFileDirectory + "\\" + DatabaseBatFileName);
+                FixDBResultMessage.setValue(StopServerFailure + " " + DatabaseBatFileDirectory + File.separator + DatabaseBatFileName);
                 RestartDatabaseIfNeeded();
                 return false;
             }
@@ -826,14 +826,14 @@ public class CommonUtilsDBadmin {
             if(folderPath!=null && folderPath.length()>0){
                 File folder = new File(folderPath);
                 if(folder.exists()&&folder.isDirectory()){
-                    dbZippedBackup = folder.getPath() + "\\" + zipFileName;
+                    dbZippedBackup = folder.getPath() + File.separator + zipFileName;
                 }
                 else{
-                    dbZippedBackup = DB_BackupFolder.getPath() + "\\" + zipFileName;
+                    dbZippedBackup = DB_BackupFolder.getPath() + File.separator + zipFileName;
                 }
             }
             else{*/
-                dbZippedBackup = DB_BackupFolder.getPath() + "\\" + zipFileName;
+                dbZippedBackup = DB_BackupFolder.getPath() + File.separator + zipFileName;
             //}
             
             ZipUtilityDBadmin zu = new ZipUtilityDBadmin(destDir.getAbsolutePath(), dbZippedBackup);
@@ -850,7 +850,7 @@ public class CommonUtilsDBadmin {
         /*
         // zip argSisPath/db with name file inside backup directory
         String dbFolderForZip = DB_Folder.getPath();
-        String dbZippedBackup = DB_BackupFolder.getPath() + "\\" + zipFileName;
+        String dbZippedBackup = DB_BackupFolder.getPath() + File.separator + zipFileName;
         ZipUtilityDBadmin zu = new ZipUtilityDBadmin(dbFolderForZip, dbZippedBackup);
 */
         
@@ -878,9 +878,9 @@ public class CommonUtilsDBadmin {
             }
         }
         */
-        File fileForRestore = new File(DB_BackupFolder.getPath() + "\\" + selectedDBbackupFileName);
+        File fileForRestore = new File(DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
         if(fileForRestore.exists()==false){
-            result.setValue("Could Not find file for restore: " + DB_BackupFolder.getPath() + "\\" + selectedDBbackupFileName);
+            result.setValue("Could Not find file for restore: " + DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
             return false;
         }
         
@@ -903,7 +903,7 @@ public class CommonUtilsDBadmin {
         }
         // restore file
         
-        String file_to_be_extracted = DB_BackupFolder.getPath() + "\\" + selectedDBbackupFileName;
+        String file_to_be_extracted = DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName;
         ExtractUtility eu = new ExtractUtility(file_to_be_extracted, Utils.StaticClass.getGraphDbFolderPath());
         // inform user for success
         String RestoreDBbackupSuccess = config.GetTranslation("RestoreDBbackupSuccess");
@@ -1184,7 +1184,7 @@ DBGeneral dbGen = new DBGeneral();
             if (Parameters.DEBUG) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + StartServerFailure);
             }
-            //CreateThesaurusResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + "\\" + DatabaseBatFileName);
+            //CreateThesaurusResultMessage.setValue(StartServerFailure + " " + DatabaseBatFileDirectory + File.separator + DatabaseBatFileName);
             RestartDatabaseIfNeeded();
             return false;
         }

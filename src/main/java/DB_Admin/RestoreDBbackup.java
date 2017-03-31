@@ -166,7 +166,7 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
                       DeleteDBbackup()
     -------------------------------------------------------*/
     public boolean DeleteDBbackup(CommonUtilsDBadmin common_utils,String selectedDBbackupFileName, StringObject RestoreDBbackupResultMessage) {
-        File fileForDeletion = new File(common_utils.DB_BackupFolder.getPath() + "\\" + selectedDBbackupFileName);
+        File fileForDeletion = new File(common_utils.DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
         boolean deletionSucceded = fileForDeletion.delete();        
         if (deletionSucceded == false) {
             RestoreDBbackupResultMessage.setValue("Δεν βρέθηκε το αρχείο " + selectedDBbackupFileName);

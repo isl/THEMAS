@@ -134,7 +134,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
 
             String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
-            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath.concat("\\" + webAppSaveResults_temporary_files_Folder);
+            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath + File.separator + webAppSaveResults_temporary_files_Folder;
             String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
             String time = Utilities.GetNow();
 
@@ -303,7 +303,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 
                 
                 String Save_Results_file_name = "SearchResults_Terms_Of_Hierarchy_Alphabetical_" + time;
-                String XML = webAppSaveResults_temporary_filesAbsolutePath + "\\" + Save_Results_file_name + ".xml";
+                String XML = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
                 String pathToLabels = context.getRealPath("/translations/labels.xml");
                 
                 
@@ -983,8 +983,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(exc);
         }
 
-        String primary2translationsXSLPath = xslBasePath.concat("\\Primary2TranslationsIndex.xsl");
-        String translations2primaryXSLPath = xslBasePath.concat("\\Translations2PrimaryIndex.xsl");
+        String primary2translationsXSLPath = xslBasePath + File.separator + "Primary2TranslationsIndex.xsl";
+        String translations2primaryXSLPath = xslBasePath + File.separator + "Translations2PrimaryIndex.xsl";
 
         //XML STORED IN Full_Save_Results_file_name
         //XSL STORED IN xslLink
