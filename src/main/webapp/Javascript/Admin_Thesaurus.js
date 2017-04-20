@@ -57,7 +57,7 @@ function Import_DataButtonPressed(importMode){
     choiceSelected="&ImportThesaurusMode="+importMode;
     
     if(importMode == 'thesaurusImport'){
-        var importXMLfilename = document.getElementById('importXMLfilename_ID').value;
+        var importXMLfilename = encodeURIComponent(document.getElementById('importXMLfilename_ID').value);
         //alert(importXMLfilename);
         if (importXMLfilename.length == 0) {
             alert(translate(44));
@@ -121,8 +121,8 @@ function Import_DataButtonPressed(importMode){
     else
     if(importMode == 'bulkImport'){
         
-        
-        var bulkImportXMLfilename = document.getElementById('bulkImportXMLfilename_ID').value; 
+
+        var bulkImportXMLfilename = encodeURIComponent(document.getElementById('bulkImportXMLfilename_ID').value);
         if (bulkImportXMLfilename.length == 0) {
             alert(translate(44));
             //alert('Δεν έχετε επιλέξει .xml αρχείο εισόδου.');
@@ -130,7 +130,7 @@ function Import_DataButtonPressed(importMode){
             submitFormTo('bulkImport_DataForm' , 'Admin_Thesaurus?DIV=ImportExport_Data_DIV');  
             return;
         }
-    
+
         // replace special characters of Create_Thesaurus_NewName_Input
         var Import_Thesaurus_Hierarchy_Input = document.getElementById('bulkImportHierarchy_Id');
         var Import_Thesaurus_HierarchyName = Import_Thesaurus_Hierarchy_Input.options[Import_Thesaurus_Hierarchy_Input.selectedIndex].value;
