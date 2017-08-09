@@ -40,6 +40,7 @@ import Utils.ConstantParameters;
 
 import Utils.Parameters;
 import Utils.StaticClass;
+import Utils.Utilities;
 
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.*;
@@ -372,8 +373,8 @@ public class DBCreate_Modify_Hierarchy {
             IntegerObject tms_session, DBGeneral dbGen,
             String targetHierarchy, StringObject errorMsg) {
 
-        String pathToConmsistensyErrorsXML = Parameters.BaseRealPath.concat("\\translations\\Consistencies_Error_Codes.xml");
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToConsistencyErrorsXML = Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         StringObject errorMsgPrefixObj = new StringObject();
 
         dbGen.Translate(errorMsgPrefixObj, "root/EditHierarchy/Edit/ErrorPrefix", null, pathToMessagesXML);
@@ -536,7 +537,7 @@ public class DBCreate_Modify_Hierarchy {
                 
                 if(bts.size()>0){
                     DBCMT.commitTermTransaction(SessionUserInfo, dbGen.removePrefix(termBelongingToOtherHierarchiesAlso),ConstantParameters.bt_kwd,
-                            bts,SessionUserInfo.name,errorMsg, Q,sis_session,TA,tms_session,dbGen, pathToConmsistensyErrorsXML,false,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
+                            bts,SessionUserInfo.name,errorMsg, Q,sis_session,TA,tms_session,dbGen, pathToConsistencyErrorsXML,false,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
                     
                      if(errorMsg.getValue() != null && errorMsg.getValue().length()>0){
                          Utils.StaticClass.webAppSystemOutPrintln(errorMsg.getValue());

@@ -83,7 +83,7 @@ public class DBAdminUtilities {
     }
 
     private static boolean lockFileExists() {
-        String fullLockFilenamePath = Parameters.BaseRealPath + "\\DBadmin\\" + DB_Admin.DBAdminUtilities.LockFileName;
+        String fullLockFilenamePath = Parameters.BaseRealPath + File.separator + "DBadmin" + File.separator + DB_Admin.DBAdminUtilities.LockFileName;
         //Utils.StaticClass.webAppSystemOutPrintln(fullLockFilenamePath);
         File f = new File(fullLockFilenamePath);
         if (f.exists() && !f.isDirectory()) {
@@ -107,7 +107,7 @@ public class DBAdminUtilities {
     public static void setLockVariable(boolean value) {
         SYSTEM_IS_LOCKED = value;
 
-        String fullLockFilenamePath = Parameters.BaseRealPath + "\\DBadmin\\" + DBAdminUtilities.LockFileName;
+        String fullLockFilenamePath = Parameters.BaseRealPath + File.separator + "DBadmin" + File.separator + DBAdminUtilities.LockFileName;
         if (value) {
 
             try {
@@ -381,7 +381,7 @@ public class DBAdminUtilities {
          boolean serverStarted = common_utils.StartDatabase();
          if (serverStarted == false) {
          String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
-         CreateThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + "\\" + common_utils.DatabaseBatFileName);
+         CreateThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
          common_utils.RestartDatabaseIfNeeded();
          return false;
          }
@@ -416,7 +416,7 @@ public class DBAdminUtilities {
          boolean telosStarted = common_utils.StartSIStelos(tlsFiles, telosOutputObj);
          if (telosStarted == false) {
          String StartTelosFailure = common_utils.config.GetTranslation("StartTelosFailure");
-         CreateThesaurusResultMessage.setValue(StartTelosFailure + " " + common_utils.SISTelosBatFileDirectory + "\\" + common_utils.SISTelosBatFileName);
+         CreateThesaurusResultMessage.setValue(StartTelosFailure + " " + common_utils.SISTelosBatFileDirectory + File.separator + common_utils.SISTelosBatFileName);
          return false;
          }
          Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "--------------------- sisTelosIs FINISHED --------------------" + (i + 1));
@@ -529,7 +529,7 @@ public class DBAdminUtilities {
 
          if (telosStarted == false) {
          String StartTelosFailure = common_utils.config.GetTranslation("StartTelosFailure");
-         InitializeDBResultMessage.setValue(StartTelosFailure + " " + common_utils.SISTelosBatFileDirectory + "\\" + common_utils.SISTelosBatFileName);
+         InitializeDBResultMessage.setValue(StartTelosFailure + " " + common_utils.SISTelosBatFileDirectory + File.separator + common_utils.SISTelosBatFileName);
          return false;
          }
 
@@ -650,7 +650,7 @@ public class DBAdminUtilities {
             IntegerObject tms_session, DBGeneral dbGen,
             String targetThesaurus, StringObject errorMsg) {
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\Messages.xml");
+        String pathToMessagesXML = Utilities.getMessagesXml();
         // timer begin
         long startTime = Utilities.startTimer();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " STARTED ############");

@@ -428,7 +428,7 @@ public class OfflineToolsClass {
                     }
 
                     //Now XSL should be found and java xsl transformation should be performed
-                    String XSL = Parameters.BaseRealPath+"\\"+Parameters.Save_Results_Folder + "\\ImportCopyMergeThesaurus_Report.xsl";
+                    String XSL = Parameters.BaseRealPath + File.separator + Parameters.Save_Results_Folder + File.separator + "ImportCopyMergeThesaurus_Report.xsl";
 
                     u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml",".html"));
 
@@ -699,7 +699,7 @@ public class OfflineToolsClass {
                     return;
                 }
                 
-                String exportFileName =f3.getAbsolutePath()+"\\Exporter_Output_at_"+GetCurrentDateAndTime()+".tsv";
+                String exportFileName =f3.getAbsolutePath()+ File.separator + "Exporter_Output_at_"+GetCurrentDateAndTime()+".tsv";
                 boolean exportCompleted = expimp.globalExportToFile(exportFileName,exportOnlyGeneric,skipGeneric);//StartSISexport();
                 if(exportCompleted==false){
                     //TODO: Translate message
@@ -779,7 +779,7 @@ public class OfflineToolsClass {
         xml.append(reportFile);
         xml.append("</"+resultFileTagName+">");
 
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
+        String pathToMessagesXML = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
         StringObject errorMsg = new StringObject();
 
         dbGen.Translate(errorMsg, "root/importcopymerge/sucessresultmsg", null, pathToMessagesXML);
@@ -861,7 +861,7 @@ public class OfflineToolsClass {
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         //xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
-        String pathToMessagesXML = Parameters.BaseRealPath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
+        String pathToMessagesXML = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
         Vector<String> errorArgs = new Vector<String>();
         StringObject errorMsg = new StringObject();
         errorArgs.add(resultObj.getValue());

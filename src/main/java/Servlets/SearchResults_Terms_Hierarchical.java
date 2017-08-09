@@ -47,6 +47,8 @@ import Utils.Parameters;
 import Utils.Utilities;
 import Utils.StringLocaleComparator;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -101,8 +103,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);   
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
             String webAppSaveResults_temporary_files_Folder = Parameters.Save_Results_Temp_Folder;
-            String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
-            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath.concat("\\" + webAppSaveResults_temporary_files_Folder);
+            String webAppSaveResults_AbsolutePathString = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+            Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
+            String webAppSaveResults_temporary_filesAbsolutePath = webAppSaveResults_AbsolutePath.resolve(webAppSaveResults_temporary_files_Folder).toString();
             String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
             String time = Utilities.GetNow();
             
@@ -347,10 +350,12 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             
             
             String Save_Results_file_name = "SearchResults_Term_Hierarchical_Display_" + time;            
-            String XSL = webAppSaveResults_AbsolutePath.concat("/Hierarchical_Term_Display.xsl");
+            String XSL = webAppSaveResults_AbsolutePath.resolve("Hierarchical_Term_Display.xsl").toString();
             writeHierarchicalResultsInXMLFile(targetTerm, allTermsOfDescriptorsTopTerms, ntsOfDesciptorsTopTerms, topTerms, referencesPerHier,u,
-                    time, "<base>Ιεραρχική παρουσίαση όρου: </base><arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>",/* xslLink,*/ webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale,targetLocale);
-            u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.concat(".html"));
+                    time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale,targetLocale);
+            u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+
+            //Send HTML relative url to output and return
             out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
 
 
@@ -364,7 +369,17 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
         }
     }
 
-    public void writeHierarchicalResultsInXMLFile(String targetTerm, Vector<Vector<String>> allTermsOfDescriptorsTopTerms, Vector<Hashtable<String, Vector<String>>> ntsOfDesciptorsTopTerms, Vector<String> topTerms, Vector<Integer> referencesPerHier, Utilities u, String title, String query,/*String xslLink,*/ String fileName,String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    public void writeHierarchicalResultsInXMLFile(String targetTerm, 
+            Vector<Vector<String>> allTermsOfDescriptorsTopTerms, 
+            Vector<Hashtable<String, Vector<String>>> ntsOfDesciptorsTopTerms, 
+            Vector<String> topTerms, 
+            Vector<Integer> referencesPerHier, 
+            Utilities u, 
+            String title, 
+            String query,
+            String fileName,
+            String pathToSaveScriptingAndLocale, 
+            Locale targetLocale) {
 
         String Full_Save_Results_file_name = fileName;
         
@@ -381,7 +396,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             // Fw = new FileWriter(Full_Save_Results_file_name);
             out.write("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">\n" +
                     "<title>" + title + "</title>" +
-                    //"<query>" + "Ιεραρχική παρουσίαση όρων της ιεραρχίας " + hierarchy + "</query>" +
+                    //"<query>" + "Hierarchical Presentation of terms belonging to hierarchy: " + hierarchy + "</query>" +
                     "<query>" + query + "</query>" +
                     "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>" );
 

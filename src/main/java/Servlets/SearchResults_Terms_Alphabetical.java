@@ -50,6 +50,8 @@ import Utils.SortItem;
 import Utils.StringLocaleComparator;
 import Utils.SortItemLocaleComparator;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -204,13 +206,20 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
                 String time = Utilities.GetNow();
                 String Save_Results_file_name = "SearchResults_Terms_Alphabetical_" + time;
-                String XML = webAppSaveResults_temporary_filesAbsolutePath + "\\" + Save_Results_file_name + ".xml";
-                String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                String XML = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
+                String webAppSaveResults_AbsolutePathString = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
                 
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Terms_Alphabetical.xsl");
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Alphabetical.xsl").toString();
                 String pathToLabels = context.getRealPath("/translations/labels.xml");
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                String resultsInfo = "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\"><title>" + time +"</title><query>" + searchCriteria.getQueryString(u) +"</query>"+ u.getXMLUserInfo(SessionUserInfo) + "<pathToLabels>" + pathToLabels +"</pathToLabels>"  + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>" ;
+                String resultsInfo = "<page language=\""+Parameters.UILang+"\" " +
+                        "primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" + 
+                        "<title>" + time +"</title>" + 
+                        "<query>" + searchCriteria.getQueryString(u) +"</query>" + 
+                        u.getXMLUserInfo(SessionUserInfo) + 
+                        "<pathToLabels>" + pathToLabels +"</pathToLabels>" + 
+                        "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>" ;
                 
                 //Storage Structures
                 
@@ -229,7 +238,11 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 Q.TEST_end_query();
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath +"/"+Save_Results_file_name.concat(".html"));
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml",
+                                   XSL, 
+                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
+				
+                //Send HTML relative url to output and return
                 out.println(webAppSaveResults_Folder + "/"+webAppSaveResults_temporary_files_Folder +"/"+  Save_Results_file_name.concat(".html"));
                // out.println(fullName);
                 float elapsedTimeSec = Utilities.stopTimer(startTime);

@@ -48,8 +48,11 @@ import Utils.SortItem;
 import Utils.Utilities;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
@@ -59,13 +62,20 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import neo4j_sisapi.StringObject;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -75,8 +85,8 @@ public class WriteFileData {
 
     private String getSkosSchemePrefix(String importThesaurusName) {
 
-        if(ConstantParameters.includeThesaurusNameInScheme){
-            return ConstantParameters.SchemePrefix +"/" + importThesaurusName.toLowerCase().replaceAll(" ", "_");
+        if (ConstantParameters.includeThesaurusNameInScheme) {
+            return ConstantParameters.SchemePrefix + "/" + importThesaurusName.toLowerCase().replaceAll(" ", "_");
         }
         return ConstantParameters.SchemePrefix;
     }
@@ -85,10 +95,10 @@ public class WriteFileData {
 
         DBGeneral dbGen = new DBGeneral();
         StringObject msgObj = new StringObject();
-        String pathToTranslationsXml = Parameters.BaseRealPath.concat("\\translations\\translations.xml");
+        String pathToTranslationsXml = Utilities.getTranslationsXml("translations.xml");
         dbGen.Translate(msgObj, "locale/footer/tooltipappnameandversion", null, pathToTranslationsXml);
         //locale/footer/tooltipappnameandversion
-        logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
+        logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
         logFileWriter.append("<!-- " + msgObj.getValue() + " -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
@@ -104,7 +114,7 @@ public class WriteFileData {
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
             //logFileWriter.append("<data ofThes=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
-                    //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
+            //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
             logFileWriter.append("<data ofThes=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\">\r\n");
         }
 
@@ -120,7 +130,7 @@ public class WriteFileData {
             Vector<String> sortedTrCategs = new Vector<String>(translationPairs.keySet());
             Collections.sort(sortedTrCategs);
             //Enumeration<String> allTrCategories = translationPairs.keys();
-            for(String languageWord : sortedTrCategs){
+            for (String languageWord : sortedTrCategs) {
                 //String languageWord = allTrCategories.nextElement();
                 String languageId = translationPairs.get(languageWord);
 
@@ -149,45 +159,44 @@ public class WriteFileData {
             GuideTermsToExport.addAll(GuideTerms);
             Collections.sort(GuideTermsToExport);
 
-
-            if(GuideTermsToExport.size()>0){
+            if (GuideTermsToExport.size() > 0) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Node Labels");
                 logFileWriter.append("\r\n\t<!-- Export of Node Labels - Guide Terms in SKOS not implemented yet ");
-                logFileWriter.append("\r\n\t<"+ConstantParameters.XMLNodeLabelsWrapperElementName+">\r\n");
+                logFileWriter.append("\r\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
 
                 for (int i = 0; i < GuideTermsToExport.size(); i++) {
-                    logFileWriter.append("\t\t<"+ConstantParameters.XMLNodeLabelElementName+" index=\"" + (i + 1) + "\">");
+                    logFileWriter.append("\t\t<" + ConstantParameters.XMLNodeLabelElementName + " index=\"" + (i + 1) + "\">");
                     //logFileWriter.append("\t\t\t<name>");
                     logFileWriter.append(Utilities.escapeXML(GuideTermsToExport.get(i)));
                     //logFileWriter.append("</name>\r\n");
-                    logFileWriter.append("</"+ConstantParameters.XMLNodeLabelElementName+">\r\n");
+                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\r\n");
                 }
 
-                logFileWriter.append("\t</"+ConstantParameters.XMLNodeLabelsWrapperElementName+">\r\n");
+                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
                 logFileWriter.append("\r\n\t-->\r\n");
             }
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
-            
+
             Vector<String> GuideTermsToExport = new Vector<String>();
             GuideTermsToExport.addAll(GuideTerms);
 
             Collections.sort(GuideTermsToExport);
 
-            if(GuideTermsToExport.size()>0){
+            if (GuideTermsToExport.size() > 0) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Node Labels");
-                logFileWriter.append("\r\n\t<"+ConstantParameters.XMLNodeLabelsWrapperElementName+" count=\""+GuideTermsToExport.size()+"\">\r\n");
+                logFileWriter.append("\r\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + " count=\"" + GuideTermsToExport.size() + "\">\r\n");
 
                 for (int i = 0; i < GuideTermsToExport.size(); i++) {
                     //logFileWriter.append("\t\t<"+ConstantParameters.XMLNodeLabelElementName+" index=\"" + (i + 1) + "\">");
-                    logFileWriter.append("\t\t<"+ConstantParameters.XMLNodeLabelElementName+">");
+                    logFileWriter.append("\t\t<" + ConstantParameters.XMLNodeLabelElementName + ">");
                     //logFileWriter.append("\t\t\t<name>");
                     logFileWriter.append(Utilities.escapeXML(GuideTermsToExport.get(i)));
                     //logFileWriter.append("</name>\r\n");
-                    logFileWriter.append("</"+ConstantParameters.XMLNodeLabelElementName+">\r\n");
+                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\r\n");
                 }
 
-                logFileWriter.append("\t</"+ConstantParameters.XMLNodeLabelsWrapperElementName+">\r\n");
+                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
             }
 
         }
@@ -203,25 +212,24 @@ public class WriteFileData {
         Vector<String> facetFilter = new Vector<String>();
         Vector<String> hierarchiesFilter = new Vector<String>();
 
-        if(FacetsFilter!=null && FacetsFilter.size()>0){
+        if (FacetsFilter != null && FacetsFilter.size() > 0) {
             facetFilter.addAll(FacetsFilter);
         }
 
-        if(HierarchiesFilter!=null && HierarchiesFilter.size()>0){
+        if (HierarchiesFilter != null && HierarchiesFilter.size() > 0) {
             hierarchiesFilter.addAll(HierarchiesFilter);
         }
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             String schemePrefix = this.getSkosSchemePrefix(importThesaurusName);
-            
+
             Hashtable<String, Vector<String>> facetHierarchyIds = new Hashtable<String, Vector<String>>();
 
             //getall facets and put a record in the above structure
             Vector<String> facetsToExport = new Vector<String>();
-            if(facetFilter.size()==0){
+            if (facetFilter.size() == 0) {
                 facetsToExport.addAll(xmlFacets);
-
 
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
                 while (hierEnum.hasMoreElements()) {
@@ -236,14 +244,11 @@ public class WriteFileData {
                         }
                     }
                 }
-            }
-            else{
+            } else {
                 facetsToExport.addAll(facetFilter);
             }
 
             Collections.sort(facetsToExport);
-
-
 
             for (int i = 0; i < facetsToExport.size(); i++) {
                 String facetName = facetsToExport.get(i);
@@ -252,56 +257,54 @@ public class WriteFileData {
                 }
             }
 
-
             //now find the ids of each hierarchy and fill the value vector of the main structure
             Enumeration<String> hierEnum = hierarchyFacets.keys();
             while (hierEnum.hasMoreElements()) {
                 String hierarchyName = hierEnum.nextElement();
-                if(hierarchiesFilter.size()>0 && hierarchiesFilter.contains(hierarchyName)==false){
+                if (hierarchiesFilter.size() > 0 && hierarchiesFilter.contains(hierarchyName) == false) {
                     continue;
                 }
                 String hierarchyId = "";
                 NodeInfoStringContainer hierarchyInfo = termsInfo.get(hierarchyName);
-                
-                    Vector<String> tcs = hierarchyInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
-                    if (tcs != null && tcs.size() > 0) {
-                        hierarchyId = ParseFileData.readSkosTC(tcs.get(0));
-                    }
 
-                    if (hierarchyId.length() > 0) {
-                        hierarchyId = schemePrefix + "/" + hierarchyId;
-                    }
+                Vector<String> tcs = hierarchyInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                if (tcs != null && tcs.size() > 0) {
+                    hierarchyId = ParseFileData.readSkosTC(tcs.get(0));
+                }
 
+                if (hierarchyId.length() > 0) {
+                    hierarchyId = schemePrefix + "/" + hierarchyId;
+                }
 
-                    Vector<String> facets = hierarchyFacets.get(hierarchyName);
-                    if (facets != null) {
-                        for (int k = 0; k < facets.size(); k++) {
-                            String facetName = facets.get(k);
-                            if (facetName != null && facetName.length() > 0 && facetHierarchyIds.containsKey(facetName)) {
+                Vector<String> facets = hierarchyFacets.get(hierarchyName);
+                if (facets != null) {
+                    for (int k = 0; k < facets.size(); k++) {
+                        String facetName = facets.get(k);
+                        if (facetName != null && facetName.length() > 0 && facetHierarchyIds.containsKey(facetName)) {
 
-                                Vector<String> hierIds = facetHierarchyIds.get(facetName);
-                                if (hierIds.contains(hierarchyId) == false) {
-                                    hierIds.add(hierarchyId);
-                                    facetHierarchyIds.put(facetName, hierIds);
-                                }
+                            Vector<String> hierIds = facetHierarchyIds.get(facetName);
+                            if (hierIds.contains(hierarchyId) == false) {
+                                hierIds.add(hierarchyId);
+                                facetHierarchyIds.put(facetName, hierIds);
                             }
                         }
                     }
-                
+                }
+
             }
-            Hashtable<String,String> idToName = new Hashtable<String,String>();
+            Hashtable<String, String> idToName = new Hashtable<String, String>();
             Enumeration<String> termEnum = termsInfo.keys();
-            while(termEnum.hasMoreElements()){
+            while (termEnum.hasMoreElements()) {
                 String termName = termEnum.nextElement();
-                String termId ="";
+                String termId = "";
                 NodeInfoStringContainer targetInfo = termsInfo.get(termName);
-                if(targetInfo!=null && targetInfo.descriptorInfo.containsKey(ConstantParameters.tc_kwd)){
-                    Vector<String> tcs= targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
-                    if(tcs!=null && tcs.size()==1){
-                        termId = ConstantParameters.SchemePrefix+"/"+tcs.get(0);
+                if (targetInfo != null && targetInfo.descriptorInfo.containsKey(ConstantParameters.tc_kwd)) {
+                    Vector<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    if (tcs != null && tcs.size() == 1) {
+                        termId = ConstantParameters.SchemePrefix + "/" + tcs.get(0);
                     }
                 }
-                if(termId.length()>0 && idToName.containsKey(termId)==false){
+                if (termId.length() > 0 && idToName.containsKey(termId) == false) {
                     idToName.put(termId, termName);
                 }
             }
@@ -322,10 +325,9 @@ public class WriteFileData {
                 for (int i = 0; i < values.size(); i++) {
                     String hierIdValue = values.get(i);
                     if (hierIdValue != null && hierIdValue.length() > 0) {
-                        logFileWriter.append("\t\t<skos:member rdf:resource=\"" + Utilities.escapeXML(hierIdValue) + "\"/> <!-- "+idToName.get(hierIdValue)+" -->\r\n");
+                        logFileWriter.append("\t\t<skos:member rdf:resource=\"" + Utilities.escapeXML(hierIdValue) + "\"/> <!-- " + idToName.get(hierIdValue) + " -->\r\n");
                     }
                 }
-
 
                 logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
                 logFileWriter.append("\t</skos:Collection>\r\n");
@@ -333,10 +335,8 @@ public class WriteFileData {
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-
-
             Vector<String> facetsToExport = new Vector<String>();
-            if(facetFilter.size()==0){
+            if (facetFilter.size() == 0) {
                 facetsToExport.addAll(xmlFacets);
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
                 while (hierEnum.hasMoreElements()) {
@@ -351,17 +351,14 @@ public class WriteFileData {
                         }
                     }
                 }
-            }
-            else{
+            } else {
                 facetsToExport.addAll(facetFilter);
             }
-
-
 
             Collections.sort(facetsToExport);
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Facets");
-            logFileWriter.append("\r\n\t<facets count=\""+facetsToExport.size()+"\">\r\n");
+            logFileWriter.append("\r\n\t<facets count=\"" + facetsToExport.size() + "\">\r\n");
 
             for (int i = 0; i < facetsToExport.size(); i++) {
                 //logFileWriter.append("\t\t<facet index=\"" + (i + 1) + "\">\r\n");
@@ -382,20 +379,18 @@ public class WriteFileData {
             Hashtable<String, NodeInfoStringContainer> termsInfo, Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
             Vector<String> TermsFilter) throws IOException {
 
-
         //should add sources
         /*
          * for (int i = 0; i < pack.getSourceEn().size(); i++) {
-        temp += "  <dc:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
-        }
-        for (int i = 0; i < pack.getSourceGr().size(); i++) {
-        temp += "  <dc:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
-        }
+         temp += "  <dc:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
+         }
+         for (int i = 0; i < pack.getSourceGr().size(); i++) {
+         temp += "  <dc:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
+         }
          */
-
         Vector<String> termsFilter = new Vector<String>();
 
-        if(TermsFilter!=null && TermsFilter.size()>0){
+        if (TermsFilter != null && TermsFilter.size() > 0) {
             termsFilter.addAll(TermsFilter);
         }
 
@@ -406,7 +401,7 @@ public class WriteFileData {
 
         String targetTermId = "";
         Vector<String> tcs = targetTermInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
-        
+
         if (tcs != null && tcs.size() > 0) {
             targetTermId = ParseFileData.readSkosTC(tcs.get(0));
         }
@@ -449,7 +444,6 @@ public class WriteFileData {
         Vector<String> commentNotes = targetTermInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
         //skos:editorialNote
 
-
         if (targetTermId.length() > 0) {
             if (isTopConcept) {
                 logFileWriter.append("\r\n\t<!-- TopConcept -->\r\n");
@@ -460,8 +454,6 @@ public class WriteFileData {
             logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetTermName));
             logFileWriter.append("</skos:prefLabel>\r\n");
-
-
 
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
@@ -493,22 +485,21 @@ public class WriteFileData {
                 logFileWriter.append("</skos:altLabel>\r\n");
             }
 
-
             //broader
             Collections.sort(bts);
             for (int j = 0; j < bts.size(); j++) {
                 String termName = bts.get(j);
                 Vector<String> termtcs = new Vector<String>();
-                if(ConstantParameters.filterBts_Nts_Rts){
-                    if(termsInfo.containsKey(termName)==false){
+                if (ConstantParameters.filterBts_Nts_Rts) {
+                    if (termsInfo.containsKey(termName) == false) {
                         continue;
                     }
                 }
-                if(termsFilter.size()>0 && termsFilter.contains(termName)==false){
+                if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                     continue;
                 }
 
-                if(termsInfo.containsKey(termName)){
+                if (termsInfo.containsKey(termName)) {
                     termtcs.addAll(termsInfo.get(termName).descriptorInfo.get(ConstantParameters.tc_kwd));
                 }
 
@@ -584,17 +575,17 @@ public class WriteFileData {
                 if (targetGuideTerm.length() == 0) {
                     for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                         String ntStr = ntsWithThisGuideTerm.get(k);
-                        if(ConstantParameters.filterBts_Nts_Rts){
-                            if(termsInfo.containsKey(ntStr)==false){
-                                 continue;
+                        if (ConstantParameters.filterBts_Nts_Rts) {
+                            if (termsInfo.containsKey(ntStr) == false) {
+                                continue;
                             }
                         }
-                        if(termsFilter.size()>0 && termsFilter.contains(ntStr)==false){
+                        if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
                             continue;
                         }
 
                         Vector<String> nttcs = new Vector<String>();
-                        if(termsInfo.containsKey(ntStr)){
+                        if (termsInfo.containsKey(ntStr)) {
                             nttcs.addAll(termsInfo.get(ntStr).descriptorInfo.get(ConstantParameters.tc_kwd));
                         }
 
@@ -605,7 +596,6 @@ public class WriteFileData {
                         if (ntId.length() > 0) {
                             ntId = schemePrefix + "/" + ntId;
                         }
-
 
                         logFileWriter.append("\t\t<skos:narrower rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
                     }
@@ -620,17 +610,17 @@ public class WriteFileData {
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
-                             if(ConstantParameters.filterBts_Nts_Rts){
-                                if(termsInfo.containsKey(ntStr)==false){
-                                     continue;
+                            if (ConstantParameters.filterBts_Nts_Rts) {
+                                if (termsInfo.containsKey(ntStr) == false) {
+                                    continue;
                                 }
                             }
-                            if(termsFilter.size()>0 && termsFilter.contains(ntStr)==false){
+                            if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
                                 continue;
                             }
 
                             Vector<String> nttcs = new Vector<String>();
-                            if(termsInfo.containsKey(ntStr)){
+                            if (termsInfo.containsKey(ntStr)) {
                                 nttcs.addAll(termsInfo.get(ntStr).descriptorInfo.get(ConstantParameters.tc_kwd));
                             }
 
@@ -642,10 +632,7 @@ public class WriteFileData {
                                 ntId = schemePrefix + "/" + ntId;
                             }
 
-
-
                             logFileWriter.append("\t\t\t\t<skos:member rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
-
 
                         }
 
@@ -660,17 +647,17 @@ public class WriteFileData {
             for (int j = 0; j < rts.size(); j++) {
                 String termName = rts.get(j);
 
-                 if(ConstantParameters.filterBts_Nts_Rts){
-                    if(termsInfo.containsKey(termName)==false){
-                         continue;
+                if (ConstantParameters.filterBts_Nts_Rts) {
+                    if (termsInfo.containsKey(termName) == false) {
+                        continue;
                     }
                 }
-                if(termsFilter.size()>0 && termsFilter.contains(termName)==false){
+                if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                     continue;
                 }
                 Vector<String> termtcs = new Vector<String>();
 
-                if(termsInfo.containsKey(termName)){
+                if (termsInfo.containsKey(termName)) {
                     termtcs.addAll(termsInfo.get(termName).descriptorInfo.get(ConstantParameters.tc_kwd));
                 }
 
@@ -694,20 +681,19 @@ public class WriteFileData {
                 }
             }
 
-
-            if(scopeNoteTranslations!=null){
+            if (scopeNoteTranslations != null) {
                 Collections.sort(scopeNoteTranslations);
                 for (int j = 0; j < scopeNoteTranslations.size(); j++) {
                     String noteStr = scopeNoteTranslations.get(j);
                     noteStr = noteStr.replaceAll("\t", " ");
                     noteStr = noteStr.replaceAll("\r\n", " ");
                     noteStr = noteStr.replaceAll("\r", " ");
-                    noteStr = noteStr.replaceAll("\n", " ");                    
+                    noteStr = noteStr.replaceAll("\n", " ");
                     noteStr = noteStr.replaceAll(" +", " ");
-                    
-                    if(noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR)==2){
+
+                    if (noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR) == 2) {
                         String langCode = noteStr.substring(0, noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR)).toUpperCase();
-                        noteStr=noteStr.substring(3);
+                        noteStr = noteStr.substring(3);
                         if (noteStr != null && noteStr.trim().length() > 0) {
                             noteStr = noteStr.trim();
                             logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
@@ -715,54 +701,52 @@ public class WriteFileData {
                             logFileWriter.append("</skos:scopeNote>\r\n");
                         }
                     }
-                    
 
                 }
             }
 
             /*
-            if (scopeNoteTranslations != null && scopeNoteTranslations.size() > 0) {
-                String scopeNoteVal = scopeNoteTranslations.get(0);
-                scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
-                scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
-                scopeNoteVal = scopeNoteVal.replaceAll("\r\n", "\n");
-                scopeNoteVal = scopeNoteVal.replaceAll(" \n", "\n");
+             if (scopeNoteTranslations != null && scopeNoteTranslations.size() > 0) {
+             String scopeNoteVal = scopeNoteTranslations.get(0);
+             scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
+             scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
+             scopeNoteVal = scopeNoteVal.replaceAll("\r\n", "\n");
+             scopeNoteVal = scopeNoteVal.replaceAll(" \n", "\n");
 
-                String[] parts = scopeNoteVal.split("\n");
+             String[] parts = scopeNoteVal.split("\n");
 
-                if (parts != null) {
-                    String langCode = "";
-                    String value = "";
-                    for (int p = 0; p < parts.length; p++) {
-                        String partStr = parts[p];
-                        if (partStr.matches("[A-Z\\-]{2,6}" + Parameters.TRANSLATION_SEPERATOR)) {
+             if (parts != null) {
+             String langCode = "";
+             String value = "";
+             for (int p = 0; p < parts.length; p++) {
+             String partStr = parts[p];
+             if (partStr.matches("[A-Z\\-]{2,6}" + Parameters.TRANSLATION_SEPERATOR)) {
 
-                            //check if langcode and value are not empty.
-                            if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
-                                logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
-                                logFileWriter.append(Utilities.escapeXML(value));
-                                logFileWriter.append("</skos:scopeNote>\r\n");
-                            }
-                            langCode = partStr.replaceFirst(Parameters.TRANSLATION_SEPERATOR, "");
-                            value = "";
-                        } else {
-                            if (value != null && value.length() > 0) {
-                                value += "\n" + partStr;
-                            } else {
-                                value = partStr;
-                            }
-                        }
-                    }
+             //check if langcode and value are not empty.
+             if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
+             logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
+             logFileWriter.append(Utilities.escapeXML(value));
+             logFileWriter.append("</skos:scopeNote>\r\n");
+             }
+             langCode = partStr.replaceFirst(Parameters.TRANSLATION_SEPERATOR, "");
+             value = "";
+             } else {
+             if (value != null && value.length() > 0) {
+             value += "\n" + partStr;
+             } else {
+             value = partStr;
+             }
+             }
+             }
 
-                    //check if langcode and value are not empty.
-                    if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
-                        logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
-                        logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</skos:scopeNote>\r\n");
-                    }
-                }
-            }*/
-
+             //check if langcode and value are not empty.
+             if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
+             logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
+             logFileWriter.append(Utilities.escapeXML(value));
+             logFileWriter.append("</skos:scopeNote>\r\n");
+             }
+             }
+             }*/
             if (historicalNotes != null && historicalNotes.size() > 0) {
                 String historicalNoteVal = historicalNotes.get(0);
                 if (historicalNoteVal.length() > 0) {
@@ -839,50 +823,46 @@ public class WriteFileData {
         Vector<String> facetFilter = new Vector<String>();
         Vector<String> termsFilter = new Vector<String>();
 
-        if(FacetsFilter!=null && FacetsFilter.size()>0){
+        if (FacetsFilter != null && FacetsFilter.size() > 0) {
             facetFilter.addAll(FacetsFilter);
         }
 
-        if(TermsFilter!=null && TermsFilter.size()>0){
+        if (TermsFilter != null && TermsFilter.size() > 0) {
             termsFilter.addAll(TermsFilter);
         }
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             Vector<String> allHierarchies = new Vector<String>();
-            if(termsFilter.size()==0){
+            if (termsFilter.size() == 0) {
                 allHierarchies.addAll(hierarchyFacets.keySet());
-            }
-            else{
+            } else {
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
-                while(hierEnum.hasMoreElements()){
+                while (hierEnum.hasMoreElements()) {
                     String hierName = hierEnum.nextElement();
-                    if(termsFilter.contains(hierName) && allHierarchies.contains(hierName)==false){
+                    if (termsFilter.contains(hierName) && allHierarchies.contains(hierName) == false) {
                         allHierarchies.add(hierName);
                     }
                 }
             }
             Collections.sort(allHierarchies);
-
 
             if (allHierarchies.size() > 0) {
                 for (int i = 0; i < allHierarchies.size(); i++) {
                     String hierarchyName = allHierarchies.get(i);
-                    WriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, hierarchyName, true, termsInfo, XMLguideTermsRelations,termsFilter);
+                    WriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, hierarchyName, true, termsInfo, XMLguideTermsRelations, termsFilter);
                 }
             }
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-
             Vector<String> allHierarchies = new Vector<String>();
-            if(termsFilter.size()==0){
+            if (termsFilter.size() == 0) {
                 allHierarchies.addAll(hierarchyFacets.keySet());
-            }
-            else{
+            } else {
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
-                while(hierEnum.hasMoreElements()){
+                while (hierEnum.hasMoreElements()) {
                     String hierName = hierEnum.nextElement();
-                    if(termsFilter.contains(hierName) && allHierarchies.contains(hierName)==false){
+                    if (termsFilter.contains(hierName) && allHierarchies.contains(hierName) == false) {
                         allHierarchies.add(hierName);
                     }
                 }
@@ -890,12 +870,10 @@ public class WriteFileData {
 
             Collections.sort(allHierarchies);
 
-
             if (allHierarchies.size() > 0) {
 
                 //logFileWriter.append("\r\n\t<hierarchies>\r\n");
-                logFileWriter.append("\r\n\t<hierarchies count=\""+allHierarchies.size()+"\">\r\n");
-
+                logFileWriter.append("\r\n\t<hierarchies count=\"" + allHierarchies.size() + "\">\r\n");
 
                 for (int i = 0; i < allHierarchies.size(); i++) {
                     String hierarchyName = allHierarchies.get(i);
@@ -911,7 +889,7 @@ public class WriteFileData {
                     logFileWriter.append("</name>\r\n");
                     for (int k = 0; k < facets.size(); k++) {
                         String facetName = facets.get(k);
-                        if(facetFilter.size()>0 && facetFilter.contains(facetName)==false){
+                        if (facetFilter.size() > 0 && facetFilter.contains(facetName) == false) {
                             continue;
                         }
                         if (facetName != null && facetName.length() > 0) {
@@ -929,34 +907,31 @@ public class WriteFileData {
 
             }
 
-
-
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Finished Exporting Hierarchies");
         logFileWriter.flush();
     }
 
-    
     public void WriteSources(OutputStreamWriter logFileWriter, String exportScheme,
             Hashtable<String, String> XMLsources) throws IOException {
-        if(exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)){
+        if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             Utilities u = new Utilities();
-            if(XMLsources.size()>0){
-                logFileWriter.append("\r\n\t<sources count=\""+XMLsources.size()+"\">");
+            if (XMLsources.size() > 0) {
+                logFileWriter.append("\r\n\t<sources count=\"" + XMLsources.size() + "\">");
                 Vector<String> sourceNames = new Vector<String>(XMLsources.keySet());
                 Collections.sort(sourceNames);
 
-                for(int k=0;k<sourceNames.size();k++){
+                for (int k = 0; k < sourceNames.size(); k++) {
                     String targetSource = sourceNames.get(k);
                     String targetSourceNote = XMLsources.get(targetSource);
                     //logFileWriter.append("\r\n\t\t<source index=\""+(k+1)+"\">");
                     logFileWriter.append("\r\n\t\t<source>");
-                    logFileWriter.append("\r\n\t\t\t<name>" + u.escapeXML(targetSource)+"</name>");
-                    if(targetSourceNote!=null && targetSourceNote.trim().length()>0){
+                    logFileWriter.append("\r\n\t\t\t<name>" + u.escapeXML(targetSource) + "</name>");
+                    if (targetSourceNote != null && targetSourceNote.trim().length() > 0) {
                         targetSourceNote = targetSourceNote.replaceAll("\r\n", " ");
                         targetSourceNote = targetSourceNote.replaceAll("\r", " ");
                         targetSourceNote = targetSourceNote.replaceAll("\n", " ");
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.source_note_kwd+">" + u.escapeXML(targetSourceNote)+"</"+ConstantParameters.source_note_kwd+">");
+                        logFileWriter.append("\r\n\t\t\t<" + ConstantParameters.source_note_kwd + ">" + u.escapeXML(targetSourceNote) + "</" + ConstantParameters.source_note_kwd + ">");
                     }
                     logFileWriter.append("\r\n\t\t</source>");
                 }
@@ -965,6 +940,7 @@ public class WriteFileData {
         }
 
     }
+
     public void WriteTerms(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
             Hashtable<String, Vector<String>> hierarchyFacets, Hashtable<String, NodeInfoStringContainer> termsInfo,
             Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
@@ -974,9 +950,7 @@ public class WriteFileData {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Vector<String> termsFilter = new Vector<String>();
 
-
-
-        if(TermsFilter!=null && TermsFilter.size()>0){
+        if (TermsFilter != null && TermsFilter.size() > 0) {
             termsFilter.addAll(TermsFilter);
         }
 
@@ -992,20 +966,18 @@ public class WriteFileData {
 
             Collections.sort(allTerms);
 
-
             if (allTerms.size() > 0) {
                 for (int i = 0; i < allTerms.size(); i++) {
                     String termName = allTerms.get(i);
-                    
-                    if(termsFilter.size()>0 && termsFilter.contains(termName)==false){
+
+                    if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                         continue;
                     }
-                    WriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, termName, false, termsInfo, XMLguideTermsRelations,termsFilter);
+                    WriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, termName, false, termsInfo, XMLguideTermsRelations, termsFilter);
                 }
 
             }
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
-
 
             DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
@@ -1016,22 +988,19 @@ public class WriteFileData {
                 ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd};
 
             Vector<String> allTerms = new Vector<String>();
-            if(termsFilter.size()==0){
+            if (termsFilter.size() == 0) {
                 allTerms.addAll(termsInfo.keySet());
-            }
-            else{
+            } else {
                 Enumeration<String> termsEnum = termsInfo.keys();
-                while(termsEnum.hasMoreElements()){
+                while (termsEnum.hasMoreElements()) {
                     String termName = termsEnum.nextElement();
-                    if(termsFilter.contains(termName)){
+                    if (termsFilter.contains(termName)) {
                         allTerms.add(termName);
                     }
                 }
             }
 
-
             Collections.sort(allTerms);
-
 
             Vector<String> specialCategories = new Vector<String>();
 
@@ -1047,10 +1016,9 @@ public class WriteFileData {
 
             if (allTerms.size() > 0) {
                 //logFileWriter.append("\r\n\t<terms>\r\n");
-                logFileWriter.append("\r\n\t<terms count=\""+allTerms.size()+"\">\r\n");
+                logFileWriter.append("\r\n\t<terms count=\"" + allTerms.size() + "\">\r\n");
                 for (int i = 0; i < allTerms.size(); i++) {
                     String termName = allTerms.get(i);
-
 
                     NodeInfoStringContainer targetTermInfo = termsInfo.get(termName);
 
@@ -1065,44 +1033,42 @@ public class WriteFileData {
                             values.addAll(targetTermInfo.descriptorInfo.get(category));
                         }
 
-
                         if (specialCategories.contains(category) == false) {
                             Collections.sort(values);
 
                             for (int k = 0; k < values.size(); k++) {
                                 logFileWriter.append("\t\t\t<" + category + ">");
-                                if(category.equals(ConstantParameters.primary_found_in_kwd) || category.equals(ConstantParameters.translations_found_in_kwd)){
-                                    logFileWriter.append(Utilities.escapeXML(values.get(k)));                                    
-                                }
-                                else{
+                                if (category.equals(ConstantParameters.primary_found_in_kwd) || category.equals(ConstantParameters.translations_found_in_kwd)) {
+                                    logFileWriter.append(Utilities.escapeXML(values.get(k)));
+                                } else {
                                     logFileWriter.append(Utilities.escapeXML(values.get(k)));
                                 }
                                 logFileWriter.append("</" + category + ">\r\n");
                             }
                         } else {
-                            if(category.equals(ConstantParameters.bt_kwd)|| category.equals(ConstantParameters.rt_kwd)){
+                            if (category.equals(ConstantParameters.bt_kwd) || category.equals(ConstantParameters.rt_kwd)) {
                                 Collections.sort(values);
                                 for (int k = 0; k < values.size(); k++) {
                                     String val = values.get(k);
-                                    if(ConstantParameters.filterBts_Nts_Rts){
-                                        if(termsInfo.containsKey(val)==false){
+                                    if (ConstantParameters.filterBts_Nts_Rts) {
+                                        if (termsInfo.containsKey(val) == false) {
                                             continue;
                                         }
                                     }
-                                    if(termsFilter.size()>0 && termsFilter.contains(val)==false){
+                                    if (termsFilter.size() > 0 && termsFilter.contains(val) == false) {
                                         continue;
                                     }
                                     logFileWriter.append("\t\t\t<" + category + ">");
                                     logFileWriter.append(Utilities.escapeXML(val));
                                     logFileWriter.append("</" + category + ">\r\n");
                                 }
-                            }else if(category.equals(ConstantParameters.translations_scope_note_kwd)){
+                            } else if (category.equals(ConstantParameters.translations_scope_note_kwd)) {
 
-                                for(int k=0; k< values.size();k++){
+                                for (int k = 0; k < values.size(); k++) {
                                     String noteStr = values.get(k);
-                                    if(noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR)==2){
+                                    if (noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR) == 2) {
                                         String langCode = noteStr.substring(0, noteStr.indexOf(Parameters.TRANSLATION_SEPERATOR)).toUpperCase();
-                                        noteStr=noteStr.substring(3);
+                                        noteStr = noteStr.substring(3);
                                         if (noteStr != null && noteStr.trim().length() > 0) {
                                             noteStr = noteStr.trim();
                                             logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + langCode.toUpperCase() + "\">");
@@ -1112,9 +1078,8 @@ public class WriteFileData {
                                     }
 
                                 }
-                                
-                            }
-                            else if(category.equals(ConstantParameters.scope_note_kwd)
+
+                            } else if (category.equals(ConstantParameters.scope_note_kwd)
                                     || category.equals(ConstantParameters.historical_note_kwd)) {
                                 if (values != null && values.size() > 0) {
                                     String noteStr = values.get(0);
@@ -1173,9 +1138,6 @@ public class WriteFileData {
                                         guidTermNts.addAll(tempNts);
                                     }
                                 }
-
-
-
 
                                 //Narrower
                                 Vector<SortItem> finalGuideTerms = new Vector<SortItem>();
@@ -1239,12 +1201,12 @@ public class WriteFileData {
                                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                                             String ntStr = ntsWithThisGuideTerm.get(k);
 
-                                            if(ConstantParameters.filterBts_Nts_Rts){
-                                                if(termsInfo.containsKey(ntStr)==false){
+                                            if (ConstantParameters.filterBts_Nts_Rts) {
+                                                if (termsInfo.containsKey(ntStr) == false) {
                                                     continue;
                                                 }
                                             }
-                                            if(termsFilter.size()>0 && termsFilter.contains(ntStr)==false){
+                                            if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
                                                 continue;
                                             }
                                             logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"\">");
@@ -1256,18 +1218,17 @@ public class WriteFileData {
 
                                         if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
 
-
                                             for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                                                 String ntStr = ntsWithThisGuideTerm.get(k);
 
-                                                if(ConstantParameters.filterBts_Nts_Rts){
-                                                    if(termsInfo.containsKey(ntStr)==false){
+                                                if (ConstantParameters.filterBts_Nts_Rts) {
+                                                    if (termsInfo.containsKey(ntStr) == false) {
                                                         continue;
                                                     }
                                                 }
-                                                if(termsFilter.size()>0 && termsFilter.contains(ntStr)==false){
-                                                     continue;
-                                                  }
+                                                if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
+                                                    continue;
+                                                }
                                                 logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + targetGuideTerm + "\">");
                                                 logFileWriter.append(Utilities.escapeXML(ntStr));
                                                 logFileWriter.append("</" + category + ">\r\n");
@@ -1289,7 +1250,6 @@ public class WriteFileData {
                 logFileWriter.append("\t</terms>\r\n");
             }
 
-
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Finished Exporting Terms");
         logFileWriter.flush();
@@ -1309,45 +1269,40 @@ public class WriteFileData {
         logFileWriter.close();
     }
 
-
-    public static void formatXMLFile(String logFileNamePath){
+    public static void formatXMLFile(String logFileNamePath) {
         //format xml
         try {
-            StringBuffer fileData = new StringBuffer(1000);
-            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(logFileNamePath));
-            char[] buf = new char[1024];
-            int numRead=0;
-            while((numRead=reader.read(buf)) != -1){
-                String readData = String.valueOf(buf, 0, numRead);
-                fileData.append(readData);
-                buf = new char[1024];
-            }
-            reader.close();
-            String input =  fileData.toString();
 
-            Source xmlInput = new StreamSource(new StringReader(input));
-            StringWriter stringWriter = new StringWriter();
-            StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute("indent-number", 4);
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(xmlInput, xmlOutput);
-            String output = xmlOutput.getWriter().toString();
-
-            if(Parameters.DEBUG){
-                Utils.StaticClass.webAppSystemOutPrintln(output);
+            DocumentBuilderFactory dbFactory;
+            DocumentBuilder dBuilder;
+            Document original = null;
+            try {
+                dbFactory = DocumentBuilderFactory.newInstance();
+                dBuilder = dbFactory.newDocumentBuilder();
+                original = dBuilder.parse(new InputSource(new InputStreamReader(new FileInputStream(logFileNamePath), "UTF-8")));
+            } catch (SAXException | IOException | ParserConfigurationException e) {
+                e.printStackTrace();
             }
+            DOMSource inSource = new DOMSource(original);
+
             FileOutputStream fout = new FileOutputStream(logFileNamePath);
             OutputStream bout = new BufferedOutputStream(fout);
             OutputStreamWriter logFileWriter = new OutputStreamWriter(bout, "UTF-8");
 
-            logFileWriter.append(output);
+            StreamResult xmlOutput = new StreamResult(logFileWriter);
+
+            TransformerFactory tf = TransformerFactory.newInstance();
+            //tf.setAttribute("indent-number", 4);
+
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(inSource, xmlOutput);
+
             logFileWriter.flush();
-
-
-            //Utils.StaticClass.webAppSystemOutPrintln(xmlOutput.getWriter().toString());
-
 
         } catch (Exception e) {
             Utils.StaticClass.handleException(e);

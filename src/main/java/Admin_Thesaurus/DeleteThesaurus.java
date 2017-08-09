@@ -164,7 +164,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
 
             if (serverStarted == false) {
                 String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
-                //CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + "\\" + common_utils.DatabaseBatFileName);
+                //CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
                 common_utils.RestartDatabaseIfNeeded();
             }
             // wait until server is finally started

@@ -2628,4 +2628,14 @@ public class Utilities {
 
         return returnArray;
     }
+
+    public static String getMessagesXml() {
+        return Utilities.getTranslationsXml("Messages.xml");
+    }
+
+    public static String getTranslationsXml(String fileName) {
+        return Parameters.BaseRealPath + File.separator + "translations" + File.separator + fileName;
+    }
 }
+
+

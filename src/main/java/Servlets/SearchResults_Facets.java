@@ -49,6 +49,8 @@ import Utils.StringLocaleComparator;
 
 import XMLHandling.WriteFileData;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -230,9 +232,10 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                 String webAppSaveResults_temporary_filesAbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder);
                 String time = Utilities.GetNow();
                 String Save_Results_file_name = "SearchResults_Facets_" + time;
-                String webAppSaveResults_AbsolutePath = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                String webAppSaveResults_AbsolutePathString = request.getSession().getServletContext().getRealPath("/"+webAppSaveResults_Folder);
+                Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathString);
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                String XSL = webAppSaveResults_AbsolutePath.concat("/SaveAll_Facets.xsl");
+                String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Facets.xsl").toString();
                 if(answerType != null && answerType.compareTo("XML")==0){
                     pathToSaveScriptingAndLocale = null;
                 }
@@ -247,16 +250,18 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                 if(answerType != null && answerType.compareTo("XML")==0){
                     if(Parameters.FormatXML){
 
-                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml");
+                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
 
                     }
                     out.println(Save_Results_file_name.concat(".xml"));
                 }
                 else{
-                    String arg1 = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
+                    String arg1 = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
                     String arg2 = XSL;
-                    String arg3 = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.concat(".html");
+                    String arg3 = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html");
                     u.XmlFileTransform(arg1, arg2, arg3);
+                    
+                    //Send HTML relative url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
                 
                 }
@@ -771,7 +776,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
         DBGeneral dbGen = new DBGeneral();
         
 
-        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
+        String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
 
         OutputStreamWriter out = null;
         try {

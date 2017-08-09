@@ -71,7 +71,7 @@ class  ExtractUtility
             ZipEntry zipentry = zipinputstream.getNextEntry();
             while (zipentry != null){ 
                 //Utils.StaticClass.webAppSystemOutPrintln(zipentry.getName());
-                if(zipentry.getName().endsWith("\\")){
+                if(zipentry.getName().endsWith(File.separator)){
                     directories.add(zipentry.getName().replace("\\","/"));
                 }
                 zipinputstream.closeEntry();
@@ -99,7 +99,7 @@ class  ExtractUtility
             while (zipentry != null) { 
                 //for each entry to be extracted
                 String entryName = zipentry.getName();
-                if(entryName.endsWith("\\")){
+                if(entryName.endsWith(File.separator)){
                     zipinputstream.closeEntry();
                     zipentry = zipinputstream.getNextEntry();
                     continue;
