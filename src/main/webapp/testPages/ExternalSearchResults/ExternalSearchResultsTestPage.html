@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+Copyright 2015 Institute of Computer Science,
+               Foundation for Research and Technology - Hellas.
+
+Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+You may obtain a copy of the Licence at:
+
+     http://ec.europa.eu/idabc/eupl
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations
+under the Licence.
+
+=============================================================================
+Contact: 
+=============================================================================
+Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+    Tel: +30-2810-391632
+    Fax: +30-2810-391638
+ E-mail: isl@ics.forth.gr
+WebSite: http://www.ics.forth.gr/isl/cci.html
+
+=============================================================================
+Authors: 
+=============================================================================
+Elias Tzortzakakis <tzortzak@ics.forth.gr>
+
+This file is part of the THEMAS system.
+-->
+<html>
+    <head>
+        <title>Get XML Search Results Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
+        <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"/>
+        <script src="./js/jsparams.js"></script>
+        <script src="./js/scripts.js"></script>        
+    </head>
+    <body>
+        <div>
+            <input type="text" name="searchParameter" id="SearchThemasParam"/>
+            <button onclick="searchTHEMAS();">Search</button>
+        </div>
+        
+        <div id="ShowResultsDiv" >
+            <h2>Results:</h2>
+            <hr/>
+            <table id="resultsDiv" class="display" width="100%"></table>
+            
+            <div id="div1" ></div>
+        </div>
+    </body>
+</html>

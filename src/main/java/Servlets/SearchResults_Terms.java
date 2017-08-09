@@ -61,7 +61,13 @@ import neo4j_sisapi.tmsapi.TMSAPIClass;
 public class SearchResults_Terms extends ApplicationBasicServlet {
 
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        String answerType = request.getParameter("answerType");
+        if(answerType.compareTo("XMLSTREAM")==0){
+            response.setContentType("text/xml;charset=UTF-8");
+        }
+        else{
+            response.setContentType("text/html;charset=UTF-8");
+        }
         request.setCharacterEncoding("UTF-8");
 
         if (SystemIsLockedForAdministrativeJobs(request, response)) {
@@ -101,7 +107,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             String ListStepStr = getServletContext().getInitParameter("ListStep");
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
-            String answerType = request.getParameter("answerType");
+            
             Locale targetLocale = new Locale(language, country);
 
             SearchCriteria searchCriteria;
@@ -349,7 +355,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
                                         + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
-                if (answerType != null && answerType.compareTo("XML") == 0) {
+                if (answerType != null && ( answerType.compareTo("XML") == 0 ||answerType.compareTo("XMLSTREAM") == 0 )) {
                     //nothing
                 } else {
                     startXML += "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>";
@@ -369,13 +375,25 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                 
-                if (answerType != null && answerType.compareTo("XML") == 0) {
+                if (answerType != null && (answerType.compareTo("XML") == 0 ||answerType.compareTo("XMLSTREAM") == 0 ) ) {
                     if (Parameters.FormatXML) {
-
                         WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
-
                     }
-                    out.println(Save_Results_file_name.concat(".xml"));
+                    if(answerType.compareTo("XMLSTREAM")==0){
+                        //out.println("/Save_Results_Displays/Save_Results_temporary_files/"+Save_Results_file_name.concat(".xml"));
+                        //response.setContentLength(getContentLength());
+                        out.println(Utils.ConstantParameters.xmlHeader+"\n<results>\n" +
+"<term index=\"1\">\n" +
+"<descriptor id=\"8270\">70mm</descriptor>\n" +
+"</term>\n" +
+"<term index=\"2\">\n" +
+"<descriptor id=\"9088\">78 rpm records</descriptor>\n" +
+"</term>\n" +
+"</results>");
+                    }
+                    else{
+                        out.println(Save_Results_file_name.concat(".xml"));
+                    }
                 } else {
                     //transform XML to HTML
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
@@ -495,5 +513,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+    }
+
+    private InputStream getInputStream() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
