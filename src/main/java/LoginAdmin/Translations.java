@@ -112,7 +112,7 @@ public class Translations extends ApplicationBasicServlet {
             sessionInstance.readSession(session, request);
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null || SessionUserInfo.userGroup.equals("ADMINISTRATOR")==false) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName()) || SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Administrator)==false) {
                 out.println("Session Invalidate");
                 return;
             }

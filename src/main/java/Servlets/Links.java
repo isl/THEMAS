@@ -110,7 +110,7 @@ public class Links extends ApplicationBasicServlet {
                         return;
                     }
                 }
-            } else if (SessionUserInfo.userGroup.equals("READER") == true // reader case
+            } else if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == true // reader case
                     // and (tab == NULL OR NOT one of the Search tabs)
                     && (tab == null ||
                     (tab.equals("SearchCriteria") == false &&

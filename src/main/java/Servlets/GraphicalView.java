@@ -87,6 +87,12 @@ public class GraphicalView extends ApplicationBasicServlet {
             
             
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                out.println("Session Invalidate");                
+                response.sendRedirect("Index");                
+                return;
+            }
+            
             String TargetKind = request.getParameter("TargetKind");
             String CalledBySVGgraph = u.getDecodedParameterValue(request.getParameter("CalledBySVGgraph"));
             String TargetName = u.getDecodedParameterValue(request.getParameter("TargetName"));

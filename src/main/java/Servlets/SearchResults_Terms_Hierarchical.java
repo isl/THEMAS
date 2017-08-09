@@ -80,7 +80,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 //response.sendRedirect("Index");
                 return;

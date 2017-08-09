@@ -80,6 +80,11 @@ public class FixDB extends ApplicationBasicServlet {
         
         PrintWriter out = response.getWriter();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+            out.println("Session Invalidate");
+            response.sendRedirect("Index");
+            return;
+        }
         try{
 
             StringBuffer xml = new StringBuffer();

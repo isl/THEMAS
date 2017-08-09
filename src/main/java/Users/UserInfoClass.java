@@ -68,7 +68,7 @@ public class UserInfoClass {
     
     // current session user info
     public String selectedThesaurus;
-    public String userGroup; // "READER" or "LIBRARY" or "THESAURUS_TEAM" or "THESAURUS_COMMITTEE" or "ADMINISTRATOR"
+    public String userGroup; // "READER" or "LIBRARY" or "THESAURUS_TEAM" or "THESAURUS_COMMITTEE" or "ADMINISTRATOR" or "EXTERNALREADER"
     // SVG graphs configuration
     public String SVG_CategoriesFrom_for_traverse, SVG_CategoriesNames_for_traverse;
     // Alphabetical display configuration
@@ -76,6 +76,96 @@ public class UserInfoClass {
     public String[] alphabetical_Links;
 
     public Vector<Vector<String>> CLASS_SET_INCLUDE;
+    
+    private static ArrayList<String> readerPermittedServletNames;
+    
+    public static void initializeAccessControlStructures(Vector<String> configValues){
+        
+        //comment out not existing servlets and servelts where access is allowed
+        //leave only servlets where access is not allowed
+        readerPermittedServletNames = new ArrayList<String>(configValues);
+        /*
+        readerPermittedServletNames = new ArrayList<>(Arrays.asList(new String[]
+            {
+//Admin_Thesaurus.Admin_Thesaurus.class.getName(),
+//Admin_Thesaurus.CopyThesaurus.class.getName(),
+//Admin_Thesaurus.CreateThesaurus.class.getName(),
+//Admin_Thesaurus.DeleteThesaurus.class.getName(),
+//Admin_Thesaurus.EditGuideTerms.class.getName(),
+//Admin_Thesaurus.ExportData.class.getName(),
+//Admin_Thesaurus.FixCurrentData.class.getName(),
+//Admin_Thesaurus.ImportData.class.getName(),
+//Admin_Thesaurus.MergeThesauri.class.getName(),
+//DB_Admin.CreateDBbackup.class.getName(),
+//DB_Admin.DBadmin.class.getName(),
+//DB_Admin.FixDB.class.getName(),
+//DB_Admin.RestoreDBbackup.class.getName(),
+            
+//not existing DisplayGraph.class.getName(),
+//not existing ExportFacets.class.getName(),
+            
+//LoginAdmin.FixAdminData.class.getName(),
+//LoginAdmin.HiddenActions.class.getName(),
+//LoginAdmin.Lock_UnlockSystem.class.getName(),
+LoginAdmin.LoginAdmin.class.getName(),
+//LoginAdmin.Start_StopNeo4j.class.getName(),
+//LoginAdmin.StartExportImportToXML.class.getName(),
+//LoginAdmin.SystemConfigurations.class.getName(),
+//LoginAdmin.Translations.class.getName(),
+            
+//not existing Logout.class.getName(),
+//not existing ProduceSVGGraphServlet.class.getName(),
+            
+Servlets.AjaxDBQuery.class.getName(),
+Servlets.CardOf_Facet.class.getName(),
+Servlets.CardOf_Hierarchy.class.getName(),
+Servlets.CardOf_Source.class.getName(),
+Servlets.CardOf_Term.class.getName(),
+Servlets.DownloadFile.class.getName(),
+//Servlets.EditActions_Facet.class.getName(),
+//Servlets.EditActions_Hierarchy.class.getName(),
+//Servlets.EditActions_Source.class.getName(),
+//Servlets.EditActions_Term.class.getName(),
+//Servlets.EditDisplays_Facet.class.getName(),
+//Servlets.EditDisplays_Hierarchy.class.getName(),
+//Servlets.EditDisplays_Source.class.getName(),
+//Servlets.EditDisplays_Term.class.getName(),
+//Servlets.EditDisplays_User.class.getName(),
+Servlets.GraphicalView.class.getName(),
+Servlets.hierarchysTermsShortcuts.class.getName(),
+Servlets.Index.class.getName(),
+Servlets.Links.class.getName(),
+//Servlets.MoveToHierarchy.class.getName(),
+//Servlets.MoveToHierarchyResults.class.getName(),
+
+//not existing Servlets.NewServlet.class.getName(),
+
+Servlets.nicajax.class.getName(),
+//Servlets.Preview_Available_Facets.class.getName(),
+//Servlets.Rename_Facet.class.getName(),
+//Servlets.Rename_Hierarchy.class.getName(),
+//Servlets.Rename_Term.class.getName(),
+//Servlets.RenameInfo_Term.class.getName(),
+Servlets.SearchResults_Facets.class.getName(),
+Servlets.SearchResults_Hierarchies.class.getName(),
+Servlets.SearchResults_Sources.class.getName(),
+Servlets.SearchResults_Terms.class.getName(),
+Servlets.SearchResults_Terms_Alphabetical.class.getName(),
+Servlets.SearchResults_Terms_Hierarchical.class.getName(),
+Servlets.SearchResults_Terms_Systematic.class.getName(),
+//Servlets.SearchResults_Users.class.getName(),
+Servlets.Statistics.class.getName(),
+Servlets.SystemIsUnderMaintenance.class.getName(),
+//Servlets.UndoRenameResults.class.getName(),
+Servlets.WaitForDownload.class.getName(),
+
+//not existing test.class.getName(),
+
+
+            }));
+        */
+        
+    }
 
     /*---------------------------------------------------------------------
                                     UserInfoClass()
@@ -85,6 +175,7 @@ public class UserInfoClass {
         password = "";
         thesaurusNames = new  Vector<String>();
         thesaurusGroups = new Vector<String>();
+        
         description = "";
         selectedThesaurus = "";
         userGroup = "";
@@ -132,7 +223,48 @@ public class UserInfoClass {
             CLASS_SET_INCLUDE.addAll(refUserInfo.CLASS_SET_INCLUDE);
         }
     }
+    
+    private String getThesaurusGroupForSpecificThesaurus(String thesName){
         
+        if(this.thesaurusNames.contains(thesName)){
+            int index = this.thesaurusNames.indexOf(thesName);
+            if(index >=0 && index < this.thesaurusGroups.size()){
+                return this.thesaurusGroups.get(index);
+            }
+        }
+        else if (this.thesaurusGroups.contains(Utils.ConstantParameters.Group_Administrator)){
+            return Utils.ConstantParameters.Group_Administrator;
+        }
+        return "";
+    }
+    
+    
+    public boolean servletAccessControl(String className){
+        boolean returnVal = true;
+        
+        String currentUserGroup = this.userGroup;//getThesaurusGroupForSpecificThesaurus(this.selectedThesaurus);
+        
+        if(currentUserGroup!=null){
+            if(currentUserGroup.equals(Utils.ConstantParameters.Group_Reader)){
+                if(readerPermittedServletNames.contains(className)){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            else if(currentUserGroup.equals(Utils.ConstantParameters.Group_External_Reader)){
+                if(readerPermittedServletNames.contains(className)){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        
+        return returnVal;
+    }
 }
 
 

@@ -86,7 +86,7 @@
                             <td colspan="2" align="right" width="100%">
                                 <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
                                 <!-- Tropopoihsh -->
-                                <xsl:if test="$THEMASUserInfo_userGroup != 'READER' and $THEMASUserInfo_userGroup != 'LIBRARY'">
+                                <xsl:if test="$THEMASUserInfo_userGroup != 'READER' and $THEMASUserInfo_userGroup != 'EXTERNALREADER' and $THEMASUserInfo_userGroup != 'LIBRARY'">
                                     <xsl:variable name="Slash">\</xsl:variable>
                                     <xsl:variable name="SlashJS">\\</xsl:variable>
                                     <xsl:variable name="Apos">'</xsl:variable>

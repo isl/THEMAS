@@ -89,6 +89,12 @@ public class CreateThesaurus extends ApplicationBasicServlet {
         try {
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
 
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                out.println("Session Invalidate");
+                response.sendRedirect("Index");
+                return;
+            }
+            
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);

@@ -88,7 +88,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 //response.sendRedirect("Index");
                 return;
@@ -129,7 +129,10 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             //CMValue cmv = new CMValue();
 
 
-            StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchy));
+            StringObject hierarchyObj = null;
+            if(hierarchy!=null && hierarchy.length()>0){
+                hierarchyObj = new StringObject(prefix_class.concat(hierarchy));
+            }
 
             //save ALL code                
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;

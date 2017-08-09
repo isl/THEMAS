@@ -77,7 +77,7 @@ public class HiddenActions extends HttpServlet {
             String selectedThesaurusNAME = "";    
 
             // in case of expired session
-            UserInfoClass TMSUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             if (sessionInstance.getAttribute("SessionUser") == null ) {
                 // Links servlet NOT called by Login Page
                 if ((username == null) || (password == null)) {
@@ -96,15 +96,19 @@ public class HiddenActions extends HttpServlet {
                         return;
                     }
                     else if (loginSucceded == true) { // login succeded but user is not ADMINISTRATOR
-                        TMSUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-                        if (TMSUserInfo.userGroup.equals("ADMINISTRATOR") == false) {
+                        SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+                        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Administrator) == false) {
                             session.setAttribute("SessionUser", null);
                             response.sendRedirect("LoginAdmin");
                             return;                        
                         }
                     }
                 } 
-            }        
+            }
+            else if(!SessionUserInfo.servletAccessControl(this.getClass().getName())){
+                response.sendRedirect("LoginAdmin");
+                return;
+            }
             // ATTENTION: Parameters.initParams() must be called after tmsUsers.Authenticate()
             Parameters.initParams(getServletContext());
 

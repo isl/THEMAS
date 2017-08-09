@@ -161,12 +161,12 @@ public class CommonUtilsDBadmin {
     }
 
     /*----------------------------------------------------------------------
-    DataBaseExists()
+    DataBaseExists() ABANDONED
     ------------------------------------------------------------------------
     FUNCTION: checks if SIS data base exists
     CALLED BY: RestartDatabaseIfNeeded() so as to call StartDatabase() or StartWithEmptyDataBase() 
     OUTPUT: true in case DB exists, false otherwise
-    ------------------------------------------------------------------------*/
+    ------------------------------------------------------------------------
     public boolean DataBaseExists() {
         File telos_db_obj = new File(DBPath + File.separator + "telos_db.obj");
         if (telos_db_obj.isFile() == true) {
@@ -174,6 +174,7 @@ public class CommonUtilsDBadmin {
         }
         return false;
     }
+    */
 
     /*----------------------------------------------------------------------
     DataBaseIsInitialized()

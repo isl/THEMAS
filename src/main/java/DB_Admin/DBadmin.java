@@ -92,7 +92,11 @@ public class DBadmin extends ApplicationBasicServlet {
             common_utils = new CommonUtilsDBadmin(config);// create the common-utils class        
             CurrentShownDIV = request.getParameter("DIV");// get servlet parameters    
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                out.println("Session Invalidate");
+                response.sendRedirect("Index");
+                return;
+            }
             StringBuffer xml = new StringBuffer();
 
             QClass Q = new QClass();            

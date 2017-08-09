@@ -81,8 +81,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             Utilities u = new Utilities();
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
-                out.println("Session Invalidate");
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                out.println("Session Invalidate");                
                 return;
             }
 
@@ -102,7 +103,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             String targetEditField = u.getDecodedParameterValue(request.getParameter("targetEditField"));
 
             // get the set of thesaurus owned by current user
-            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            //UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             Vector<String> thesaurusVector = new Vector<String>();
             UsersClass tmsUsers = new UsersClass();
             thesaurusVector = tmsUsers.GetThesaurusSetOfTMSUser(request, SessionUserInfo.name);

@@ -72,13 +72,14 @@ public class UndoRenameResults extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
         try{
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 out.println("Session Invalidate");
                 response.sendRedirect("Index");
                 return;
             }
 
-            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            
             DBGeneral dbGen = new DBGeneral();
             // open SIS and TMS connection
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();

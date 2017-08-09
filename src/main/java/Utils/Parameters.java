@@ -175,6 +175,16 @@ public class Parameters {
                 }
                 
                 UnclassifiedTermsLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsHierarchyName[1]", document);
+                
+                Vector<String> permittedClassesFromXml = new Vector();
+                NodeList classesPermitted = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document,XPathConstants.NODESET);
+                if(classesPermitted!=null){
+                    int howmanyClasses = classesPermitted.getLength();
+                    for(int i=0; i< howmanyClasses; i++){
+                        permittedClassesFromXml.add(classesPermitted.item(i).getTextContent());
+                    }
+                }
+                Users.UserInfoClass.initializeAccessControlStructures(permittedClassesFromXml);
 
             } catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());

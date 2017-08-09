@@ -286,6 +286,7 @@
             <option lang="el">Τυπική Ιεραρχική Αναπαράσταση</option>
         </linktotypical>
     </savealltermshierarchicaltree>
+    
     <savealltermshierarchicalsimple>
         <titleprefix>
             <option lang="en">Terms Search Results (Hierarchical Simple Presentation) </option>

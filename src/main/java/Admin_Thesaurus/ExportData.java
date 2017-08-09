@@ -123,10 +123,8 @@ public class ExportData extends ApplicationBasicServlet {
 
         UserInfoClass refSessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
 
-        if (refSessionUserInfo == null) {
-
+        if (refSessionUserInfo == null || !refSessionUserInfo.servletAccessControl(this.getClass().getName())) {
             out.println("Session Invalidate");
-
             response.sendRedirect("Index");
             return;
         }

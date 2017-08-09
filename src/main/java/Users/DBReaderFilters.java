@@ -68,7 +68,7 @@ public class DBReaderFilters {
     public int FilterTermsResults(UserInfoClass SessionUserInfo, int termsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return termsSet;
         }        
         // in case of reader user
@@ -144,7 +144,7 @@ public class DBReaderFilters {
     public int FilterHierResults(UserInfoClass SessionUserInfo, int hiersSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return hiersSet;
         }
         // in case of reader user
@@ -199,7 +199,7 @@ public class DBReaderFilters {
     public boolean FilterHierarchy(UserInfoClass SessionUserInfo, StringObject hierarchy, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return true;
         }
         // in case of reader user
@@ -252,7 +252,7 @@ public class DBReaderFilters {
     public int FilterFacetResults(UserInfoClass SessionUserInfo, int facetsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return facetsSet;
         }
         // in case of reader user
@@ -301,7 +301,7 @@ public class DBReaderFilters {
     public int FilterToValuesOfTerms(UserInfoClass SessionUserInfo, int ToValuesOfTermsSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return ToValuesOfTermsSet;
         }
         // in case of reader user
@@ -396,7 +396,7 @@ public class DBReaderFilters {
     public int FilterBTLinksSet(UserInfoClass SessionUserInfo, int BTLinksSet, QClass Q, IntegerObject sis_session) {
         
         // in case of NOT reader user, return the same set
-        if (SessionUserInfo.userGroup.equals("READER") == false) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Reader) == false) {
             return BTLinksSet;
         }
         // in case of reader user

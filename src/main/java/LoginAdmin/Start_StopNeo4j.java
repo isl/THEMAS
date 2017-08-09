@@ -68,7 +68,7 @@ public class Start_StopNeo4j extends HttpServlet {
         try{
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null || SessionUserInfo.userGroup.equals("ADMINISTRATOR")==false) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName()) || SessionUserInfo.userGroup.equals(ConstantParameters.Group_Administrator)==false) {
                 response.sendRedirect("Index");
                 return;
             }

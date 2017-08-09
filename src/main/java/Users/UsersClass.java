@@ -79,8 +79,8 @@ import org.w3c.dom.NodeList;
 ----------------------------------------------------------------------*/
 public class UsersClass {
     public static final String WebAppUsersXMLFilePath = File.separator + "WEB-INF" + File.separator + "WebAppUSERS.xml";
-    public final String[] UsersGroups = {"READER", "LIBRARY", "THESAURUS_TEAM", "THESAURUS_COMMITTEE", "ADMINISTRATOR"};
-    public final String[] UsersGroupsGR = {"Χρήστης Αναγνώστης", "Χρήστης Βιβλιοθήκης", "Ομάδα Θησαυρού", "Επιτροπή Θησαυρού", "Διαχειριστής"};
+    public final String[] UsersGroups = {Utils.ConstantParameters.Group_Reader, "LIBRARY", "THESAURUS_TEAM", "THESAURUS_COMMITTEE", ConstantParameters.Group_Administrator,ConstantParameters.Group_External_Reader};
+    public final String[] UsersGroupsGR = {"Χρήστης Αναγνώστης", "Χρήστης Βιβλιοθήκης", "Ομάδα Θησαυρού", "Επιτροπή Θησαυρού", "Διαχειριστής","Εξωτερικός Αναγνώστης"};
         
     /*---------------------------------------------------------------------
                             UsersClass()
@@ -97,7 +97,7 @@ public class UsersClass {
         thesaurusV.add("AAA");
         thesaurusV.add("BBB");
         Vector<String> groupV = new Vector<String>();
-        groupV.add("READER");
+        groupV.add(Utils.ConstantParameters.Group_Reader);
         groupV.add("LIBRARY");        
         int ret;
         HttpSession session = request.getSession();	
@@ -317,7 +317,7 @@ public class UsersClass {
         }        
         // in case of user ADMINISTRATOR or of user owning ALL thesaurus (*), return all the existing thesaurus
         //if (userInfo.thesaurusGroups.contains("ADMINISTRATOR") || userInfo.thesaurusNames.contains("*")) {
-        if (userInfo.thesaurusGroups.contains("ADMINISTRATOR")) {
+        if (userInfo.thesaurusGroups.contains(ConstantParameters.Group_Administrator)) {
             QClass Q = new QClass();
             IntegerObject sis_session = new IntegerObject();            
             DBGeneral dbGen = new DBGeneral();
@@ -419,7 +419,7 @@ public class UsersClass {
         int groupVSize = groupV.size();
         for (int i = 0; i < groupVSize; i++) {        
             String UserGroupStr = (String)groupV.get(i);
-            if (UserGroupStr.equals("READER") == false) {
+            if (UserGroupStr.equals(Utils.ConstantParameters.Group_Reader) == false) {
                 newUsersGroupsAreAllREADER = false;
                 break;
             }

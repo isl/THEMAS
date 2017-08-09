@@ -74,16 +74,18 @@ public class SearchResults_Users extends ApplicationBasicServlet {
         String startRecord = (String) request.getParameter("pageFirstResult");
         try {
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
-                if (startRecord != null && startRecord.matches("SaveAll")) {
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                if(startRecord!=null && startRecord.matches("SaveAll")){
                     out.println("Session Invalidate");
-                } else {
+                }
+                else{
                     response.sendRedirect("Index");
                 }
                 return;
             }
 
-            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            
 
             // get servlet's parameters
             String updateUsersCriteria = (String) request.getParameter("updateUserCriteria");

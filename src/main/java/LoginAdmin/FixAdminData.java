@@ -93,7 +93,8 @@ public class FixAdminData extends ApplicationBasicServlet {
             
             
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            if (SessionUserInfo == null || SessionUserInfo.userGroup.equals("ADMINISTRATOR")==false) {
+            
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName()) || SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Administrator)==false ) {
                 out.println("Session Invalidate");
                 return;
             }

@@ -97,7 +97,7 @@
                                 
                             </xsl:for-each>
                             
-                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER' "> 
+                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> 
                                 <td>
                                     <strong>
                                         <xsl:value-of select="$facetslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
@@ -215,7 +215,7 @@
                                 </img>
                             </a>
 			    <!-- Check for user of READER group (DISABLE editing) -->
-                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER' and $THEMASUserInfo_userGroup != 'LIBRARY' ">
+                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER' and $THEMASUserInfo_userGroup != 'LIBRARY' ">
                                 <a href="#">
                                     <xsl:attribute name="onClick">showEditCard_Facet('<xsl:value-of select="$currentJS"/>')</xsl:attribute>
                                     <img width="16" height="16" border="0" >

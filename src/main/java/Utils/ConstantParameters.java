@@ -118,6 +118,14 @@ public class ConstantParameters {
     
     public static boolean DEVELOPING = true;
     
+    //Group_Reader --> i.e. READER. This user can see only the published part of the thesaurus without creation/modfication data
+    public static final String Group_Reader = "READER";
+    
+    //Group_External_Reader --> i.e. EXTERNALREADER. This user can see everything (apart from other user data) in a specific thesarus but cannot change anything 
+    public static final String Group_External_Reader = "EXTERNALREADER";
+    
+    public static final String Group_Administrator = "ADMINISTRATOR";
+    
     public static final String hierarchytermClass = "HierarchyTerm";
     public static final String termClass = "Term";
     public static final String individualClass = "Individual";

@@ -92,6 +92,11 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
         try {
 
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+                out.println("Session Invalidate");
+                response.sendRedirect("Index");
+                return;
+            }
             // create the common-utils class
             CommonUtilsDBadmin common_utils = new CommonUtilsDBadmin(config);
             // get form parameters

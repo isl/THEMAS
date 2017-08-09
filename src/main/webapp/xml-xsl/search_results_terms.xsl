@@ -378,7 +378,7 @@
                             </a>
 
                             <!-- DISABLE editing in case of user of group READER -->
-                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'">
+                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
                                 <a href="#">
                                     <img width="16" height="16" border="0" >
                                         <xsl:attribute name="src">

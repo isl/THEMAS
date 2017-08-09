@@ -357,10 +357,10 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>Translations</servlet-name>
         <servlet-class>LoginAdmin.Translations</servlet-class>
     </servlet>
-    <servlet>
+    <!--<servlet>
         <servlet-name>NewServlet</servlet-name>
         <servlet-class>Servlets.NewServlet</servlet-class>
-    </servlet>
+    </servlet>-->
     <servlet-mapping>
         <servlet-name>FixCurrentData</servlet-name>
         <url-pattern>/FixCurrentData</url-pattern>
@@ -565,7 +565,7 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>MoveToHierarchyResults</servlet-name>
         <url-pattern>/MoveToHierarchyResults</url-pattern>
     </servlet-mapping>
-    <servlet>
+    <!--<servlet>
         <servlet-name>DisplayGraph</servlet-name>
         <servlet-class>DisplayGraph</servlet-class>
     </servlet>
@@ -588,7 +588,7 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
     <servlet-mapping>
         <servlet-name>SIS-TMS2SVG</servlet-name>
         <url-pattern>/SIS-TMS2SVG</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>    
     <servlet>
         <servlet-name>Logout</servlet-name>
         <servlet-class>Logout</servlet-class>
@@ -605,6 +605,7 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>test</servlet-name>
         <url-pattern>/test</url-pattern>
     </servlet-mapping>
+    -->
     <servlet>
         <servlet-name>nicajax</servlet-name>
         <servlet-class>Servlets.nicajax</servlet-class>
@@ -761,10 +762,10 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>Translations</servlet-name>
         <url-pattern>/Translations</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+    <!--<servlet-mapping>
         <servlet-name>NewServlet</servlet-name>
         <url-pattern>/NewServlet</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
     <session-config>
         <session-timeout>200</session-timeout>
     </session-config>

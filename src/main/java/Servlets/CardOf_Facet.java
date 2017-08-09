@@ -85,7 +85,7 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             String outputMode   = request.getParameter("mode");
-            if (SessionUserInfo == null) {
+            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(outputMode==null){
                     out.println("Session Invalidate");                
                 }

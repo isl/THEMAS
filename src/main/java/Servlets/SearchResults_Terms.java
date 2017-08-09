@@ -77,7 +77,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
         String startRecord = (String) request.getParameter("pageFirstResult");
         try {
             // check for previous logon but because of ajax usage respond with Session Invalidate str
-            if (sessionInstance.getAttribute("SessionUser") == null) {
+            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if (startRecord != null && startRecord.matches("SaveAll")) {
                     out.println("Session Invalidate");
                 } else {
@@ -95,7 +96,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
             //Servlet needed Parameters
-            UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            
             String updateTermsCriteria = (String) request.getParameter("updateTermCriteria");
             String ListStepStr = getServletContext().getInitParameter("ListStep");
             String language = getServletContext().getInitParameter("LocaleLanguage");
