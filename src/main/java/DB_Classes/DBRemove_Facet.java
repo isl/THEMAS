@@ -35,6 +35,7 @@ package DB_Classes;
 
 
 
+import Utils.Utilities;
 import java.util.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
@@ -112,9 +113,15 @@ public class DBRemove_Facet {
     public String DeleteFacet(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,StringObject targetFacet) {
         String errorMsg = new String("");
 
+        
+        
         if (dbGen.check_exist(targetFacet.getValue(),Q,sis_session) == false) {
-            errorMsg = "Ο μικροθησαυρός " + targetFacet + " δεν υπάρχει.";
+            Vector<String> errorArgs = new Vector<String>();
+            errorArgs.add(targetFacet.getValue());
+            StringObject translatedMsgObj = new StringObject("");
+            dbGen.Translate(translatedMsgObj, "root/EditFacet/Deletion/FacetNotFound", errorArgs, Utilities.getMessagesXml());
             //errorMsg = "Facet " + targetFacet + " does not exist";
+            errorMsg = translatedMsgObj.getValue();
             return errorMsg;
         }
 

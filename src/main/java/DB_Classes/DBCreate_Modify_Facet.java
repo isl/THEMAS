@@ -196,30 +196,30 @@ public class DBCreate_Modify_Facet {
             if (createORmodify.equals("create")) {
 
                 dbGen.Translate(errorMsg, "root/EditFacet/Creation/SuccessMsg", errorArgs, pathToMessagesXml);
-                //errorMsg.setValue("Ο μικροθησαυρός : '" + targetFacet + "' δημιουργήθηκε με επιτυχία.");
+                //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully created.");
 
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
                     //String message = "";
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
                         dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessMsg", errorArgs, pathToMessagesXml);
-                        //message = "Ο μικροθησαυρός : '" + targetFacet + "' διαγράφηκε με επιτυχία.";
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
 
-                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessObsoleteMsg", errorArgs, pathToMessagesXml);
-                        //message = "Ο μικροθησαυρός : '" + targetFacet + "' ολοκληρώθηκε η αναίρεση της κατάργησής του.";
+                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessUndoObsoleteMsg", errorArgs, pathToMessagesXml);
+                        //message = "Undo abandonment action of facet '%s' was successfully performed.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
-                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessReleasedMsg", errorArgs, pathToMessagesXml);
-                        //message = "Ο μικροθησαυρός : '" + targetFacet + "' καταργήθηκε με επιτυχία.";
+                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessMsg", errorArgs, pathToMessagesXml);                        
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                      
                     //errorMsg.setValue(message);
                     //return message;
                 } else {
                     dbGen.Translate(errorMsg, "root/EditFacet/Edit/SuccessMsg", errorArgs, pathToMessagesXml);
-                    //errorMsg.setValue("Ο μικροθησαυρός : '" + targetFacet + "' τροποποιήθηκε με επιτυχία.");                
+                    //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
                 }
             }
 

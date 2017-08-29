@@ -124,8 +124,10 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             }
                   
             
+           StringObject trObj = new StringObject("");
+           dbGen.Translate(trObj, "root/EditHierarchy/Edit/AvailableFacets", null, Utilities.getMessagesXml());
            
-            String outPutAnswer = "Διαθέσιμοι Μικροθησαυροί : <select id=\"new_Hier_FacetID\" name=\"new_Hier_Facet\" size=\"5\" style=\"min-width:100px;\" onchange=\"hierarchyFacetName.value=new_Hier_Facet.options[new_Hier_Facet.selectedIndex].value;\"  >";
+            String outPutAnswer = trObj.getValue()+" <select id=\"new_Hier_FacetID\" name=\"new_Hier_Facet\" size=\"5\" style=\"min-width:100px;\" onchange=\"hierarchyFacetName.value=new_Hier_Facet.options[new_Hier_Facet.selectedIndex].value;\"  >";
             
             for(int i=0;i<availableFacets.size();i++){
                 outPutAnswer += "<option value=\"" + escapeHTML(availableFacets.get(i).toString().trim()) + "\">";

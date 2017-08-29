@@ -194,7 +194,7 @@ public class ExportData extends ApplicationBasicServlet {
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
                 
 
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile εξαγωγής δεδομένων του θησαυρού : " + exprortThesaurus + " στο αρχείο: " + logFileNamePath + ".");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
 
             } catch (Exception exc) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());

@@ -97,10 +97,13 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             String targetField = u.getDecodedParameterValue(request.getParameter("targetField"));
             
             if(targetField==null || targetHierarchy==null){
+                StringObject translatedMsgObj = new StringObject("");
+                dbGen.Translate(translatedMsgObj, "root/EditHierarchy/Edit/NothingSpecified", null, Utilities.getMessagesXml());
+                
                 xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
                 xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
-                        "<resultText>Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο η ιεραρχία στόχος όσο και το πεδίο προς επεξεργασία</resultText>");
+                        "<resultText>"+translatedMsgObj.getValue()+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path + "/xml-xsl/EditHierarchyActions/Edit_Hierarchy.xsl");

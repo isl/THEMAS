@@ -1086,14 +1086,14 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfEditUserThesaurus) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
-                //out.println("Failure" + "Ο χρήστης '" + targetUser + "' δεν υπάρχει.");
+                //out.println("Failure" + "User '" + targetUser + "' does not exist.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUserThesaurus/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED:
-                //out.println("Failure" + "Η αλλαγή θησαυρού απέτυχε.");
+                //out.println("Failure" + "The change of thesaurus failed.");
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUserThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;

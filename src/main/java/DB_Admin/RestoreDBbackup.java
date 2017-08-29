@@ -33,6 +33,7 @@
  */
 package DB_Admin;
 
+import DB_Classes.DBGeneral;
 import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
@@ -173,11 +174,18 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
     public boolean DeleteDBbackup(CommonUtilsDBadmin common_utils,String selectedDBbackupFileName, StringObject RestoreDBbackupResultMessage) {
         File fileForDeletion = new File(common_utils.DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
         boolean deletionSucceded = fileForDeletion.delete();        
+        
+        DB_Classes.DBGeneral dbGen = new DB_Classes.DBGeneral();
+        Vector<String> trArgs = new Vector<String>();
+        trArgs.add(selectedDBbackupFileName);
+                
         if (deletionSucceded == false) {
-            RestoreDBbackupResultMessage.setValue("Δεν βρέθηκε το αρχείο " + selectedDBbackupFileName);
+            dbGen.Translate(RestoreDBbackupResultMessage, "root/DBAdminUtilities/BackupRestore/ZipFileNotFound", trArgs, Utilities.getMessagesXml());
+            //RestoreDBbackupResultMessage.setValue("File: '%s' was not found.");
             return false;
         }
-        RestoreDBbackupResultMessage.setValue("Το αρχείο " + selectedDBbackupFileName + " διαγράφηκε");
+        //RestoreDBbackupResultMessage.setValue("File: " + selectedDBbackupFileName + " was successfully deleted.");
+        dbGen.Translate(RestoreDBbackupResultMessage, "root/DBAdminUtilities/BackupRestore/ZipFileSuccessfullyDeleted", trArgs, Utilities.getMessagesXml());
         return true;
     }    
     

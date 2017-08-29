@@ -115,11 +115,16 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             String targetField = u .getDecodedParameterValue(request.getParameter("targetField"));
             
             if(targetField==null || targetTerm==null){
+                
+                StringObject translatedMsgObj = new StringObject("");
+                dbGen.Translate(translatedMsgObj, "root/EditTerm/Edit/NothingSpecified", null, Utilities.getMessagesXml());
+                
+                
                 xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
                         Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf()+
-                        "<resultText>Σφάλμα επεξεργασίας. πρέπει να προσδιοριστεί τόσο ο όρος στόχος όσο και το πεδίο προς επεξεργασία</resultText>");
+                        "<resultText>"+translatedMsgObj.getValue()+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path +  "/xml-xsl/EditTermActions/Edit_Term.xsl");

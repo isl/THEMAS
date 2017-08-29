@@ -111,13 +111,13 @@
                 <option lang="el">Ο Μικροθησαυρός: '%s' διαγράφηκε με επιτυχία.</option>
             </SuccessMsg>
             <SuccessObsoleteMsg>
-                <option lang="en">Undo abandonment action of facet '%s' was successfully performed.</option>
-                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής του μικροθησαυρού: '%s'.</option>
-            </SuccessObsoleteMsg>
-            <SuccessReleasedMsg>
                 <option lang="en">Facet '%s' was successfully abandoned</option>
                 <option lang="el">Ο Μικροθησαυρός: '%s' καταργήθηκε με επιτυχία.</option>
-            </SuccessReleasedMsg>
+            </SuccessObsoleteMsg>
+            <SuccessUndoObsoleteMsg>
+                <option lang="en">Undo abandonment action of facet '%s' was successfully performed.</option>
+                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής του μικροθησαυρού: '%s'.</option>
+            </SuccessUndoObsoleteMsg>
         </Deletion>
         <Creation>
             <ErrorPrefix>
@@ -159,7 +159,39 @@
             <LongName>
                 <option lang="en"><!--Facet name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
                 <option lang="el"><!--Το όνομα του Μικροθησαυρού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
-            </LongName>
+            </LongName>        
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+             <NoFacetSelected>
+                <option lang="en">No Facet selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε μικροθησαυρός για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoFacetSelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Facet selected for rename does not exist anymore. Please search again for this Facet and try again. Operation cancelled.</option>
+                <option lang="el">Ο Μικροθησαυρός προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new Facet name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για τον μικροθησαυρό προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New Facet name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>
+            <NewNameExistsAsTT>
+                <option lang="en">New hierarchy name cannot be used as Top Term of the Hierarchy. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα που δώθηκε δεν μπορεί να χρησιμοποιηθεί για τον Όρο κορυφής της ιεραρχίας. Ακύρωση μετονομασίας.</option>
+            </NewNameExistsAsTT>
+            <CannotRenameDefaultHierarchy>
+                <option lang="en">This hierarchy cannot be renamed. All new terms created are classified by default under this hierarchy.</option>
+                <option lang="el">Η συγκεκριμένη ιεραρχία δεν μπορεί να μετονομαστεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται.</option>
+            </CannotRenameDefaultHierarchy>
+            <HierarchyDoesNotExist>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyDoesNotExist>
         </Rename>
     </EditFacet>
     <EditHierarchy>
@@ -186,6 +218,10 @@
             </TopTermHasLinksFrom>
         </Deletion>
         <Creation>
+            <Success>
+                <option lang="en">Hierarchy: %s was sucessfully created.</option>
+                <option lang="el">Η ιεραρχία: %s δημιουργήθηκε με επιτυχία.</option>
+            </Success>
             <ErrorPrefix>
                 <option lang="en">Hierarchy creation error: </option>
                 <option lang="el">Λάθος κατά τη δημιουργία ιεραρχίας: </option>
@@ -216,6 +252,14 @@
                 <option lang="en">Hierarchy editing error: </option>
                 <option lang="el">Λάθος κατά την τροποποίηση ιεραρχίας: </option>
             </ErrorPrefix>
+            <AvailableFacets>
+                <option lang="en">Available Facets: </option>
+                <option lang="el">Διαθέσιμοι μικροθησαυροί: </option>
+            </AvailableFacets>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing hierarchy and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο η ιεραρχία στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
             <HierarchyNotFound>
                 <option lang="en">Hierarchy %s was not found in the database.</option>
                 <option lang="el">Η ιεραρχία: %s δεν βρέθηκε στην βάση.</option>
@@ -228,12 +272,56 @@
                 <option lang="en">Every Hierarchy must be classified under at least one facet. Modification aborted.</option>
                 <option lang="el">Κάθε ιεραρχία πρέπει να υπάγεται σε έναν τουλάχιστον μικροθησαυρό. Ακύρωση τροποποίησης.</option>
             </NoFacet>
+            <SuccessfullyDeleted>
+                <option lang="en">Hierarchy %s was successfully deleted.</option>
+                <option lang="el">Η ιεραρχία %s διαγράφηκε με επιτυχία.</option>
+            </SuccessfullyDeleted>
+            <SuccessUndoObsoleteMsg>
+                <option lang="en">Undo abandonment action of hierarchy: '%s' was successfully performed.</option>
+                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής της ιεραρχίας: '%s'.</option>                
+            </SuccessUndoObsoleteMsg>    
+            <SuccessfullyEdited>
+                <option lang="en">Hierarchy: '%s' was successfully modified.</option>
+                <option lang="el">Η ιεραρχία: '%s' τροποποιήθηκε επιτυχώς.</option>                
+            </SuccessfullyEdited>                    
         </Edit>
         <Rename>
             <LongName>
                 <option lang="en"><!--Hierarchy name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
                 <option lang="el"><!--Το όνομα της Ιεραρχίας δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
             </LongName>
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+             <NoHierarchySelected>
+                <option lang="en">No hierarchy selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε ιεραρχία για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoHierarchySelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.</option>
+                <option lang="el">Η ιεραρχία προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new hierarchy name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για την ιεραρχία προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New hierarchy name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>
+            <NewNameExistsAsTT>
+                <option lang="en">New hierarchy name cannot be used as Top Term of the Hierarchy. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα που δώθηκε δεν μπορεί να χρησιμοποιηθεί για τον Όρο κορυφής της ιεραρχίας. Ακύρωση μετονομασίας.</option>
+            </NewNameExistsAsTT>
+            <CannotRenameDefaultHierarchy>
+                <option lang="en">This hierarchy cannot be renamed. All new terms created are classified by default under this hierarchy.</option>
+                <option lang="el">Η συγκεκριμένη ιεραρχία δεν μπορεί να μετονομαστεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται.</option>
+            </CannotRenameDefaultHierarchy>
+            <HierarchyDoesNotExist>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyDoesNotExist>
         </Rename>
     </EditHierarchy>
     <EditSource>
@@ -285,6 +373,12 @@
                 <option lang="el">Η διαγραφή των αναφορών της πηγής από τον τρέχοντα θησαυρό ολοκληρώθηκε επιτυχώς. Ωστόσο η πηγή δεν μπορεί να διαγραφεί γιατί διαθέτει αναφορές και από άλλους θησαυρούς.</option>
             </OtherThesauriReferences>
         </Deletion>
+        <Edit>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing source and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο η πηγή στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
+        </Edit>
         <Rename>
             <LongName>
                 <option lang="en"><!--Source Name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
@@ -340,6 +434,10 @@
                 <option lang="en">Rename completed sucessfully.</option>
                 <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
             </Success>
+            <UndoRenameSuccess>
+                <option lang="en">Undo rename operation of term '%s' was successfully completed.</option>
+                <option lang="el">Η αναίρεση μετονομασίας του όρου '%s', ολοκληρώθηκε επιτυχώς.</option>
+            </UndoRenameSuccess>
             <NoTermSelected>
                 <option lang="en">No term selected for rename. Operation cancelled.</option>
                 <option lang="el">Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.</option>
@@ -518,6 +616,10 @@
                 <option lang="en">An error occurred during update of node %s.</option>
                 <option lang="el">Παρουσιάστηκε σφάλμα κατά την ενημέρωση του κόμβου %s.</option>
             </GeneralUpdateNodeError>
+            <NoTargetTermSpecified>
+                <option lang="en">No target term was specified for the movement operation.</option>
+                <option lang="el">Δεν δηλώθηκε όρος προς μετακίνηση.</option>
+            </NoTargetTermSpecified>
         </Move2Hierarchy>
     </EditTerm>
     <EditGuideTerms>
@@ -774,6 +876,14 @@
         </DeleteThesaurusSucceded>
     </DeleteThesaurus>
     <ImportData>
+        <ReportTitle>
+            <option lang="en">Import Data in thesaurus: %s report. Time: %s.</option>
+            <option lang="el">Αναφορά εισαγωγής δεδομένων στον θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Import Data operation in thesaurus: %s from file: %s was successfully completed in: %s minutes.</option>
+            <option lang="el">Η διαδικασία εισαγωγής δεδομένων στον θησαυρό %s από το αρχείο %s ολοκληρώθηκε με επιτυχία σε χρόνο : %s λεπτά.</option>
+        </ReportSuccessMessage>
         <ImportFunctionFailure>
             <option lang="en">Import Data failed. </option>
             <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
@@ -791,7 +901,7 @@
             <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
         </InsertionFailure>
         <SuccessfulInsertion>
-            <option lang="en">Data insertion finished successfully. As current Thesaurus was set the : </option>
+            <option lang="en">Data insertion finished successfully. Current Thesaurus set: </option>
             <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο:  </option>
         </SuccessfulInsertion>
     </ImportData>
@@ -932,5 +1042,15 @@
                 <option lang="el">Ο θησαυρός '%s' δεν βρέθηκε στην βάση.</option>
             </ThesaurusNotFound>
         </DeleteThesaurus>
+        <BackupRestore>
+            <ZipFileNotFound>
+                <option lang="en">File: '%s' was not found.</option>
+                <option lang="el">Δεν βρέθηκε το αρχείο: '%s'.</option>
+            </ZipFileNotFound>
+            <ZipFileSuccessfullyDeleted>
+                <option lang="en">File: '%s' was successfully deleted.</option>
+                <option lang="el">Το αρχείο: '%s' διαγράφηκε με επιτυχία.</option>
+            </ZipFileSuccessfullyDeleted>
+        </BackupRestore>
     </DBAdminUtilities>
 </root>

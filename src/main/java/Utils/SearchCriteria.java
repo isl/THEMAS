@@ -134,14 +134,14 @@ public class SearchCriteria {
                     // translations ~ (contains) QuickSearchInputValue or
                     // rt ~ (contains) QuickSearchInputValue or
                     // uf ~ (contains) QuickSearchInputValue or
-                    // OUTPUT fields: name - AO - ΠΟ - OK - ΣO - XA
+                    // OUTPUT fields: name - TR - BT - TT - RT - UF
                     
                     // get the QuickSearchInputValue
                     String QuickSearchInputValue = request.getParameter("QuickSearchInputValue");
                     QuickSearchInputValue = u.getDecodedParameterValue(QuickSearchInputValue);                    
                     // CombineOperator - always "or"
                     sc.CombineOperator = "or";                    
-                    // INPUTs: name - AO - ΣO - XA
+                    // INPUTs: name - TR - RT - UF
 
                     //String[] inputsArray = {"name", "translations", ConstantParameters.rt_kwd, "uf"};
                     String operator = "~";
@@ -150,7 +150,7 @@ public class SearchCriteria {
                         sc.operator.addElement(operator);
                         sc.value.addElement(QuickSearchInputValue);                        
                     }
-                    // OUTPUTs: name - AO - ΠΟ - OK - ΣO - XA
+                    // OUTPUTs: name - TR - BT - TT - RT - UF
                     //String[] outputsArray = {"name", "translations", ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, "topterm", ConstantParameters.rt_kwd, "uf"};
                     sc.output = new Vector(Arrays.asList(quickSearchOutput));
                 }                 
@@ -527,7 +527,7 @@ public class SearchCriteria {
 
         if (CombineOperator.equals("*")||CombineOperator.equals("all")) {
 
-            //Query = "Παρουσίαση όλων";
+            //Query = "Show all";
             Query = SearchCriteria.showAllString;
 
         } else {
@@ -594,33 +594,33 @@ public class SearchCriteria {
                         else{//If name then we should write term/hier/or facet
                             if(mode.compareTo("term")==0){
                                 if(inputStr.compareTo("name")==0){
-                                    inputStr_UI = " Όρος";
+                                    inputStr_UI = " Term";
                                 }
                                 else if(inputStr.compareTo("primary_found_in")==0){
-                                    inputStr_UI = " Ελλην.Πηγή";
+                                    inputStr_UI = " Gr.Source";
                                 }
                                 else if(inputStr.compareTo("translations_found_in")==0){
-                                    inputStr_UI = " Αγγλ.Πηγή";
+                                    inputStr_UI = " Eng.Source";
                                 }
                                     
                             }
                             else
                             if(mode.compareTo("hierarchy")==0 && inputStr.compareTo("name")==0){
-                                inputStr_UI = " Ιεραρχία";
+                                inputStr_UI = "Hierarchy";
                             }
                             else
                             if(mode.compareTo("facet")==0 && inputStr.compareTo("name")==0){
-                                inputStr_UI = " Μικροθησαυρός";
+                                inputStr_UI = "Facet";
                             }
                             else if(mode.compareTo("source")==0){
                                 if(inputStr.compareTo("name")==0){
-                                    inputStr_UI = " Πηγή";
+                                    inputStr_UI = "Source";
                                 }
                                 else if(inputStr.compareTo("primary_found_in")==0){
-                                    inputStr_UI = " Ελλ.Πηγή όρου";
+                                    inputStr_UI = "Gr. Term Source";
                                 }
                                 else if(inputStr.compareTo("translations_found_in")==0){
-                                    inputStr_UI = " Αγγ.Πηγή όρου";
+                                    inputStr_UI = "Eng. Term Source";
                                 }
                                     
                             }                            

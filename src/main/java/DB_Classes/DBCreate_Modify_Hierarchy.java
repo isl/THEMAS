@@ -185,7 +185,7 @@ public class DBCreate_Modify_Hierarchy {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/HierarchyNotFound", errorArgs, pathToMessagesXML);
             errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
 
-            //errorMsg.setValue(errorMsg.getValue().concat(errorMsgPrefix.getValue() + "Η ιεραρχία " + targetHierarchy +" δεν βρέθηκε στην βάση."));
+            //errorMsg.setValue(errorMsg.getValue().concat(errorMsgPrefix.getValue() + "Hierarchy %s was not found in the database."));
             return false;
         }
 
@@ -197,13 +197,13 @@ public class DBCreate_Modify_Hierarchy {
             if (targetHierarchy == null || targetHierarchy.trim().length() == 0) {
                 dbGen.Translate(errorMsg, "root/EditHierarchy/Creation/EmptyName", null, pathToMessagesXML);
                 errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
-                //errorMsg.setValue("Δεν έχει δηλωθεί όνομα για την ιεραρχία.");
+                //errorMsg.setValue("A name must be specified for the new hierarchy");
                 return false;
             }
             if (targetHierarchyFacets == null || targetHierarchyFacets.size() == 0) {
                 dbGen.Translate(errorMsg, "root/EditHierarchy/Creation/NoFacet", null, pathToMessagesXML);
                 errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
-                //errorMsg.setValue("Η δήλωση ενός τουλάχιστον μικροθησαυρού είναι υποχρεωτική για την δημιουργία της ιεραρχίας.");
+                //errorMsg.setValue("At least one parent facet must be specified for the new hierarchy creation.");
                 return false;
             }
             Q.reset_name_scope();
@@ -212,7 +212,7 @@ public class DBCreate_Modify_Hierarchy {
                 errorArgs.add(targetHierarchy);
                 dbGen.Translate(errorMsg, "root/EditHierarchy/Creation/AlreadyinDB", errorArgs, pathToMessagesXML);
                 errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
-                //errorMsg.setValue("Το όνομα αυτό υπάρχει ήδη στην βάση είτε σαν ιεραρχία είτε σαν μικροθησαυρός.");
+                //errorMsg.setValue("Name %s is already used in the database as a hierarchy name or facet name.");
                 return false;
             }
 
@@ -223,7 +223,7 @@ public class DBCreate_Modify_Hierarchy {
                 dbGen.Translate(errorMsg, "root/EditHierarchy/Creation/TermAlreadyinDB", errorArgs, pathToMessagesXML);
                 errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
 
-                //errorMsg.setValue("Το όνομα αυτό υπάρχει ήδη στην βάση σαν όρος με αποτέλεσμα να μην μπορεί να δημιουργηθεί ο αντίστοιχος ΟΚ.");
+                //errorMsg.setValue("Name %s is already used in the database as a term name and it can not be used in order to create the relavant TT.");
                 return false;
             }
 
@@ -306,7 +306,7 @@ public class DBCreate_Modify_Hierarchy {
                     //errorMsg = " Every hierarchy should have at least one parent Facet. Modification Aborted";
                     dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/NoFacet", null, pathToMessagesXML);
                     errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
-                    //errorMsg.setValue(" Κάθε ιεραρχία πρέπει να υπάγεται σε έναν τουλάχιστον μικροθησαυρό. Ακύρωση τροποποίησης.");
+                    //errorMsg.setValue("Every Hierarchy must be classified under at least one facet. Modification aborted.");
                     return false;
                 } else {
 
@@ -329,28 +329,41 @@ public class DBCreate_Modify_Hierarchy {
             //CreationOrModificationSucceded = true;
             // end transaction
             //Q.end_transaction();
+            errorArgs.clear();
+            errorArgs.add(targetHierarchy);
+            
             if (createORmodify.equals("create")) {
-                //errorMsg.setValue("Η ιεραρχία : '" + targetHierarchy + "' δημιουργήθηκε με επιτυχία.");
+                //errorMsg.setValue("Hierarchy: %s was sucessfully created.");
+                dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/NoFacet", errorArgs, pathToMessagesXML);
+                errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
+                
                 return true;
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
 
-
                     String message = "";
 
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_NEW) {
-                        //message = "Η ιεραρχία : '" + targetHierarchy + "' διαγράφηκε με επιτυχία.";
+                        //message = "Hierarchy %s was successfully deleted.";
+                        dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/SuccessfullyDeleted", errorArgs, pathToMessagesXML);
+                        errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
                     }
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_OBSOLETE) {
-                        //message = "Για την ιεραρχία : '" + targetHierarchy + "' ολοκληρώθηκε η αναίρεση της κατάργησής της.";
+                        //message = "Undo abandonment action of hierarchy: '%s' was successfully performed.";
+                        dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/SuccessUndoObsoleteMsg", errorArgs, pathToMessagesXML);
+                        errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
                     }
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_RELEASED) {
-                        //message = "Η ιεραρχία : '" + targetHierarchy + "' καταργήθηκε με επιτυχία.";
+                        //message = "Hierarchy %s was successfully deleted.";
+                        dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/SuccessfullyDeleted", errorArgs, pathToMessagesXML);
+                        errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
                     }
                     errorMsg.setValue(message);
                     return true;
                 } else {
-                    //errorMsg.setValue("Η ιεραρχία : '" + targetHierarchy + "' τροποποιήθηκε με επιτυχία.");
+                    //errorMsg.setValue("Hierarchy: '%s' was successfully modified.");
+                    dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/SuccessfullyEdited", errorArgs, pathToMessagesXML);
+                    errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
                     return true;
                 }
             }
@@ -402,9 +415,9 @@ public class DBCreate_Modify_Hierarchy {
         // looking for AAADescriptor
         StringObject thesDescriptor = new StringObject();
         dbtr.getThesaurusClass_Descriptor(SessionUserInfo.selectedThesaurus, Q, SISApiSession, thesDescriptor);
-        // looking for AAAClass`Ορφανοί όροι
+        // looking for AAAClass`Unclassified terms
         StringObject orphansHierarchyObj = new StringObject(prefix.concat(Parameters.UnclassifiedTermsLogicalname));
-        // looking for AAAEL`Ορφανοί όροι
+        // looking for AAAEN`Unclassified terms
         StringObject orphansHierarchyTopTermObj = new StringObject(orphansHierarchyObj.getValue().replaceFirst(prefix, topTermPrefix));
         // looking for AAA_BT
         StringObject thesBT = new StringObject();
@@ -416,13 +429,13 @@ public class DBCreate_Modify_Hierarchy {
 
             errorArgs.add(targetHierarchy);
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/HierarchyNotFound", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Η ιεραρχία " + targetHierarchy +" δεν βρέθηκε στην βάση."));
+            //errorMsg.setValue(errorMsg.getValue().concat("Hierarchy %s was not found in the database."));
             return;
         }
-        // check if target hierarchy to be deleted is the AAAEL`Ορφανοί όροι
+        // check if target hierarchy to be deleted is the AAAEN`Unclassified terms
         if (targetHierarchyObj.getValue().compareTo(orphansHierarchyObj.getValue()) == 0) {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Η συγκεκριμένη ιεραρχία δεν μπορεί να διαγραφεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται."));
+            //errorMsg.setValue(errorMsg.getValue().concat("This hierarchy can not be deleted. It is used to classify all new terms that are not classified elsewhere."));
             return;
         }
         // get the kind of the target hierarchy
@@ -557,7 +570,7 @@ public class DBCreate_Modify_Hierarchy {
         // ------------------------------------------------------------------------------------------                
         // 2. get the rest terms of target hierarchy and for those that have links from/to terms 
         //    that belong to other hierachies, de-instantiate them from target hierarchy and
-        //    instantiate them to UnclassifiedTermsLogicalname (AAAClass`Ορφανοί όροι)
+        //    instantiate them to UnclassifiedTermsLogicalname (AAAClass`Unclassified terms)
         // ------------------------------------------------------------------------------------------                
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"step 2. ------------------------------------------------------------------------------------------");
         Q.reset_name_scope();
@@ -594,9 +607,7 @@ public class DBCreate_Modify_Hierarchy {
             
             for(Return_Nodes_Row row : retNodes){
                 StringObject targetNode = new StringObject(row.get_v1_cls_logicalname());
-                if(row.get_v1_cls_logicalname().equals("ALLMERGEDEL`μεταλλουργικός εξοπλισμός")){
-                    System.out.println("DEBUG");
-                }
+                
                 if(allTopTerms.contains(targetNode.getValue())==false){
                 /*
                     
@@ -630,7 +641,7 @@ public class DBCreate_Modify_Hierarchy {
 
         }
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"termsOfHierarchyReferredByTermsOfOtherHierarchies card = " + Q.set_get_card(termsOfHierarchyReferredByTermsOfOtherHierarchies));
-        // instantiate them to UnclassifiedTermsLogicalname (AAAClass`Ορφανοί όροι)
+        // instantiate them to UnclassifiedTermsLogicalname (AAAClass`Unclassified terms)
         
         
 
@@ -748,7 +759,7 @@ public class DBCreate_Modify_Hierarchy {
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"Delete_Node(target hierarchy) = " + ret); 
         // ------------------------------------------------------------------------------------------
         // 6. get the the TopTerm of target hierarchy and de-instantiate it from AAATopTerm
-        // and connect it with BT link with AAAEL`Ορφανοί όροι (orphansHierarchyTopTermObj)
+        // and connect it with BT link with AAAEN`Unclassified terms (orphansHierarchyTopTermObj)
         // ------------------------------------------------------------------------------------------
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"step 6. ------------------------------------------------------------------------------------------");
         Q.reset_name_scope();
@@ -761,7 +772,7 @@ public class DBCreate_Modify_Hierarchy {
             if (ret == QClass.APIFail) {
                 errorMsg.setValue(dbGen.check_success(ret,TA,  null, tms_session));
             }
-            // connect it with BT link with AAAEL`Ορφανοί όροι
+            // connect it with BT link with AAAEN`Unclassified terms
             Q.reset_name_scope();
             long TopTermOfOrphansL = Q.set_current_node(orphansHierarchyTopTermObj);
             Identifier fromID = new Identifier(TopTermSysidL);
@@ -824,14 +835,14 @@ public class DBCreate_Modify_Hierarchy {
 
         if (oldName.compareTo(Parameters.UnclassifiedTermsLogicalname) == 0) {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Η συγκεκριμένη ιεραρχία δεν μπορεί να διαγραφεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται."));
+            //errorMsg.setValue(errorMsg.getValue().concat("This hierarchy can not be deleted. It is used to classify all new terms that are not classified elsewhere."));
             return false;
         }
 
         Q.reset_name_scope();
         if (Q.set_current_node(new StringObject(prefix_el.concat(oldName))) == QClass.APIFail) {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/TopTermNotFound", null, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο αντίστοιχος Όρος κορυφής δεν βρέθηκε στην βάση. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε."));
+            //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top Term was not found in the database. The hierarchy deletion action failed."));
             return false;
         }
 
@@ -839,14 +850,14 @@ public class DBCreate_Modify_Hierarchy {
         Q.reset_set(set_to_links);
         if (Q.set_get_card(set_to_links) > 0) {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/TopTermHasLinksTo", null, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο αντίστοιχος Όρος κορυφής διαθέτει αναφορές προς αυτόν. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε."));
+            //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top term has references pointing to it. The hierarchy deletion action failed."));
             return false;
         }
 
         Q.reset_name_scope();
         if (Q.set_current_node(new StringObject(prefix_el.concat(oldName))) == QClass.APIFail) {
             dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/TopTermNotFound", null, pathToMessagesXML);
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο αντίστοιχος Όρος κορυφής δεν βρέθηκε στην βάση. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε."));
+            //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top Term was not found in the database. The hierarchy deletion action failed."));
             return false;
         }
         int set_from_links = Q.get_link_from(0);
@@ -884,7 +895,7 @@ public class DBCreate_Modify_Hierarchy {
                 count++;
                 if (count > 1) {
                     dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/TopTermHasLinksFrom", null, pathToMessagesXML);
-                    //errorMsg.setValue(errorMsg.getValue().concat("Ο αντίστοιχος Όρος κορυφής διαθέτει συνδέσμους προς άλλους κόμβους. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε."));
+                    //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top term has references pointing to other nodes. The hierarchy deletion action failed."));
                     return false;
                 }
             }
@@ -911,7 +922,7 @@ public class DBCreate_Modify_Hierarchy {
             count++;
             if (count > 1) {
                 dbGen.Translate(errorMsg, "root/EditHierarchy/Deletion/TopTermHasLinksFrom", null, pathToMessagesXML);
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο αντίστοιχος Όρος κορυφής διαθέτει συνδέσμους προς άλλους κόμβους. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε."));
+                //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top term has references pointing to other nodes. The hierarchy deletion action failed."));
                 return false;
             }
         }

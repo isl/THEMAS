@@ -319,7 +319,7 @@ public class ConsistensyCheck {
             }
             if(count!=1){
                 errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Η δήλωση μίας μοναδικής μετάφρασης για κάθε περιγραφέα είναι υποχρεωτική.";// του όρου : '" + targetDescriptor + "' είναι υποχρεωτική.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
                 return false;
             }
         }
@@ -333,7 +333,7 @@ public class ConsistensyCheck {
         //Check if at least one dn is declared
         if (tcs_Vector.size() == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί ταξινομικός κωδικός.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No taxonomical code has been declared.";
             return false;
         }
         return true;
@@ -347,7 +347,7 @@ public class ConsistensyCheck {
         //Check if at least one greek source is declared
         if (greekSources == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί πηγή του ελληνικού όρου.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No term source has been declared.";
             return false;
         }
                     
@@ -362,7 +362,7 @@ public class ConsistensyCheck {
         //Check if at least one english source is declared
         if (enSources == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί πηγή της αγγλικής μετάφρασης του όρου.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No term translation source has been declared.";
             return false;
         }
 
@@ -401,7 +401,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs= new Vector<String>();
                 errorArgs.add(bts_Vector.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο ΠΟ : '" + UnclassifiedClass + "' που δηλώθηκε για την δημιουργία του νέου όρου δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("BT: '" + UnclassifiedClass + "' declared for the creation of the new term was not found in the database.";
                 Q.reset_name_scope();
                 return false;
             }
@@ -427,10 +427,9 @@ public class ConsistensyCheck {
 
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(targetDescriptor);
-                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Ο όρος '" + targetDescriptor + "' υπάρχει ήδη στη βάση.";
+                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Term '" + targetDescriptor + "' already exists in the database.";
                 
                 // append a sort description of the existing term
-                // Chatzimari: Όταν το σύστημα εμφανίζει μήνυμα "υπάρχει ήδη στη βάση" να εμφανίζει πού υπάρχει. 
                 errorMsg.setValue(errorMsg.getValue().concat(dbGen.ExistingTermSortDescription(selectedThesaurus,targetDescr,Q,sis_session).getValue()));
                 
                 Q.reset_name_scope();

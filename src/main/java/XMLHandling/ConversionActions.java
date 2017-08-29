@@ -92,14 +92,14 @@ public class ConversionActions {
 
         /* Step1 Read Facets specified by XML****************************************************/
         if (parser.readXMLFacets(importThesaurusName, inputFilePath, inputScheme, xmlFacets) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης μικροθησαυρών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +  "Failed to read Facets.");
             processSucceded = false;
         }
 
 
         /* Step2 Read Hierarchies specified by XML************************************************/
         if (processSucceded && parser.readXMLHierarchies(importThesaurusName, inputFilePath, inputScheme, hierarchyFacets, xmlFacets) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης ιεραρχιών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Hierarchies.");
             processSucceded = false;
         }
 
@@ -109,17 +109,17 @@ public class ConversionActions {
 
 
         if (processSucceded && parser.readXMLTerms(inputFilePath, inputScheme, termsInfo, userSelections) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Terms.");
             processSucceded = false;
         }
 
         if (processSucceded && parser.readXMLSources(inputFilePath, inputScheme, XMLsources) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης πηγών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Sources.");
             processSucceded = false;
         }
 
         if (processSucceded && parser.readXMLGuideTerms(inputFilePath, inputScheme, guideTerms, XMLguideTermsRelations) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης ετικετών δεσμού.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Guide Terms / Node Labels.");
             processSucceded = false;
         }
 
@@ -195,14 +195,14 @@ public class ConversionActions {
 
         /* Step1 Read Facets specified by XML****************************************************/
         if (parser.readXMLFacets(importThesaurusName, inputFilePath, inputScheme, xmlFacets) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης μικροθησαυρών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Facets.");
             processSucceded = false;
         }
 
 
         /* Step2 Read Hierarchies specified by XML************************************************/
         if (processSucceded && parser.readXMLHierarchies(importThesaurusName, inputFilePath, inputScheme, hierarchyFacets, xmlFacets) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης ιεραρχιών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Hierarchies.");
             processSucceded = false;
         }
 
@@ -212,17 +212,17 @@ public class ConversionActions {
 
 
         if (processSucceded && parser.readXMLTerms(inputFilePath, inputScheme, termsInfo, userSelections) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Terms.");
             processSucceded = false;
         }
 
         if (processSucceded && parser.readXMLSources(inputFilePath, inputScheme, XMLsources) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης πηγών.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Sources.");
             processSucceded = false;
         }
 
         if (processSucceded && parser.readXMLGuideTerms(inputFilePath, inputScheme, guideTerms, XMLguideTermsRelations) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης ετικετών δεσμού.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Guide Terms / Node Labels.");
             processSucceded = false;
         }
 
@@ -348,14 +348,14 @@ public class ConversionActions {
         
 
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή λειτουργίας ανάγνωσης όρων.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Terms.");
         if (processSucceded && parser.readAAT_XML(inputFilePath, inputScheme,
                 xmlFacets,
                 hierarchyFacets,
                 termsInfo,
                 guideTerms,
                 XMLguideTermsRelations) == false) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία λειτουργίας ανάγνωσης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Terms.");
             processSucceded = false;
         }
 
@@ -404,11 +404,11 @@ public class ConversionActions {
         
 
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή λειτουργίας ανάγνωσης κατηγοριών μετάφρασης.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Translation Categories.");
         if (outputScheme.equals(ConstantParameters.xmlschematype_THEMAS)
                 && parser.readTranslationCategoriesFromTerms(termsInfo,filterTerms, userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections) == false) {
             processSucceded = false;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία ανάγνωσης κατηγοριών μετάφρασης.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Translation Categories.");
         }
 
 

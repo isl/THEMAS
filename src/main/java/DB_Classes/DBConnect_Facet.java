@@ -97,7 +97,7 @@ public class DBConnect_Facet {
                 dbGen.Translate(errorMsgObj, "root/EditFacet/Creation/FacetExists", errorArgs, pathToErrorsXML);
 
                 errorMSG = errorMSG.concat(/*"<tr><td>" +*/ dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,errorMsgObj.getValue()
-                        /*"Ο μικροθησαυρός " + dbGen.removePrefix(targetFacet.getValue()) + " υπάρχει ήδη στη βάση."*/
+                        /*"Facet " + dbGen.removePrefix(targetFacet.getValue()) + " already exists in the database."*/
                         ,tms_session)/* +
                         "</td></tr>"*/);
                 return errorMSG;

@@ -1099,7 +1099,7 @@ public class WriteFileData {
                                     if (Parameters.PrimaryLang.toLowerCase().equals("en")) {
                                         statusVal = "Under construction";
                                     } else {
-                                        //Υπό επεξεργασία in hex form
+                                        //greek translation of Under construction in hex form
                                         statusVal = "\u03A5\u03C0\u03CC \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03af\u03B1";
                                     }
                                 }

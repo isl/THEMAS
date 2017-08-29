@@ -150,7 +150,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
             String Filename = "Merge_Thesauri_" + thesaurusName1 + "_" + thesaurusName2 + "_in_" + mergedThesaurusName + "_" + time;
             logFileNamePath += "/" + Filename + ".xml";
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή διαδικασίας συγχώνευσης Θησαυρών στις: " + Utilities.GetNow());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting thesaurus merge operation at: " + Utilities.GetNow());
 
             //thesaurusName1
             //thesaurusName2
@@ -171,7 +171,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
             String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
             u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Η διαδικασία συγχώνευσης των θησαυρών: " + thesaurusName1 + ", " + thesaurusName2 + " στον θησαυρό " + mergedThesaurusName + " ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus merge operation of thesauri: " + thesaurusName1 + ", " + thesaurusName2 + " in thesaurus " + mergedThesaurusName + " was successfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");
 
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in servlet " + getServletName() + ". Message:" + e.getMessage());
@@ -275,7 +275,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         dbGen.Translate(resultMessageObj, "root/abortActionsMergeThesauri/MergeFailure", null, pathToMessagesXML);
         xml.append(getXMLMiddle(thesauriNames, resultMessageObj.getValue() + resultObj.getValue()));
         
-        //xml.append(getXMLMiddle(thesauriNames, "Αποτυχία λειτουργίας συγχώνευσης. " + resultObj.getValue()));
+        //xml.append(getXMLMiddle(thesauriNames, "Merge of thesauri failure. " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 
@@ -335,7 +335,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         errorArgs.removeAllElements();
 
         xml.append(getXMLMiddle(thesauriNames, resultMessageObj.getValue()));        
-        //xml.append(getXMLMiddle(thesauriNames, "Η λειτουργία συγχώνευσης ολοκληρώθηκε με επιτυχία. Ο νέος θησαυρός " + mergedThesaurusName + " τέθηκε σαν επιλεγμένος."));
+        //xml.append(getXMLMiddle(thesauriNames, "Thesauri merge finished successfully. New thesaurus  " + mergedThesaurusName + " was set as current thesaurus."));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 

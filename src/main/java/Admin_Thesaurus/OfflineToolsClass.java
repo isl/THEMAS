@@ -493,7 +493,7 @@ public class OfflineToolsClass {
                         OutputStream bout = new BufferedOutputStream(fout);
                         logFileWriter = new OutputStreamWriter(bout, "UTF-8");
 
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile εξαγωγής δεδομένων του θησαυρού : " + exportThesarus + " στο αρχείο: " + exportFilePath + ".");
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exportThesarus + " in file: " + exportFilePath + ".");
 
 
                     }
@@ -549,7 +549,7 @@ public class OfflineToolsClass {
                 StringObject CreateThesaurusResultMessage = new StringObject("");
                 StringObject resultObj = new StringObject();
                 StringBuffer xml = new StringBuffer(); 
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή διαδικασίας συγχώνευσης Θησαυρών στις: " + Utilities.GetNow());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Starting Thesauri merge at: " + Utilities.GetNow());
                 
                 //IMPORT ACTIONS
                 if(dbImport.thesaurusMergeActions(refSessionUserInfo, common_utils, config,
@@ -572,9 +572,9 @@ public class OfflineToolsClass {
                 String XSL = baseApplicationFilePath+  "/Save_Results_Displays/ImportCopyMergeThesaurus_Report.xsl";
                 u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml", ".html"));
                 
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Η διαδικασία συγχώνευσης των θησαυρών: "+
-                        thesaurusName1+", " + thesaurusName2 + " στον θησαυρό "+ mergedThesaurusName
-                        +" ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Merge operation of thesauri: "+
+                        thesaurusName1+", " + thesaurusName2 + " to thesarus "+ mergedThesaurusName
+                        +" was successfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");
                 
                 
                 

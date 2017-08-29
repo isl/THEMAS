@@ -6954,6 +6954,26 @@ public class DBGeneral {
         return true;
     }
 
+    //Using public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) 
+    //requires  Vector<String> args to be correctly defined. 
+    //this is some times inconvenient and hard to check
+    //This helper function allows to define per call an array of Strings for 
+    //args instead of relying to the correct preparation of the Vector<String> args
+    public void Translate(StringObject resultObj, String targetMessageBasePath, String pathToErrorXMLFile, String[] args) {
+        
+        if(args!=null){
+            Vector<String> argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }
+            Translate(resultObj,targetMessageBasePath,argsVector,pathToErrorXMLFile);
+        }
+        else{
+            Translate(resultObj,targetMessageBasePath,null,pathToErrorXMLFile);
+        }
+    }
+    
     public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
         String CurrentValue = resultObj.getValue();
         if (CurrentValue == null) {

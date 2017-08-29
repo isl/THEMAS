@@ -118,7 +118,8 @@ public class ImportData extends ApplicationBasicServlet {
             DBGeneral dbGen = new DBGeneral();
             DBImportData dbImport = new DBImportData();
             DBMergeThesauri dbMerge = new DBMergeThesauri();
-
+            StringObject translatedMsgObj = new StringObject("");
+            
             Vector<String> thesauriNames = new Vector<String>();
 
             CommonUtilsDBadmin common_utils = new CommonUtilsDBadmin(config);
@@ -214,7 +215,7 @@ public class ImportData extends ApplicationBasicServlet {
                     errorArgs.removeAllElements();
 
                     resultObj.setValue(resultMessageObj.getValue());
-                    //resultObj.setValue("Ο θησαυρός '" + importThesaurusName + "' έχει ήδη ορισθεί στην βάση. Παρακαλώ επιλέξτε διαφορετικό όνομα θησαυρού");
+                    //resultObj.setValue("Thesaurus '" + importThesaurusName + "' already exists in database. Please choose a different name for the Thesaurus.");
 
                     Vector<String> allHierarchies = new Vector<String>();
                     Vector<String> allGuideTerms = new Vector<String>();
@@ -253,7 +254,7 @@ public class ImportData extends ApplicationBasicServlet {
                     errorArgs.removeAllElements();
                     resultObj.setValue(resultMessageObj.getValue());
 
-                    //resultObj.setValue("Ο θησαυρός '" + importThesaurusName + "' δεν βρέθηκε στην βάση. Παρακαλώ ελέγξτε αν ο θησαυρός αυτός εξακολουθεί να υπάρχει.");
+                    //resultObj.setValue("Thesaurus '" + importThesaurusName + "' does not exist in database. Please choose a different thesaurus if this one still exists.");
                     Vector<String> allHierarchies = new Vector<String>();
                     Vector<String> allGuideTerms = new Vector<String>();
                     dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
@@ -275,7 +276,7 @@ public class ImportData extends ApplicationBasicServlet {
                      */
                     dbGen.Translate(resultMessageObj_2, "root/ImportData/InsertionFailure", null, pathToMessagesXML);
                     xml.append(getXMLMiddle(thesauriNames, resultMessageObj_2.getValue() + resultObj.getValue(), importMethodChoice));
-                    //xml.append(getXMLMiddle(thesauriNames, "Αποτυχία λειτουργίας εισαγωγής δεδομένων. " + resultObj.getValue(),importMethodChoice));
+                    //xml.append(getXMLMiddle(thesauriNames, "Data insertion failure. " + resultObj.getValue(),importMethodChoice));
                     xml.append(u.getXMLUserInfo(SessionUserInfo));
                     xml.append(u.getXMLEnd());
                     u.XmlPrintWriterTransform(out, xml, sessionInstance.path + "/xml-xsl/page_contents.xsl");
@@ -304,12 +305,17 @@ public class ImportData extends ApplicationBasicServlet {
                 OutputStream bout = new BufferedOutputStream(fout);
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
                 logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
+                Vector<String> translationArgs = new Vector<String>();
+                translationArgs.add(importThesaurusName);
+                translationArgs.add(time);
+                dbGen.Translate(translatedMsgObj, "root/ImportData/ReportTitle", translationArgs, Utilities.getMessagesXml());                
+                
                 //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../" + webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
                 logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-                logFileWriter.append("<title>Αναφορά εισαγωγής δεδομένων στον θησαυρό " + importThesaurusName + " " + time + "</title>\r\n"
+                logFileWriter.append("<title>"+translatedMsgObj.getValue()+"</title>\r\n"
                         + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\r\n");
-                //logFileWriter.append("<!--"+time + " LogFile λειτουργίας εισαγωγής δεδομένων στον θησαυρό: " + importThesaurusName +".-->\r\n");
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile λειτουργίας εισαγωγής δεδομένων στον θησαυρό: " + importThesaurusName + ".");
+                //logFileWriter.append("<!--"+time + " LogFile for data import in thesaurus: " + importThesaurusName +".-->\r\n");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile for data import in thesaurus: " + importThesaurusName + ".");
 
             } catch (Exception exc) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
@@ -342,7 +348,13 @@ public class ImportData extends ApplicationBasicServlet {
 
             commitActions(request, WebAppUsersFileName, sessionInstance, context, targetLocale, importThesaurusName, out, Filename.concat(".html"));
 
-            logFileWriter.append("\r\n<creationInfo>Η διαδικασία εισαγωγής δεδομένων στον θησαυρό " + importThesaurusName + " από το αρχείο " + xmlFilePath + " ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.</creationInfo>\r\n");
+            //ReportSuccessMessage
+            Vector<String> translationArgs = new Vector<String>();
+            translationArgs.add(importThesaurusName);
+            translationArgs.add(xmlFilePath);
+            translationArgs.add(((Utilities.stopTimer(startTime)) / 60)+"");
+            dbGen.Translate(translatedMsgObj, "root/ImportData/ReportSuccessMessage", translationArgs, Utilities.getMessagesXml());                
+            logFileWriter.append("\r\n<creationInfo>"+translatedMsgObj.getValue()+"</creationInfo>\r\n");
 
             if (logFileWriter != null) {
                 logFileWriter.append("</page>");
@@ -491,7 +503,7 @@ public class ImportData extends ApplicationBasicServlet {
         dbGen.Translate(resultMessageObj, "root/ImportData/SuccessfulInsertion", null, pathToMessagesXML);
 
         xml.append(getXMLMiddle(thesauriNames, resultMessageObj.getValue() + importThesaurusName + ".", importMethodChoice));
-        //xml.append(getXMLMiddle(thesauriNames, "Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο: " + importThesaurusName + ".", importMethodChoice));
+        //xml.append(getXMLMiddle(thesauriNames, "Data insertion finished successfully. Current Thesaurus set: " + importThesaurusName + ".", importMethodChoice));
 
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());

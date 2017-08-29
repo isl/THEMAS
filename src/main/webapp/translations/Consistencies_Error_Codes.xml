@@ -59,7 +59,7 @@
         
         <TEST id="3">
             <errorcase id="1">
-                <option lang="en"></option>
+                <option lang="en">Declaration of one and only translation for each term is obligatory.</option>
                 <option lang="el">Η δήλωση μίας μοναδικής μετάφρασης για κάθε περιγραφέα είναι υποχρεωτική.</option>
             </errorcase>
         </TEST>
@@ -67,22 +67,22 @@
         <TEST id="4">
             
             <errorcase id="1">
-                <option lang="en"></option>
+                <option lang="en">No taxonomical code has been declared.</option>
                 <option lang="el">Δεν έχει δηλωθεί ταξινομικός κωδικός.</option>
             </errorcase>
         </TEST>
         
         <TEST id="5">
             <errorcase id="1">
-                <option lang="en"></option>
-                <option lang="el">Δεν έχει δηλωθεί πηγή του ελληνικού όρου.</option>
+                <option lang="en">No term primary source has been declared.</option>
+                <option lang="el">Δεν έχει δηλωθεί πρωτεύουσα πηγή του όρου.</option>
             </errorcase>
         </TEST>
         
         <TEST id="6">
             <errorcase id="1">
-                <option lang="en"></option>
-                <option lang="el">Δεν έχει δηλωθεί πηγή της αγγλικής μετάφρασης του όρου.</option>
+                <option lang="en">No term translation source has been declared.</option>
+                <option lang="el">Δεν έχει δηλωθεί πηγή μετάφρασεων του όρου.</option>
             </errorcase>
         </TEST>
         

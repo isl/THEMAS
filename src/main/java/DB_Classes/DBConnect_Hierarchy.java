@@ -78,13 +78,13 @@ public class DBConnect_Hierarchy {
         if (targetHierarchyObj.getValue().trim().equals(prefix)) {
             dbGen.Translate(errorMsgObj, "root/EditHierarchy/Creation/EmptyName", null, pathToErrorsXML);
             
-            //errorMSG = errorMSG.concat("δεν είναι εφικτή η δημιουργία κενής ιεραρχίας");
+            //errorMSG = errorMSG.concat("A name must be specified for the new hierarchy.");
             return errorMsgObj.getValue();
         }
 
         if (targetHierarchyFacetObj.getValue().trim().equals(prefix)) {
             dbGen.Translate(errorMsgObj, "root/EditHierarchy/Creation/NoFacetName", null, pathToErrorsXML);
-            //errorMSG = errorMSG.concat("δεν είναι εφικτή η ταξινόμιση σε κενό μικροθησαυρό");
+            //errorMSG = errorMSG.concat("At least one parent facet must be specified for the new hierarchy creation.");
             return errorMsgObj.getValue();
         }
 
