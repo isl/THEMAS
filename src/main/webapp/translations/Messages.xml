@@ -335,6 +335,38 @@
                 <option lang="el"><!--O όρος %s μετονομάστηκε σε %s γιατί ξεπερνoύσε το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
             </LongNameErrorResolve>
         </Creation>
+        <Rename>
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+            <NoTermSelected>
+                <option lang="en">No term selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoTermSelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.</option>
+                <option lang="el">Ο όρος προς μετονομασία δεν είναι έγκυρος. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new term name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για τον όρο προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New term name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>
+            <TermDoesNotExist>
+                <option lang="en">Term %s was not found in the database.</option>
+                <option lang="el">Ο όρος %s δεν βρέθηκε στην βάση.</option>
+            </TermDoesNotExist>
+        </Rename>
+        <Edit>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing term and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο ο όρος στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
+        </Edit>
         <Translations>
             <LongName>
                 <option lang="en"><!--Translation of a term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
@@ -432,7 +464,7 @@
             </AtLeastOne>
             <GeneralHierarchyUpdateMsg>
                 <option lang="en">Error during modification of hierarchies.</option>
-                <option lang="el">Λάθος κατά την εννημέρωση των ιεραρχιών.</option>
+                <option lang="el">Λάθος κατά την ενημέρωση των ιεραρχιών.</option>
             </GeneralHierarchyUpdateMsg>
             <NotFound>
                 <option lang="en">Term %s was not found.</option>
@@ -484,7 +516,7 @@
             </SuccessMsg>
             <GeneralUpdateNodeError>
                 <option lang="en">An error occurred during update of node %s.</option>
-                <option lang="el">Παρουσιάστηκε σφάλμα κατά την εννημέρωση του κόμβου %s.</option>
+                <option lang="el">Παρουσιάστηκε σφάλμα κατά την ενημέρωση του κόμβου %s.</option>
             </GeneralUpdateNodeError>
         </Move2Hierarchy>
     </EditTerm>
@@ -656,7 +688,7 @@
             <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.  </option>
             <option lang="el">Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
         </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
-         <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
             <option lang="en">The new Username '%s' is already in use from another user.</option>
             <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
         </NEW_USER_NAME_ALREADY_EXISTS_IN_XML>

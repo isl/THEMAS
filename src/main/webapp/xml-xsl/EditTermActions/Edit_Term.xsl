@@ -87,6 +87,7 @@
                                     <xsl:when test="$targetEditField = 'name'">
                                         <xsl:call-template name="rename_term">
                                             <xsl:with-param name="specificlocale" select="$termcardlocale/editactions"/>
+                                            <xsl:with-param name="showSaveOldNameAsUF" select="//SaveOldNameAsUF"/>
                                             <xsl:with-param name="lang" select="$lang"/>
                                         </xsl:call-template>
                                         <table width="100%">
@@ -2089,6 +2090,7 @@
     <!--RENAME TERM-->
     <xsl:template name="rename_term">
         <xsl:param name="specificlocale" />
+        <xsl:param name="showSaveOldNameAsUF" />
         <xsl:param name="lang" />
    
         <fieldset id="renameFieldSet_Term">
@@ -2098,7 +2100,9 @@
                     <xsl:value-of select="//targetTerm"/>
                 </b>
             </legend>
+            
             <br/>
+            
             <div id="DynamicGenaration" align="center">
                 <table cellspacing="0" cellpadding="3">
                     <tr>
@@ -2115,14 +2119,39 @@
                         <td  align="right" > <!-- style="color:#999966" -->
                             <xsl:value-of select="$specificlocale/rename/currentname/option[@lang=$lang]"/>
                         </td>
-                        <td colspan="2">
-                            <input id="oldTerm" disabled="disabled" class="disabledbutton" style="width:630px;" name="target" >
-                                <xsl:attribute name="value">
-                                    <xsl:value-of select="//currentRename/term/name"/>
-                                </xsl:attribute>
-                            </input>
-                        </td>
-                    
+                        
+                        
+                        <xsl:choose>
+                            <xsl:when test="$showSaveOldNameAsUF='yes'">
+                                <td>                            
+                                    <input id="oldTerm" disabled="disabled" class="disabledbutton" style="width:100%" name="target" >
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="//currentRename/term/name"/>
+                                        </xsl:attribute>
+                                    </input>
+                                </td>
+                                <td style="width:200px;">
+                                    <label>
+                                    <input type="checkbox" name="saveasuf" value="yes" checked="checked" style="vertical-align: middle;"/>
+                                        
+                                    </label>
+                                    <xsl:text> <xsl:value-of select="$specificlocale/rename/saveasufCheckboxLabel/option[@lang=$lang]"/> </xsl:text>                                    
+                                </td>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <td colspan="2">                            
+                                    <input id="oldTerm" disabled="disabled" class="disabledbutton" style="width:630px;" name="target" >
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="//currentRename/term/name"/>
+                                        </xsl:attribute>
+                                    </input>
+                                    <input type="checkbox" name="saveasuf" value="no" style="display:none;"/> 
+                                </td>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        
+                        
+                        
                     </tr>
                 
                     <!--EMPTY SEPERATOR LINE-->

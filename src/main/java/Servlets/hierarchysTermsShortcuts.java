@@ -375,7 +375,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));         
                 
                 //Write XML file
-                u.writeResultsInXMLFile(allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
+                u.writeResultsInXMLFile(null,allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
                 
                 //end query and close connection
                 Q.free_all_sets();
@@ -428,7 +428,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 writeSystematicResultsInXMLFile(descriptors, 
                         u, 
                         time, 
-                        //"<base>Συστηματική παρουσίαση όρων της ιεραρχίας: </base>"+
+                        //"<base>Systematic display of terms belonging to hierarchy: </base>"+
                         "<arg1>" + Utilities.escapeXML(hierarchy) + "</arg1>", 
                         webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml",
                         pathToSaveScriptingAndLocale);

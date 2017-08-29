@@ -61,23 +61,24 @@ import neo4j_sisapi.tmsapi.TMSAPIClass;
 public class SearchResults_Terms extends ApplicationBasicServlet {
 
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        
+        request.setCharacterEncoding("UTF-8");
         String answerType = request.getParameter("answerType");
-        if(answerType.compareTo("XMLSTREAM")==0){
+        if(answerType!=null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
             response.setContentType("text/xml;charset=UTF-8");
         }
         else{
             response.setContentType("text/html;charset=UTF-8");
         }
-        request.setCharacterEncoding("UTF-8");
-
-        if (SystemIsLockedForAdministrativeJobs(request, response)) {
-            return;
-        }
-
+        
+        if (SystemIsLockedForAdministrativeJobs(request, response)) return;
+       
         HttpSession session = request.getSession();
         ServletContext context = getServletContext();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
-        init(request, response, sessionInstance);
+        init(request, response,sessionInstance); 
+        
 
         PrintWriter out = response.getWriter();
         String startRecord = (String) request.getParameter("pageFirstResult");
@@ -86,6 +87,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if (startRecord != null && startRecord.matches("SaveAll")) {
+                    
                     out.println("Session Invalidate");
                 } else {
                     response.sendRedirect("Index");
@@ -355,14 +357,18 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
                                         + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
-                if (answerType != null && ( answerType.compareTo("XML") == 0 ||answerType.compareTo("XMLSTREAM") == 0 )) {
+                if (answerType != null && ( answerType.compareTo("XML") == 0 ||answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 )) {
                     //nothing
                 } else {
                     startXML += "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>";
                 }
 
-                u.writeResultsInXMLFile(allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale);
-
+                if(answerType != null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
+                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale);
+                }
+                else{
+                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale);
+                }
                 // timer end
                 elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in terms --> time elapsed: " + elapsedTimeSec);
@@ -375,26 +381,20 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                 
-                if (answerType != null && (answerType.compareTo("XML") == 0 ||answerType.compareTo("XMLSTREAM") == 0 ) ) {
+                if (answerType != null && answerType.compareTo("XML") == 0 ) {
                     if (Parameters.FormatXML) {
                         WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
                     }
-                    if(answerType.compareTo("XMLSTREAM")==0){
-                        //out.println("/Save_Results_Displays/Save_Results_temporary_files/"+Save_Results_file_name.concat(".xml"));
-                        //response.setContentLength(getContentLength());
-                        out.println(Utils.ConstantParameters.xmlHeader+"\n<results>\n" +
-"<term index=\"1\">\n" +
-"<descriptor id=\"8270\">70mm</descriptor>\n" +
-"</term>\n" +
-"<term index=\"2\">\n" +
-"<descriptor id=\"9088\">78 rpm records</descriptor>\n" +
-"</term>\n" +
-"</results>");
-                    }
-                    else{
-                        out.println(Save_Results_file_name.concat(".xml"));
-                    }
-                } else {
+                    
+                    out.println(Save_Results_file_name.concat(".xml"));
+                    out.flush();
+                    
+                } 
+                else if(answerType != null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+                    //nothing to do results already streamed
+                    out.flush();
+                }
+                else{
                     //transform XML to HTML
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
                                        XSL, 
@@ -402,9 +402,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     
                     //Send HTML url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
+                    out.flush();
 
                 }
-                out.flush();
+                //out.flush();
                 return;
 
             }
@@ -473,6 +474,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             elapsedTimeSec = Utilities.stopTimer(startTime);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in terms --> time elapsed: " + elapsedTimeSec);
 
+            
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
             xml.append("<results>");
             xml.append(u.writePagingInfoXML(termsPagingListStep, termsPagingFirst, termsPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Terms"));

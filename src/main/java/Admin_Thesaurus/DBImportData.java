@@ -1905,7 +1905,7 @@ public class DBImportData {
 
 
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
-        // Step8 Get and put default Status per user for Ορφανοί όροι
+        // Step8 Get and put default Status per user for Unclassified terms
         if(termsInfo.containsKey(Parameters.UnclassifiedTermsLogicalname) ==false ){
         specifyOrphansStatus(SessionUserInfo, Q, sis_session, tms_session, resultObj);
         }
@@ -2401,7 +2401,7 @@ public class DBImportData {
 
         //filling structures allTermsWithoutBTsorNTs, topTerms and find out hierarchies and top terms
         findOutTopTermsAndOrphans(descriptorNts, allTermsHavingBTs, allTermsHavingNTs, allTermsWithoutBTsorNTs, topTerms, hierarchyFacets);
-
+        
         //classify terms in levels of creation kept level by level in allLevelsOfImportThes
 
 
@@ -2532,9 +2532,12 @@ public class DBImportData {
                 String currentNt = nts.get(k);
 
 
+                /* BUG Not NEEDED A->B and C->D->B 
+                A,C top terms diffenrent 
+                In this case B would not be created as a child of D parsed terms works well in case of cyrcles
                 if (currentLevel.contains(currentNt)) {
                     continue;
-                }
+                }*/
 
                 if (nextLevelSet_Terms_and_Bts.containsKey(currentNt) == false) {
                     Vector<String> bts = new Vector<String>();

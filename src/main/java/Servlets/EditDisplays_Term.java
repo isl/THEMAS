@@ -118,6 +118,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
+                        Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf()+
                         "<resultText>Σφάλμα επεξεργασίας. πρέπει να προσδιοριστεί τόσο ο όρος στόχος όσο και το πεδίο προς επεξεργασία</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
@@ -140,7 +141,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
             if(targetField.compareTo(ConstantParameters.term_create_kwd)==0){
                 
-                xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>");
+                xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
             else if(targetField.compareTo(ConstantParameters.guide_term_kwd)==0){
@@ -163,7 +164,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 
                 //write results 
                 xml.append(u.getBTNTWithGuideTermsResultsInXml(targetTerm, ConstantParameters.nt_kwd,BTLinkObj.getValue(), nts,existingGuideTermsVec,targetLocale)); 
-                xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>");
+                xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
             }             
             else{
                 String[] output = new String[2];
@@ -171,7 +172,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 output[1] = targetField;
                 results = u.getTermResultsInXml(SessionUserInfo,targetTerm, output,Q,TA,sis_session,targetLocale);
                 xml.append(results);
-                xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>");
+                xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
             

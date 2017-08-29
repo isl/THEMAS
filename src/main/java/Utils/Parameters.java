@@ -72,6 +72,8 @@ public class Parameters {
     public static String Save_Results_Temp_Folder;
     public static String Save_Results_Folder;
     
+    public static boolean AtRenameSaveOldNameAsUf = false;
+    
     public static boolean ThesTeamEditOnlyCreatedByTerms = false;
     public static boolean CreatorInAlphabeticalTermDisplay = false;
 
@@ -136,7 +138,15 @@ public class Parameters {
         BaseRealPath = context.getRealPath("");
         initParams(BaseRealPath);
     }
-
+    
+    public static String getXmlElementForConfigAtRenameSaveOldNameAsUf(){
+        if(Parameters.AtRenameSaveOldNameAsUf){
+            return "<SaveOldNameAsUF>yes</SaveOldNameAsUF>";
+        }
+        else{
+            return "<SaveOldNameAsUF>no</SaveOldNameAsUF>";
+        }
+    }
     public static void initParams(String basePathString){
         Path basePath = Paths.get(basePathString);
         try {
@@ -172,6 +182,14 @@ public class Parameters {
                 }
                 else{
                     Parameters.CreatorInAlphabeticalTermDisplay = false;
+                }
+                
+                String boolValStr_3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
+                if(boolValStr_3.toLowerCase().equals("true")||boolValStr_3.toLowerCase().equals("yes")){
+                    Parameters.AtRenameSaveOldNameAsUf = true;
+                }
+                else{
+                    Parameters.AtRenameSaveOldNameAsUf = false;
                 }
                 
                 UnclassifiedTermsLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsHierarchyName[1]", document);

@@ -358,5 +358,7 @@ public class ConstantParameters {
     //public static final int MAX_LOGINAM_SIZE = 100;
     //public static final int MAX_COMMENT_SIZE = 19000;
 
+    //output option supported for specific servlets in order to provide the output as xml stream
+    public static final String XMLSTREAM = "XMLSTREAM";
     
 }
