@@ -34,14 +34,24 @@
  -->
 
 <!--
-    Document   : Messages.xml
-    Created on : December 21, 2011, 4:50 PM
-    Author     : tzortzak
+    Document : Messages.xml
+    Created on: December 21, 2011, 4:50 PM
+    Author   : tzortzak
     Description:
         Purpose of the document follows.
 -->
 
 <root>
+    <!--<GeneralMessages>
+        <XMLStartTitleAttribute>
+            <option lang="en">Thesarus Creator</option>
+            <option lang="el">Δημιουργός Θησαυρού</option>
+        </XMLStartTitleAttribute>
+        <XMLStartHeaderName>
+            <option lang="en">Thesarus Creator</option>
+            <option lang="el">Δημιουργός Θησαυρού</option>
+        </XMLStartHeaderName>
+    </GeneralMessages>-->
     <TranslationsSynchronization>
         <DeletionErrorRemainingInstances>
             <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed due to existing instances of this translation.</option>
@@ -393,8 +403,8 @@
                 <option lang="el">Δεν δόθηκε νέο όνομα πηγής για μετονομασία. Ακύρωση μετονομασίας.</option>
             </EmptyNewName>
             <NotFound>
-                <option lang="en">Source given for deletion: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.</option>
-                <option lang="el">Η πηγή που δόθηκε προς διαγραφή: %s δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση διαγραφής.</option>
+                <option lang="en">Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.</option>
+                <option lang="el">Η πηγή που δόθηκε προς μετονομασία %s δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση διαγραφής.</option>
             </NotFound>
             <AlreadyinDB>
                 <option lang="en">New source name selected already exists in the database. Please select another source name.</option>
@@ -609,8 +619,8 @@
         </GuideTerms>
         <Move2Hierarchy>
             <SuccessMsg>
-                <option lang="en">Movement of term '%s' to Hierarchy waw successfully performed.</option>
-                <option lang="el">Η μετακίνηση του όρου '%s' σε Ιεραρχία, ολοκληρώθηκε επιτυχώς.</option>
+                <option lang="en">Movement of term '%s' was successfully performed.</option>
+                <option lang="el">Η μετακίνηση του όρου '%s', ολοκληρώθηκε επιτυχώς.</option>
             </SuccessMsg>
             <GeneralUpdateNodeError>
                 <option lang="en">An error occurred during update of node %s.</option>
@@ -619,7 +629,15 @@
             <NoTargetTermSpecified>
                 <option lang="en">No target term was specified for the movement operation.</option>
                 <option lang="el">Δεν δηλώθηκε όρος προς μετακίνηση.</option>
-            </NoTargetTermSpecified>
+            </NoTargetTermSpecified>            
+            <SpecificDeleteBtSuccess>
+                <option lang="en">Deletion of BT: %s from term: %s was successfully completed.</option>
+                <option lang="el">Η διαγραφή του ΠΟ: %s του όρου %s ολοκληρώθηκε επιτυχώς.</option>
+            </SpecificDeleteBtSuccess>
+            <SpecificDeleteBtFailure>
+                <option lang="en">Deletion of BT: %s from term: %s failed.</option>
+                <option lang="el">Η διαγραφή του ΠΟ: %s του όρου %s απέτυχε.</option>
+            </SpecificDeleteBtFailure>
         </Move2Hierarchy>
     </EditTerm>
     <EditGuideTerms>
@@ -703,7 +721,7 @@
             <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.</option>
         </NO_USER_NAME_GIVEN>
         <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
-            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.  </option>
+            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.</option>
             <option lang="el">Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
         </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
         <NO_USER_PASSWORD_GIVEN>
@@ -715,7 +733,7 @@
             <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
         </NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
         <THESAURUS_SET_WITH_DUBLICATE_VALUES>
-            <option lang="en">Definition of different groups is not allowd in the same Thesaurus.</option>
+            <option lang="en">Definition of different groups is not allowed in the same Thesaurus.</option>
             <option lang="el">Δεν επιτρέπεται ο ορισμός διαφορετικών γκρουπ στον ίδιο θησαυρό.</option>
         </THESAURUS_SET_WITH_DUBLICATE_VALUES>
         <NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
@@ -723,8 +741,8 @@
             <option lang="el">Ο νέος χρήστης υπάρχει ήδη στο σύστημα.</option>
         </NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
         <NO_NEW_FORMER_USER_NAME_GIVEN>
-            <option lang="en">Field of new User is not declared for the older User '%s' .</option>
-            <option lang="el">Δεν έχει δηλωθεί το πεδίο νέου ονόματος για τον παλαιότερο χρήστη '%s' .</option>
+            <option lang="en">Field of new User is not declared for the older User '%s'.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο νέου ονόματος για τον παλαιότερο χρήστη '%s'.</option>
         </NO_NEW_FORMER_USER_NAME_GIVEN>
         <NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
             <option lang="en">New field of Username '%s' must have minimun length of 2 and max length of 20 characters.</option>
@@ -749,7 +767,7 @@
             <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.</option>
         </NO_USER_NAME_GIVEN>
         <NOT_ALLOWED_TO_DELETE_YOURSELF>
-            <option lang="en">Auto deletion of user '%s' is not allowed.</option>
+            <option lang="en">Self deletion of user '%s' is not allowed.</option>
             <option lang="el">Δεν επιτρέπεται η αυτο-διαγραφή του χρήστη '%s'.</option>
         </NOT_ALLOWED_TO_DELETE_YOURSELF>
         <CANNOT_DELETE_LAST_ADMINISTRATOR>
@@ -761,8 +779,8 @@
             <option lang="el">Ο χρήστης '%s' δεν μπορεί να διαγραφεί. Είναι ο τελευταίος χρήστης "Επιτροπή Θησαυρού" για κάποιον θησαυρό.</option>
         </CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS>
         <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
-            <option lang="en">New field of Username '%s' must have minimun length of 2 and max length of 20 characters.</option>
-            <option lang="el">Το νέο πεδίο ονόματος χρήστη '%s' πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
+            <option lang="en">New field of Username must have minimum length of 2 and max length of 20 characters.</option>
+            <option lang="el">Το νέο πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
         </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
         <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
             <option lang="en">The new Username '%s' is already in use from another user.</option>
@@ -787,7 +805,7 @@
             <option lang="el">Ο προς μετονομασία χρήστης: '%s' δεν βρέθηκε ως χρήστης του συστήματος.</option>
         </USER_NAME_DOES_NOT_EXIST>
         <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
-            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.  </option>
+            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.</option>
             <option lang="el">Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
         </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
         <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
@@ -799,8 +817,8 @@
             <option lang="el">Tο νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη στην βάση. Παρακαλώ επιλέξτε άλλο όνομα για μετονομασία του παλαιότερου χρήστη '%s'.</option>
         </NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
         <TARGET_USER_RENAME_FAILED>
-            <option lang="en">Failure of renaming user '%s' to '%s' .</option>
-            <option lang="el">Αποτυχία μετονομασίας του χρήστη '%s' σε '%s' .</option>
+            <option lang="en">Failure of renaming user '%s' to '%s'.</option>
+            <option lang="el">Αποτυχία μετονομασίας του χρήστη '%s' σε '%s'.</option>
         </TARGET_USER_RENAME_FAILED>
         <FORMER_USER_RENAME_FAILED>
             <option lang="en">Renaming of user '%s' to '%s' in database failed.</option>
@@ -815,24 +833,24 @@
             <option lang="el">Αποτυχία διαγραφής του χρήστη '%s' από την βάση.</option>
         </FORMER_USER_DELETION_FAILED>
         <TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED>
-            <option lang="en">Failure of deleting creator links to author '%s' .</option>
+            <option lang="en">Failure of deleting creator links to author '%s'.</option>
             <option lang="el">Αποτυχία διαγραφής των συνδέσμων δημιουργού προς τον συντάκτη '%s'.</option>
         </TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED>
         <TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED>
-            <option lang="en">Failure of deleting modifier links to author '%s' .</option>
-            <option lang="el">Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '%s' .</option>
+            <option lang="en">Failure of deleting modifier links to author '%s'.</option>
+            <option lang="el">Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '%s'.</option>
         </TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED>
         <FORMER_USER_INSTANCE_ADDITION_FAILED>
             <option lang="en">Failure inserting user '%s' to thesaurus where user '%s' belonged.</option>
-            <option lang="el">Αποτυχία προσθήκης του χρήστη '%s' στους θησαυρούς που άνηκε ο χρήστης '%s' .</option>
+            <option lang="el">Αποτυχία προσθήκης του χρήστη '%s' στους θησαυρούς που άνηκε ο χρήστης '%s'.</option>
         </FORMER_USER_INSTANCE_ADDITION_FAILED>
         <FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED>
-            <option lang="en">Failure of moving creator links to author '%s' .</option>
-            <option lang="el">Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '%s' .</option>
+            <option lang="en">Failure of moving creator links to author '%s'.</option>
+            <option lang="el">Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '%s'.</option>
         </FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED>
         <FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED>
-            <option lang="en">Failure of moving modifier links to author '%s' .</option>
-            <option lang="el">Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '%s' .</option>
+            <option lang="en">Failure of moving modifier links to author '%s'.</option>
+            <option lang="el">Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '%s'.</option>
         </FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED>
     </resultOfEditTargetAndOlderUser>
     <resultOfEditUserPassword>
@@ -882,7 +900,7 @@
         </ReportTitle>
         <ReportSuccessMessage>
             <option lang="en">Import Data operation in thesaurus: %s from file: %s was successfully completed in: %s minutes.</option>
-            <option lang="el">Η διαδικασία εισαγωγής δεδομένων στον θησαυρό %s από το αρχείο %s ολοκληρώθηκε με επιτυχία σε χρόνο : %s λεπτά.</option>
+            <option lang="el">Η διαδικασία εισαγωγής δεδομένων στον θησαυρό %s από το αρχείο %s ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
         </ReportSuccessMessage>
         <ImportFunctionFailure>
             <option lang="en">Import Data failed. </option>
@@ -935,11 +953,11 @@
     </importTermsUnderHierarchy>
     <CreateHierarchies>
         <WrongHierarchyPosition>
-            <option lang="en">Hierarchy '%s' found incorrectly without belonging in any Facet. Subordination of this Hierarchy to Facet '%s' .</option>
-            <option lang="el">Η ιεραρχία '%s' βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα μικροθησαυρό. Υπαγωγή της στον μικροθησαυρό '%s' .</option>
+            <option lang="en">Hierarchy '%s' found incorrectly without belonging in any Facet. Subordination of this Hierarchy to Facet '%s'.</option>
+            <option lang="el">Η ιεραρχία '%s' βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα μικροθησαυρό. Υπαγωγή της στον μικροθησαυρό '%s'.</option>
         </WrongHierarchyPosition>
         <TermFoundAsTopTerm>
-            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s' .</option>
+            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s'.</option>
             <option lang="el">Ο όρος '%s' βρέθηκε σαν OK στον θησαυρό '%s'. Για την επιτυχή προσθήκη του μετονομάζεται σε '%s' </option>
         </TermFoundAsTopTerm>        
     </CreateHierarchies>
@@ -949,29 +967,29 @@
             <option lang="el">'%s' βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: '%s'. Η σχέση αυτή παρακάμπτεται.</option>
         </TermLinkToRT>
         <CategoryReferenceFailed_2_Param>
-            <option lang="en">Failed to reference at Category '%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s' του θησαυρού : '%s'.</option>
+            <option lang="en">Failed to reference at Category '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s' του θησαυρού: '%s'.</option>
         </CategoryReferenceFailed_2_Param>
         <CategoryReferenceFailed>
-            <option lang="en">Failed to reference at Category '%s'->'%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού : '%s'.</option>
+            <option lang="en">Failed to reference at Category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
         </CategoryReferenceFailed>
     </CopyRTs>
     <CreateStatuses>
         <FoundInStatus>
             <option lang="en">Term '%s' found in status '%s' and '%s' .<br/><t/><t/> It was choosen with priority order the status '%s'.</option>
-            <option lang="el">O όρος : '%s' βρέθηκε με κατάσταση '%s' και '%s'.<br/><t/><t/>Επιλέχθηκε με σειρά προτεραιότητας η κατάσταση '%s'.</option>
+            <option lang="el">O όρος: '%s' βρέθηκε με κατάσταση '%s' και '%s'.<br/><t/><t/>Επιλέχθηκε με σειρά προτεραιότητας η κατάσταση '%s'.</option>
         </FoundInStatus>
     </CreateStatuses>
     <CopyTermsLevelByLevel>
         <TopTermReferenceFailed>
-            <option lang="en">Failed to reference at TopTerm Class of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : '%s' .</option>
+            <option lang="en">Failed to reference at TopTerm Class of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού: '%s'.</option>
         </TopTermReferenceFailed>
     </CopyTermsLevelByLevel>
     <CreateTermsLevelByLevel>
         <TermFoundAsTopTerm>
-            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s' .</option>
+            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s'.</option>
             <option lang="el">Ο όρος '%s' βρέθηκε σαν OK στον θησαυρό '%s'. Για την επιτυχή προσθήκη του μετονομάζεται σε '%s' </option>
         </TermFoundAsTopTerm>
         <CopyTermFailure>
@@ -982,31 +1000,31 @@
     <CreateStatuses>
         <FailedToUpdateTermStatus>
             <option lang="en">Failed to Update Status of Term: '%s' . </option>
-            <option lang="el">Αποτυχία ενημέρρωσης της κατάστασης του όρου : '%s' . </option>
+            <option lang="el">Αποτυχία ενημέρρωσης της κατάστασης του όρου: '%s' . </option>
         </FailedToUpdateTermStatus>
         <TermReferenceFailed>
-            <option lang="en">Failed to reference at Term '%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στον όρο '%s' του θησαυρού: '%s' .</option>
+            <option lang="en">Failed to reference at Term '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στον όρο '%s' του θησαυρού: '%s'.</option>
         </TermReferenceFailed>
     </CreateStatuses>
     <CopyDatesAndEditors>
         <ClassReferenceFailure>
-            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s' .</option>
+            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
         </ClassReferenceFailure>
         <CategoryReferenceFailure>
-            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s' .</option>
+            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
         </CategoryReferenceFailure>                    
     </CopyDatesAndEditors>
     <CopySimpleLinks>
         <ClassReferenceFailure>
-            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s' .</option>
+            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
         </ClassReferenceFailure>
         <CategoryReferenceFailure>
-            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s' .</option>
-            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s' .</option>
+            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
         </CategoryReferenceFailure>                  
     </CopySimpleLinks>
     <abortActions>
@@ -1034,8 +1052,8 @@
                 <option lang="el">Ο χρήστης '%s' δεν υπάρχει.</option>
             </USER_NAME_DOES_NOT_EXIST>
             <AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
-                <option lang="en">User '%s' does not have permission to delete the thesaurus '%s' .</option>
-                <option lang="el">Ο χρήστης '%s' δεν έχει το δικαίωμα διαγραφής του θησαυρού '%s' .</option>
+                <option lang="en">User '%s' does not have permission to delete the thesaurus '%s'.</option>
+                <option lang="el">Ο χρήστης '%s' δεν έχει το δικαίωμα διαγραφής του θησαυρού '%s'.</option>
             </AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
             <ThesaurusNotFound>
                 <option lang="en">Thesaurus '%s' does not exist in database.</option>

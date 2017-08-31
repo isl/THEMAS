@@ -33,6 +33,7 @@
  */
 package Servlets;
 
+import DB_Classes.DBGeneral;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
@@ -165,11 +166,21 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
     CALLED BY: Index and Links servlets
     ----------------------------------------------------------------------*/
     public String getXMLLoginStart(String xsl) {
+        /*DBGeneral dbGen = new DBGeneral();
+        StringObject trMessage1 = new StringObject("");
+        StringObject trMessage2 = new StringObject("");
+        
+        dbGen.Translate(trMessage1, "root/GeneralMessages/XMLStartTitleAttribute", Utilities.getMessagesXml(),null);
+        dbGen.Translate(trMessage2, "root/GeneralMessages/XMLStartHeaderName", Utilities.getMessagesXml(),null);
+        */
         String XMLLoginStart =ConstantParameters.xmlHeader  +
                 "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
-                "<page title=\"Δημιουργός Θησαυρού\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
+                //"<page title=\"Thesarus Creator\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
+                //"<page title=\""+trMessage1.getValue()+"\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
+                "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
                 "<header>" +
-                "<name>Δημιουργός Θησαυρού</name>" +
+                //"<name>Thesarus Creator</name>" +
+                //"<name>"+trMessage2.getValue()+"</name>" +                
                 "<logo>images/thesaurusheader.jpg</logo>" +
                 "</header>" +
                 "<leftmenu></leftmenu>" +

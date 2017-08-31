@@ -114,7 +114,7 @@ public class DBCreate_Modify_Source {
 
         if (targetSource.length() == 0) {
             dbGen.Translate(errorMsg, "root/EditSource/Creation/EmptyName", null, pathToMessagesXML);
-            //errorMsg.setValue("Δεν έχει δοθεί όνομα για την δημιουργία νέας πηγής.");
+            //errorMsg.setValue("A name must be specified for the new source.");
             return false;
         }
         String prefix_Source = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
@@ -124,7 +124,7 @@ public class DBCreate_Modify_Source {
         if (Q.set_current_node(sourceObj) != QClass.APIFail) {
             errorArgs.add(targetSource);
             dbGen.Translate(errorMsg, "root/EditSource/Creation/AlreadyinDB", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η πηγή με όνομα " + targetSource + " υπάρχει ήδη στην βάση.");
+            //errorMsg.setValue("Source with name " + targetSource + " already exists in the database.");
             return false;
         }
 
@@ -184,7 +184,7 @@ public class DBCreate_Modify_Source {
             if (targetSource == null || targetSource.trim().length() == 0) {
 
                 dbGen.Translate(errorMsg, "root/EditSource/Deletion/EmptyName", null, pathToMessagesXML);
-                //errorMsg.setValue("Δεν επιλέχθηκε πηγή για μετονομασία. Ακύρωση διαγραφής.");
+                //errorMsg.setValue("No name is specified for the deletion source. Deletion cancelled.");
                 return false;
             }
 
@@ -193,7 +193,7 @@ public class DBCreate_Modify_Source {
             if (sourceIDL == QClass.APIFail) {
                 errorArgs.add(targetSource);
                 dbGen.Translate(errorMsg, "root/EditSource/Deletion/NotFound", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Η πηγή που δόθηκε προς διαγραφή δεν βρέθηκε στην βάση. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση διαγραφής.");
+                //errorMsg.setValue("Source given for deletion: "+targetSource+" was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
 
@@ -204,7 +204,7 @@ public class DBCreate_Modify_Source {
             if (howmanyRefs > 0 && deleteCurrentThesaurusReferences == null) {
                 errorArgs.add(targetSource);
                 dbGen.Translate(errorMsg, "root/EditSource/Deletion/HasReferences", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Η πηγή " + targetSource + " διαθέτει αναφορές από τον τρέχοντα ή από άλλους θησαυρούς της βάσης και δεν μπορεί να διαγραφεί. Ακύρωση διαγραφής.");
+                //errorMsg.setValue("Source " + targetSource + " is referenced from the current or other thesauri of the database and can not be deleted. Deletion cancelled.");
                 return false;
 
             }
@@ -263,7 +263,7 @@ public class DBCreate_Modify_Source {
                     if (ret == QClass.APIFail) {
                         errorArgs.add(targetTerms.get(k));
                         dbGen.Translate(errorMsg, "root/EditSource/Deletion/ReferenceDeletionError", errorArgs, pathToMessagesXML);
-                        //errorMsg.setValue("Αποτυχία διαγραφής αναφορών πηγής από τον τρέχοντα θησαυρό για τον όρο: "+ dbGen.removePrefix(targetTerms.get(k))+". Η λειτουργία διαγραφής της πηγής απέτυχε.");
+                        //errorMsg.setValue("Deletion error occurred while deleting source references for term "+ dbGen.removePrefix(targetTerms.get(k))+". Deletion cancelled.");
                         //reset to previous thesaurus name if needed
                         if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
                             TA.SetThesaurusName(prevThes.getValue());
@@ -278,7 +278,7 @@ public class DBCreate_Modify_Source {
                 if (howmanyfromCurrent != howmanyRefs) {
 
                     dbGen.Translate(errorMsg, "root/EditSource/Deletion/OtherThesauriReferences", null, pathToMessagesXML);
-                    //errorMsg.setValue("Η διαγραφή των αναφορών της πηγής από τον τρέχοντα θησαυρό ολοκληρώθηκε επιτυχώς. Ωστόσο η πηγή δεν μπορεί να διαγραφεί γιατί διαθέτει αναφορές και από άλλους θησαυρούς.");
+                    //errorMsg.setValue("Source references from current thesaurus were deleted successfully. The source could not be though deleted due to references from other thesauri of the database.");
                     Q.TEST_end_transaction();
                     return false;
                 }
@@ -326,7 +326,7 @@ public class DBCreate_Modify_Source {
             //<editor-fold defaultstate="collapsed" desc="Source Rename...">
             if (targetSource == null || targetSource.trim().length() == 0) {
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/EmptyName", null, pathToMessagesXML);
-                //errorMsg.setValue("Δεν επιλέχθηκε πηγή για μετονομασία. Ακύρωση μετονομασίας.");
+                //errorMsg.setValue("No name is specified for the source to rename. Renaming operation cancelled.");
                 return false;
             }
 
@@ -334,7 +334,7 @@ public class DBCreate_Modify_Source {
             if (newValue == null || newValue.trim().length() == 0) {
 
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/EmptyNewName", null, pathToMessagesXML);
-                //errorMsg.setValue("Δεν δόθηκε νέο όνομα πηγής για μετονομασία. Ακύρωση μετονομασίας.");
+                //errorMsg.setValue("No new name is specified for the source to rename. Renaming operation cancelled.");
 
                 return false;
             }
@@ -361,7 +361,7 @@ public class DBCreate_Modify_Source {
             if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
                 errorArgs.add(targetSource);
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/NotFound", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Η πηγή που δόθηκε προς μετονομασία δεν βρέθηκε στην βάση. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.");
+                //errorMsg.setValue("Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
 
@@ -372,7 +372,7 @@ public class DBCreate_Modify_Source {
             Q.reset_name_scope();
             if (Q.set_current_node(newSourceNameObj) != QClass.APIFail) {
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/AlreadyInDB", null, pathToMessagesXML);
-                //errorMsg.setValue("Το νέο όνομα που δόθηκε για την μετονομασία υπάρχει ήδη στην βάση. Παρακαλώ επιλέξτε άλλο όνομα πηγής.");
+                //errorMsg.setValue("New source name selected already exists in the database. Please select another source name.");
                 return false;
             }
 
@@ -382,7 +382,7 @@ public class DBCreate_Modify_Source {
             //check result
             if (ret == QClass.APIFail) {
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/RenameFailure", null, pathToMessagesXML);
-                //errorMsg.setValue("Αποτυχία μετονομασίας.");
+                //errorMsg.setValue("Rename Failure.");
                 return false;
             }
 
@@ -399,7 +399,7 @@ public class DBCreate_Modify_Source {
             //check result of rename source note node if it existed
             if (ret == QClass.APIFail) {
                 dbGen.Translate(errorMsg, "root/EditSource/Rename/RenameFailure", null, pathToMessagesXML);
-                //errorMsg.setValue("Αποτυχία μετονομασίας.");
+                //errorMsg.setValue("Rename Failure.");
                 return false;
             } else {
                 errorMsg.setValue("<newName>" + newValue + "</newName>");
@@ -597,7 +597,7 @@ public class DBCreate_Modify_Source {
             if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
                 errorArgs.add(targetSource);
                 dbGen.Translate(errorMsg, "root/EditSource/MoveReferences/NotFound", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Η πηγή " + targetSource + " δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα αποτελέσματα αναζήτησης πηγών.");
+                //errorMsg.setValue("Source " + targetSource + " was not found in the database. Please refresh the source's search results.");
                 return false;
             }
 

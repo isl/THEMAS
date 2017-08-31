@@ -115,7 +115,7 @@ public class DBImportData {
     }
 
     public boolean importTermsUnderHierarchy(SessionWrapperClass sessionInstance, String targetHierarchy, String xmlFilePath, String pathToErrorsXML, OutputStreamWriter logFileWriter, StringObject resultObj) throws IOException {
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης όρων από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading terms from file: " + xmlFilePath + ".");
         Vector<String> parsedTermNames = new Vector<String>();
 
         try {
@@ -137,7 +137,7 @@ public class DBImportData {
                 }
             }
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης όρων. Βρέθηκαν " + parsedTermNames.size() + " όροι.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading terms. Found " + parsedTermNames.size() + " terms.");
 
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
@@ -189,7 +189,7 @@ public class DBImportData {
                 errorArgs.removeAllElements();
                 
                 resultObj.setValue(resultMessageObj.getValue());
-                //resultObj.setValue("Η ιεραρχία '" + Utilities.escapeXML(targetHierarchy) + "' που επιλέχθηκε για εισαγωγή όρων δεν βρέθηκε στην βάση. Παρακαλώ επιλέξτε ένα νέο όνομα ιεραρχίας.");
+                //resultObj.setValue("Hierarchy  '" + Utilities.escapeXML(targetHierarchy) + "' which was choosen for insertion of terms does not exist in database. Please choose a different name of Hierarchy.");
                 
                 returnVal = false;
                 return false;
@@ -215,7 +215,7 @@ public class DBImportData {
                     logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(targetHierarchy) + "</errorValue>");
                     logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + resultMessageObj.getValue() + "').</reason>");
-                    //logFileWriter.append("<reason>Ο όρος '" + targetUITerm + "' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: '" + Utilities.escapeXML(targetHierarchy) + "').</reason>");
+                    //logFileWriter.append("<reason>The Term '" + targetUITerm + "' already exists in database and it did not change (to be essentially NT of Term: '" + Utilities.escapeXML(targetHierarchy) + "'.</reason>");
                     logFileWriter.append("</targetTerm>");
                     //Utils.StaticClass.webAppSystemOutPrintln("\tTerm: "+ targetUITerm + " already found in thes " + SessionUserInfo.selectedThesaurus);
                     continue;
@@ -230,7 +230,7 @@ public class DBImportData {
             }
             Q.free_all_sets();
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης όρων από το αρχείο: " + xmlFilePath + ".");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading terms from file: " + xmlFilePath + ".");
 
         }
         finally{
@@ -724,7 +724,7 @@ public class DBImportData {
 
 
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος δημιουργίας νέου θησαυρού: " + importThesaurusName + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of new thesaurus creation: " + importThesaurusName + ".");
 
         Q.reset_name_scope();
         if (readAndSyncronizeTranslationCategories(importThesaurusName, resultObj, Q, TA, sis_session, tms_session,
@@ -734,7 +734,7 @@ public class DBImportData {
 
 
         Q.reset_name_scope();
-        // Step8 Get and put default Status per user for Ορφανοί όροι
+        // Step8 Get and put default Status per user for Unclassified terms
         if (termsInfo.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
             specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
         } else {

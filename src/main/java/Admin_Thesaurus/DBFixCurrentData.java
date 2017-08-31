@@ -1008,7 +1008,7 @@ public class DBFixCurrentData {
             errorArgs.removeAllElements();
 
             errorMsg.setValue(resultMessageObj.getValue());
-            //errorMsg.setValue("Αποτυχία εύρεσης της ιεραρχίας " + targetHierarchy + " στην βάση.");
+            //errorMsg.setValue("Failed to find Hierarchy " + targetHierarchy + " in database.");
             fixed = false;
             return;
         }
@@ -1133,10 +1133,10 @@ public class DBFixCurrentData {
             for (int i = 0; i < classes.size(); i++) {
 
                 String currentPrefix = prefixes.get(i);
-                //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Προσπάθεια αναφοράς στην κλάση " + classes.get(i).getValue() +" με πρόθεμα "+ currentPrefix);
+                //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Attempt to access class " + classes.get(i).getValue() +" with prefix "+ currentPrefix);
                 Q.reset_name_scope();
                 if (Q.set_current_node(classes.get(i)) == QClass.APIFail) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία αναφοράς στην κλάση " + classes.get(i).getValue());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to access to class: " + classes.get(i).getValue());
                     continue;
                 }
                 int set_curr_instances = Q.get_all_instances(0);

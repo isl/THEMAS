@@ -138,68 +138,10 @@ public class Utilities {
                 + // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page title=\"Δημιουργός Θησαυρού\" language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
-                + "\r\n<header>"
-                + "\r\n<name>Δημιουργός Θησαυρού</name>"
-                + //"\r\n<logo>images/thesaurusheader.jpg</logo>" +
-                "\r\n</header>"
+                "\r\n<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
                 + "\r\n<leftmenu>"
                 + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
-                + /*"\r\n<option>" +
-                "\r\n<name>Term</name>" +
-                "\r\n<new alt=\"Δημιουργία\" kind=\"Term\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των όρων\" url=\"/ViewAll_Terms\">images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Hierarchy</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Hierarchy\" >images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των ιεραρχιών\" url=\"/ViewAll_Hierarchies\">images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Facet</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Facet\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των μικροθησαυρών\" url=\"/ViewAll_Facets\" >images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Bibliography</name>" +
-                "</option>" +
-                "<option>" +
-                "<name>Sources</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Source\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των πηγών\" url=\"/ViewAll_Sources\" >images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Statistics</name>" +
-                "<statistics alt=\"Εμφάνιση Στατιστικών Θησαυρού\" href=\"Statistics?DIV=StatisticsOfTerms_DIV\">images/showalldocs.gif</statistics>" +
-                "</option>" +
-                "<option>" +
-                "<name>THES_Admin</name>" +
-                "<ThesOperations alt=\"Διαχείριση Θησαυρών\" href=\"ImportExportData?DIV=Import_Data_DIV\">images/db.gif</ThesOperations>" + 
-                "<ThesChange alt=\"Αλλαγή Τρέχοντος Θησαυρού\" href=\"#\">images/editdoc.gif</ThesChange>" + 
-                "</option>" +                
-                "<option>" +
-                "<name>DB Admin</name>" +
-                "<anchor alt=\"Διαχείριση Βάσης Δεδομένων\" href=\"DBadmin?DIV=Create_Restore_DB_backup_DIV\">images/db.gif</anchor>" +
-                "</option>" +
-                
-                "<option>" +
-                "<name>ReleaseThes</name>" +
-                "<anchor alt=\"Έκδοση Θησαυρού\" href=\"ReleaseThesaurus?DIV=ReleaseThesaurus_DIV\">images/ReleaseThesaurus.gif</anchor>" +
-                "</option>" +
-                "<option>" +
-                "<name>Users</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Users\">images/newdoc.gif</new>" +
-                // temporarily NO search for users
-                // "<search>images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των χρηστών\" url=\"/ViewAll_Users\">images/showalldocs.gif</viewAll>" +
-                "<shareThesaurus alt=\"Διαχείριση ιδιοτήτων χρηστών θησαυρού\">images/db.gif</shareThesaurus>" +
-                "</option>" +*//*
-                "<save>images/disk.gif</save>"+
-                "<save-xml>images/disk_xml.gif</save-xml>"+*/ "</leftmenu>";
+                + "</leftmenu>";
 
         return XMLStart;
     }
@@ -216,7 +158,6 @@ public class Utilities {
     public String getXMLMiddle(String resultsString, String upActiveTab/*, String downActiveTab*/) {
         // <tabset1>
         // the following strings must be the SAME with the strings defined in tabs.js!!!
-        //String[] tabsetArray1 = {"Αλφαβητικά", "Συστηματικά", "Ιεραρχικά", "Γραφικά", "Αποτ.Αναζήτησης", "Κριτ.Αναζήτησης", "Ρυθμίσεις","Αποτ.Αναζήτ.Ιεραρχιών", "Αποτ.Αναζήτ.Θεμάτων"};
         String[] tabsetArray1 = {"Alphabetical", "Systematic", "Hierarchical", "Graphical", "SearchResults", "SearchCriteria", "Settings",
             "SearchHierarchyResults", "SearchFacetResults", "SearchSourceResults", "SearchUsersResults", "HierarchiesSearchCriteria", "FacetsSearchCriteria", "SourcesSearchCriteria", "New",
             "NewHierarchy", "NewFacet", "Move2Hier", "HistoricalInfo_Term", "HistoricalInfo_Hierarchy", "HistoricalInfo_Facet", "Rename", "RenameHierarchy", "RenameFacet",

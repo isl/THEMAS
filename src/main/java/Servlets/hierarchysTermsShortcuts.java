@@ -1051,8 +1051,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(exc);
         }
 
-        String primary2translationsXSLPath = xslBasePath.concat("\\Primary2TranslationsIndex.xsl");
-        String translations2primaryXSLPath = xslBasePath.concat("\\Translations2PrimaryIndex.xsl");
+        String primary2translationsXSLPath = xslBasePath.concat(File.separator+"Primary2TranslationsIndex.xsl");
+        String translations2primaryXSLPath = xslBasePath.concat(File.separator+"Translations2PrimaryIndex.xsl");
 
         //XML STORED IN Save_Results_file_nameWithoutExtension
         //XSL STORED IN xslLink

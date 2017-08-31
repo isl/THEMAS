@@ -119,7 +119,7 @@ public class DBConnect_Term {
         // PERFORMED BY CONSISTENCYCHECK.JAVA
         /*
         if (targetDescriptor.getValue().trim().equals(b_prefix)) {		
-        errorMsg = errorMsg.concat("δεν ειναι εφικτη η δημιουργια του κενου ορου");
+        errorMsg = errorMsg.concat("you cannot create a term without a name.");
         return errorMsg;
         }
          */
@@ -537,6 +537,7 @@ public class DBConnect_Term {
                 // create it as instance of class DeweyNumber
                 Identifier id_d = new Identifier(((StringObject) deweys.get(i)).getValue());
                 if (Q.CHECK_Add_Node( id_d, QClass.SIS_API_TOKEN_CLASS,true) == QClass.APIFail) {
+                    
                     errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος" + 
                             dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) +
                             " δε μπορεί να προστεθεί στη βάση.",tms_session) + " ");

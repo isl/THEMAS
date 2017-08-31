@@ -576,29 +576,29 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
         switch (resultOfCreateUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.");
+                //out.println("Failure" + "Username field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());               
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.");
+                //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NO_USER_PASSWORD_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο κωδικού του χρήστη.");
+                //out.println("Failure" + "User Password field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + newName_User + "' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.");                
+                //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");                
                 errorArgs.add(newName_User);
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.THESAURUS_SET_WITH_DUBLICATE_VALUES:
-                //out.println("Failure" + "Δεν επιτρέπεται ο ορισμός διαφορετικών γκρουπ στον ίδιο θησαυρό.");
+                //out.println("Failure" + "Definition of different groups is not allowd in the same Thesaurus.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
@@ -678,65 +678,65 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfCreateUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.");
+                //out.println("Failure" + "Username field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NO_NEW_FORMER_USER_NAME_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο νέου ονόματος για τον παλαιότερο χρήστη '" + newName_User + "'.");
+                //out.println("Failure" + "Field of new User is not declared for the older User '" + newName_User + "'.");
                 errorArgs.add(newName_User);
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_NEW_FORMER_USER_NAME_GIVEN", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.");
+                //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "Το νέο πεδίο ονόματος χρήστη '" + olderUserRenameName + "' πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.");
+                //out.println("Failure" + "New field of Username '" + olderUserRenameName + "' must have minimun length of 2 and max length of 20 characters.");
                 errorArgs.add(olderUserRenameName);
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.NO_USER_PASSWORD_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο κωδικού του χρήστη.");
+                //out.println("Failure" + "User Password field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + newName_User + "' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.");
+                //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");
                 errorArgs.add(newName_User);
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + olderUserRenameName + "' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.");
+                //out.println("Failure" + "The new Username '" + olderUserRenameName + "' is already in use from another user.");
                 errorArgs.add(olderUserRenameName);
                 dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.THESAURUS_SET_WITH_DUBLICATE_VALUES:
-                //out.println("Failure" + "Δεν επιτρέπεται ο ορισμός διαφορετικών γκρουπ στον ίδιο θησαυρό.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", null, pathToMessagesXML);
+                //out.println("Failure" + "Definition of different groups is not allowed in the same Thesaurus.");
+                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + olderUserRenameName + "' χρησιμοποιείται ήδη στην βάση. Παρακαλώ επιλέξτε διαφορετικό όνομα.");
+                //out.println("Failure" + "The new Username '" + olderUserRenameName + "' is already in use from another user in database. Please choose a different one.");
                 errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB", errorArgs, pathToMessagesXML);
+                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB", pathToMessagesXML, new String[]{olderUserRenameName});
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();;
                 return;
             case UsersClass.FORMER_USER_RENAME_FAILED:
-                //out.println("Failure" + "Η μετονομασία του χρήστη '" + newName_User + "' σε '" + olderUserRenameName + "' στην βάση απέτυχε.");
+                //out.println("Failure" + "Renaming of user '" + newName_User + "' to '" + olderUserRenameName + "' failed.");
                 errorArgs.add(newName_User);
                 errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/FORMER_USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
+                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/FORMER_USER_RENAME_FAILED", pathToMessagesXML, new String[]{newName_User,olderUserRenameName});
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
@@ -746,10 +746,10 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         return;
 
     }
+    
     /*---------------------------------------------------------------------
      EditUser()
      ----------------------------------------------------------------------*/
-
     private void EditUser(HttpServletRequest request, SessionWrapperClass sessionInstance, PrintWriter out) throws IOException {
         Utilities u = new Utilities();
         // get input parameters
@@ -789,38 +789,38 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfEditUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.");
+                //out.println("Failure" + "Username field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NOT_ALLOWED_TO_DELETE_YOURSELF:
-                //out.println("Failure" + "Δεν επιτρέπεται η αυτο-διαγραφή του χρήστη '" + oldUserName + "'.");
+                //out.println("Failure" + "Self deletion of user '" + oldUserName + "' is not allowed.");
                 errorArgs.add(oldUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NOT_ALLOWED_TO_DELETE_YOURSELF", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.CANNOT_DELETE_LAST_ADMINISTRATOR:
-                //out.println("Failure" + "Ο χρήστης '" + oldUserName + "' δεν μπορεί να διαγραφεί. Είναι ο τελευταίος χρήστης Διαχειριστής.");
+                //out.println("Failure" + "User '" + oldUserName + "' cannot be deleted. He/She is the last administrator of the system.");
                 errorArgs.add(oldUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/CANNOT_DELETE_LAST_ADMINISTRATOR", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS:
-                //out.println("Failure" + "Ο χρήστης '" + oldUserName + "' δεν μπορεί να διαγραφεί. Είναι ο τελευταίος χρήστης \"Επιτροπή Θησαυρού\" για κάποιον θησαυρό.");
+                //out.println("Failure" + "User '" + oldUserName + "' cannot be deleted. He/She is the last user of group "Thesaurus Committee" for a Thesaurus.");
                 errorArgs.add(oldUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "Το νέο πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.");
+                //out.println("Failure" + "New field of Username must have minimum length of 2 and max length of 20 characters.");
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + newName_User + "' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.");
+                //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");
                 errorArgs.add(newName_User);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
@@ -832,7 +832,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
                 //out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_RENAME_FAILED:
-                //out.println("Failure" + "Η μετονομασία του χρήστη '" + oldUserName + "' σε '" + newName_User + "' στην βάση απέτυχε.");
+                //out.println("Failure" + "Renaming of user '" + oldUserName + "' to '" + newName_User + "' in database failed.");
                 errorArgs.add(oldUserName);
                 errorArgs.add(newName_User);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUser/USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
@@ -885,33 +885,33 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfEditTargetAndOlderUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
-                //out.println("Failure" + "Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.");
+                //out.println("Failure" + "Username field is not declared.");
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
-                //out.println("Failure" + "Ο προς μετονομασία χρήστης: '" + targetUser + "' δεν βρέθηκε ως χρήστης του συστήματος.");
+                //out.println("Failure" + "The renaming user: '" + targetUser + "' could not be found as a user of the system.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "Το νέο πεδίο ονόματος χρήστη '" + OlderUserRenameName + "' πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.");//OlderUserRenameName
-                errorArgs.add(OlderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", errorArgs, pathToMessagesXML);
+                //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
+                //errorArgs.add(OlderUserRenameName);
+                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
-                //out.println("Failure" + "Το νέο όνομα χρήστη '" + OlderUserRenameName + "' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.");
+                //out.println("Failure" + "The new Username '" + OlderUserRenameName + "' is already in use from another user.");
                 errorArgs.add(OlderUserRenameName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_DB:
-                //out.println("Failure" + "Tο νέο όνομα χρήστη '" + OlderUserRenameName + "' χρησιμοποιείται ήδη στην βάση. Παρακαλώ επιλέξτε άλλο όνομα για μετονομασία του παλαιότερου χρήστη '" + olderUserName + "'.");//+"<newName>"+newName_User+"</newName>" + "<oldName>" + oldUserName + "</oldName>");
+                //out.println("Failure" + "Username '" + OlderUserRenameName + "' already exists in database. Please choose a different Username to rename the old user '" + olderUserName + "'.);//+"<newName>"+newName_User+"</newName>" + "<oldName>" + oldUserName + "</oldName>");
                 errorArgs.add(OlderUserRenameName);
                 errorArgs.add(olderUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_DB", errorArgs, pathToMessagesXML);
@@ -919,7 +919,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_RENAME_FAILED:
-                //out.println("Failure" + "Αποτυχία μετονομασίας του χρήστη '" + targetUser + "' σε '" + olderUserName + "'.");
+                //out.println("Failure" + "Failure of renaming user '" + targetUser + "' to '" + olderUserName + "'.");
                 errorArgs.add(targetUser);
                 errorArgs.add(olderUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
@@ -927,7 +927,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_RENAME_FAILED:
-                //out.println("Failure" + "Αποτυχία μετονομασίας του χρήστη '" + olderUserName + "' σε '" + OlderUserRenameName + "'.");
+                //out.println("Failure" + "Renaming of user '" + olderUserName + "' to '" + OlderUserRenameName + "' in database failed.");
                 errorArgs.add(olderUserName);
                 errorArgs.add(OlderUserRenameName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
@@ -935,35 +935,35 @@ public class EditDisplays_User extends ApplicationBasicServlet {
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_DELETION_FAILED:
-                //out.println("Failure" + "Αποτυχία διαγραφής του χρήστη '" + targetUser + "' από την βάση.");
+                //out.println("Failure" + "Failure of deleting user '" + targetUser + "' from the database.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_DELETION_FAILED:
-                //out.println("Failure" + "Αποτυχία διαγραφής του χρήστη '" + olderUserName + "' από την βάση.");
+                //out.println("Failure" + "Failure of deleting user '" + olderUserName + "' from the database.");
                 errorArgs.add(olderUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED:
-                //out.println("Failure" + "Αποτυχία διαγραφής των συνδέσμων δημιουργού προς τον συντάκτη '" + targetUser + "'.");
+                //out.println("Failure" + "Failure of deleting creator links to author '" + targetUser + "'.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED:
-                //out.println("Failure" + "Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '" + targetUser + "'.");
+                //out.println("Failure" + "Failure of deleting modifier links to author '" + targetUser + "'.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_INSTANCE_ADDITION_FAILED:
-                //out.println("Failure" + "Αποτυχία προσθήκης του χρήστη '" + olderUserName + "' στους θησαυρούς που άνηκε ο χρήστης '" + targetUser + "'.");
+                //out.println("Failure" + "Failure inserting user '" + olderUserName + "' to thesaurus where user '" + targetUser + "' belonged.");
                 errorArgs.add(olderUserName);
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_INSTANCE_ADDITION_FAILED", errorArgs, pathToMessagesXML);
@@ -971,14 +971,14 @@ public class EditDisplays_User extends ApplicationBasicServlet {
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED:
-                //out.println("Failure" + "Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '" + olderUserName + "'.");
+                //out.println("Failure" + "Failure of moving creator links to author '" + olderUserName + "'.");
                 errorArgs.add(olderUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED:
-                //out.println("Failure" + "Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '" + olderUserName + "'.");
+                //out.println("Failure" + "Failure of moving modifier links to author '" + olderUserName + "'.");
                 errorArgs.add(olderUserName);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
@@ -1028,20 +1028,20 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfEditUserPassword) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
-                //out.println("Failure" + "Ο χρήστης '" + targetUser + "' δεν υπάρχει.");
+                //out.println("Failure" + "The renaming user: '" + targetUser + "' could not be found as a user of the system.");
                 errorArgs.add(targetUser);
                 dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 errorArgs.removeAllElements();
                 return;
             case UsersClass.OLD_PASSWORD_GIVEN_INCORRECT:
-                //out.println("Failure" + "Λανθασμένη τιμή παλιού κωδικού.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/OLD_PASSWORD_GIVEN_INCORRECT", null, pathToMessagesXML);
+                //out.println("Failure" + "Wrong old password was given.");
+                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/OLD_PASSWORD_GIVEN_INCORRECT", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.CONFIRM_NEW_PASSWORD_IS_DIFFERENT:
-                //out.println("Failure" + "Δόθηκαν διαφορετικές τιμές για τον νέο κωδικό.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/CONFIRM_NEW_PASSWORD_IS_DIFFERENT", null, pathToMessagesXML);
+                //out.println("Failure" + "Different values of new password were given.");
+                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/CONFIRM_NEW_PASSWORD_IS_DIFFERENT", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
         }
@@ -1157,12 +1157,12 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         
         switch (resultOfShareThesaurus) {
             case UsersClass.THESAURUS_WITHOUT_THESAURUS_COMMITTEE:
-                //out.println("Failure" + "Ο θησαυρός πρέπει να έχει έναν τουλάχιστον χρήστη \"Επιτροπή Θησαυρού\".");
+                //out.println("Failure" + "Thesaurus must have at least one \"Thesaurus Committee\" user.");
                 dbGen.Translate(resultMessageObj, "root/resultOfShareThesaurus/THESAURUS_WITHOUT_THESAURUS_COMMITTEE", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_SET_WITH_DUBLICATE_VALUES:
-                //out.println("Failure" + "Δεν μπορούν να ορισθούν παραπάνω από ένα γκρουπ-ρόλος για έναν χρήστη στον ίδιο θησαυρό.");
+                //out.println("Failure" + "There cannot be defined more than one group-role for one user at the same Thesaurus.");
                 dbGen.Translate(resultMessageObj, "root/resultOfShareThesaurus/USER_SET_WITH_DUBLICATE_VALUES", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;

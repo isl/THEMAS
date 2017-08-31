@@ -87,7 +87,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
 
             DBGeneral dbGen = new DBGeneral();
             
-                        //StringBuffer xml = new StringBuffer();
+            //StringBuffer xml = new StringBuffer();
             //String RenameResult = "Renamed succesfully!!";
             StringObject msgObj = new StringObject("");
             dbGen.Translate(msgObj, "root/EditFacet/Rename/Success", null, pathToMessagesXML);
