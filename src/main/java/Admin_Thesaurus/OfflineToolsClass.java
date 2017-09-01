@@ -100,9 +100,10 @@ public class OfflineToolsClass {
             
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ importXMLMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+importXMLMode);
-            Utils.StaticClass.webAppSystemOutPrintln("2) ThesaurusName (No spaces just latin chars)");
-            Utils.StaticClass.webAppSystemOutPrintln("3) Input XML Full File Path ");
-            Utils.StaticClass.webAppSystemOutPrintln("4) Issues report xml file full path (an html will also be produeced with the same name but different extension)");            
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) ThesaurusName (No spaces just latin chars)");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Input XML Full File Path ");
+            Utils.StaticClass.webAppSystemOutPrintln("5) Issues report xml file full path (an html will also be produeced with the same name but different extension)");            
                 
             return;
         }    
@@ -110,55 +111,63 @@ public class OfflineToolsClass {
             
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ exportXMLMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+exportXMLMode);
-            Utils.StaticClass.webAppSystemOutPrintln("2) ThesaurusName (Thesaurus must exist or use value: XXXXXX in order to export all existing thesauri)");
-            Utils.StaticClass.webAppSystemOutPrintln("3) Export XML Full Folder Path ");
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) ThesaurusName (Thesaurus must exist or use value: XXXXXX in order to export all existing thesauri)");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Export XML Full Folder Path ");
             
             return;
         }
         if(mode.equals(mergeMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ mergeMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+mergeMode);
-            Utils.StaticClass.webAppSystemOutPrintln("2) ThesaurusName 1");
-            Utils.StaticClass.webAppSystemOutPrintln("3) ThesaurusName 2");
-            Utils.StaticClass.webAppSystemOutPrintln("4) MERGED ThesaurusName ");
-            Utils.StaticClass.webAppSystemOutPrintln("5) Issues report xml file full path (an html will also be produeced with the same name but different extension)"); 
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) ThesaurusName 1");
+            Utils.StaticClass.webAppSystemOutPrintln("4) ThesaurusName 2");
+            Utils.StaticClass.webAppSystemOutPrintln("5) MERGED ThesaurusName ");
+            Utils.StaticClass.webAppSystemOutPrintln("6) Issues report xml file full path (an html will also be produeced with the same name but different extension)"); 
             return;
         }    
         if(mode.equals(lockSystemMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ lockSystemMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+lockSystemMode);
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             return;
         }    
         if(mode.equals(unlockSystemMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ unlockSystemMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+unlockSystemMode);
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             return;
         }    
         if(mode.equals(fixDbMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ fixDbMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+fixDbMode);
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             return;
         }    
         if(mode.equals(shutDownDb)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ shutDownDb+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+shutDownDb);
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             return;
         }
         if(mode.equals(importFromTsvMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ importFromTsvMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+importFromTsvMode);
-            Utils.StaticClass.webAppSystemOutPrintln("2) Full path to the TSV to be loaded.");
-            Utils.StaticClass.webAppSystemOutPrintln("3) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) Full path to the TSV to be loaded.");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
                     
             return;
         }    
         if(mode.equals(exportToTsvMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ exportToTsvMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+exportToTsvMode);
-            Utils.StaticClass.webAppSystemOutPrintln("2) Boolean value true or false that determines if the TSV will ONLY contain Generic data or Not.");
-            Utils.StaticClass.webAppSystemOutPrintln("3) Boolean value true or false that determines if the TSV will skip Generic data or Not.\r\n"
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) Boolean value true or false that determines if the TSV will ONLY contain Generic data or Not.");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV will skip Generic data or Not.\r\n"
                                                    + "   If previous value was set tot true then this argument is just ignored.");
-            Utils.StaticClass.webAppSystemOutPrintln("4) Full Path To TSV outPutFolder (optional variable if noe is used then TSVs folder will be selected.");
+            Utils.StaticClass.webAppSystemOutPrintln("5) Full Path To TSV outPutFolder (optional variable if noe is used then TSVs folder will be selected.");
             return;
         }   
         
@@ -263,7 +272,10 @@ public class OfflineToolsClass {
                 //arguements.add()
             }
             
-            String basePath = null;
+            String basePath = arguements.get(0);
+            getFolderPathOrExit(basePath,true);
+            
+            /*
             try {
                 basePath = URLDecoder.decode(OfflineToolsClass.class.getResource("OfflineToolsClass.class").getFile(), "UTF-8");
             } catch (UnsupportedEncodingException ex) {
@@ -286,6 +298,7 @@ public class OfflineToolsClass {
                 basePath = System.getProperty("user.dir").replace("WEB-INF\\classes", "").replace("WEB-INF/classes", "");
 
             }
+            */
             Parameters.initParams(basePath);
             //Utils.StaticClass.webAppSystemOutPrintln(basePath);
 
@@ -341,14 +354,14 @@ public class OfflineToolsClass {
                 String inputFilePath = "";
                 String logFileNamePath = "";
                 
-                if(arguements.size()!=3){
+                if(arguements.size()!=4){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
                 
-                importThesaurusName = arguements.get(0);
-                inputFilePath = arguements.get(1);
-                logFileNamePath = arguements.get(2);
+                importThesaurusName = arguements.get(1);
+                inputFilePath = arguements.get(2);
+                logFileNamePath = arguements.get(3);
                 
 
                 Locale targetLocale = new Locale("el", "GR");
@@ -449,12 +462,12 @@ public class OfflineToolsClass {
                 String exportFolderPath = "";
                 //String logFileNamePath = "";
                 
-                if(arguements.size()!=2){
+                if(arguements.size()!=3){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
-                exportThesaurusName = arguements.get(0);
-                exportFolderPath = getFolderPathOrExit(arguements.get(1),true);
+                exportThesaurusName = arguements.get(1);
+                exportFolderPath = getFolderPathOrExit(arguements.get(2),true);
                 
                 //open connection and start Query
                 if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, null, true) == QClass.APIFail) {
@@ -524,15 +537,15 @@ public class OfflineToolsClass {
                 String mergedThesaurusName = "";
                 String logFileNamePath = "";
                 
-                if(arguements.size()!=4){
+                if(arguements.size()!=5){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
                 
-                thesaurusName1 = arguements.get(0);
-                thesaurusName2 = arguements.get(1);
-                mergedThesaurusName = arguements.get(2);                
-                logFileNamePath = arguements.get(3);
+                thesaurusName1 = arguements.get(1);
+                thesaurusName2 = arguements.get(2);
+                mergedThesaurusName = arguements.get(3);                
+                logFileNamePath = arguements.get(4);
                 
                 Locale targetLocale = new Locale("el", "GR");
                 String pathToErrorsXML = baseApplicationFilePath.concat("/translations/Consistencies_Error_Codes.xml");
@@ -616,13 +629,13 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="tsvImport">
             if(mode.equals(importFromTsvMode)){
                 
-                if(arguements.size()!=2){
+                if(arguements.size()!=3){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
-                String import_export_file = arguements.get(0);
+                String import_export_file = arguements.get(1);
                 boolean genericImport =false;
-                if(arguements.get(1).toLowerCase().trim().equals("true")|| arguements.get(1).toLowerCase().trim().equals("yes")){
+                if(arguements.get(2).toLowerCase().trim().equals("true")|| arguements.get(2).toLowerCase().trim().equals("yes")){
                     genericImport = true;
                 }
                 
@@ -658,16 +671,16 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="tsvExport">
             if(mode.equals(exportToTsvMode)){
                 
-                if(arguements.size()!=2 && arguements.size()!=3){
+                if(arguements.size()!=3 && arguements.size()!=4){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
                 boolean exportOnlyGeneric =false;
-                if(arguements.get(0).toLowerCase().trim().equals("true")|| arguements.get(0).toLowerCase().trim().equals("yes")){
+                if(arguements.get(1).toLowerCase().trim().equals("true")|| arguements.get(1).toLowerCase().trim().equals("yes")){
                     exportOnlyGeneric = true;
                 }
                 boolean skipGeneric =false;
-                if(arguements.get(1).toLowerCase().trim().equals("true")|| arguements.get(1).toLowerCase().trim().equals("yes")){
+                if(arguements.get(2).toLowerCase().trim().equals("true")|| arguements.get(2).toLowerCase().trim().equals("yes")){
                     skipGeneric = true;
                 }
                 
@@ -676,8 +689,8 @@ public class OfflineToolsClass {
                 String dataBaseBasePath = config.GetConfigurationValue("Neo4j_DB_FOLDER_PATH");
                 String dbSubPath = config.GetConfigurationValue("Neo4j_DB_PATH");
                 String tsvExportFolder = "";
-                if(arguements.size()==3){
-                    tsvExportFolder = getFolderPathOrExit(arguements.get(2), true);
+                if(arguements.size()==4){
+                    tsvExportFolder = getFolderPathOrExit(arguements.get(3), true);
                 }
                 else{
                     tsvExportFolder = dataBaseBasePath + config.GetConfigurationValue("Neo4j_ExportFileDirectory");

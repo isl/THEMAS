@@ -49,4 +49,4 @@ SET SystemOutFilePath="%BaseInputOutpoutPath%\OfflineToolsClassOutput.txt"
 
 
 cd "%BaseTHEMASwebappPath%\WEB-INF\classes"
-"%JAVA_BIN_PATH%\java.exe"  -Xmx2048M -cp ".;%libFolder%\*;" -Dfile.encoding=UTF8 Admin_Thesaurus.OfflineToolsClass %Mode% %ThesaurusName% %ExportFolderPath% 1> %SystemOutFilePath% 2>&1
+"%JAVA_BIN_PATH%\java.exe"  -Xmx2048M -cp ".;%libFolder%\*;" -Dfile.encoding=UTF8 Admin_Thesaurus.OfflineToolsClass %Mode% "%BaseTHEMASwebappPath%" %ThesaurusName% %ExportFolderPath% 1> %SystemOutFilePath% 2>&1
