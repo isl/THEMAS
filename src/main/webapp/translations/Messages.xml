@@ -893,6 +893,16 @@
             <option lang="el">Η διαγραφή του θησαυρού '%s' ολοκληρώθηκε με επιτυχία.</option>
         </DeleteThesaurusSucceded>
     </DeleteThesaurus>
+    <MergeThesauri>
+        <ReportTitle>
+            <option lang="en">Report of merge operation of thesauri %s and %s in %s. Time: %s.</option>
+            <option lang="el">Αναφορά συγχώνευσης θησαυρών %s και %s στον νέο θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Merge thesauri operation of thesauri %s and %s in %s completed successfully in %s minutes.</option>
+            <option lang="el">Η διαδικασία συγχώνευσης θησαυρών %s και %s στον νέο θησαυρό %s ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
+        </ReportSuccessMessage>
+    </MergeThesauri>
     <ImportData>
         <ReportTitle>
             <option lang="en">Import Data in thesaurus: %s report. Time: %s.</option>

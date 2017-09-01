@@ -369,7 +369,7 @@ public class DBMergeThesauri {
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
         Q.free_all_sets();
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή δημιουργίας ετικετών δεσμού. Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of Guide terms /Node Labels. Time: " + Utilities.GetNow());
         DBEditGuideTerms dbEdit_Guide_Terms = new DBEditGuideTerms();
         int howmanyGts = allGuideTerms.size();
         for (int i = 0; i < howmanyGts; i++) {
@@ -382,13 +382,13 @@ public class DBMergeThesauri {
             }
 
             if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj, pathToMessagesXML) == false) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία δημιουργίας της ετικέτας δεσμού: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create guide term / node lable: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
                 return false;
             }
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος δημιουργίας ετικετών δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of guide terms / node labels.");
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ενημέρωσης σχέσεων με ετικέτες δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting update of BT relations with guide terms/ node labels notation.");
 
         DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
         int linkRelations = 0;
@@ -426,13 +426,13 @@ public class DBMergeThesauri {
 
             //error detection
             if (resultObj.getValue() != null && resultObj.getValue().length() > 0) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία προσθήκης στον όρο" + targetTerm + " των ετικετών δεσμού " + GuideTermsDecodedValues.toString() + " για τους ΕΟ " + ntsDecodedValues.toString() + ".\r\n" + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to add in term: " + targetTerm + " the node labels: " + GuideTermsDecodedValues.toString() + " for the NTs: " + ntsDecodedValues.toString() + ".\r\n" + resultObj.getValue());
                 return false;
             }
             //links++;
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ενημέρωσης σχέσεων με ετικέτες δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of update of BT relations with guide terms/ node labels notation.");
         return true;
     }
 
@@ -451,7 +451,7 @@ public class DBMergeThesauri {
             facets_thes2.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, thesaurusName2, null));
         }
 
-        //Get All Facets of New merged thesaurus --> ΘΈΜΑ ΚΟΡΥΦΗΣ 
+        //Get All Facets of New merged thesaurus --> UNCLASSFIED TERMS 
         Vector<String> mergedFacetNames = new Vector<String>();
         mergedFacetNames.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, mergedThesaurusName, null));
 
@@ -652,6 +652,7 @@ public class DBMergeThesauri {
         return HierarchiesSucceeded;
     }
 
+    /* ABANDONED CODE
     public boolean CopyTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String sourceThesaurusName, String mergedThesaurusName, String pathToErrorsXML,
             Locale targetLocale, StringBuffer warnignsBuffer, StringObject resultObj, OutputStreamWriter logFileWriter, int ConsistencyCheckPolicy) throws IOException {
@@ -666,7 +667,7 @@ public class DBMergeThesauri {
             common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
         }
         //<editor-fold defaultstate="collapsed" desc="Terms and BTs">
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Όρων (και ΠΟ ).");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying terms (and BTs).");
         logFileWriter.flush();
         startTime = System.currentTimeMillis();
         keepCopying = CopyTermsLevelByLevel(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
@@ -680,11 +681,12 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Όρων (και ΠΟ ) σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΣΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying terms (and BTs) in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying RTs.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy/*, warnignsBuffer*/);
+            //keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy, warnignsBuffer);
+            keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
         }
         //</editor-fold>  
 
@@ -696,8 +698,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΣΟ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής κατάστασης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying RTs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying term Status.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyStatuses(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj);
@@ -712,8 +714,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής κατάστασης όρων σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΔΣ, SN και ΙΣ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying term status in " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying SN, tr_SN, HN.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
@@ -728,8 +730,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΔΣ, SN και ΙΣ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΑΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying SN, tr_SN, HN in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying translations.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.translation_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -744,13 +746,13 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΑΟ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying translations in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFs = new Vector<String>();
             errorProneUFs.addAll(CollectErrorProneUfs(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΧΑ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying UFs.");
 
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.uf_kwd, errorProneUFs, resultObj, ConsistencyCheckPolicy);
 
@@ -765,7 +767,7 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΧΑ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying UFs in time: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFTranslations = new Vector<String>();
@@ -774,7 +776,7 @@ public class DBMergeThesauri {
                 errorProneUFTranslations.addAll(CollectErrorProneUFTranslations(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
             }
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής UF.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying UF translations.");
 
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.uf_translations_kwd, errorProneUFTranslations, resultObj, ConsistencyCheckPolicy);
         }
@@ -788,8 +790,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής UF σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής TK.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying UF translations in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying TCs.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.tc_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -804,8 +806,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής TK σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής GS.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying TCs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying primary sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.primary_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -820,8 +822,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής GS σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ES.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of coppying primary sources in:" + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying translation sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.translations_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -836,8 +838,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ES σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Created BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying translation sources in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying Created BY / ON fileds.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.created_by_kwd, resultObj);
@@ -852,8 +854,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Created BY/ ON σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Modified BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying Created BY / ON fields in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying Modified BY /ON fields.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.modified_by_kwd, resultObj);
@@ -867,14 +869,14 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Modified ΒΥ / ON σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying Modified ΒΥ / ON fields in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
         }
 
         return keepCopying;
 
     }
-
+*/
     public boolean MergeTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String sourceThesaurusName1, String sourceThesaurusName2, String mergedThesaurusName, String pathToErrorsXML,
             Locale targetLocale, StringBuffer warnignsBuffer, StringObject resultObj, OutputStreamWriter logFileWriter, int ConsistencyCheckPolicy) throws IOException {
