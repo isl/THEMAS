@@ -169,6 +169,7 @@ function searchTHEMAS(){
                                                   //output field: onty the term name
                                                   '&output_term1=name'+
                                                   '&output_term1=uf'+        
+                                                  '&output_term1=rnt'+     
                                                   //'&=deSelectAllOutputs'
                                                   '';
 
@@ -184,6 +185,15 @@ function searchTHEMAS(){
                 //$("#div1").html(xml);
                 //alert('edw');
                 $('#resultsSelect').append('<option value="" selected>&nbsp;</option>');
+                var s = new XMLSerializer();
+                if($(xml).find("data").length>0){
+                    var d = $(xml).find("data")[0];
+
+                    var str = s.serializeToString(d);
+
+                    $("#searchDiv").val(vkbeautify.xml(str, 4));
+                }
+                
                 $(xml).find("term").each(function(){
                     var descriptorName = '';
                     var ufs ='';
@@ -245,6 +255,15 @@ function ShowHideStarXML(){
     }
     else{
         $("#starDiv").show();
+    }
+}
+
+function ShowHideSearchResultsXML(){
+    if($("#searchDiv").is(":visible")){
+        $("#searchDiv").hide();
+    }
+    else{
+        $("#searchDiv").show();
     }
 }
 

@@ -110,6 +110,10 @@ This file is part of the THEMAS system.
         <div id="ShowResultsDiv" style="display:none; width:100%">
             <h2>Results:</h2>
             <hr/>
+            <br/>
+                <a onclick="ShowHideSearchResultsXML();" style="margin: 10px; cursor: pointer;"> Show/Hide XML</a>
+            <br/>
+            <textarea id="searchDiv" style="margin:10px; width:300px; height:400px; float:left; overflow-x: auto;  overflow-y: auto; display: none;"></textarea>
             
             <select id="resultsSelect"  data-placeholder="-------------" class="chosen-select" style="width:300px; height:200px;"></select>
             <button onclick="starView();" id="starViewBtn">STAR</button>

@@ -355,7 +355,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                     //errorMsgObj.setValue(errorMessageStr);
                     Vector<String> errorArgs = new Vector<String>();
                     errorArgs.add(errorMessageStr);
-                    dbGen.Translate(errorMsgObj, "root/EditTerm/Rename/TermDoesNotExist", errorArgs, pathToMessagesXml);
+                    dbGen.Translate(errorMsgObj, "root/EditTerm/Edit/TermDoesNotExist", errorArgs, pathToMessagesXml);
                     
                 }
                 out.println(errorMsgObj.toString());

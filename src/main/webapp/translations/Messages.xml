@@ -52,6 +52,75 @@
             <option lang="el">Δημιουργός Θησαυρού</option>
         </XMLStartHeaderName>
     </GeneralMessages>-->
+    <PreviewErrorReports>
+        <Kinds>
+            <Facet>
+                <option lang="en">Facet</option>
+                <option lang="el">Μικροθησαυρός</option>
+            </Facet>
+            <Hierarchy>
+                <option lang="en">Hierarchy</option>
+                <option lang="el">Ιεραρχία</option>
+            </Hierarchy>
+            <Term>
+                <option lang="en">Term</option>
+                <option lang="el">Όρος</option>
+            </Term>
+            <UF>
+                <option lang="en">UF</option>
+                <option lang="el">ΧΑ</option>
+            </UF>
+            <tr_UF>
+                <option lang="en">UF (Tra.)</option>
+                <option lang="el">ΧΑ (Μετ.)</option>
+            </tr_UF>
+            <AlternativeTerm>
+                <option lang="en">Alternative Term</option>
+                <option lang="el">Εναλλ. Όρος</option>
+            </AlternativeTerm>
+            <Translation>
+                <option lang="en">Translation</option>
+                <option lang="el">Μετάφραση</option>
+            </Translation>
+            <Source>
+                <option lang="en">Source</option>
+                <option lang="el">Πηγή</option>
+            </Source>
+            <SN>
+                <option lang="en">SN</option>
+                <option lang="el">ΔΣ</option>
+            </SN>
+            <tr_SN>
+                <option lang="en">SN (Tra.)</option>
+                <option lang="el">ΔΣ (Μετ.)</option>
+            </tr_SN>
+            <HN>
+                <option lang="en">HN</option>
+                <option lang="el">ΙΣ</option>
+            </HN>
+            
+            <Editor>
+                <option lang="en">Editor</option>
+                <option lang="el">Συντάκτης</option>
+            </Editor>
+            <CreationDate>
+                <option lang="en">Creation Date</option>
+                <option lang="el">Ημερομην.Δημιουργίας</option>
+            </CreationDate>
+            <ModificationDate>
+                <option lang="en">Modification Date</option>
+                <option lang="el">Ημερομην.Τροποποίησης</option>
+            </ModificationDate>            
+        </Kinds>
+        <ExistsMessage>
+            <option lang="en">EXISTS</option>
+            <option lang="el">ΥΠΑΡΧΕΙ</option>
+        </ExistsMessage>
+        <Yes>
+            <option lang="en">YES</option>
+            <option lang="el">ΝΑΙ</option>
+        </Yes>
+    </PreviewErrorReports>
     <TranslationsSynchronization>
         <DeletionErrorRemainingInstances>
             <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed due to existing instances of this translation.</option>
@@ -463,17 +532,17 @@
             <NewNameExists>
                 <option lang="en">New term name already exists in the database. Operation cancelled.</option>
                 <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
-            </NewNameExists>
-            <TermDoesNotExist>
-                <option lang="en">Term %s was not found in the database.</option>
-                <option lang="el">Ο όρος %s δεν βρέθηκε στην βάση.</option>
-            </TermDoesNotExist>
+            </NewNameExists>            
         </Rename>
         <Edit>
             <NothingSpecified>
                 <option lang="en">Editing error. Both the target editing term and the target edit field must be specified.</option>
                 <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο ο όρος στόχος όσο και το πεδίο προς επεξεργασία.</option>
             </NothingSpecified>
+            <TermDoesNotExist>
+                <option lang="en">Term %s was not found in the database.</option>
+                <option lang="el">Ο όρος %s δεν βρέθηκε στην βάση.</option>
+            </TermDoesNotExist>
         </Edit>
         <Translations>
             <LongName>

@@ -4379,7 +4379,7 @@ public class DBGeneral {
         return true;
     }
 
-    public boolean collect_Recurcively_ALL_NTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, String resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
+    public boolean collect_Recurcively_ALL_NTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
 
         int sisSessionId = sis_session.getValue();
         StringObject btFromObj = new StringObject();
@@ -4389,7 +4389,10 @@ public class DBGeneral {
 
         /*Check if target node still exists*/
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage = resultMessage.concat("Ο όρος " + targetDescriptorObj.getValue() + " δεν βρέθηκε στην βάση");
+            StringObject trMsg = new StringObject();
+            this.Translate(trMsg, "root/EditTerm/Edit/TermDoesNotExist",Utilities.getMessagesXml(), new String[]{targetDescriptorObj.getValue()});
+            resultMessage.setValue(resultMessage.getValue().concat(trMsg.getValue()));
+            //resultMessage.setValue(resultMessage.getValue().concat("Term " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
 
@@ -5781,8 +5784,8 @@ public class DBGeneral {
         boolean ntOutputSelected = output.contains(ConstantParameters.nt_kwd);
         boolean btOutputSelected = output.contains(ConstantParameters.bt_kwd);
         if (ntOutputSelected && !btOutputSelected) {
-            output.add(ConstantParameters.bt_kwd);
-        }
+                output.add(ConstantParameters.bt_kwd);
+            }
         if (btOutputSelected && !ntOutputSelected) {
             output.add(ConstantParameters.nt_kwd);
         }
@@ -5816,13 +5819,17 @@ public class DBGeneral {
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
 
+        Vector<String> resultTermNamesWithPrefixes = new Vector<String>();
         Q.reset_set(set_results);
         Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
+                
                 long targetTermIdL = row.get_Neo4j_NodeId();
                 resultNodesIds.add(targetTermIdL);
+                
                 String targetTerm = removePrefix(row.get_v1_cls_logicalname());
+                resultTermNamesWithPrefixes.add(row.get_v1_cls_logicalname());
 
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -5861,6 +5868,38 @@ public class DBGeneral {
         collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds);
         collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds);
 
+        
+        if(output.contains(ConstantParameters.rnt_kwd)){
+            
+            StringObject errorMsg = new StringObject("");
+            
+            for(int i=0; i< resultTermNamesWithPrefixes.size(); i++){
+                String targetTerm = resultTermNamesWithPrefixes.get(i);
+                String termNameWithoutPrefix = removePrefix(targetTerm);
+                
+                int set_recursive_nts = Q.set_get_new();
+                this.collect_Recurcively_ALL_NTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg,false, Q, sis_session);
+                if(Q.set_get_card(set_recursive_nts)>0){
+                    
+                    retVals.clear();
+                    Vector<SortItem> recNts = new Vector<SortItem>();
+                    if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
+                        for (Return_Nodes_Row row : retVals) {
+
+                            long targetTermIdL = row.get_Neo4j_NodeId();
+
+                            recNts.add(new SortItem(removePrefix(row.get_v1_cls_logicalname()), targetTermIdL, ""));                            
+                        }
+                    }
+                    
+                    
+                    termsInfo.get(termNameWithoutPrefix).descriptorInfo.get(ConstantParameters.rnt_kwd).addAll(recNts);
+                }
+            }
+            
+            
+            
+        }
         dbExport.ReadTermStatuses(SessionUserInfo.selectedThesaurus, Q, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermCommentCategories(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermFacetAndHierarchies(SessionUserInfo, Q, sis_session, set_results, output, allTerms, termsInfo, resultNodesIds);
@@ -6975,10 +7014,11 @@ public class DBGeneral {
     }
     
     public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
-        String CurrentValue = resultObj.getValue();
+        String CurrentValue = "";
+        /*resultObj.getValue();
         if (CurrentValue == null) {
             CurrentValue = "";
-        }
+        }*/
         Utilities u = new Utilities();
         String tagetMessageFullXPath = targetMessageBasePath + "/option[@lang=\"" + Parameters.UILang + "\"]";
         resultObj.setValue(CurrentValue + u.translate(tagetMessageFullXPath, args, pathToErrorXMLFile));

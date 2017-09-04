@@ -2369,6 +2369,7 @@ public class Utilities {
 
                     if (category.compareTo(ConstantParameters.bt_kwd) == 0
                             || category.compareTo(ConstantParameters.nt_kwd) == 0
+                            || category.compareTo(ConstantParameters.rnt_kwd) == 0
                             || category.compareTo(ConstantParameters.topterm_kwd) == 0
                             || category.compareTo(ConstantParameters.rt_kwd) == 0
                             || category.compareTo(ConstantParameters.uf_kwd) == 0

@@ -85,7 +85,7 @@ public class DBFixCurrentData {
             RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
             //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
 
-        } else //</editor-fold>       
+        } else //</editor-fold>      
         //<editor-fold defaultstate="collapsed" desc="RepairNames...">  
         if (functionallity.compareTo("RepairNames") == 0) {
 
@@ -1476,21 +1476,38 @@ public class DBFixCurrentData {
 
             Q.reset_name_scope();
 
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_1Names, prefix1_2, "", "Μικροθησαυρός", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_2Names, prefix1_2, "", "Ιεραρχία", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_3Names, prefix3_5, "", "Όρος", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_4Names, prefix3_5, "", "ΧΑ", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_5Names, prefix3_5, "", "Εναλλ.Όρος", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_6Names, prefix6_8, "", "ΑΟ", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_7Names, prefix6_8, "", "UF", out);
-            /*RepairNames_Preview_or_Fix(selectedThesaurus, Q, sis_session, targetLocale, mode, fixed, set_8Names, prefix6_8, "", "ALT", out);*/
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_9Names, prefix9, "", "Πηγές", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_10Names, prefix10, "", "Συντάκτης", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_11Names, prefix3_5, "`" + scope_noteLinkObj.getValue(), "ΔΣ", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_12Names, prefix3_5, "`" + commentLinkObj.getValue(), "IΣ", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_13Names, prefix3_5, "`" + scope_noteENLinkObj.getValue(), "SN", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, createdDates, "", "", "Ημερομην.Δημιουργίας", out);
-            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, modifiedDates, "", "", "Ημερομην.Τροποποίησης", out);
+            String pathToMessages = Utilities.getMessagesXml();
+            
+            StringObject trObj = new StringObject("");
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Facet", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_1Names, prefix1_2, "", /*"Facet"*/trObj.getValue(), out);
+            
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Hierarchy", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_2Names, prefix1_2, "", /*"Hierarchy"*/trObj.getValue() , out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Term", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_3Names, prefix3_5, "", /*"Term"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/UF", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_4Names, prefix3_5, "", /*"UF"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/AlternativeTerm", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_5Names, prefix3_5, "", /*"ALT"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Translation", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_6Names, prefix6_8, "", /*"TR"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/tr_UF", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_7Names, prefix6_8, "", /*"UF (Tra.)"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Source", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_9Names, prefix9, "", /*"Source"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/Editor", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_10Names, prefix10, "", /*"Editor"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/SN", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_11Names, prefix3_5, "`" + scope_noteLinkObj.getValue(), /*"SN"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/HN", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_12Names, prefix3_5, "`" + commentLinkObj.getValue(), /*"HN"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/tr_SN", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_13Names, prefix3_5, "`" + scope_noteENLinkObj.getValue(), /*"SN (Tra.)"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/CreationDate", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, createdDates, "", "", /*"Creation Date"*/trObj.getValue(), out);
+            dbGen.Translate(trObj, "root/PreviewErrorReports/Kinds/ModificationDate", pathToMessages,null);
+            RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, modifiedDates, "", "", /*"Modification Date"*/trObj.getValue(), out);
 
             if (mode.compareTo("Preview") == 0) {
                 Q.TEST_end_query();
@@ -1510,8 +1527,13 @@ public class DBFixCurrentData {
 
     void RepairNames_Preview_or_Fix(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, Vector<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
 
-        Utilities u = new Utilities();
+        DBGeneral dbGen = new DBGeneral();
 
+        
+        StringObject yesMsgObj = new StringObject("");
+            
+        dbGen.Translate(yesMsgObj, "root/PreviewErrorReports/Yes", Utilities.getMessagesXml(),null);
+            
         allNamesWithPrefix.trimToSize();
         Collections.sort(allNamesWithPrefix, new StringLocaleComparator(targetLocale));
 
@@ -1865,7 +1887,8 @@ public class DBFixCurrentData {
                     out.write("<newnameexists>");
 
                     if (exists) {
-                        out.write("NAI");
+                        //out.write("YES");
+                        out.write(yesMsgObj.getValue());
                     } else {
                         out.write(" - ");
                     }
@@ -3175,6 +3198,11 @@ public class DBFixCurrentData {
             OutputStreamWriter out = null;
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
+            
+            StringObject existsMsgObj = new StringObject("");
+            
+            dbGen.Translate(existsMsgObj, "root/PreviewErrorReports/ExistsMessage", Utilities.getMessagesXml(),null);
+            
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
             QClass Q = new neo4j_sisapi.QClass();
             TMSAPIClass TA = new TMSAPIClass();
@@ -3351,7 +3379,8 @@ public class DBFixCurrentData {
 
                             out.write("<primary_src>");
                             if (Q.set_get_card(set_greek_source) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3359,7 +3388,8 @@ public class DBFixCurrentData {
 
                             out.write("<translations_src>");
                             if (Q.set_get_card(set_english_source) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3367,7 +3397,8 @@ public class DBFixCurrentData {
 
                             out.write("<translation>");
                             if (Q.set_get_card(set_to_en) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3412,6 +3443,10 @@ public class DBFixCurrentData {
             OutputStreamWriter out = null;
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
+            
+            StringObject existsMsgObj = new StringObject("");
+            dbGen.Translate(existsMsgObj, "root/PreviewErrorReports/ExistsMessage", Utilities.getMessagesXml(),null);
+            
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
             QClass Q = new neo4j_sisapi.QClass();
             TMSAPIClass TA = new TMSAPIClass();
@@ -3594,7 +3629,8 @@ public class DBFixCurrentData {
 
                             out.write("<created_by>");
                             if (Q.set_get_card(set_created_by) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3602,7 +3638,8 @@ public class DBFixCurrentData {
 
                             out.write("<created_on>");
                             if (Q.set_get_card(set_created_on) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3610,7 +3647,8 @@ public class DBFixCurrentData {
 
                             out.write("<modified_by>");
                             if (Q.set_get_card(set_modified_by) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
@@ -3618,7 +3656,8 @@ public class DBFixCurrentData {
 
                             out.write("<modified_on>");
                             if (Q.set_get_card(set_modified_on) > 0) {
-                                out.write("ΥΠΑΡΧΕΙ");
+                                //out.write("EXISTS");
+                                out.write(existsMsgObj.getValue());
                             } else {
                                 out.write("-");
                             }
