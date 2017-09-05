@@ -97,8 +97,7 @@
             <HN>
                 <option lang="en">HN</option>
                 <option lang="el">ΙΣ</option>
-            </HN>
-            
+            </HN>            
             <Editor>
                 <option lang="en">Editor</option>
                 <option lang="el">Συντάκτης</option>
@@ -507,6 +506,14 @@
                 <option lang="en"><!--Term %s was renamed to %s because it exceeded the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
                 <option lang="el"><!--O όρος %s μετονομάστηκε σε %s γιατί ξεπερνoύσε το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
             </LongNameErrorResolve>
+            <TermAlreadyExists>
+                <option lang="en">Term: %s already exists in the database.</option>
+                <option lang="el">Ο όρος %s υπάρχει ήδη στην βάση.</option>
+            </TermAlreadyExists>
+            <BTMustExist>
+                <option lang="en">Bts declared should already exist in the database.</option>
+                <option lang="el">Πρέπει να εισάγεται στο πεδίο ΠΟ όρους που υπάρχουν στη βάση.</option>
+            </BTMustExist>
         </Creation>
         <Rename>
             <Success>
@@ -543,6 +550,58 @@
                 <option lang="en">Term %s was not found in the database.</option>
                 <option lang="el">Ο όρος %s δεν βρέθηκε στην βάση.</option>
             </TermDoesNotExist>
+            <NtNotInDescriptors>
+                <option lang="en">Term %s does not belong in Descriptors and therefore cannot be defined as NT.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στους περιγραφείς ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο NT.</option>
+            </NtNotInDescriptors>
+            <RTNotInPreferredTerms>
+                <option lang="en">Term %s does not belong in preferred terms set and therefore cannot be defined as RT.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στο σύνολο των προτιμώμενων όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΣΟ.</option>
+            </RTNotInPreferredTerms>
+            <ValueNotInUsedForTerms>
+                <option lang="en">Term %s does not belong in non-preferred terms set and therefore cannot be defined as UF.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στο σύνολο των μη προτιμώμενων όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΧΑ.</option>
+            </ValueNotInUsedForTerms>
+             <ValueNotInDeweyNumbers>
+                <option lang="en">Value: %s does not belong in the set of Dewey Numbers and therefore cannot be defined as DN.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Dewey Numbers ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Dewey.</option>
+            </ValueNotInDeweyNumbers>
+            <ValueNotInTaxonomicalCodes>
+                <option lang="en">Value: %s does not belong in the set of Taxonomical Codes and therefore cannot be defined as TC.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Ταξινομικών κωδικών ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΤΚ.</option>
+            </ValueNotInTaxonomicalCodes>
+            <ValueNotInTranslations>
+                <option lang="en">Value: %s does not belong in the set of Translation terms and therefore cannot be defined as Translation.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των όρων Μετάφρασης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Μετάφρασης.</option>
+            </ValueNotInTranslations>
+            <ValueNotInAlternativeTerms>
+                <option lang="en">Value: %s does not belong in the set of Alternative Terms and therefore cannot be defined as ALT.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των όρων Ενναλακτικών όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Εναλλ.όρος.</option>
+            </ValueNotInAlternativeTerms>
+            <CannotCreateRelationFromAndToTheSameTerm>
+                <option lang="en">The creation of relation from and to the same term is prohibitied.</option>
+                <option lang="el">Δεν επιτρέπεται η δημιουργία σχέσης ενός όρου με τον εαυτό του.</option>
+            </CannotCreateRelationFromAndToTheSameTerm>
+            <ValueNotInUFTranslations>
+                <option lang="en">Value: %s does not belong in the set of non preferred Translation terms and therefore cannot be defined as translation UF.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των μή προτιμόμενων όρων Μετάφρασης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΧΑ (Μετ.).</option>
+            </ValueNotInUFTranslations>
+            <ValueNotInSources>
+                <option lang="en">Value: %s does not belong in the set Sources and therefore cannot be used as primary or translations source.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Πηγων ώστε να μπορεί να χρησιμοποιηθεί ως πηγή πρωτεύουσας γλώσσας ή πηγή μετάφρασης.</option>
+            </ValueNotInSources>
+            <ConnectionError>
+                <option lang="en">Error occurred while creationg link: %s.</option>
+                <option lang="el">Λάθος κατά την δημιουργία συνδέσμου: %s.</option>
+            </ConnectionError>
+            <DeweyAdditionError>
+                <option lang="en">Addition of Dewey Number: %s failed.</option>
+                <option lang="el">Η προσθήκη του κωδικού Dewey: %s απέτυχε.</option>
+            </DeweyAdditionError>
+            <TaxonomicalCodeAdditionError>
+                <option lang="en">Addition of Taxonomical Code: %s failed.</option>
+                <option lang="el">Η προσθήκη του Ταξινομικού κωδικού: %s απέτυχε.</option>
+            </TaxonomicalCodeAdditionError>
         </Edit>
         <Translations>
             <LongName>
@@ -707,6 +766,22 @@
                 <option lang="en">Deletion of BT: %s from term: %s failed.</option>
                 <option lang="el">Η διαγραφή του ΠΟ: %s του όρου %s απέτυχε.</option>
             </SpecificDeleteBtFailure>
+            <CurrentTermNotFound>
+                <option lang="en">The given term does not exist in data base.</option>
+                <option lang="el">Ο τρέχων όρος δεν βρέθηκε στην βάση δεδομένων.</option>
+            </CurrentTermNotFound>
+            <CurrentTermIsTopTerm>
+                <option lang="en">Current term is Top Term.</option>
+                <option lang="el">Ο τρέχων όρος είναι κορυφαίος.</option>
+            </CurrentTermIsTopTerm>
+            <CurrentTermIsObsolete>
+                <option lang="en">Current term is Obsolete.</option>
+                <option lang="el">Ο τρέχων όρος είναι κατηργημένος.</option>
+            </CurrentTermIsObsolete>
+            <CurrentTermNotDescriptor>
+                <option lang="en">Current term does not belong in Descriptors.</option>
+                <option lang="el">Ο τρέχων όρος δεν υπάγεται στην κλάσση Descriptors.</option>
+            </CurrentTermNotDescriptor>
         </Move2Hierarchy>
     </EditTerm>
     <EditGuideTerms>
@@ -971,7 +1046,57 @@
             <option lang="en">Merge thesauri operation of thesauri %s and %s in %s completed successfully in %s minutes.</option>
             <option lang="el">Η διαδικασία συγχώνευσης θησαυρών %s και %s στον νέο θησαυρό %s ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
         </ReportSuccessMessage>
+        <MergeTermSNs>
+            <option lang="en">Two SNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΔΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermSNs>
+        <MergeTerm_trSNs>
+            <option lang="en">Two SNs (Tra.) were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΔΣ (Μετ.) για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTerm_trSNs>
+        <MergeTermHNs>
+            <option lang="en">Two HNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΙΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermHNs>
+        <MergeSourceSNsSourcePrefix>
+            <option lang="en">Source: </option>
+            <option lang="el">Πηγή: </option>
+        </MergeSourceSNsSourcePrefix>
+        <MergeSourceSNs>
+            <option lang="en">Two Source Notes were found for source: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 Σημειώσεις πηγής για την πηγή: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeSourceSNs>
+        <SkipUFLink>
+            <option lang="en">Skipping copying of UF (Tra.) link: '%s' for term: %s from thesaurus: %s. This name is already used as a translation of thesaurus %s and cannot be used as a UF (Tra.) term in the new thesaurus.</option>
+            <option lang="el">Παρακάμφθηκε η αντιγραφή του ΧΑ (Μετ.) συνδέσμου: %s για τον όρο: %s από τον θησαυρό %s. Το όνομα αυτό χρησιμοποιείται για Μετάφραση του θησαυρού %s και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή ΧΑ (Μετ.) συνδέσμου στον νέο θησαυρό.</option>
+        </SkipUFLink>
+        <SkipUFLink>
+            <option lang="en">Skipping copying of UF link: '%s' for term: %s. This name is already used as a term in thesaurus %s and cannot be used as a non-preferred term in the new thesaurus.</option>
+            <option lang="el">Παρακάμφθηκε η αντιγραφή του ΧΑ συνδέσμου: %s για τον όρο: %s. Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού %s και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί ως μη προτιμώμενος όρος στον νέο θησαυρό.</option>
+        </SkipUFLink>
+        <SkipNodeLabel>
+            <option lang="en">Term: '%s' has an already defined NT relationship with term: '%s' and node label: '%s'. There was also detected though another NT relationship among them with node label: '%s' which was skipped.</option>
+            <option lang="el">Για τον όρο: '%s' έχει ήδη ορισθεί σχέση ΕΟ με τον όρο '%s' και ετικέτα δεσμού '%s'. Ανιχνεύθηκε ωστόσο μεταξύ τους και σχέση ΕΟ με ετικέτα δεσμού '%s' η οποία παρακάμφθηκε.</option>
+        </SkipNodeLabel>
+        <FailureMessage>
+            <option lang="en">Failure of merge thesauri operation.</option>
+            <option lang="el">Αποτυχία λειτουργίας συγχώνευσης.</option>
+        </FailureMessage>
     </MergeThesauri>
+    <CopyThesauri>
+        <ReportTitle>
+            <option lang="en">Report of copy thesaurus operation of thesaurus %s to thesaurus %s. Time: %s.</option>
+            <option lang="el">Αναφορά αντιγραφής δεδομένων από τον θησαυρό %s στον θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Copy thesaurus operation completed successfully in %s minutes.</option>
+            <option lang="el">Η διαδικασία αντιγραφής θησαυρών ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
+        </ReportSuccessMessage>
+        <FailureMessage>
+            <option lang="en">Failure of copy thesaurus operation.</option>
+            <option lang="el">Αποτυχία λειτουργίας αντιγραφής.</option>
+        </FailureMessage>
+    </CopyThesauri>
     <ImportData>
         <ReportTitle>
             <option lang="en">Import Data in thesaurus: %s report. Time: %s.</option>
@@ -1088,17 +1213,17 @@
     </CreateStatuses>
     <CopyDatesAndEditors>
         <ClassReferenceFailure>
-            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="en">Failed to refer to Class '%s' of Thesaurus: '%s'.</option>
             <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
         </ClassReferenceFailure>
         <CategoryReferenceFailure>
-            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="en">Failed to refer to Category '%s'->'%s' of Thesaurus: '%s'.</option>
             <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
         </CategoryReferenceFailure>                    
     </CopyDatesAndEditors>
     <CopySimpleLinks>
         <ClassReferenceFailure>
-            <option lang="en">Failed to reference at Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="en">Failed to refer to Class '%s' of Thesaurus: '%s'.</option>
             <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
         </ClassReferenceFailure>
         <CategoryReferenceFailure>

@@ -2287,9 +2287,13 @@ public class DBGeneral {
      ----------------------------------------------------------------------*/
     public boolean DescriptorCanBeMovedToHierarchy(String selectedThesaurus, StringObject targetDescriptor, StringObject reasonOfFalse, QClass Q, IntegerObject sis_session) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+       
+        Utilities u = new Utilities();
+       
         // check the case the given descriptor does not belong to DB
         if (check_exist(targetDescriptor.getValue(), Q, sis_session) == false) {
-            reasonOfFalse.setValue("The given term does not exist in data base");
+            //The given term does not exist in data base.
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotFound", null));
             return false;
         }
         // check the case the given descriptor is TopTerm        
@@ -2299,7 +2303,7 @@ public class DBGeneral {
         boolean isTopTerm = NodeBelongsToClass(targetDescriptor, thesTopTerm, false, Q, sis_session);
         if (isTopTerm == true) {
             //reasonOfFalse.setValue("The given term is a Top Term");
-            reasonOfFalse.setValue("Ο τρέχων όρος είναι κορυφαίος.");
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsTopTerm", null));
             return false;
         }
         // check the case the given descriptor is ObsoleteDescriptor
@@ -2309,7 +2313,7 @@ public class DBGeneral {
         boolean isObsolete = NodeBelongsToClass(targetDescriptor, thesObsoleteDescriptor, false, Q, sis_session);
         if (isObsolete == true) {
             //reasonOfFalse.setValue("The given term is Obsolete");
-            reasonOfFalse.setValue("Ο τρέχων όρος είναι κατηργημένος.");
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsObsolete", null));
             return false;
         }
         // check the case the given descriptor is not a descriptor
@@ -2320,7 +2324,7 @@ public class DBGeneral {
         boolean isDescriptor = NodeBelongsToClass(targetDescriptor, thesDescriptor, false, Q, sis_session);
         if (isDescriptor == false) {
             //reasonOfFalse.setValue("The given term is not a Descriptor");
-            reasonOfFalse.setValue("Ο τρέχων όρος δεν ανήκει στους Descriptors");
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotDescriptor", null));
             return false;
         }
 
@@ -5565,7 +5569,7 @@ public class DBGeneral {
         getKeywordPair(SessionUserInfo.selectedThesaurus, mode_kwd, fromClassObj, LinkObj, Q, sis_session);
         Q.reset_name_scope();
         if (Q.set_current_node(sourceObj) == QClass.APIFail) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία αναφοράς στην πηγή " + targetSource);
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to reference source: " + targetSource);
             return termsWithThisSource;
         }
 
@@ -7014,14 +7018,14 @@ public class DBGeneral {
     }
     
     public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
-        String CurrentValue = "";
-        /*resultObj.getValue();
+        /*String CurrentValue = "";
+        resultObj.getValue();
         if (CurrentValue == null) {
             CurrentValue = "";
         }*/
         Utilities u = new Utilities();
         String tagetMessageFullXPath = targetMessageBasePath + "/option[@lang=\"" + Parameters.UILang + "\"]";
-        resultObj.setValue(CurrentValue + u.translate(tagetMessageFullXPath, args, pathToErrorXMLFile));
+        resultObj.setValue(u.translate(tagetMessageFullXPath, args, pathToErrorXMLFile));
     }
 
     public boolean deleteTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,

@@ -1225,7 +1225,9 @@ public class DBImportData {
             }
             //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../"+webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
             logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-            logFileWriter.append("<title>Αναφορά αντιγραφής δεδομένων από τον θησαυρό " + sourceThesaurusName + " στον θησαυρό " + targetThesaurusName + " " + time + "</title>\r\n"
+            logFileWriter.append("<title>"+u.translateFromMessagesXML("root/CopyThesauri/ReportTitle", new String[]{sourceThesaurusName, targetThesaurusName, time}) + "</title>\r\n"
+            //logFileWriter.append("<title>Report of copy thesaurus operation of thesaurus " + sourceThesaurusName + " to thesaurus " + targetThesaurusName + ". Time: " + time + "</title>\r\n"
+            
                     + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\r\n");
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile  LogFile for the copy operation of thesaurus: " + sourceThesaurusName + " to the new thesarus: " + targetThesaurusName + ".");
@@ -1394,12 +1396,13 @@ public class DBImportData {
                     //SUCESS
                     commitCopyActions(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session, targetLocale,targetThesaurusName, out, Filename.concat(".html"));
                     if (logFileWriter != null) {
-
-                            logFileWriter.append("\r\n<creationInfo>Η διαδικασία αντιγραφής ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.</creationInfo>\r\n");
-                            logFileWriter.append("</page>");
-                            logFileWriter.flush();
-                            logFileWriter.close();
-
+                        
+                        logFileWriter.append("\r\n<creationInfo>"+u.translateFromMessagesXML("root/CopyThesauri/ReportSuccessMessage", new String[]{ (""+((Utilities.stopTimer(startTime)) / 60))}) + "</creationInfo>\r\n");
+                        //logFileWriter.append("\r\n<creationInfo>Copy thesaurus operation completed successfully in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.</creationInfo>\r\n");
+                        
+                        logFileWriter.append("</page>");
+                        logFileWriter.flush();
+                        logFileWriter.close();
                     }
                 }
                 
@@ -1637,7 +1640,8 @@ public class DBImportData {
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
-        xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, "Αποτυχία λειτουργίας συγχώνευσης. " + resultObj.getValue()));
+        xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, u.translateFromMessagesXML("root/MergeThesauri/FailureMessage", null)+" " + resultObj.getValue()));
+        //xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, "Failure of merge thesauri operation: " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 
@@ -1706,7 +1710,8 @@ public class DBImportData {
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
-        xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject("Αποτυχία λειτουργίας αντιγραφής: " + resultObj.getValue()), false));
+        xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject(u.translateFromMessagesXML("root/CopyThesauri/FailureMessage",null)+" " + resultObj.getValue()), false));
+        //xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject("Failure of copy thesaurus operation: " + resultObj.getValue()), false));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 
@@ -2145,9 +2150,11 @@ public class DBImportData {
                         }
                         return false;
                     }
-                    logFileWriter.append("\r\n<targetTerm><name>Πηγή: " + Utilities.escapeXML(nameStr) + "</name><errorType>" + ConstantParameters.source_note_kwd + "</errorType>");
+                    //root/MergeThesauri/MergeSourceSNsSourcePrefix --> 'Source: '
+                    logFileWriter.append("\r\n<targetTerm><name>"+u.translateFromMessagesXML("root/MergeThesauri/MergeSourceSNsSourcePrefix",null) + Utilities.escapeXML(nameStr) + "</name><errorType>" + ConstantParameters.source_note_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(oldSourceNoteStr + " ### " + sourceNoteStr) + "</errorValue>");
-                    logFileWriter.append("<reason>Βρέθηκαν 2 σημειώσεις για την πηγή: '" + Utilities.escapeXML(nameStr) + "'. Διατηρηθηκαν και οι δύο με το διαχωριστικό ' ### '.</reason>");
+                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeSourceSNs", new String[]{Utilities.escapeXML(nameStr)})+"</reason>");
+                    //logFileWriter.append("<reason>Two Source Notes were found for source: '" + Utilities.escapeXML(nameStr) + "'. In order to keep both they will be concatenated with ' ### ' as delimeter</reason>");
                     logFileWriter.append("</targetTerm>\r\n");
                     logFileWriter.flush();
 
@@ -2437,7 +2444,7 @@ public class DBImportData {
         while (currentLevel.size() > 0) {
 
             int termsperlevel = 0;
-            //logFileWriter.append("\r\nΕπίπεδο όρων Νο: " + (levelIndex+2) +"\r\n");
+            //logFileWriter.append("\r\nTerm Level No: " + (levelIndex+2) +"\r\n");
 
 
             allLevelsOfImportThes.add(readNextLevelSetTermsAndBts(currentLevel, descriptorNts, parsedTerms));

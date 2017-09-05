@@ -110,7 +110,7 @@ public class DBConnect_Term {
     public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         // initialize output
         String errorMsg = new String("");
-
+        Utilities u = new Utilities();
         // looking for Descriptor prefix
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String b_prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
@@ -132,7 +132,8 @@ public class DBConnect_Term {
             bt_obj = new StringObject(tempName);
 
             if (dbGen.check_exist(bt_obj.getValue(),Q,sis_session) == false) {
-                errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Πρέπει να εισάγεται στο πεδίο ΠΟ όρους που υπάρχουν στη βάση.",tms_session) + "");
+                //Bts declared should already exist in the database.
+                errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Creation/BTMustExist", null),tms_session) + "");
                 continue;
             }
             vec_bt.addElement(bt_obj);
@@ -146,9 +147,13 @@ public class DBConnect_Term {
                 return errorMsg;
             }
         } else {
-            String tmp = "Ο όρος " + dbGen.removePrefix(targetDescriptor.getValue()) + " υπάρχει ήδη στη βάση.";
-            errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                    "Ο όρος " + dbGen.removePrefix(targetDescriptor.getValue()) + " υπάρχει ήδη στη βάση.",tms_session) + "");
+            
+            //Term dbGen.removePrefix(targetDescriptor.getValue()) already exists in the database.
+            errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,
+                                       TA, 
+                                       u.translateFromMessagesXML("root/EditTerm/Creation/TermAlreadyExists", new String[] { dbGen.removePrefix(targetDescriptor.getValue())}),
+                                       tms_session) 
+                                    + "");
             return errorMsg;
         }
 
@@ -195,6 +200,8 @@ public class DBConnect_Term {
     ----------------------------------------------------------------------*/
     public String connectNTs(String selectedThesaurus, StringObject targetDescriptor, String nts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         String errorMsg = new String("");
+        Utilities u = new Utilities();
+        
         // looking for Descriptor prefix (EL`)
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         //THEMASUserInfo SessionUserInfo = (THEMASUserInfo)sessionInstance.getAttribute("SessionUser");
@@ -229,7 +236,9 @@ public class DBConnect_Term {
             if (dbGen.check_exist(((StringObject) vec_nt.get(i)).getValue(),Q,sis_session) == true) {
                 if (dbGen.isConcept(selectedThesaurus, ((StringObject) vec_nt.get(i)).getValue(),Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) vec_nt.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος " + str + " δεν ανήκει στους περιγραφείς ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο NT.",tms_session) + "");
+                    
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/NtNotInDescriptors", new String[]{str}),tms_session) + "");        
+                    //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Term " + str + " does not belong in Descriptors and therefore cannot be defined as NT.",tms_session) + "");
                     continue;
                 }
                 // get the Hierarchies of the current NT
@@ -301,6 +310,7 @@ public class DBConnect_Term {
     ----------------------------------------------------------------------*/
     public String connectRTs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> rts ,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
+        Utilities u = new Utilities();
         String errorMsg = new String("");
         
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -346,8 +356,8 @@ public class DBConnect_Term {
                 // in case it is not a HierarchyTerm, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) rtsVector.get(i), new StringObject(selectedThesaurus + "HierarchyTerm"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) rtsVector.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος " + str +
-                            " δεν ανήκει στους σχετικούς όρους ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο RT.",tms_session) + "");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/RTNotInPreferredTerms", new String[]{str}),tms_session) + "");
+                    //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Term " + str + " does not belong in the preferred terms set, therefore cannot be declared as RT value.",tms_session) + "");
                     continue;
                 }
             }
@@ -389,6 +399,8 @@ public class DBConnect_Term {
     ----------------------------------------------------------------------*/
     public String connectUFs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> ufs,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
+        Utilities u = new Utilities();
+        
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
@@ -444,8 +456,9 @@ public class DBConnect_Term {
                 // in case it is not a UsedForTerm, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) ufsVector.get(i), new StringObject(selectedThesaurus + "UsedForTerm"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) ufsVector.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος " + str +
-                            " δεν ανήκει στους αδόκιμους όρους ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο UF.",tms_session) + "");
+                    
+                     errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUsedForTerms", new String[]{str}),tms_session) + "");
+                    //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Term: " + str + " does not belong in non-preferred terms set and therefore cannot be defined as UF.",tms_session) + "");
                     //reset to previous thesaurus name if needed
                     if(prevThes.getValue().equals(selectedThesaurus)==false){
                         TA.SetThesaurusName(prevThes.getValue());
@@ -507,6 +520,7 @@ public class DBConnect_Term {
     ----------------------------------------------------------------------*/
     public String connectDewey(String selectedThesaurus,StringObject targetDescriptor, String dewey,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
+        Utilities u = new Utilities();
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();  
         String DeweyNumber = ConstantParameters.DeweyClass;
@@ -537,10 +551,8 @@ public class DBConnect_Term {
                 // create it as instance of class DeweyNumber
                 Identifier id_d = new Identifier(((StringObject) deweys.get(i)).getValue());
                 if (Q.CHECK_Add_Node( id_d, QClass.SIS_API_TOKEN_CLASS,true) == QClass.APIFail) {
-                    
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος" + 
-                            dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) +
-                            " δε μπορεί να προστεθεί στη βάση.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}),tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Dewey Number: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) + " failed.",tms_session) + " ");
                     continue;
                 }
                 Q.reset_name_scope();
@@ -552,17 +564,17 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 //if (Q.CHECK_Add_Instance( id_from, id_to) == QClass.APIFail) {
                 if (Q.CHECK_Add_Instance( id_d, id_to) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος" + 
-                            dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) +
-                            " δε μπορεί να προστεθεί στη βάση.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}),tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Dewey Number: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) + " failed.",tms_session) + " ");
+                     
                     continue;
                 }
             } else { // Dewey exists
                 // in case it is not a DeweyNumber, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) deweys.get(i), new StringObject("DeweyNumber"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) deweys.get(i)).getValue());
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος " + str +
-                            " δεν ανήκει στα πεδία ταξινόμησης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο DN.",tms_session) + " ");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInDeweyNumbers", new String[]{str}),tms_session) + "");
+                    //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + str + " does not belong in the set of Dewey Numbers and therefore cannot be defined as DN.",tms_session) + "");
                     continue;
                 }
             }
@@ -582,9 +594,8 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                        "Λάθος κατά την δημιουργία συνδέσμου " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())
-                        + " .",tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}) ,tms_session) + " ");
+                //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())+ " .",tms_session) + " ");
             }
         }
         return errorMsg;
@@ -605,7 +616,7 @@ public class DBConnect_Term {
                
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
-        
+        Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();  
         String taxCodeClass = ConstantParameters.TaxonomicCodeClass;
         String tcPrefix = dbtr.getThesaurusPrefix_TaxonomicCode(Q,sis_session.getValue());
@@ -638,9 +649,9 @@ public class DBConnect_Term {
                 // create it as instance of class DeweyNumber
                 Identifier id_tc = new Identifier(((StringObject) taxCodes.get(i)).getValue());
                 if (Q.CHECK_Add_Node( id_tc, QClass.SIS_API_TOKEN_CLASS,true) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο ταξινομικός κωδικός " +
-                            dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue()) +
-                            " δε μπορεί να προστεθεί στη βάση.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}),tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Taxonomical Code: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())  + " failed.",tms_session) + " ");
+                    
                     continue;
                 }
                 Q.reset_name_scope();
@@ -652,17 +663,16 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 //if (Q.CHECK_Add_Instance( id_from, id_to) == QClass.APIFail) {
                 if (Q.CHECK_Add_Instance( id_tc, id_to) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος" + 
-                            dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue()) +
-                            " δε μπορεί να προστεθεί στη βάση.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}),tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Taxonomical Code: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())  + " failed.",tms_session) + " ");
                     continue;
                 }
             } else { // Dewey exists
                 // in case it is not a DeweyNumber, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) taxCodes.get(i), new StringObject(taxCodeClass), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue());
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος " + str +
-                            " δεν ανήκει στα πεδία ταξινόμησης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ταξινομικού κωδικού.",tms_session) + " ");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTaxonomicalCodes", new String[]{str}),tms_session) + "");
+                    //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + str + " does not belong in the set of Taxonomical Codes and therefore cannot be defined as TC.",tms_session) + "");                    
                     continue;
                 }
             }
@@ -682,8 +692,8 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Λάθος κατά την δημιουργία συνδέσμου " +
-                        dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue()) + " .",tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())} ),tms_session) + " ");
+                //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue()) + " .",tms_session) + " ");
             }
         }
         return errorMsg;
@@ -708,6 +718,7 @@ public class DBConnect_Term {
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
         // looking for Source prefix ("Literature`")
         String prefix = dbtr.getThesaurusPrefix_Source(Q,sis_session.getValue());
         // looking for THES1HierarchyTerm 
@@ -751,8 +762,8 @@ public class DBConnect_Term {
                 // check it is an instance of class Source
                 if (dbGen.NodeBelongsToClass((StringObject) sources.get(i), new StringObject("Source"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) sources.get(i)).getValue());
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Ο όρος " + str +
-                            " δεν ανήκει στις πηγές ώστε να μπορεί να χρησιμοποιηθεί στα πεδία ES,BTS,GS.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInSources", new String[]{str}),tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Value: " + str + " does not belong in the set Sources and therefore cannot be used as primary or translations source.",tms_session) + " ");
                     continue;
                 }
             }
@@ -783,8 +794,8 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Λάθος κατά την δημιουργία συνδέσμου " +
-                        dbGen.removePrefix(((StringObject) sources.get(i)).getValue()) + " .",tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) sources.get(i)).getValue())}) ,tms_session) + " ");
+                //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) sources.get(i)).getValue()) + " .",tms_session) + " ");
             }
         } // for each Source value
 
@@ -811,7 +822,7 @@ public class DBConnect_Term {
         int TMSapiSession = tms_session.getValue();
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        
+        Utilities u = new Utilities();
 
         // in case of empty engWordList, return	
         if(engWordList.size()==0){
@@ -844,8 +855,8 @@ public class DBConnect_Term {
         for (int i = 0; i < words.size(); i++) {
             // check if current EnglishWord is the same with target descriptor
             if (targetDescriptor.getValue().compareTo(dbGen.removePrefix(((StringObject) words.get(i)).getValue())) == 0) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                        "Δεν επιτρέπεται η δημιουργία σχέσης ενός όρου με τον εαυτό του.",tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/CannotCreateRelationFromAndToTheSameTerm",null),tms_session) + " ");
+                //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "The creation of relation from and to the same term is prohibitied.",tms_session) + " ");
                 return errorMsg;
             }
             // if it doesn't exist with TMSAPI
@@ -860,8 +871,8 @@ public class DBConnect_Term {
                 // EnglishWord class is not thesauric and is the same as uk_uf
                 //String str = dbGen.removePrefix(((StringObject) words.get(i)).getValue());
                 if (dbGen.NodeBelongsToClass((StringObject) words.get(i), new StringObject("EnglishWord"), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος " +
-                            ((StringObject) words.get(i)).getValue() + " δεν ανήκει στις αγγλικές λέξεις.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{((StringObject) words.get(i)).getValue()}) ,tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+" does not belong in the set of Translation terms and therefore cannot be defined as Translation.",tms_session) + " ");
                     return errorMsg;
                 }
             }
@@ -882,9 +893,8 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                        "Λάθος κατά την σύνδεση του όρου με την αγγλική λέξη " +
-                        dbGen.removePrefix(((StringObject) words.get(i)).getValue()),tms_session) + " ." + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) words.get(i)).getValue())}) ,tms_session) + " ");
+                //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,"Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) words.get(i)).getValue()),tms_session) + " ." + " ");
             }
         } // for each EnglishWord value
 
@@ -960,7 +970,7 @@ public class DBConnect_Term {
 
         String errorMsg = new String("");
         int SisSessionId = sis_session.getValue();
-        
+        Utilities u = new Utilities();
 
         StringObject thesHierarchyTerm = new StringObject(selectedThesaurus + "HierarchyTerm");
         StringObject thes_ALT = new StringObject(selectedThesaurus + "_ALT");
@@ -1004,7 +1014,9 @@ public class DBConnect_Term {
                 
                 if (dbGen.NodeBelongsToClass((StringObject) alts_Vector.get(i), altClassObj , false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) alts_Vector.get(i)).getValue());
-                    errorMsg = errorMsg.concat("Ο όρος : '" + str + "' υπάρχει στην βάση αλλά δεν ανήκει στο σύνολο των εναλλακτικών όρων.");
+                    //ValueNotInAlternativeTerms
+                    errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInAlternativeTerms", new String[]{str}));
+                    //errorMsg = errorMsg.concat("Value: '" + str + "' does not belong in the set of Alternative Terms and therefore cannot be defined as ALT.");
                     continue;
                 }
             }
@@ -1038,6 +1050,7 @@ public class DBConnect_Term {
     public String connectTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         StringObject fromClass = new StringObject();
         StringObject link = new StringObject();
@@ -1091,8 +1104,8 @@ public class DBConnect_Term {
                 
                 //consistency check 26 is supposed to be applied prior to this call
                 if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος " + targetWord+
-                            " δεν ανήκει στις αγγλικές λέξεις.",tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+" does not belong in the set of Translation terms and therefore cannot be defined as Translation.",tms_session) + " ");
                     return errorMsg;
                 }
             }
@@ -1145,6 +1158,7 @@ public class DBConnect_Term {
     public String connectUFTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         StringObject fromClass = new StringObject();
         StringObject link = new StringObject();
@@ -1195,8 +1209,9 @@ public class DBConnect_Term {
 
                 //consistency check 26 is supposed to be applied prior to this call
                 if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Ο όρος " + targetWord+
-                            " δεν ανήκει στις αγγλικές λέξεις.",tms_session) + " ");
+                    
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUFTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                    //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+"  does not belong in the set of non preferred Translation terms and therefore cannot be defined as translation UF.",tms_session) + " ");
                     return errorMsg;
                 }
             }

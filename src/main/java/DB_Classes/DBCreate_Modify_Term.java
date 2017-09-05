@@ -1881,12 +1881,12 @@ public class DBCreate_Modify_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject TargetTermNameUTF8WithPrefix = new StringObject(termPrefix.concat(TargetTermName));
         StringObject MoveFromHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveFromHierarchy));
-        StringObject MoveΤoHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
+        StringObject MoveToHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
         StringObject MoveBTtermUTF8WithPrefix = new StringObject(termPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
         int MTHoption = TMSAPIClass.MOVE_NODE_ONLY;
 
         int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix,
-                MoveΤoHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
+                MoveToHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
 
         StringObject MoveToHierarchyResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
@@ -1910,7 +1910,7 @@ public class DBCreate_Modify_Term {
     /*---------------------------------------------------------------------
     MoveToHierarchyAction()
     ----------------------------------------------------------------------*/
-    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveΤoHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
+    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveToHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
 
         String pathToMessagesXML = Utilities.getMessagesXml();
 
@@ -1925,7 +1925,7 @@ public class DBCreate_Modify_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject TargetTermNameUTF8WithPrefix = new StringObject(termPrefix.concat(TargetTermName));
         StringObject MoveFromHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveFromHierarchy));
-        StringObject MoveΤoHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveΤoHierarchy));
+        StringObject MoveToHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveToHierarchy));
         StringObject MoveBTtermUTF8WithPrefix = new StringObject(termPrefix.concat(MoveBTterm));
         int MTHoption = 0;
 
@@ -1938,7 +1938,7 @@ public class DBCreate_Modify_Term {
             MTHoption = TMSAPIClass.CONNECT_NODE_AND_SUBTREE;
         }
 
-        int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix, MoveΤoHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
+        int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix, MoveToHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
 
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
             //Q.free_all_sets();

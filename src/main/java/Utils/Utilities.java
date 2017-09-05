@@ -2579,6 +2579,20 @@ public class Utilities {
 
     }
 
+    public String translateFromMessagesXML( String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }
+            
+        }        
+        return translate(messageXPath, argsVector, Utilities.getMessagesXml());
+    }
+    
     public String translate(String messageXPath, Vector<String> args, String pathToErrorsXML) {
 
         String widgetNodeStr = "";
