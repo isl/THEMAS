@@ -174,7 +174,6 @@ public class UndoRenameResults extends ApplicationBasicServlet {
     boolean UndoRenameAction(String selectedThesaurus, String TargetTermName,StringObject UndoRenameResultsMessage, QClass Q,IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
         // begin transaction
         Q.TEST_begin_transaction();    
-        DBGeneral dbGen = new DBGeneral();
         
         // looking for Term prefix
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -187,12 +186,9 @@ public class UndoRenameResults extends ApplicationBasicServlet {
         
         UndoRenameResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
-            
-            Vector<String> trArgs = new Vector<String>();
-            trArgs.add(TargetTermName);
+            Utilities u = new Utilities();
+            UndoRenameResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/UndoRenameSuccess", new String[]{TargetTermName}));
             //UndoRenameResultsMessage.setValue("Undo rename operation of term " + TargetTermName + " was successfully completed.");
-            dbGen.Translate(UndoRenameResultsMessage, "root/EditTerm/Rename/UndoRenameSuccess", trArgs, Utilities.getMessagesXml());
-            
             return true;
         }
         else { // FAIL

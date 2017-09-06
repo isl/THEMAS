@@ -123,11 +123,11 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             String targetTerm = u.getDecodedParameterValue(request.getParameter("term"));
             String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
+            //StringObject resultMessageObj = new StringObject();
             
             if(targetTerm==null || targetTerm.length()==0){
-                dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";                
+                //dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/NoTermSelected", null)+"</errorMsg>";                
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 
                 return;
@@ -187,11 +187,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_name_scope();
             if(Q.set_current_node(targetTermObj)==QClass.APIFail){
 
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(targetTerm);
-
-                dbGen.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/CardOfTerm/TermNotFound", errorArgs, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/TermNotFound", new String[]{targetTerm})+"</errorMsg>";
                 
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 Q.free_all_sets();

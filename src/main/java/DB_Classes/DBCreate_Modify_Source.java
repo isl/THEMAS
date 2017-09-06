@@ -35,6 +35,7 @@ package DB_Classes;
 
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
+import Utils.Utilities;
 
 
 import java.io.UnsupportedEncodingException;
@@ -60,9 +61,10 @@ public class DBCreate_Modify_Source {
     }
 
     public boolean createNewSource(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String targetSource, String source_note, StringObject errorMsg, String pathToMessagesXML) {
+            String targetSource, String source_note, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -109,11 +111,8 @@ public class DBCreate_Modify_Source {
         }
 
 
-        Vector<String> errorArgs = new Vector<String>();
-
-
         if (targetSource.length() == 0) {
-            dbGen.Translate(errorMsg, "root/EditSource/Creation/EmptyName", null, pathToMessagesXML);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/EmptyName", null));
             //errorMsg.setValue("A name must be specified for the new source.");
             return false;
         }
@@ -122,8 +121,7 @@ public class DBCreate_Modify_Source {
 
         Q.reset_name_scope();
         if (Q.set_current_node(sourceObj) != QClass.APIFail) {
-            errorArgs.add(targetSource);
-            dbGen.Translate(errorMsg, "root/EditSource/Creation/AlreadyinDB", errorArgs, pathToMessagesXML);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/AlreadyinDB", new String[] {targetSource}));
             //errorMsg.setValue("Source with name " + targetSource + " already exists in the database.");
             return false;
         }
@@ -168,11 +166,9 @@ public class DBCreate_Modify_Source {
     public boolean commitSourceTransaction(UserInfoClass SessionUserInfo, ServletContext context, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String targetSource, String targetField, String newValue, String deleteCurrentThesaurusReferences, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-        Vector<String> errorArgs = new Vector<String>();
 
         String prefixSource = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
         String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
@@ -182,8 +178,7 @@ public class DBCreate_Modify_Source {
             //<editor-fold defaultstate="collapsed" desc="Delete Source...">
 
             if (targetSource == null || targetSource.trim().length() == 0) {
-
-                dbGen.Translate(errorMsg, "root/EditSource/Deletion/EmptyName", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/EmptyName", null));
                 //errorMsg.setValue("No name is specified for the deletion source. Deletion cancelled.");
                 return false;
             }
@@ -191,8 +186,7 @@ public class DBCreate_Modify_Source {
             Q.reset_name_scope();
             long sourceIDL = Q.set_current_node(targetSourceObj);
             if (sourceIDL == QClass.APIFail) {
-                errorArgs.add(targetSource);
-                dbGen.Translate(errorMsg, "root/EditSource/Deletion/NotFound", errorArgs, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/NotFound", new String[] {targetSource}));
                 //errorMsg.setValue("Source given for deletion: "+targetSource+" was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
@@ -202,8 +196,7 @@ public class DBCreate_Modify_Source {
             int howmanyRefs = Q.set_get_card(set_links_to_source);
             Q.free_set(set_links_to_source);
             if (howmanyRefs > 0 && deleteCurrentThesaurusReferences == null) {
-                errorArgs.add(targetSource);
-                dbGen.Translate(errorMsg, "root/EditSource/Deletion/HasReferences", errorArgs, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/HasReferences", new String[] {targetSource}));
                 //errorMsg.setValue("Source " + targetSource + " is referenced from the current or other thesauri of the database and can not be deleted. Deletion cancelled.");
                 return false;
 
@@ -261,8 +254,7 @@ public class DBCreate_Modify_Source {
                 for (int k = 0; k < targetTerms.size(); k++) {
                     ret = TA.CHECK_DeleteNewDescriptorAttribute(targetTermsLinkIdL.get(k), new StringObject(targetTerms.get(k)));
                     if (ret == QClass.APIFail) {
-                        errorArgs.add(targetTerms.get(k));
-                        dbGen.Translate(errorMsg, "root/EditSource/Deletion/ReferenceDeletionError", errorArgs, pathToMessagesXML);
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/ReferenceDeletionError", new String[] {targetTerms.get(k)}));
                         //errorMsg.setValue("Deletion error occurred while deleting source references for term "+ dbGen.removePrefix(targetTerms.get(k))+". Deletion cancelled.");
                         //reset to previous thesaurus name if needed
                         if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
@@ -276,8 +268,7 @@ public class DBCreate_Modify_Source {
                 }
 
                 if (howmanyfromCurrent != howmanyRefs) {
-
-                    dbGen.Translate(errorMsg, "root/EditSource/Deletion/OtherThesauriReferences", null, pathToMessagesXML);
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/OtherThesauriReferences", null));
                     //errorMsg.setValue("Source references from current thesaurus were deleted successfully. The source could not be though deleted due to references from other thesauri of the database.");
                     Q.TEST_end_transaction();
                     return false;
@@ -325,17 +316,15 @@ public class DBCreate_Modify_Source {
         } else if (targetField.compareTo(source_rename_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Source Rename...">
             if (targetSource == null || targetSource.trim().length() == 0) {
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/EmptyName", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyName", null));
                 //errorMsg.setValue("No name is specified for the source to rename. Renaming operation cancelled.");
                 return false;
             }
 
 
             if (newValue == null || newValue.trim().length() == 0) {
-
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/EmptyNewName", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyNewName", null));
                 //errorMsg.setValue("No new name is specified for the source to rename. Renaming operation cancelled.");
-
                 return false;
             }
             /*
@@ -359,8 +348,7 @@ public class DBCreate_Modify_Source {
 
             Q.reset_name_scope();
             if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
-                errorArgs.add(targetSource);
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/NotFound", errorArgs, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/NotFound", new String[]{targetSource}));                
                 //errorMsg.setValue("Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
@@ -371,7 +359,7 @@ public class DBCreate_Modify_Source {
 
             Q.reset_name_scope();
             if (Q.set_current_node(newSourceNameObj) != QClass.APIFail) {
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/AlreadyInDB", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/AlreadyInDB", null));
                 //errorMsg.setValue("New source name selected already exists in the database. Please select another source name.");
                 return false;
             }
@@ -381,7 +369,7 @@ public class DBCreate_Modify_Source {
 
             //check result
             if (ret == QClass.APIFail) {
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/RenameFailure", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null));
                 //errorMsg.setValue("Rename Failure.");
                 return false;
             }
@@ -398,7 +386,7 @@ public class DBCreate_Modify_Source {
 
             //check result of rename source note node if it existed
             if (ret == QClass.APIFail) {
-                dbGen.Translate(errorMsg, "root/EditSource/Rename/RenameFailure", null, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null));
                 //errorMsg.setValue("Rename Failure.");
                 return false;
             } else {
@@ -595,8 +583,7 @@ public class DBCreate_Modify_Source {
 
             Q.reset_name_scope();
             if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
-                errorArgs.add(targetSource);
-                dbGen.Translate(errorMsg, "root/EditSource/MoveReferences/NotFound", errorArgs, pathToMessagesXML);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/MoveReferences/NotFound", new String[]{targetSource}));
                 //errorMsg.setValue("Source " + targetSource + " was not found in the database. Please refresh the source's search results.");
                 return false;
             }

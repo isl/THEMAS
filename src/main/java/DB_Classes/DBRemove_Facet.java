@@ -116,12 +116,10 @@ public class DBRemove_Facet {
         
         
         if (dbGen.check_exist(targetFacet.getValue(),Q,sis_session) == false) {
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(targetFacet.getValue());
-            StringObject translatedMsgObj = new StringObject("");
-            dbGen.Translate(translatedMsgObj, "root/EditFacet/Deletion/FacetNotFound", errorArgs, Utilities.getMessagesXml());
+            Utilities u = new Utilities();            
+            errorMsg = u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet.getValue()});
             //errorMsg = "Facet " + targetFacet + " does not exist";
-            errorMsg = translatedMsgObj.getValue();
+            
             return errorMsg;
         }
 

@@ -262,18 +262,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
-
-        /*
-         *
-         *HARDCODED GREEKS
-         *
-         */
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-        StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
-
-        dbGen.Translate(resultMessageObj, "root/abortActionsMergeThesauri/MergeFailure", null, pathToMessagesXML);
-        xml.append(getXMLMiddle(thesauriNames, resultMessageObj.getValue() + resultObj.getValue()));
+        
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null) + resultObj.getValue()));
         
         //xml.append(getXMLMiddle(thesauriNames, "Merge of thesauri failure. " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -321,20 +311,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
         xml.append("<mergeReportFile>");
         xml.append(Filename);
         xml.append("</mergeReportFile>");
-        /*
-        *
-        *HARDCODED GREEKS
-        *
-        */
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-        StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
-
-        errorArgs.add(mergedThesaurusName);
-        dbGen.Translate(resultMessageObj, "root/commitActionsMergeThesauri/MergeSucceeded", errorArgs, pathToMessagesXML);
-        errorArgs.removeAllElements();
-
-        xml.append(getXMLMiddle(thesauriNames, resultMessageObj.getValue()));        
+        
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/commitActionsMergeThesauri/MergeSucceeded", new String[]{mergedThesaurusName})));        
         //xml.append(getXMLMiddle(thesauriNames, "Thesauri merge finished successfully. New thesaurus  " + mergedThesaurusName + " was set as current thesaurus."));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());

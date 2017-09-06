@@ -552,54 +552,38 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         UsersClass tmsUsers = new UsersClass();
         int resultOfCreateUser = tmsUsers.CreateUser(request, sessionInstance, createNewUserAsAdministrator, newName_User, newPassword_User, newDescription_User, selectThesaurusVector, selectUserGroupVector, UsersClass.CreateUserSimple_Mode, null, null);
 
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
-        ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
 
         String language = getServletContext().getInitParameter("LocaleLanguage");
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
-
+        
         switch (resultOfCreateUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NO_USER_NAME_GIVEN", null));
                 //out.println("Failure" + "Username field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());               
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null));
                 //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NO_USER_PASSWORD_GIVEN:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null));
                 //out.println("Failure" + "User Password field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", new String[]{newName_User}));
                 //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");                
-                errorArgs.add(newName_User);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.THESAURUS_SET_WITH_DUBLICATE_VALUES:
-                //out.println("Failure" + "Definition of different groups is not allowd in the same Thesaurus.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", null, pathToMessagesXML);
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", null));
+                //out.println("Failure" + "Definition of different groups is not allowed in the same Thesaurus.");
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_DB:
@@ -653,92 +637,64 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
         int resultOfCreateUser = tmsUsers.CreateUser(request, sessionInstance, createUserAsAdministrator, newName_User, newPassword_User, newDescription_User, selectThesaurusVector, selectUserGroupVector, UsersClass.CreateUserWithOlderUserHandle_Mode, olderUserCreateChoice, olderUserRenameName);
 
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
-        
-        ServletContext context = getServletContext();
-        DBGeneral dbGen = new DBGeneral();
 
         String language = getServletContext().getInitParameter("LocaleLanguage");
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-        StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
+        StringObject resultMessageObj = new StringObject("");
         
         switch (resultOfCreateUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
                 //out.println("Failure" + "Username field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NO_USER_NAME_GIVEN", null));
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NO_NEW_FORMER_USER_NAME_GIVEN:
+                
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NO_NEW_FORMER_USER_NAME_GIVEN", new String[]{newName_User}));
                 //out.println("Failure" + "Field of new User is not declared for the older User '" + newName_User + "'.");
-                errorArgs.add(newName_User);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_NEW_FORMER_USER_NAME_GIVEN", errorArgs, pathToMessagesXML);
-                out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
+                out.println("Failure" + resultMessageObj.getValue());                
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
-                //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null));
+                //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");                
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", new String[]{olderUserRenameName}));
                 //out.println("Failure" + "New field of Username '" + olderUserRenameName + "' must have minimun length of 2 and max length of 20 characters.");
-                errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", errorArgs, pathToMessagesXML);
-                out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
+                out.println("Failure" + resultMessageObj.getValue());                
                 return;
             case UsersClass.NO_USER_PASSWORD_GIVEN:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null));
                 //out.println("Failure" + "User Password field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NO_USER_PASSWORD_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", new String[]{newName_User}));
                 //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");
-                errorArgs.add(newName_User);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML", new String[]{olderUserRenameName}));
                 //out.println("Failure" + "The new Username '" + olderUserRenameName + "' is already in use from another user.");
-                errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.THESAURUS_SET_WITH_DUBLICATE_VALUES:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", null));
                 //out.println("Failure" + "Definition of different groups is not allowed in the same Thesaurus.");
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/THESAURUS_SET_WITH_DUBLICATE_VALUES", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB", new String[]{olderUserRenameName}));
                 //out.println("Failure" + "The new Username '" + olderUserRenameName + "' is already in use from another user in database. Please choose a different one.");
-                errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB", pathToMessagesXML, new String[]{olderUserRenameName});
-                out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();;
+                out.println("Failure" + resultMessageObj.getValue());                
                 return;
             case UsersClass.FORMER_USER_RENAME_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfCreateUser/FORMER_USER_RENAME_FAILED", new String[]{newName_User,olderUserRenameName}));
                 //out.println("Failure" + "Renaming of user '" + newName_User + "' to '" + olderUserRenameName + "' failed.");
-                errorArgs.add(newName_User);
-                errorArgs.add(olderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfCreateUser/FORMER_USER_RENAME_FAILED", pathToMessagesXML, new String[]{newName_User,olderUserRenameName});
-                out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
+                out.println("Failure" + resultMessageObj.getValue());                
                 return;
         }
 
@@ -764,18 +720,6 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         UsersClass tmsUsers = new UsersClass();
         int resultOfEditUser = tmsUsers.EditUser(request, sessionInstance, deletePassword, deleteUser, oldUserName, newName_User, newDescription_User);
 
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
-        
         ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
 
@@ -783,61 +727,51 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
+        //String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
+        //Vector<String> errorArgs = new Vector<String>();
         
         switch (resultOfEditUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/NO_USER_NAME_GIVEN", null));
                 //out.println("Failure" + "Username field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NOT_ALLOWED_TO_DELETE_YOURSELF:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/NOT_ALLOWED_TO_DELETE_YOURSELF", new String[]{oldUserName}));
                 //out.println("Failure" + "Self deletion of user '" + oldUserName + "' is not allowed.");
-                errorArgs.add(oldUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NOT_ALLOWED_TO_DELETE_YOURSELF", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.CANNOT_DELETE_LAST_ADMINISTRATOR:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/CANNOT_DELETE_LAST_ADMINISTRATOR", new String[]{oldUserName}));
                 //out.println("Failure" + "User '" + oldUserName + "' cannot be deleted. He/She is the last administrator of the system.");
-                errorArgs.add(oldUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/CANNOT_DELETE_LAST_ADMINISTRATOR", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS", new String[]{oldUserName}));
                 //out.println("Failure" + "User '" + oldUserName + "' cannot be deleted. He/She is the last user of group "Thesaurus Committee" for a Thesaurus.");
-                errorArgs.add(oldUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null));
                 //out.println("Failure" + "New field of Username must have minimum length of 2 and max length of 20 characters.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", new String[]{newName_User}));
                 //out.println("Failure" + "The new Username '" + newName_User + "' is already in use from another user.");
-                errorArgs.add(newName_User);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_DB:
+                //ajax handling no need to set the error message
                 out.println("Failure" + "NEW_USER_NAME_ALREADY_EXISTS_IN_DB");
                 //dbGen.Translate(resultMessageObj, "root/resultOfEditUser/NEW_USER_NAME_ALREADY_EXISTS_IN_DB", null, pathToMessagesXML);
                 //out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_RENAME_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUser/USER_RENAME_FAILED", new String[]{oldUserName,newName_User}));
                 //out.println("Failure" + "Renaming of user '" + oldUserName + "' to '" + newName_User + "' in database failed.");
-                errorArgs.add(oldUserName);
-                errorArgs.add(newName_User);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUser/USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
         }
 
@@ -860,129 +794,83 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
         int resultOfEditTargetAndOlderUser = tmsUsers.EditTargetAndOlderUser(sessionInstance, this.getServletContext(), THEMASUsersFileName, targetUser, targetUserDescription, olderUserName, OlderUserRenameName, choice);
 
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
-        
-        ServletContext context = getServletContext();
-        DBGeneral dbGen = new DBGeneral();
-
         String language = getServletContext().getInitParameter("LocaleLanguage");
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
         
         switch (resultOfEditTargetAndOlderUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/NO_USER_NAME_GIVEN", null));
                 //out.println("Failure" + "Username field is not declared.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NO_USER_NAME_GIVEN", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
                 //out.println("Failure" + "The renaming user: '" + targetUser + "' could not be found as a user of the system.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null));
                 //out.println("Failure" + "The field of Username must have minimum length of 2 and max length of 20 characters.");
                 //errorArgs.add(OlderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_XML:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", new String[]{OlderUserRenameName}));
                 //out.println("Failure" + "The new Username '" + OlderUserRenameName + "' is already in use from another user.");
-                errorArgs.add(OlderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_XML", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.NEW_USER_NAME_ALREADY_EXISTS_IN_DB:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_DB", new String[]{OlderUserRenameName,olderUserName}));
                 //out.println("Failure" + "Username '" + OlderUserRenameName + "' already exists in database. Please choose a different Username to rename the old user '" + olderUserName + "'.);//+"<newName>"+newName_User+"</newName>" + "<oldName>" + oldUserName + "</oldName>");
-                errorArgs.add(OlderUserRenameName);
-                errorArgs.add(olderUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/NEW_USER_NAME_ALREADY_EXISTS_IN_DB", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_RENAME_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/TARGET_USER_RENAME_FAILED", new String[]{targetUser,olderUserName}));
                 //out.println("Failure" + "Failure of renaming user '" + targetUser + "' to '" + olderUserName + "'.");
-                errorArgs.add(targetUser);
-                errorArgs.add(olderUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_RENAME_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/FORMER_USER_RENAME_FAILED", new String[]{olderUserName,OlderUserRenameName}));
                 //out.println("Failure" + "Renaming of user '" + olderUserName + "' to '" + OlderUserRenameName + "' in database failed.");
-                errorArgs.add(olderUserName);
-                errorArgs.add(OlderUserRenameName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_RENAME_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_DELETION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/TARGET_USER_DELETION_FAILED", new String[]{targetUser}));
                 //out.println("Failure" + "Failure of deleting user '" + targetUser + "' from the database.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_DELETION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/FORMER_USER_DELETION_FAILED", new String[]{olderUserName}));
                 //out.println("Failure" + "Failure of deleting user '" + olderUserName + "' from the database.");
-                errorArgs.add(olderUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED", new String[]{targetUser}));
                 //out.println("Failure" + "Failure of deleting creator links to author '" + targetUser + "'.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED", new String[]{targetUser}));
                 //out.println("Failure" + "Failure of deleting modifier links to author '" + targetUser + "'.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_INSTANCE_ADDITION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/FORMER_USER_INSTANCE_ADDITION_FAILED", new String[]{olderUserName,targetUser}));
                 //out.println("Failure" + "Failure inserting user '" + olderUserName + "' to thesaurus where user '" + targetUser + "' belonged.");
-                errorArgs.add(olderUserName);
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_INSTANCE_ADDITION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED", new String[]{olderUserName}));
                 //out.println("Failure" + "Failure of moving creator links to author '" + olderUserName + "'.");
-                errorArgs.add(olderUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditTargetAndOlderUser/FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED", new String[]{olderUserName}));
                 //out.println("Failure" + "Failure of moving modifier links to author '" + olderUserName + "'.");
-                errorArgs.add(olderUserName);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditTargetAndOlderUser/FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
         }
         out.println("Success");
@@ -1003,18 +891,6 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         UsersClass tmsUsers = new UsersClass();
         int resultOfEditUserPassword = tmsUsers.EditUserPassword(THEMASUsersFileName, targetUser, oldUserPassword, newUserPassword1, newUserPassword2);
 
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
-        
         ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
 
@@ -1022,26 +898,22 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
         
         switch (resultOfEditUserPassword) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUserPassword/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
                 //out.println("Failure" + "The renaming user: '" + targetUser + "' could not be found as a user of the system.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.OLD_PASSWORD_GIVEN_INCORRECT:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUserPassword/OLD_PASSWORD_GIVEN_INCORRECT", null));
                 //out.println("Failure" + "Wrong old password was given.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/OLD_PASSWORD_GIVEN_INCORRECT", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.CONFIRM_NEW_PASSWORD_IS_DIFFERENT:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUserPassword/CONFIRM_NEW_PASSWORD_IS_DIFFERENT", null));
                 //out.println("Failure" + "Different values of new password were given.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserPassword/CONFIRM_NEW_PASSWORD_IS_DIFFERENT", pathToMessagesXML, null);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
         }
@@ -1060,18 +932,6 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
         UsersClass tmsUsers = new UsersClass();
         int resultOfEditUserThesaurus = tmsUsers.EditUserThesaurus(request, session, sessionInstance, targetUser, newUserThesaurus);
-
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
         
         ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
@@ -1080,21 +940,17 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
         
         switch (resultOfEditUserThesaurus) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUserThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
                 //out.println("Failure" + "User '" + targetUser + "' does not exist.");
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserThesaurus/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
-                errorArgs.removeAllElements();
                 return;
             case UsersClass.AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfEditUserThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", null));
                 //out.println("Failure" + "The change of thesaurus failed.");
-                dbGen.Translate(resultMessageObj, "root/resultOfEditUserThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
         }
@@ -1132,17 +988,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String CurrentThesaurus = TMSCurrentUserInfo.selectedThesaurus;
 
         int resultOfShareThesaurus = tmsUsers.ShareThesaurus(request, CurrentThesaurus, selectUsersVector, selectUserGroupVector);
-        /*
-         * 
-         *
-         *
-         *
-         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-         *
-         *
-         *
-         *
-         */
+        
         
         ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
@@ -1151,19 +997,18 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String country = getServletContext().getInitParameter("LocaleCountry");
         Locale targetLocale = new Locale(language, country);
 
-        String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
+        
         
         switch (resultOfShareThesaurus) {
             case UsersClass.THESAURUS_WITHOUT_THESAURUS_COMMITTEE:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfShareThesaurus/THESAURUS_WITHOUT_THESAURUS_COMMITTEE", null));
                 //out.println("Failure" + "Thesaurus must have at least one \"Thesaurus Committee\" user.");
-                dbGen.Translate(resultMessageObj, "root/resultOfShareThesaurus/THESAURUS_WITHOUT_THESAURUS_COMMITTEE", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
             case UsersClass.USER_SET_WITH_DUBLICATE_VALUES:
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/resultOfShareThesaurus/USER_SET_WITH_DUBLICATE_VALUES", null));
                 //out.println("Failure" + "There cannot be defined more than one group-role for one user at the same Thesaurus.");
-                dbGen.Translate(resultMessageObj, "root/resultOfShareThesaurus/USER_SET_WITH_DUBLICATE_VALUES", null, pathToMessagesXML);
                 out.println("Failure" + resultMessageObj.getValue());
                 return;
         }

@@ -110,12 +110,10 @@ public class DBRemove_Hierarchy {
  
         if (dbGen.check_exist(targetHierarchy.getValue(),Q,sis_session) == false) {
             
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(targetHierarchy.getValue());
-            StringObject translatedMsgObj = new StringObject("");
-            dbGen.Translate(translatedMsgObj, "root/EditHierarchy/Deletion/HierarchyNotFound", errorArgs, Utilities.getMessagesXml());
+            Utilities u = new Utilities();            
+            errorMsg = u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy.getValue()});
             //errorMsg = "Hierarchy " + targetHierarchy + " does not exist";
-            errorMsg = translatedMsgObj.getValue();
+            
             return errorMsg;
         }
 

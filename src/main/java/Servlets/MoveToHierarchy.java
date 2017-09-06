@@ -114,10 +114,8 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
                 targetTermUTF8=new String("");
                 targetTermCanBeMovedToHierarchy= false;
                 
+                reasonTargetTermCannotBeMovedToHierarchy.setValue(u.translateFromMessagesXML( "root/EditTerm/Move2Hierarchy/NoTargetTermSpecified", null));
                 //reasonTargetTermCannotBeMovedToHierarchy.setValue("No target term was specified for the movement operation.");
-                dbGen.Translate(reasonTargetTermCannotBeMovedToHierarchy, "root/EditTerm/Move2Hierarchy/NoTargetTermSpecified", null, Utilities.getMessagesXml());
-                
-
             }
             else{   
                 StringObject targetTermUTF8WithPrefix = new StringObject(termPrefix.concat(targetTermUTF8));

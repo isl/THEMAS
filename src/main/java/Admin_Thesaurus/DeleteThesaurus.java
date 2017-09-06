@@ -198,21 +198,11 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             //dbAdminUtils.RefreshThesaurusVector(sessionInstance, Q, TA, sis_session, tms_session, dbGen, thesaurusVector);
             // in case of succesful deletion of the thesaurus inform user's rights for the deletion of the thesaurus (todo)
             
-            /*
-            *
-            *           
-            *HARDCODED GREEKS NEED TRANSLATION
-            *
-            *
-            */
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
             
+            StringObject resultMessageObj = new StringObject();
             if (DeleteThesaurusSucceded == true) {
-                errorArgs.add(ThesaurusName);
-                dbGen.Translate(resultMessageObj, "root/DeleteThesaurus/DeleteThesaurusSucceded", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
+            
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/DeleteThesaurus/DeleteThesaurusSucceded", new String[]{ThesaurusName}));
                 
                 DeleteThesaurusResultMessage.setValue(resultMessageObj.getValue());
                 //DeleteThesaurusResultMessage.setValue("Thesaurus " + ThesaurusName + " deletion completed successfully");

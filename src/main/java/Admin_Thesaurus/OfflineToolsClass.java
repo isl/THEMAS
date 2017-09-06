@@ -367,7 +367,7 @@ public class OfflineToolsClass {
                 Locale targetLocale = new Locale("el", "GR");
                 String pathToErrorsXML = baseApplicationFilePath.concat("/translations/Consistencies_Error_Codes.xml");
                 //String pathToSaveScriptingAndLocale = baseApplicationFilePath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
-                String pathToMessagesXML = Parameters.BaseRealPath.concat("/translations/SaveAll_Locale_And_Scripting.xml");
+                String pathToSaveScriptingAndLocale = Parameters.BaseRealPath.concat("/translations/SaveAll_Locale_And_Scripting.xml");
 
                 
                 
@@ -397,13 +397,6 @@ public class OfflineToolsClass {
                     logFileNamePath = logFileNamePath.replace("/", "\\");
                     
                     
-                    Vector<String> msgArgs = new Vector<String>();
-                    StringObject trMsg = new StringObject();
-                    msgArgs.add(importThesaurusName);
-                    msgArgs.add(time);
-                    dbGen.Translate(trMsg, "root/importcopymerge/importreporttitle", msgArgs, pathToMessagesXML);
-
-
                     OutputStream fout = new FileOutputStream(logFileNamePath);
                     OutputStream bout = new BufferedOutputStream(fout);
                     logFileWriter = new OutputStreamWriter(bout, "UTF-8");
@@ -411,9 +404,9 @@ public class OfflineToolsClass {
 
 
                     logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-                    logFileWriter.append("<title>"+trMsg.getValue()+"</title>\r\n");
+                    logFileWriter.append("<title>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/importreporttitle", new String[]{importThesaurusName,time})+"</title>\r\n");
 
-                    logFileWriter.append("<pathToSaveScriptingAndLocale>" + pathToMessagesXML +"</pathToSaveScriptingAndLocale>\r\n");
+                    logFileWriter.append("<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>\r\n");
 
                     if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                         Utils.StaticClass.webAppSystemOutPrintln("Failure");
@@ -425,14 +418,8 @@ public class OfflineToolsClass {
                     commitActions(importThesaurusName, Filename.concat(".html"));
 
                     Utils.StaticClass.webAppSystemOutPrintln("IMPORT PROCESS FINISHED SUCCESSFULLY at time: " + Utilities.GetNow());
-                    msgArgs = new Vector<String>();
-                    trMsg = new StringObject();
-                    msgArgs.add(importThesaurusName);
-                    msgArgs.add(inputFilePath);
-                    dbGen.Translate(trMsg, "root/importcopymerge/creationinfomsg", msgArgs, pathToMessagesXML);
-
-
-                    logFileWriter.append("\r\n<creationInfo>"+trMsg.getValue()+"</creationInfo>\r\n");
+                    
+                    logFileWriter.append("\r\n<creationInfo>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/creationinfomsg", new String[]{importThesaurusName,inputFilePath})+"</creationInfo>\r\n");
 
                     if(logFileWriter!=null){
                         logFileWriter.append("</page>");
@@ -792,12 +779,7 @@ public class OfflineToolsClass {
         xml.append(reportFile);
         xml.append("</"+resultFileTagName+">");
 
-        String pathToMessagesXML = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
-        StringObject errorMsg = new StringObject();
-
-        dbGen.Translate(errorMsg, "root/importcopymerge/sucessresultmsg", null, pathToMessagesXML);
-
-        xml.append(getXMLMiddle(errorMsg.getValue(),importMethodChoice));
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/sucessresultmsg", null),importMethodChoice));
 
 
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -874,12 +856,8 @@ public class OfflineToolsClass {
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         //xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
-        String pathToMessagesXML = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
-        Vector<String> errorArgs = new Vector<String>();
-        StringObject errorMsg = new StringObject();
-        errorArgs.add(resultObj.getValue());
-        dbGen.Translate(errorMsg, "root/importcopymerge/abortresultmsg", errorArgs, pathToMessagesXML);
-        xml.append(getXMLMiddle(errorMsg.getValue(),importMethodChoice));
+        
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/abortresultmsg", new String[]{resultObj.getValue()}),importMethodChoice));
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 

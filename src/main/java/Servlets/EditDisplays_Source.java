@@ -105,13 +105,11 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
             StringBuffer xmlResults = new StringBuffer();
             
             if(targetField==null || targetSource==null){
-                StringObject translatedMsgObj = new StringObject("");
-                dbGen.Translate(translatedMsgObj, "root/EditSource/Edit/NothingSpecified", null, Utilities.getMessagesXml());
                 
                 xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
                 xml.append("<targeSource>"+Utilities.escapeXML(targetSource)+"</targeSource>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
-                        "<resultText>"+translatedMsgObj.getValue()+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditSource/Edit/NothingSpecified", null)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path +  "/xml-xsl/EditSourceActions/Edit_Source.xsl");

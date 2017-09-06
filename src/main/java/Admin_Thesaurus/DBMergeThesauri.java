@@ -383,7 +383,7 @@ public class DBMergeThesauri {
                 }
             }
 
-            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj, pathToMessagesXML) == false) {
+            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create guide term / node lable: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
                 return false;
             }
@@ -486,7 +486,7 @@ public class DBMergeThesauri {
 
         for (int i = 0; i < merged_thesaurus_NEW_facets.size(); i++) {
             Q.reset_name_scope();
-            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false, pathToMessagesXML);
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false);
 
             if (FacetAdditionSucceded == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
@@ -576,7 +576,7 @@ public class DBMergeThesauri {
         boolean HierarchiesSucceeded = true;
         try {
 
-            String pathToMessagesXML = Utilities.getMessagesXml();
+            //String pathToMessagesXML = Utilities.getMessagesXml();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             UsersClass wtmsUsers = new UsersClass();
@@ -593,7 +593,7 @@ public class DBMergeThesauri {
             String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
             StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
+            //Vector<String> errorArgs = new Vector<String>();
 
             //Now for each pair of hierarchyplus facets create hierarchy and then change facets. If no facet is declared add hier under default facet
             Enumeration<String> pairsEnumMerged = pairsOfMergedThesaurus.keys();
@@ -602,13 +602,8 @@ public class DBMergeThesauri {
                 Vector<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
                 if (underFacets.size() == 0) {
 
-                    errorArgs.add(Utilities.escapeXML(hierarchy));
-                    errorArgs.add(Utilities.escapeXML(defaultFacet));
-                    dbGen.Translate(resultMessageObj, "root/CreateHierarchies/WrongHierarchyPosition", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
                     logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchy) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacet) + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchy),Utilities.escapeXML(defaultFacet)}) + "</reason>");
                     //logFileWriter.append("<reason>Hierarchy: " + Utilities.escapeXML(hierarchy) + " was found without being classified under any Facet. It is therefore by default classified under the default Facet: " + Utilities.escapeXML(defaultFacet) + ".</reason>");
                     logFileWriter.append("</targetHierarchy>\r\n");
                     underFacets.add(defaultFacet);
@@ -620,18 +615,18 @@ public class DBMergeThesauri {
                 if (Q.set_current_node(hierarchyObj) == QClass.APIFail) {
                     //create hierarchy
                     Q.reset_name_scope();
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false);
                     //logFileWriter.append(resultObj.getValue()+"\r\n");
                     if (HierarchiesSucceeded == true && underFacets.size() > 1) {
 
                         resultObj.setValue("");
-                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
 
                         //logFileWriter.append(resultObj.getValue()+"\r\n");
                     }
                 } else {
                     //modify hierarchy
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
                 }
 
                 if (HierarchiesSucceeded == false) {
@@ -2486,6 +2481,7 @@ public class DBMergeThesauri {
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2507,29 +2503,12 @@ public class DBMergeThesauri {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + thesaurusName1 + ".");
         Q.reset_name_scope();
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-
-            String pathToMessagesXML = pathToErrorsXML;
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
+           
             //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-            resultObj.setValue(resultMessageObj.getValue());
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName1}));
             //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-            errorArgs.removeAllElements();
+            
             return false;
         }
 
@@ -2581,28 +2560,10 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + thesaurusName2 + ".");
             Q.reset_name_scope();
             if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = pathToErrorsXML;
-                StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
                 //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj_2, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-                resultObj.setValue(resultMessageObj_2.getValue());
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName2}));
                 //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-                errorArgs.removeAllElements();
                 return false;
             }
 
@@ -2657,6 +2618,7 @@ public class DBMergeThesauri {
             Vector<Hashtable<String, Vector<String>>> allLevelsOfThes) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2675,30 +2637,12 @@ public class DBMergeThesauri {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + sourceThesaurus + ".");
         Q.reset_name_scope();
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = pathToErrorsXML;
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
-            errorArgs.add(sourceThesaurus);
-            dbGen.Translate(resultMessageObj, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[] {sourceThesaurus}));
             //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + sourceThesaurus + ".");
+            //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-            errorArgs.removeAllElements();
+            
             return false;
         }
 
@@ -2873,30 +2817,15 @@ public class DBMergeThesauri {
                     if (exists) {
 
                         allBts.addAll(dbGen.returnResults(SessionUserInfo, term, ConstantParameters.bt_kwd, Q, TA, sis_session));
-                        /*
-                         *
-                         *
-                         *HARDCODED GREEKS TRANSLATE
-                         *
-                         *
-                         */
+                        
 
-                        StringObject resultMessageObj = new StringObject();
-                        StringObject resultMessageObj_2 = new StringObject();
-                        Vector<String> errorArgs = new Vector<String>();
-
+                        
                         if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
-
-                            errorArgs.add(Utilities.escapeXML(term));
-                            errorArgs.add(thesaurusName2);
-                            errorArgs.add(Utilities.escapeXML(term));
-                            dbGen.Translate(resultMessageObj, "root/CreateTermsLevelByLevel/TermFoundAsTopTerm", errorArgs, pathToMessagesXML);
-                            errorArgs.removeAllElements();
 
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "1</errorValue>");
-                            logFileWriter.append("<reason>" + resultMessageObj + "1.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(term),thesaurusName2,Utilities.escapeXML(term)}) + "1.</reason>");
                             //logFileWriter.append("<reason>Term " + Utilities.escapeXML(term) + " found as a TT in Thesaurus '" + thesaurusName2 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "1.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             term += "1";
@@ -2933,27 +2862,9 @@ public class DBMergeThesauri {
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
-                        /*
-                         * 
-                         *
-                         *
-                         *
-                         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                         *
-                         *
-                         *
-                         *
-                         */
+                        
 
-                        StringObject resultMessageObj = new StringObject();
-                        Vector<String> errorArgs = new Vector<String>();
-
-                        errorArgs.add(thesaurusName1);
-                        errorArgs.add(Utilities.escapeXML(term));
-                        dbGen.Translate(resultMessageObj, "root/CreateTermsLevelByLevel/CopyTermFailure", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
-                        resultObj.setValue(resultMessageObj.getValue() + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(term)}) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus: " + thesaurusName1 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
@@ -3004,8 +2915,8 @@ public class DBMergeThesauri {
                     Vector<String> additionalBTs = new Vector<String>();
                     additionalBTs.addAll(allLevelsOfThes2.get(i).get(term));
 
-                    StringObject resultMessageObj_2 = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
+                    //StringObject resultMessageObj_2 = new StringObject();
+                    //Vector<String> errorArgs = new Vector<String>();
 
                     if (exists) {
 
@@ -3013,16 +2924,10 @@ public class DBMergeThesauri {
 
                         if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
 
-                            errorArgs.add(Utilities.escapeXML(term));
-                            errorArgs.add(thesaurusName1);
-                            errorArgs.add(Utilities.escapeXML(term));
-                            dbGen.Translate(resultMessageObj_2, "root/CreateTermsLevelByLevel/TermFoundAsTopTerm", errorArgs, pathToMessagesXML);
-                            errorArgs.removeAllElements();
-
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "2</errorValue>");
-                            logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "2.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(term),thesaurusName1,Utilities.escapeXML(term)}) + "2.</reason>");
                             //logFileWriter.append("<reason>Term ' " + Utilities.escapeXML(term) + "' found as a TT in Thesaurus '" + thesaurusName1 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "2.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             term += "2";
@@ -3059,27 +2964,8 @@ public class DBMergeThesauri {
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
-                        /*
-                         * 
-                         *
-                         *
-                         *
-                         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                         *
-                         *
-                         *
-                         *
-                         */
-
-                        StringObject resultMessageObj_3 = new StringObject();
-
-                        errorArgs.add(thesaurusName2);
-                        errorArgs.add(Utilities.escapeXML(term));
-                        dbGen.Translate(resultMessageObj_3, "root/CreateTermsLevelByLevel/CopyTermFailure", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
-                        resultObj.setValue(resultMessageObj_2.getValue() + resultObj.getValue());
-
+                        
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(term)}) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus " + thesaurusName2 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
@@ -3125,52 +3011,16 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
         if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(rtFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed_2_Param", errorArgs, pathToErrorsXML);
-            errorArgs.removeAllElements();
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(),thesaurusName1}));
             //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus : " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
         }
 
         if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(rtFromClassObj.getValue());
-            errorArgs.add(rtLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed", errorArgs, pathToErrorsXML);
-            errorArgs.removeAllElements();
-
-            resultObj.setValue(resultMessageObj.getValue());
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
@@ -3193,22 +3043,12 @@ public class DBMergeThesauri {
                 String term1Name = dbGen.removePrefix(row.get_v1_cls());
                 String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
                 if (term1Name.compareTo(term2Name) == 0) {
-
-                    errorArgs.add(Utilities.escapeXML(term1Name));
-                    errorArgs.add(thesaurusName1);
-                    dbGen.Translate(resultMessageObj, "root/CopyRTs/TermLinkToRT", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
 
                     rtsToThemSelves.add(term1Name);
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName1}) + "</reason>");
                     //logFileWriter.append("<reason>" + Utilities.escapeXML(term1Name) + " found to have Link RT with itself at Thesaurus: ' " + thesaurusName1 + "' . This Relationship will be bypassed.</reason>");
                     logFileWriter.append("</targetTerm>/r/n");
                     continue; //ignore from reading
@@ -3307,55 +3147,16 @@ public class DBMergeThesauri {
 
             Q.reset_name_scope();
             if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(rtFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed_2_Param", errorArgs, pathToErrorsXML);
-                errorArgs.removeAllElements();
-
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
             }
 
             if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(rtFromClassObj.getValue());
-                errorArgs.add(rtLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed", errorArgs, pathToErrorsXML);
-                errorArgs.removeAllElements();
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
@@ -3378,22 +3179,13 @@ public class DBMergeThesauri {
                     String term1Name = dbGen.removePrefix(row.get_v1_cls());
                     String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    StringObject resultMessageObj_2 = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
 
                     if (term1Name.compareTo(term2Name) == 0) {
-
-                        errorArgs.add(Utilities.escapeXML(term1Name));
-                        errorArgs.add(thesaurusName2);
-                        dbGen.Translate(resultMessageObj_2, "root/CopyRTs/TermLinkToRT", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
 
                         rtsToThemSelves.add(term2Name);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                        logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName2}) + "</reason>");
                         //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term1Name) + " was found to have RT relationship with himself in thesaurus: " + thesaurusName2 + ". This relation will be ignored.</reason>");
                         logFileWriter.append("</targetTerm>/r/n");
                         continue; //ignore from reading
@@ -3761,25 +3553,14 @@ public class DBMergeThesauri {
                     StatusThes2StrGR = Parameters.Status_Approved;
                 }
 
-                //HARDCODED GREEKS
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
                 StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
+                
                 int priority = getStatusPriority(StatusThes2, mergedThesaurusName) - getStatusPriority(StatusThes1, mergedThesaurusName);
                 if (priority > 0) {
-                    //change             
-                    errorArgs.add(Utilities.escapeXML(term));
-                    errorArgs.add(StatusThes1StrGR);
-                    errorArgs.add(StatusThes2StrGR);
-                    errorArgs.add(StatusThes1StrGR);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/FoundInStatus", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
+                    
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + StatusThes2StrGR + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
                     //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes1StrGR + "' was chosen.</reason>");
                     logFileWriter.append("</targetTerm>\r\n");
                     logFileWriter.flush();
@@ -3796,16 +3577,10 @@ public class DBMergeThesauri {
 
                 } else { //both status != null
                     if (priority < 0) {
-                        errorArgs.add(Utilities.escapeXML(term));
-                        errorArgs.add(StatusThes1StrGR);
-                        errorArgs.add(StatusThes2StrGR);
-                        errorArgs.add(StatusThes1StrGR);
-                        dbGen.Translate(resultMessageObj_2, "root/CreateStatuses/FoundInStatus", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
+                        
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + StatusThes1StrGR + "</errorValue>");
-                        logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
                         //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes2StrGR + "' was chosen.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -3817,25 +3592,8 @@ public class DBMergeThesauri {
             }
 
             if (ret == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(term);
-                dbGen.Translate(resultMessageObj, "root/CreateStatuses/FailedToUpdateTermStatus", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
                 //resultObj.setValue("Failed to update status of term: " + term);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
@@ -3854,26 +3612,8 @@ public class DBMergeThesauri {
                 long termIDL = Q.set_current_node(new StringObject(mergedTermPrefix.concat(term)));
 
                 if (termIDL == QClass.APIFail) {
-                    /*
-                     * 
-                     *
-                     *
-                     *
-                     * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                     *
-                     *
-                     *
-                     *
-                     */
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
-
-                    errorArgs.add(term);
-                    errorArgs.add(mergedThesaurusName);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/TermReferenceFailed", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-                    resultObj.setValue(resultMessageObj.getValue());
+                    
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/TermReferenceFailed", new String[]{term,mergedThesaurusName}));
                     //resultObj.setValue("Failed to refer to " + term + " of thesaurus: " + mergedThesaurusName);
                     return false;
                 }
@@ -3889,26 +3629,8 @@ public class DBMergeThesauri {
                 }
 
                 if (ret == QClass.APIFail) {
-                    /*
-                     * 
-                     *
-                     *
-                     *
-                     * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                     *
-                     *
-                     *
-                     *
-                     */
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
 
-                    errorArgs.add(term);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/FailedToUpdateTermStatus", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
-                    resultObj.setValue(resultMessageObj.getValue());
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
                     //resultObj.setValue("Failed to update status of term: " + term);
                     return false;
                 }
@@ -4222,6 +3944,7 @@ public class DBMergeThesauri {
             OutputStreamWriter logFileWriter, String editorKeyWordStr, StringObject resultObj) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
 
         Hashtable<String, Vector<String>> term_Editor_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
@@ -4257,55 +3980,15 @@ public class DBMergeThesauri {
         //READ EDITOR LINKS OF THES1
         Q.reset_name_scope();
         if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(editorFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(editorFromClassObj.getValue());
-            errorArgs.add(editorLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -4360,54 +4043,15 @@ public class DBMergeThesauri {
         Q.free_all_sets();
         Q.reset_name_scope();
         if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED GREEKS, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(dateFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED GREEKS, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(dateFromClassObj.getValue());
-            errorArgs.add(dateLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -4471,55 +4115,15 @@ public class DBMergeThesauri {
             //READ EDITOR LINKS OF THES2
             Q.reset_name_scope();
             if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(editorFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(),thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(editorFromClassObj.getValue());
-                errorArgs.add(editorLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
@@ -4573,54 +4177,15 @@ public class DBMergeThesauri {
             Q.free_all_sets();
             Q.reset_name_scope();
             if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(dateFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus : " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(dateFromClassObj.getValue());
-                errorArgs.add(dateLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
@@ -4900,6 +4465,7 @@ public class DBMergeThesauri {
         //Copy Links to EnglishWords, Taxonomic Codes, Sources
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
 
         StringObject fromClassObj = new StringObject();
@@ -4921,54 +4487,15 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
         if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(fromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(LinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(fromClassObj.getValue());
-            errorArgs.add(LinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(),LinkObj.getValue(), thesaurusName1}));
             //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -5036,54 +4563,15 @@ public class DBMergeThesauri {
 
             Q.reset_name_scope();
             if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(fromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(LinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(fromClassObj.getValue());
-                errorArgs.add(LinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(), LinkObj.getValue(), thesaurusName2}));
                 //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }

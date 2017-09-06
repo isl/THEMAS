@@ -2998,13 +2998,12 @@ public class ConsistensyCheck {
     }
      
 
-    public boolean check_facet_deletion(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,DBGeneral dbGen, String targetFacet, StringObject errorMsg, Locale targetLocale, String pathToErrorsXML){
+    public boolean check_facet_deletion(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,DBGeneral dbGen, String targetFacet, StringObject errorMsg, Locale targetLocale){
        
-
         int index = Parameters.CLASS_SET.indexOf("FACET");
         String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
         SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
-        Vector<String>errorArgs = new Vector<String>();
+        
         
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject targetFacetObj = new StringObject();
@@ -3018,9 +3017,8 @@ public class ConsistensyCheck {
         targetFacetObj.setValue(prefixClass+targetFacet);
         long retL = Q.set_current_node(targetFacetObj);
         if(retL==QClass.APIFail){
-            errorArgs.add(targetFacet);
-            dbGen.Translate(errorMsg, "root/EditFacet/Deletion/FacetNotFound", errorArgs, pathToErrorsXML);
-            
+            Utilities u = new Utilities();
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet}));
             //errorMsg.setValue("Facet " + targetFacet + " was not found.");
             return false;
         }
@@ -3061,10 +3059,9 @@ public class ConsistensyCheck {
         Q.free_set(set_f_nodes);
         if(allHiersMoreThanOneFacet==false){
             errorHierNames = errorHierNames.substring(0, errorHierNames.length()-2);
-            errorArgs.add(targetFacet);
-            errorArgs.add(errorHierNames);
-            dbGen.Translate(errorMsg, "root/EditFacet/Deletion/LastFacetForHierarchies", errorArgs, pathToErrorsXML);
-
+            
+            Utilities u = new Utilities();
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/LastFacetForHierarchies", new String[]{targetFacet,errorHierNames}));
             //errorMsg.setValue("Facet " + targetFacet +" is the only one under which heirarchies: " + errorHierNames + " are classifiesd. Facet deletion action was cancelled in order to maintain these hierarchies under at least one facet.");
             return false;
         }

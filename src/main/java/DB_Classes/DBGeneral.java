@@ -64,7 +64,6 @@ public class DBGeneral {
     public DBGeneral() {
 
     }
-
     /* getPrefixes()
      * Function used in order to pull all prefixes from thesaurus DB
      * Called by SearchResults_Terms_Alphabetical Servlet.
@@ -2343,6 +2342,7 @@ public class DBGeneral {
      ----------------------------------------------------------------------*/
     public Vector<String> getDescriptorHierarchies(String selectedThesaurus, StringObject targetDescriptor, QClass Q, IntegerObject sis_session) {
         int SISapiSession = sis_session.getValue();
+        Utilities u = new Utilities();
 
         // looking for Descriptor THES1Hierarchy
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -2386,7 +2386,8 @@ public class DBGeneral {
                 Q.free_set(set_h);
                 Q.free_set(set_c);
             } else {
-                errorMsg = errorMsg.concat("<tr><td>" + "Παρουσιάστηκε πρόβλημα κατά την πρόσβαση στη βάση. Παρακαλούμε προσπαθήστε ξανά." + "</td></tr>");
+                errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/DBConnectionError", null) + "</td></tr>");
+                //errorMsg = errorMsg.concat("<tr><td>" + "A database connection error occurred. Please try again later." + "</td></tr>");
                 error.addElement(errorMsg);
                 return error;
             }
@@ -2404,7 +2405,8 @@ public class DBGeneral {
                 hierarchiesVector.addElement(classPrefix.concat(removePrefix(targetDescriptor.getValue())));
                 return hierarchiesVector;
             }
-            errorMsg = errorMsg.concat("<tr><td>Ο όρος " + removePrefix(targetDescriptor.getValue()) + " δεν ανήκει σε ιεραρχία.</td></tr>");
+            errorMsg = errorMsg.concat("<tr><td>" +u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{ removePrefix(targetDescriptor.getValue())}) + "</td></tr>");
+            //errorMsg = errorMsg.concat("<tr><td>Term: '" + removePrefix(targetDescriptor.getValue()) + "' is not classified under any hierarchy.</td></tr>");
             error.addElement(errorMsg);
             return error;
         }
@@ -4325,6 +4327,7 @@ public class DBGeneral {
     public boolean collect_Recurcively_ALL_BTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
 
         int sisSessionId = sis_session.getValue();
+        Utilities u = new Utilities();
         StringObject btFromObj = new StringObject();
         StringObject btCategObj = new StringObject();
         getKeywordPair(selectedThesaurus, ConstantParameters.bt_kwd, btFromObj, btCategObj, Q, sis_session);
@@ -4334,7 +4337,8 @@ public class DBGeneral {
         /*Check if target node exists*/
         Q.reset_name_scope();
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage.setValue(resultMessage.getValue().concat("Ο όρος " + targetDescriptorObj.getValue() + " δεν βρέθηκε στην βάση"));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/GeneralMessages/TermNotfoundInTheDatabase", new String[]{targetDescriptorObj.getValue() })));
+            //resultMessage.setValue(resultMessage.getValue().concat("Term: " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
 
@@ -4386,6 +4390,7 @@ public class DBGeneral {
     public boolean collect_Recurcively_ALL_NTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
 
         int sisSessionId = sis_session.getValue();
+        Utilities u = new Utilities();
         StringObject btFromObj = new StringObject();
         StringObject btCategObj = new StringObject();
         getKeywordPair(selectedThesaurus, ConstantParameters.bt_kwd, btFromObj, btCategObj, Q, sis_session);
@@ -4393,9 +4398,7 @@ public class DBGeneral {
 
         /*Check if target node still exists*/
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            StringObject trMsg = new StringObject();
-            this.Translate(trMsg, "root/EditTerm/Edit/TermDoesNotExist",Utilities.getMessagesXml(), new String[]{targetDescriptorObj.getValue()});
-            resultMessage.setValue(resultMessage.getValue().concat(trMsg.getValue()));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist",new String[]{targetDescriptorObj.getValue()})));
             //resultMessage.setValue(resultMessage.getValue().concat("Term " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
@@ -4815,6 +4818,8 @@ public class DBGeneral {
     public StringObject ExistingTermSortDescription(String selectedThesaurus, StringObject targetTerm, QClass Q, IntegerObject sis_session) {
         String description = "";
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
+        
         // looking for Descriptor EKTDescriptor->EKT_BT
         StringObject thesDescriptor = new StringObject();
         dbtr.getThesaurusClass_Descriptor(selectedThesaurus, Q, sis_session.getValue(), thesDescriptor);
@@ -4830,11 +4835,7 @@ public class DBGeneral {
         Q.reset_set(BTlinksSet);
         int BTlinksSetCard = Q.set_get_card(BTlinksSet);
         if (BTlinksSetCard >= 1) {            
-            if(Parameters.UILang.equals("el")){
-                description += "\r\nΩς ειδικότερος όρος του όρου(ων): ";
-            }else if(Parameters.UILang.equals("en")){
-                description += "\r\nAs narrower term of term(or terms):";
-            }
+            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNTtermOfTerms", null);            
         }
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
@@ -4868,11 +4869,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_TopTerm(selectedThesaurus, Q, sis_session.getValue(), thesTopTerm);
         boolean isTopTerm = NodeBelongsToClass(targetTerm, thesTopTerm, false, Q, sis_session);
         if (isTopTerm == true) {            
-            if(Parameters.UILang.equals("el")){
-                description += "\r\nΩς όρος κορυφής.";
-            }else if(Parameters.UILang.equals("en")){
-                description += "\r\nAs top term.";
-            }
+            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsTopTerm", null);            
         }
         // 3. in case targetTerm belongs to EKTUsedForTerm with UF links pointing to it from terms x1, x2, ..., xn =>
         // "as non preferred term of terms: x1, x2, ..., xn"        
@@ -4881,11 +4878,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_UsedForTerm(selectedThesaurus, Q, sis_session.getValue(), thesUsedForTerm);
         boolean isUsedForTerm = NodeBelongsToClass(targetTerm, thesUsedForTerm, false, Q, sis_session);
         if (isUsedForTerm == true) {            
-            if(Parameters.UILang.equals("el")){
-                description += "\r\nΩς μη προτιμώμενος όρος";
-            }else if(Parameters.UILang.equals("en")){
-                description += "\r\nAs preferred term.";
-            }
+            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNonPreferredTerm", null);            
         }
         // looking for EKTHierarchyTerm 
         StringObject thesHierarchyTerm = new StringObject();
@@ -4899,11 +4892,7 @@ public class DBGeneral {
         Q.reset_set(UFlinksSet);
         int UFlinksSetCard = Q.set_get_card(UFlinksSet);
         if (UFlinksSetCard >= 1) {            
-            if(Parameters.UILang.equals("el")){
-                description += " του όρου(ων): ";
-            }else if(Parameters.UILang.equals("en")){
-                description += " of term(or terms): ";
-            }
+            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/OfTermOrTerms", null);            
         }
         counter = 0;
         retVals.clear();
@@ -6988,51 +6977,34 @@ public class DBGeneral {
         return true;
     }
 
-    public boolean checkIfErrorFreeAndTranslate(int ret, StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
-
-        if (ret == QClass.APIFail) {
-            Translate(resultObj, targetMessageBasePath, args, pathToErrorXMLFile);
-            return false;
-        }
-        return true;
-    }
-
-    //Using public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) 
-    //requires  Vector<String> args to be correctly defined. 
-    //this is some times inconvenient and hard to check
-    //This helper function allows to define per call an array of Strings for 
-    //args instead of relying to the correct preparation of the Vector<String> args
-    public void Translate(StringObject resultObj, String targetMessageBasePath, String pathToErrorXMLFile, String[] args) {
-        
-        if(args!=null){
-            Vector<String> argsVector = new Vector<String>();
-            int howmany = args.length;
-            for(int i=0; i< howmany; i++){
-                argsVector.add(args[i]);
-            }
-            Translate(resultObj,targetMessageBasePath,argsVector,pathToErrorXMLFile);
-        }
-        else{
-            Translate(resultObj,targetMessageBasePath,null,pathToErrorXMLFile);
-        }
-    }
-    
+    /*
+    Usage is not any more recommended. Use the specific functions for each xml file
+     * instead from the Utilities class i.e. 
+     * translateFromMessagesXML / translateFromTranslationsXML / translateFromSaveAllLocaleAndScriptingXML
+     * that do not require the path to the xml parameter and the args variable can be initialized in-line
+     * @param resultObj
+     * @param targetMessageBasePath
+     * @param args
+     * @param pathToErrorXMLFile 
+     
     public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
-        /*String CurrentValue = "";
-        resultObj.getValue();
-        if (CurrentValue == null) {
-            CurrentValue = "";
-        }*/
+        //String CurrentValue = "";
+        //resultObj.getValue();
+        //if (CurrentValue == null) {
+       //            CurrentValue = "";
+        //      }
         Utilities u = new Utilities();
         String tagetMessageFullXPath = targetMessageBasePath + "/option[@lang=\"" + Parameters.UILang + "\"]";
         resultObj.setValue(u.translate(tagetMessageFullXPath, args, pathToErrorXMLFile));
     }
+    */
 
     public boolean deleteTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             IntegerObject tms_session, String targetThesaurus, Hashtable<String, String> LanguageWordsAndIds,
             boolean startTransactionAndConnection, StringObject resultMessageObj, String pathToTranslationsXML) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
         int ret = -1;
         boolean OneTransaction = true;
         // <editor-fold defaultstate="collapsed" desc="Create Common Identifier Objects">
@@ -7143,14 +7115,12 @@ public class DBGeneral {
             String languageWord = languagesEnumeration.nextElement();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(languageWord);
-            errorArgs.add(languageId);
             // <editor-fold defaultstate="collapsed" desc="translations section">
             //create a string object and an identifer for the new Translation Category i.e. AAA_translation, to_IT
             StringObject thesaurusTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursTranslationCategorysubString).concat(languageId));
 
-            errorArgs.add(thesaurusTranslationCategoryStrObj.getValue());
+            String[] errorArgs = {languageWord,languageId,thesaurusTranslationCategoryStrObj.getValue()};
+            String errorMessage1 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
             Q.set_current_node(thesaurusTermStrObj);
@@ -7182,14 +7152,17 @@ public class DBGeneral {
                     Identifier currentToLanguageCategoryIdentifier = new Identifier(currentToLanguageCategoryIdL);
 
                     ret = Q.CHECK_Delete_IsA(thesaurusTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_IsA(thesaurusTranslationCategoryIdentifier, thesaurusTranslationIdentifier);;
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-
+                    
                     //  RETELL (AAA_translation, to_IT)
                     //      from  :  (AAATerm)
                     //      to    :  (ItalianWord) in (garbage_collected),
@@ -7198,18 +7171,23 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, garbageCollectedIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, translationTypeIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, thesaurusDescriptionIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-
+                    
                      //
                     //  RETELL Attribute (AAA_translation, to_IT)
                     //      from  :  (AAATerm)
@@ -7217,12 +7195,14 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Named_Attribute(thesaurusTranslationCategoryIdentifier, thesurusTermIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
+                    
                 } else {
 
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs));                    
                     return false;
 
                 }
@@ -7235,7 +7215,9 @@ public class DBGeneral {
             // <editor-fold defaultstate="collapsed" desc="uf_translations section">
             //create a string object and an identifer for the new Translation Category i.e. AAA_uf_translation, to_IT
             StringObject thesaurusUFTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursUFTranslationCategorysubString).concat(languageId));
-            errorArgs.set(2, thesaurusUFTranslationCategoryStrObj.getValue());
+            errorArgs[2]= thesaurusUFTranslationCategoryStrObj.getValue();
+            
+            String errorMessage2 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
             Q.set_current_node(thesaurusHierarchyTermStrObj);
@@ -7267,14 +7249,17 @@ public class DBGeneral {
                     Identifier currentToLanguageCategoryIdentifier = new Identifier(currentToLanguageCategoryIdL);
 
                     ret = Q.CHECK_Delete_IsA(thesaurusUFTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_IsA(thesaurusUFTranslationCategoryIdentifier, thesaurusUFTranslationIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-
+                    
                     //  RETELL (AAA_uf_translation, to_IT)
                     //      from  :  (AAAHierarchyTerm)
                     //      to    :  (ItalianWord) in (garbage_collected),
@@ -7283,18 +7268,23 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, garbageCollectedIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, translationTypeIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
+                    
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, thesaurusDescriptionIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-
+                    
                      //
                     //  RETELL Attribute (AAA_uf_translation, to_IT)
                     //      from  :  (AAAHierarchyTerm)
@@ -7302,7 +7292,8 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Named_Attribute(thesaurusUFTranslationCategoryIdentifier, thesurusHierarchyTermIdentifier);
-                    if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                    if(ret==QClass.APIFail){
+                        resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
                 }
@@ -7394,12 +7385,12 @@ public class DBGeneral {
             if (otherLanguageReferences.contains(languageWord)) {
                 continue;
             }
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(languageWord);
-            errorArgs.add(languageId);
-
+            
             StringObject toTranslationCategoryStrObj = new StringObject(ConstantParameters.toTranslationCategoryPrefix.concat(languageId));
-            errorArgs.add(toTranslationCategoryStrObj.getValue());
+            
+            String[] errorArgs = {languageWord,languageId,toTranslationCategoryStrObj.getValue()};
+            String errorMessage = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
+            
             //get an identifier with id for the new language category i.e. to_IT
             Q.reset_name_scope();
             Q.set_current_node(new StringObject(ConstantParameters.termClass));
@@ -7418,7 +7409,8 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_IsA(toNewLanguageIdentifier, termTranslationIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                if (ret == QClass.APIFail){
+                    resultMessageObj.setValue(errorMessage);
                     return false;
                 }
 
@@ -7429,11 +7421,14 @@ public class DBGeneral {
                 //  end
                 //
                 ret = Q.CHECK_Delete_Instance(toNewLanguageIdentifier, systemControlledIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                if (ret == QClass.APIFail){
+                    resultMessageObj.setValue(errorMessage);
                     return false;
                 }
+                
                 ret = Q.CHECK_Delete_Instance(toNewLanguageIdentifier, translationTypeIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                if (ret == QClass.APIFail){
+                    resultMessageObj.setValue(errorMessage);
                     return false;
                 }
 
@@ -7445,7 +7440,8 @@ public class DBGeneral {
                 //
                 //Delete a word CMValue
                 ret = Q.CHECK_Delete_Named_Attribute(toNewLanguageIdentifier, TermIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                if (ret == QClass.APIFail){
+                    resultMessageObj.setValue(errorMessage);
                     return false;
                 }
             }
@@ -7488,10 +7484,8 @@ public class DBGeneral {
                 continue;
             }
 
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(languageWord);
-            errorArgs.add(languageId);
-            errorArgs.add(ConstantParameters.hasPrefix);
+            String[] errorArgs = {languageWord,languageId,ConstantParameters.hasPrefix};
+            String errorMsgStr = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
 
             //
             //  RETELL (ItalianWord)
@@ -7543,19 +7537,20 @@ public class DBGeneral {
                 ret = Q.reset_name_scope();
 
                 ret = Q.CHECK_Delete_Unnamed_Attribute(new Identifier(tid.getValue()));
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionError", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(errorMsgStr);
                     return false;
                 }
             } else {
+                String[] errorArgs2 = {languageWord,languageId,ConstantParameters.hasPrefix,languageWord};
                 if (instancesCardinallity != 0) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordInstances", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));
+                    
                 } else if (allLinksToNumber != 0) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordRelations", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
+                    
                 } else if (hasPrefixLinksFromNumber != allLinksFromNumber) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordRelations", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
                 }
                 return false;
             }
@@ -7593,10 +7588,8 @@ public class DBGeneral {
                 continue;
             }
 
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(languageWord);
-            errorArgs.add(languageId);
-
+            
+            
             ret = Q.reset_name_scope();
             Q.set_current_node(new StringObject(languageWord.concat(ConstantParameters.wordClass)));
 
@@ -7632,8 +7625,8 @@ public class DBGeneral {
             //The prefix should also have no other links pointing to it
             if (instancesCardinallity == 0 && allLinksToNumber == 0 && allLinksFromNumber == 0 && remainingLinksToPrefix == 0) {
 
-                errorArgs.add(languageWord);
-                errorArgs.add(languageId);
+                String[] errorArgs1 = {languageWord,languageId,languageWord,languageId};
+                
                 //
                 // RETELL (IT`) in (Prefix)
                 // end
@@ -7644,18 +7637,21 @@ public class DBGeneral {
                 Identifier LanguagePrefixIdentifier = new Identifier(newLanguageIdentifierIdL);
 
                 ret = Q.CHECK_Delete_Instance(LanguagePrefixIdentifier, PrefixClassIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
-
+                
                 //
                 // RETELL Individual (IT`) in Token
                 // end
                 //
                 ret = Q.CHECK_Delete_Node(LanguagePrefixIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
+                
 
                 //update the Identifier object so that it references by sysid
                 Q.reset_name_scope();
@@ -7668,7 +7664,8 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_IsA(LanguageWordIdentifier, WordIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
 
@@ -7677,7 +7674,8 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_Instance(LanguageWordIdentifier, ThesaursNotionTypeIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
 
@@ -7686,22 +7684,21 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_Node(LanguageWordIdentifier);
-                if (this.checkIfErrorFreeAndTranslate(ret, resultMessageObj, "root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs, pathToTranslationsXML) == false) {
+                if(ret==QClass.APIFail){
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
             } else {
+                String[] errorArgs2 = {languageWord,languageId,languageWord};
                 if (instancesCardinallity != 0) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordInstances", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));                    
                 } else if (allLinksToNumber != 0) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordRelations", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
                 } else if (allLinksFromNumber != 0) {
-                    errorArgs.add(languageWord);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingWordRelations", errorArgs, pathToTranslationsXML);
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
                 } else if (remainingLinksToPrefix != 0) {
-                    errorArgs.add(languageId);
-                    this.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/TranslationsSynchronization/remainingPrefixRelations", errorArgs, pathToTranslationsXML);
+                    errorArgs2[2] = languageId;
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingPrefixRelations", errorArgs2));
                 }
                 return false;
             }

@@ -93,14 +93,12 @@ public class WriteFileData {
 
     public void WriteFileStart(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName) throws IOException {
 
-        DBGeneral dbGen = new DBGeneral();
-        StringObject msgObj = new StringObject();
-        String pathToTranslationsXml = Utilities.getTranslationsXml("translations.xml");
-        dbGen.Translate(msgObj, "locale/footer/tooltipappnameandversion", null, pathToTranslationsXml);
+        Utilities u = new Utilities();
+        
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
-        logFileWriter.append("<!-- " + msgObj.getValue() + " -->\r\n");
+        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null) + " -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"

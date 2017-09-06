@@ -360,7 +360,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                dbGen.Translate(MoveToHierarchyResultsMessage, "root/EditTerm/Move2Hierarchy/SuccessMsg", Utilities.getMessagesXml(), new String[]{TargetTermName});
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[]{TargetTermName}));
                 //MoveToHierarchyResultsMessage.setValue("Movement of term \"" + TargetTermName + "\" was successfully performed.");
                 return true;
             } else {
@@ -455,7 +455,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                dbGen.Translate(MoveToHierarchyResultsMessage, "root/EditTerm/Move2Hierarchy/SpecificDeleteBtSuccess", Utilities.getMessagesXml(), new String[]{TargetBTforDeletion,TargetTermName});
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtSuccess", new String[]{TargetBTforDeletion,TargetTermName}));
                 //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" was successfully completed.");
 
                 return true;
@@ -465,7 +465,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 return false;
             }
         } else {
-            dbGen.Translate(MoveToHierarchyResultsMessage, "root/EditTerm/Move2Hierarchy/SpecificDeleteBtFailure", Utilities.getMessagesXml(), new String[]{TargetBTforDeletion,TargetTermName});
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtFailure", new String[]{TargetBTforDeletion,TargetTermName}));
             //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" failed.");
             Q.free_all_sets();
 
@@ -566,6 +566,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
+        Utilities u = new Utilities();
 
         Vector<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
         StringObject TopTermObjClass = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("TopTerm"));
@@ -664,7 +665,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
                         ret = Q.CHECK_Delete_Instance( from, to);
                         if (ret == QClass.APIFail) {
-                            dbGen.Translate(errorMsg, "root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", Utilities.getMessagesXml(), new String[]{tempStr});
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
                             //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
@@ -690,7 +691,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                             String tempStr = checkNodes.get(i);
                             tempStr = dbGen.removePrefix(tempStr);
 
-                            dbGen.Translate(errorMsg, "root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", Utilities.getMessagesXml(), new String[]{tempStr});
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
                             //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }

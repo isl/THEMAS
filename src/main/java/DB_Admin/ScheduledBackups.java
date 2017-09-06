@@ -422,6 +422,7 @@ public class ScheduledBackups extends TimerTask {
 
         //tools
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         //UsersClass WTMSUsers = new UsersClass();
         //DBexportData dbExport = new DBexportData();
         DBImportData dbImport = new DBImportData();
@@ -444,18 +445,10 @@ public class ScheduledBackups extends TimerTask {
                 OutputStream bout = new BufferedOutputStream(fout);
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
                 
-                StringObject translatedMsgObj = new StringObject("");
-                Vector<String> translationArgs = new Vector<String>();
-                translationArgs.add(importThesaurus);
-                translationArgs.add( Utilities.GetNow());
-                
-                
-                dbGen.Translate(translatedMsgObj, "root/ImportData/ReportTitle", translationArgs, Utilities.getMessagesXml());                
-                
                 logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
                 //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../" + webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
                 logFileWriter.append("<importActions>\r\n");
-                logFileWriter.append("<title>"+translatedMsgObj.getValue()+"</title>\r\n");
+                logFileWriter.append("<title>"+u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurus,Utilities.GetNow()})+"</title>\r\n");
                 //logFileWriter.append("<!--"+time + " LogFile  of import data in thesaurus: " + importThesaurusName +".-->\r\n");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile of import data in thesaurus: " + importThesaurus + ".");
 

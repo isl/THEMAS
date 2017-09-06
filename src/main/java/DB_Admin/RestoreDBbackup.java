@@ -175,17 +175,15 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
         File fileForDeletion = new File(common_utils.DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
         boolean deletionSucceded = fileForDeletion.delete();        
         
-        DB_Classes.DBGeneral dbGen = new DB_Classes.DBGeneral();
-        Vector<String> trArgs = new Vector<String>();
-        trArgs.add(selectedDBbackupFileName);
+        Utilities u = new Utilities();
                 
         if (deletionSucceded == false) {
-            dbGen.Translate(RestoreDBbackupResultMessage, "root/DBAdminUtilities/BackupRestore/ZipFileNotFound", trArgs, Utilities.getMessagesXml());
+            RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileNotFound", new String[]{selectedDBbackupFileName}));
             //RestoreDBbackupResultMessage.setValue("File: '%s' was not found.");
             return false;
         }
-        //RestoreDBbackupResultMessage.setValue("File: " + selectedDBbackupFileName + " was successfully deleted.");
-        dbGen.Translate(RestoreDBbackupResultMessage, "root/DBAdminUtilities/BackupRestore/ZipFileSuccessfullyDeleted", trArgs, Utilities.getMessagesXml());
+        RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileSuccessfullyDeleted", new String[]{selectedDBbackupFileName}));
+        //RestoreDBbackupResultMessage.setValue("File: " + selectedDBbackupFileName + " was successfully deleted.");        
         return true;
     }    
     

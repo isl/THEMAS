@@ -106,16 +106,14 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             String country  = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             String targetHierarchy = u.getDecodedParameterValue(request.getParameter("hierarchy"));
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
             
             //Data storage
             StringBuffer xml = new StringBuffer();
             String output[] = {"name", "facet"};
             
             if(targetHierarchy==null || targetHierarchy.length()==0){
-                dbGen.Translate(resultMessageObj, "root/CardOfHierarchy/NoHierarchySelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";
+                
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfHierarchy/NoHierarchySelected", null)+"</errorMsg>";
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 return;
             }

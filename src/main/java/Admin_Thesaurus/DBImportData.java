@@ -167,27 +167,18 @@ public class DBImportData {
             return false;
         }
         try{
-            
-
-
 
             String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
             Vector<String> btOfTerms = new Vector<String>();
             btOfTerms.add(targetHierarchy);
             
-            String pathToMessagesXML = Utilities.getMessagesXml();
             StringObject resultMessageObj = new StringObject();
             StringObject resultMessageObj_2 = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-
+            
             Q.reset_name_scope();
             if (Q.set_current_node(new StringObject(prefixTerm.concat(targetHierarchy))) == QClass.APIFail) {
                 
-                errorArgs.add(Utilities.escapeXML(targetHierarchy));
-                dbGen.Translate(resultMessageObj, "root/importTermsUnderHierarchy/FailureFindHierarchy", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/importTermsUnderHierarchy/FailureFindHierarchy", new String[]{Utilities.escapeXML(targetHierarchy)}));
                 resultObj.setValue(resultMessageObj.getValue());
                 //resultObj.setValue("Hierarchy  '" + Utilities.escapeXML(targetHierarchy) + "' which was choosen for insertion of terms does not exist in database. Please choose a different name of Hierarchy.");
                 
@@ -205,9 +196,8 @@ public class DBImportData {
                 Q.free_all_sets();
                 Q.reset_name_scope();
                 
-                errorArgs.add(targetUITerm);
-                dbGen.Translate(resultMessageObj_2, "root/importTermsUnderHierarchy/targetUITermAlreadyExists", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
+                resultMessageObj_2.setValue(u.translateFromMessagesXML("root/importTermsUnderHierarchy/targetUITermAlreadyExists", new String[]{targetUITerm}));
+                resultObj.setValue(resultMessageObj_2.getValue());
                 
                 if (Q.set_current_node(targetTermObj) != QClass.APIFail) {
                     logFileWriter.append("<targetTerm>");
@@ -794,7 +784,6 @@ public class DBImportData {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
-        StringObject trObj = new StringObject("");
         
         DBMergeThesauri dbMerge = new DBMergeThesauri();
 
@@ -830,9 +819,9 @@ public class DBImportData {
             }
             //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../"+webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
             
-            dbGen.Translate(trObj, "root/MergeThesauri/ReportTitle", Utilities.getMessagesXml(), new String[]{thesaurusName1,thesaurusName2,targetThesaurusName,time});
+            
             logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-            logFileWriter.append("<title>"+trObj.getValue()+"</title>\r\n"
+            logFileWriter.append("<title>"+u.translateFromMessagesXML("root/MergeThesauri/ReportTitle", new String[]{thesaurusName1,thesaurusName2,targetThesaurusName,time})+"</title>\r\n"
                     + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\r\n");
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of merge thesauri operation of thesauri: " + thesaurusName1 + " and " + thesaurusName2 + "  in new thesaurus: " + targetThesaurusName + ".");
@@ -1049,8 +1038,7 @@ public class DBImportData {
                     targetThesaurusName, out, Filename.concat(".html"));
             if (logFileWriter != null) {
 
-                dbGen.Translate(trObj, "root/MergeThesauri/ReportSuccessMessage", Utilities.getMessagesXml(), new String[]{thesaurusName1,thesaurusName2,targetThesaurusName,((Utilities.stopTimer(startTime)) / 60)+"" });
-                logFileWriter.append("\r\n<creationInfo>"+trObj.getValue()+"</creationInfo>\r\n");
+                logFileWriter.append("\r\n<creationInfo>"+u.translateFromMessagesXML("root/MergeThesauri/ReportSuccessMessage", new String[]{thesaurusName1,thesaurusName2,targetThesaurusName,((Utilities.stopTimer(startTime)) / 60)+"" })+"</creationInfo>\r\n");
                 logFileWriter.append("</page>");
                 logFileWriter.flush();
                 logFileWriter.close();
@@ -1484,7 +1472,6 @@ public class DBImportData {
 
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();
-        DBMergeThesauri dbMerge = new DBMergeThesauri();
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
@@ -1505,14 +1492,6 @@ public class DBImportData {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
         
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
-        
-        errorArgs.add(mergedThesaurusName);        
-        dbGen.Translate(resultMessageObj, "root/commitMergeActions/MergeThesaurusSucceed", errorArgs, pathToMessagesXML);
-        errorArgs.removeAllElements();
-        
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         //xml.append("<mergewarnings>");
@@ -1521,7 +1500,7 @@ public class DBImportData {
         xml.append("<mergeReportFile>");
         xml.append(reportFile);
         xml.append("</mergeReportFile>");
-        xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, resultMessageObj.getValue()));
+        xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, u.translateFromMessagesXML("root/commitMergeActions/MergeThesaurusSucceed", new String[]{mergedThesaurusName})));
         //xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, "The merge thesauri procedure was successfully completed. New thesaurus: " + mergedThesaurusName + " was set as the current one."));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
@@ -1561,18 +1540,12 @@ public class DBImportData {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);     
         
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        StringObject resultMessageObj = new StringObject();
-        Vector<String> errorArgs = new Vector<String>();
-        
-        dbGen.Translate(resultMessageObj, "root/commitCopyActions/CopySucceed", null, pathToMessagesXML);
-
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         xml.append("<copyReportFile>");
         xml.append(reportFile);
         xml.append("</copyReportFile>");
-        xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames,resultMessageObj, true));
+        xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames,new StringObject(u.translateFromMessagesXML("root/commitCopyActions/CopySucceed",null)), true));
         //xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject("The copy thesuarus procedure was successfully completed.\n\n"), true));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());

@@ -35,6 +35,7 @@ package DB_Classes;
 
 
 
+import Utils.Utilities;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -70,22 +71,19 @@ public class DBConnect_Hierarchy {
     public String ConnectHierarchy(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, StringObject targetHierarchyObj, StringObject targetHierarchyFacetObj, String pathToErrorsXML) {
 
         StringObject errorMsgObj = new StringObject("");
-
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus,Q,sis_session.getValue());
 
         if (targetHierarchyObj.getValue().trim().equals(prefix)) {
-            dbGen.Translate(errorMsgObj, "root/EditHierarchy/Creation/EmptyName", null, pathToErrorsXML);
-            
             //errorMSG = errorMSG.concat("A name must be specified for the new hierarchy.");
-            return errorMsgObj.getValue();
+            return u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null);
         }
 
         if (targetHierarchyFacetObj.getValue().trim().equals(prefix)) {
-            dbGen.Translate(errorMsgObj, "root/EditHierarchy/Creation/NoFacetName", null, pathToErrorsXML);
             //errorMSG = errorMSG.concat("At least one parent facet must be specified for the new hierarchy creation.");
-            return errorMsgObj.getValue();
+            return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null) ;
         }
 
         int ret = TA.CHECK_CreateHierarchy(targetHierarchyObj, targetHierarchyFacetObj);

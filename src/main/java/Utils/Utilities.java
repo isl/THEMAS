@@ -2589,9 +2589,40 @@ public class Utilities {
                 argsVector.add(args[i]);
             }
             
-        }        
-        return translate(messageXPath, argsVector, Utilities.getMessagesXml());
+        }       
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getMessagesXml());
     }
+    
+    public String translateFromTranslationsXML(String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }
+            
+        }        
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+    }
+    
+    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }            
+        }        
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+    }
+    
     
     public String translate(String messageXPath, Vector<String> args, String pathToErrorsXML) {
 

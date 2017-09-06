@@ -35,6 +35,7 @@ package DB_Classes;
 
 
 import Utils.ConstantParameters;
+import Utils.Utilities;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -94,16 +95,17 @@ public class DBCreate_Modify_Facet {
     FUNCTION: creates / modifies the given Facet
     CALLED BY: Create_Modify_Facet servlet
     ----------------------------------------------------------------------*/
-    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists, String pathToMessagesXml) {
+    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
 
         
         DBConnect_Facet dbCon = new DBConnect_Facet();
+        Utilities u = new Utilities();
 
         StringObject errorMsgPrefix = new StringObject();
-        if (createORmodify.equals("create")) {
-            dbGen.Translate(errorMsgPrefix, "root/EditFacet/Creation/ErrorPrefix", null, pathToMessagesXml);
+        if (createORmodify.equals("create")) {            
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/ErrorPrefix", null));
         } else {
-            dbGen.Translate(errorMsgPrefix, "root/EditFacet/Edit/ErrorPrefix", null, pathToMessagesXml);
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/ErrorPrefix", null));
         }
 
         Q.reset_name_scope();
@@ -136,16 +138,14 @@ public class DBCreate_Modify_Facet {
         // in case of empty Facet
         if (targetFacetObj.getValue().trim().equals(prefix) == true) {
 
-            dbGen.Translate(errorMsg, "root/EditFacet/Edit/NoTargetSpecified", null, pathToMessagesXml);
-
-            errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/NoTargetSpecified", null));
             
             return false;
         }
         
         int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,pathToMessagesXml)));
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,Utilities.getMessagesXml())));
 
         } else // modify
         {
@@ -190,35 +190,31 @@ public class DBCreate_Modify_Facet {
             //Facet_CreationOrModificationSucceded = true;
             // end transaction
             //Q.end_transaction();
-            Vector<String> errorArgs = new Vector<String>();
-            errorArgs.add(targetFacet);
-            
             if (createORmodify.equals("create")) {
 
-                dbGen.Translate(errorMsg, "root/EditFacet/Creation/SuccessMsg", errorArgs, pathToMessagesXml);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacet}));
                 //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully created.");
 
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
                     //String message = "";
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
-                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessMsg", errorArgs, pathToMessagesXml);
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
-
-                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessUndoObsoleteMsg", errorArgs, pathToMessagesXml);
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacet}));
                         //message = "Undo abandonment action of facet '%s' was successfully performed.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
-                        dbGen.Translate(errorMsg, "root/EditFacet/Deletion/SuccessMsg", errorArgs, pathToMessagesXml);                        
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                      
                     //errorMsg.setValue(message);
                     //return message;
                 } else {
-                    dbGen.Translate(errorMsg, "root/EditFacet/Edit/SuccessMsg", errorArgs, pathToMessagesXml);
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacet}));
                     //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
                 }
             }

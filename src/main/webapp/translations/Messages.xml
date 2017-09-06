@@ -52,6 +52,38 @@
             <option lang="el">Δημιουργός Θησαυρού</option>
         </XMLStartHeaderName>
     </GeneralMessages>-->
+    <GeneralMessages>
+        <DBConnectionError>
+            <option lang="en">A database connection error occurred. Please try again later.</option>
+            <option lang="el">"Παρουσιάστηκε πρόβλημα κατά την πρόσβαση στη βάση. Παρακαλούμε προσπαθήστε ξανά.</option>
+        </DBConnectionError>
+        <TermDoesNotBelongInAnyHierarchy>
+            <option lang="en">Term: '%s' is not classified under any hierarchy.</option>
+            <option lang="el">Ο όρος: '%s' δεν ανήκει σε ιεραρχία.</option>
+        </TermDoesNotBelongInAnyHierarchy>
+        <TermNotfoundInTheDatabase>
+            <option lang="en">Term: '%s' was not found in the database.</option>
+            <option lang="el">Ο όρος: '%s' δεν βρέθηκε στην βάση.</option>
+        </TermNotfoundInTheDatabase>
+        <ConsistencyChecks>
+            <AsNTtermOfTerms>
+                <option lang="en">As narrower term of term(or terms): </option>
+                <option lang="el">Ως ειδικότερος όρος του όρου(ων): </option>
+            </AsNTtermOfTerms> 
+            <AsTopTerm>
+                <option lang="en">As top term.</option>
+                <option lang="el">Ως όρος κορυφής.</option>
+            </AsTopTerm>
+            <AsNonPreferredTerm>
+                <option lang="en">As non-Preferred Term.</option>
+                <option lang="el">Ως μη προτιμώμενος όρος.</option>
+            </AsNonPreferredTerm>    
+            <OfTermOrTerms>
+                <option lang="en"> of term(or terms): </option>
+                <option lang="el"> του όρου(ων): </option>
+            </OfTermOrTerms>            
+        </ConsistencyChecks>
+    </GeneralMessages>
     <PreviewErrorReports>
         <Kinds>
             <Facet>
@@ -1123,8 +1155,8 @@
             <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
         </InsertionFailure>
         <SuccessfulInsertion>
-            <option lang="en">Data insertion finished successfully. Current Thesaurus set: </option>
-            <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο:  </option>
+            <option lang="en">Data insertion finished successfully. Current Thesaurus set: %s.</option>
+            <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο: %s.</option>
         </SuccessfulInsertion>
     </ImportData>
     <commitMergeActions>
