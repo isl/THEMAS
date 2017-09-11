@@ -980,7 +980,7 @@ public class WriteFileData {
             DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
 
-            String[] output = {ConstantParameters.facet_kwd, ConstantParameters.topterm_kwd, ConstantParameters.status_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd,
+            String[] output = {ConstantParameters.system_transliteration_kwd,ConstantParameters.system_referenceId_kwd,ConstantParameters.facet_kwd, ConstantParameters.topterm_kwd, ConstantParameters.status_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd,
                 ConstantParameters.tc_kwd, ConstantParameters.translation_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.uf_translations_kwd,
                 ConstantParameters.primary_found_in_kwd, ConstantParameters.translations_found_in_kwd, ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
                 ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd};
@@ -1031,6 +1031,16 @@ public class WriteFileData {
                             values.addAll(targetTermInfo.descriptorInfo.get(category));
                         }
 
+                        if(category.equals(ConstantParameters.system_referenceId_kwd)){
+                            Long number = Long.parseLong(values.get(0));
+                            if(number>0){
+                                logFileWriter.append("\t\t\t<" + category + " referenceId=\""+number+"\">");
+                                logFileWriter.append(Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, number)));
+                                logFileWriter.append("</" + category + ">\r\n");
+                            }
+                            continue;
+                        }
+                        
                         if (specialCategories.contains(category) == false) {
                             Collections.sort(values);
 

@@ -392,7 +392,7 @@ public class DBAdminUtilities {
          }
          */
         TSVExportsImports expimps = new TSVExportsImports();
-        if (expimps.importSpecificFromFile(Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath()) == false) {
+        if (expimps.importSpecificFromFile(Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath(),true) == false) {
 
             StringObject result = new StringObject("");
             boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
@@ -510,7 +510,7 @@ public class DBAdminUtilities {
         //import generic file
         String genericTSVFile = common_utils.Neo4j_GenericTsvFile;
         TSVExportsImports expimps = new TSVExportsImports();
-        if (expimps.importGenericFromFile(genericTSVFile) == false) {
+        if (expimps.importGenericFromFile(genericTSVFile,true) == false) {
             InitializeDBResultMessage.setValue("Generic Import Failed");
             boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject());
 

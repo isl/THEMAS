@@ -1825,9 +1825,14 @@ public class DBMergeThesauri {
                 }
 
                 String targetTerm = dbGen.removePrefix(row.get_v1_cls());
+                String targetTransliterationTerm = row.get_v10_clsTransliteration();
+                Long targetTermReferenceId = row.get_v11_clsRefid();
+                
                 String category = row.get_v5_categ();
                 String categoryKwd = kewyWordsMappings.get(row.get_v5_categ());
                 String value = row.get_v8_cmv().getString();
+                long valueRefIdL = row.get_v8_cmv().getRefid();
+                String valueTranslit = row.get_v8_cmv().getTransliterationString();
                 // Utils.StaticClass.webAppSystemOutPrintln((counter++) +" In " + targetTerm);
                 long targetTermIdL = row.get_v2_clsid();
                 long valueIdL = row.get_v8_cmv().getSysid();
@@ -1854,7 +1859,12 @@ public class DBMergeThesauri {
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                     //newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId, category));
+                    newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(targetTermReferenceId+"");
+                    newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(targetTransliterationTerm);
+                    
                     termsInfo.put(targetTerm, newContainer);
+                    
+                    
                     allTerms.add(targetTerm);
                 }
 
@@ -1883,6 +1893,9 @@ public class DBMergeThesauri {
                 if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                     if (termsInfo.containsKey(value) == false) {
                         NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
+                        
+                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(valueRefIdL+"");
+                        newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(valueTranslit);
                         //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
                         termsInfo.put(value, newContainer);
                         allTerms.add(value);
@@ -1902,6 +1915,8 @@ public class DBMergeThesauri {
                 } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
                     if (termsInfo.containsKey(value) == false) {
                         NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
+                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(valueRefIdL+"");
+                        newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(valueTranslit);
                         //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
                         termsInfo.put(value, newContainer);
                         allTerms.add(value);

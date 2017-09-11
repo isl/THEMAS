@@ -408,7 +408,7 @@ public class CommonUtilsDBadmin {
         // start server with empty data base folder
         Utils.StaticClass.getDBService();
         
-        boolean importSucceeded = expimp.globalImportFromFile(exportFileName);
+        boolean importSucceeded = expimp.globalImportFromFile(exportFileName,false);
         if(importSucceeded==false){
             String TelosFailed = config.GetTranslation("TelosFailed");
             FixDBResultMessage.setValue(TelosFailed);

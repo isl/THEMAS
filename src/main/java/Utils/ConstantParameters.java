@@ -204,6 +204,9 @@ public class ConstantParameters {
 
     public static final String accepted_kwd ="accepted";
     public static final String status_kwd   ="status";
+    
+    public static final String system_referenceId_kwd   ="ReferenceUri";
+    public static final String system_transliteration_kwd   ="transliteration";
 
 
     public static final String editor_kwd ="editor";

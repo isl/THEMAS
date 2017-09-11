@@ -86,6 +86,9 @@ public class Parameters {
     public static String[] alphabetical_ignored_nodes;
     public static Vector<String> alphabetical_mode_PAGING_COUNT_NODES;
     
+    public static boolean TransliterationsToLowerCase = false;
+    public static Hashtable<String,String> TransliterationsReplacements = new Hashtable<>();
+    
     
     public static Vector<Integer> TermModificationChecks;
     
@@ -194,6 +197,29 @@ public class Parameters {
                 
                 UnclassifiedTermsLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsHierarchyName[1]", document);
                 
+                
+                String boolValStr_4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/@toLowerCase[1]", document);
+                if(boolValStr_4.toLowerCase().equals("true")||boolValStr_4.toLowerCase().equals("yes")){
+                    Parameters.TransliterationsToLowerCase = true;
+                }
+                else{
+                    Parameters.TransliterationsToLowerCase = false;
+                }
+                
+                NodeList TransltiterationGroups = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/ReplacementGroup", document,XPathConstants.NODESET);
+                if(TransltiterationGroups!=null){
+                    int howmanyGroups = TransltiterationGroups.getLength();
+                    for(int i=0; i< howmanyGroups; i++){
+                        
+                        
+                        String delimeter = xpath.evaluate("./Source/@dellimeterChar", TransltiterationGroups.item(i));
+                        String replaceWhat = xpath.evaluate("./Source", TransltiterationGroups.item(i));
+                        String replaceWith =xpath.evaluate("./Replacement", TransltiterationGroups.item(i));
+                        
+                        Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith);
+                    }
+                }
+                
                 Vector<String> permittedClassesFromXml = new Vector();
                 NodeList classesPermitted = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document,XPathConstants.NODESET);
                 if(classesPermitted!=null){
@@ -203,6 +229,9 @@ public class Parameters {
                     }
                 }
                 Users.UserInfoClass.initializeAccessControlStructures(permittedClassesFromXml);
+                
+                
+                
 
             } catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());

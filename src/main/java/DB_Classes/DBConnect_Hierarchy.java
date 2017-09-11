@@ -85,8 +85,15 @@ public class DBConnect_Hierarchy {
             //errorMSG = errorMSG.concat("At least one parent facet must be specified for the new hierarchy creation.");
             return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null) ;
         }
+        
+        
+        String transliterationString ="";
+        if(targetHierarchyObj.getValue()!=null && targetHierarchyObj.getValue().length()>0){
 
-        int ret = TA.CHECK_CreateHierarchy(targetHierarchyObj, targetHierarchyFacetObj);
+            transliterationString = Utilities.getTransliterationString(targetHierarchyObj.getValue(),true);            
+        }
+        
+        int ret = TA.CHECK_CreateHierarchy(targetHierarchyObj, targetHierarchyFacetObj,transliterationString);
 
         if (ret == TMSAPIClass.TMS_APIFail) {
 

@@ -2663,7 +2663,7 @@ public class Utilities {
             ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
             ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
             ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
+            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd, ConstantParameters.system_referenceId_kwd, ConstantParameters.system_transliteration_kwd
         };
         return output;
     }
@@ -2696,12 +2696,83 @@ public class Utilities {
         return returnArray;
     }
 
+    public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TERM /*,SOURCE*/};
+
+    public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
+        String retVal ="";
+        
+        switch(kind){
+            case FACET:{
+                if(thesaurusName!=null && thesaurusName.length()>0){
+                    retVal += thesaurusName+"/";
+                }
+                retVal += "Facet/";
+                break;
+            }
+            case HIERARCHY:{
+                if(thesaurusName!=null && thesaurusName.length()>0){
+                    retVal += thesaurusName+"/";
+                }
+                retVal += "Hierarchy/";
+                break;
+            }
+            case TERM:{
+                if(thesaurusName!=null && thesaurusName.length()>0){
+                    retVal += thesaurusName+"/";
+                }
+                retVal += "Term/";
+                break;
+            }
+            /*
+            Source might raise issues during merge thesauri operations.
+            It is not unique per thesaurus -> Thus logicalname may have 
+            different 
+            case SOURCE:{
+                retVal += "Source/";
+                break;
+            }
+            */
+            default:{
+                break;
+            }
+            
+            
+        }
+        retVal += String.format("%07d", referenceId);
+        return retVal;
+    }
+    
     public static String getMessagesXml() {
         return Utilities.getTranslationsXml("Messages.xml");
     }
 
     public static String getTranslationsXml(String fileName) {
         return Parameters.BaseRealPath + File.separator + "translations" + File.separator + fileName;
+    }
+    
+    public static String getTransliterationString(String originalLogicalNameWithoutPrefix, boolean removePrefix){
+        String transliterationString = "";
+        if(removePrefix){
+            if (originalLogicalNameWithoutPrefix.contains("`")) {
+                transliterationString = originalLogicalNameWithoutPrefix.substring(originalLogicalNameWithoutPrefix.indexOf("`") + 1);
+            } else {
+                transliterationString = originalLogicalNameWithoutPrefix;
+            }
+        }
+        else{
+            transliterationString = originalLogicalNameWithoutPrefix;
+        }
+        if(Parameters.TransliterationsToLowerCase){
+            transliterationString = transliterationString.toLowerCase();
+        }
+        for (String key : Parameters.TransliterationsReplacements.keySet()) {
+            String replaceRegEx = "["+key+"]";
+            String replaceWith = Parameters.TransliterationsReplacements.get(key);
+
+            transliterationString = transliterationString.replaceAll(replaceRegEx, replaceWith);
+
+        }
+        return transliterationString;
     }
 }
 

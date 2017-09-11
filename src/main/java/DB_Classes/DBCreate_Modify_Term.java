@@ -65,7 +65,6 @@ public class DBCreate_Modify_Term {
 
     public void createNewTerm(UserInfoClass SessionUserInfo, String newName, Vector<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
         if (Parameters.DEBUG) {
             Utils.StaticClass.webAppSystemOutPrintln("Target NEW Term: " + newName + " Target bts: " + decodedValues.toString());
         }
@@ -77,8 +76,6 @@ public class DBCreate_Modify_Term {
         String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject newNameObj = new StringObject(prefix.concat(newName));
 
-
-        Vector<String> errorArgs = new Vector<String>();
         if (newName != null && newName.length() > 0) {
             /*
             try {
@@ -149,6 +146,7 @@ public class DBCreate_Modify_Term {
             return;
         }
 
+        //TODO: Check if reference uri exists
 
         errorMsg.setValue(dbCon.connectDescriptor(SessionUserInfo.selectedThesaurus, newNameObj, decodedValues, Q, sis_session, dbGen, TA, tms_session));
 

@@ -115,6 +115,14 @@ public class DBConnect_Term {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String b_prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
 
+        String transliterationString ="";
+        if(targetDescriptor.getValue()!=null && targetDescriptor.getValue().length()>0){
+            
+            transliterationString = Utilities.getTransliterationString(targetDescriptor.getValue(),true);            
+        }
+        
+        //Utils.StaticClass.webAppSystemOutPrintln("targetDescriptor: "+ targetDescriptor + "  transliteration: " + transliterationString);
+        
         // in case of empty targetDescriptor
         // PERFORMED BY CONSISTENCYCHECK.JAVA
         /*
@@ -141,7 +149,7 @@ public class DBConnect_Term {
 
         // create targetDescriptor if it doesn't exist
         if (dbGen.check_exist(targetDescriptor.getValue(),Q,sis_session) == false) {
-            int ret = TA.CHECK_CreateDescriptor( targetDescriptor, (StringObject) vec_bt.get(0));
+            int ret = TA.CHECK_CreateDescriptor(targetDescriptor, (StringObject) vec_bt.get(0), transliterationString);
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMsg = errorMsg.concat("" + dbGen.check_success(ret, TA,null,tms_session) + "");
                 return errorMsg;
@@ -162,20 +170,21 @@ public class DBConnect_Term {
         for (int i = 0; i < vec_bt.size(); i++) {
             hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i),Q,sis_session);
             if (i == 0) {
-                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) targetDescriptor,Q,sis_session);
+                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus,
+                                                          (StringObject) targetDescriptor,
+                                                           Q,
+                                                           sis_session);
             } else {
                 prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i - 1),Q,sis_session);
             }
             
             for (int j = 0; j < hiers.size(); j++) {
                 
-                String targetDescriptorUTF8 = targetDescriptor.getValue();
-                String prevHiers0_UTF8 = prevHiers.get(0);
-                String Hiers_UTF8 = hiers.get(j);
-                String vecBT_I = vec_bt.get(i).getValue();
-                
-                int ret = TA.CHECK_MoveToHierarchy(targetDescriptor, new StringObject(prevHiers.get(0)),
-                        new StringObject(hiers.get(j)), vec_bt.get(i), TMSAPIClass.CONNECT_NODE_AND_SUBTREE);
+                int ret = TA.CHECK_MoveToHierarchy(targetDescriptor, 
+                                                   new StringObject(prevHiers.get(0)),
+                                                   new StringObject(hiers.get(j)), 
+                                                   vec_bt.get(i), 
+                                                   TMSAPIClass.CONNECT_NODE_AND_SUBTREE);
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("" + dbGen.check_success(ret,TA, null,tms_session) + "");
                 }

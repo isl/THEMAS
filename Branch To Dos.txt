@@ -1,12 +1,5 @@
-- Implement a function with
-  Input: Όρος αναζήτησης
-  Output: XML Λίστα όλων των όρων που περιέχουν τον όρο αναζήτησης 
-	Πιθανή επέκταση των αποτελεσμάτων με 
-		-	Όλους τους αναδρομικούς απόγονους του όρου που περιέχει τον όρο αναζήτησης όπως και το σχετικό τους βάθος
-		-	Τους όρους των οποίων ο μη προτιμώμενος UF όρος περιέχει τον όρο αναζήτησης
-
+- Add a configurable list of replacements that will be used for the 
+  transliteration generation out of each term Logicalname
 		
-- Implement a function with
-  Input: Όνομα θησαυρικού όρου 
-  Output: Ολόκληρα τα ιεραρχικά δένδρα στα οποία συμμετέχει όπως στην ιεραρχική αναπαράσταση όρου
+- Add uri reference ids to Terms/Hierarchies/Facets
 		

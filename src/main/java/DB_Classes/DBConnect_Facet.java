@@ -82,7 +82,12 @@ public class DBConnect_Facet {
 
         if (dbGen.check_exist(targetFacet.getValue(),Q,sis_session) == false) {
             
-            int ret = TA.CHECK_CreateFacet(targetFacet);
+            String transliterationString ="";
+            if(targetFacet.getValue()!=null && targetFacet.getValue().length()>0){
+
+                transliterationString = Utilities.getTransliterationString(targetFacet.getValue(),true);            
+            }
+            int ret = TA.CHECK_CreateFacet(targetFacet,transliterationString);
             
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMSG = errorMSG.concat(dbGen.check_success(ret, TA, null,tms_session));

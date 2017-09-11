@@ -33,6 +33,8 @@
  */
 package DB_Admin;
 
+import DB_Classes.DBGeneral;
+import Utils.Utilities;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -46,6 +48,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
+import neo4j_sisapi.Configs;
+import neo4j_sisapi.IntegerObject;
+import neo4j_sisapi.QClass;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -65,13 +70,29 @@ public class TSVExportsImports {
     private String CommonLabel = "Common";
     
     private String LabelKey = "LABEL";
-    private String PropertyKey_Type = "Type";
-    private String PropertyKey_Value = "Value";
-    public static String PropertyKey_Neo4j_Id = "Neo4j_Id";
-    private String PropertyKey_Logicalname = "Logicalname";
+    //private String Neo4j_Key_For_Type = "Type";
+    //private String Neo4j_Key_For_Value = "Value";
+    //public static String Neo4j_Key_For_Neo4j_Id = "Neo4j_Id";
     
-    private String MaxNeoIdNodeLogicalName = "Telos_Object";
-    private String PropertyKeyMaxNeo4jId = "MaxNeo4j_Id";
+    //private String Neo4j_Key_For_Logicalname = "Logicalname";
+    //private String Neo4j_Key_For_Transliteration = "Transliteration";
+    //private String Neo4j_Key_For_ReferenceId = "ReferenceId";
+    
+    
+    //private String Neo4j_Key_For_MaxThesaurusReferenceId = "MaxThesaurusReferenceId";
+    
+    //private String Neo4j_Key_For_MaxThesaurusFacetId = "MaxThesaurusFacetId";
+    //private String Neo4j_Key_For_MaxThesaurusHierarchyId = "MaxThesaurusHierarchyId";
+    //private String Neo4j_Key_For_MaxThesaurusTermId = "MaxThesaurusTermId";
+    //private String Neo4j_Key_For_MaxSourceId = "MaxSourceId";
+    
+    //private String Neo4j_Node_LogicalName_For_MaxNeo4jId = "Telos_Object";
+    //private String Neo4j_Node_LogicalName_For_MaxTHESFacetId = "%THES%Facet";
+    //private String Neo4j_Node_LogicalName_For_MaxTHESHierarchyId = "%THES%Hierarchy";
+    //private String Neo4j_Node_LogicalName_For_MaxTHESTermId = "%THES%HierarchyTerm";
+    //private String Neo4j_Node_LogicalName_For_MaxSourceId = "Source";
+        
+    
     
     enum Rels implements RelationshipType {
 
@@ -84,12 +105,12 @@ public class TSVExportsImports {
 
     private void writeNodeInfoInTsvFile(Node n, OutputStreamWriter out, boolean onlyGeneric, boolean skipGeneric) throws IOException{
      
-        String nodeId = n.getProperty(PropertyKey_Neo4j_Id).toString();
+        String nodeId = n.getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
         //long nodeId = n.getId();
-        String logicalname = n.getProperty(PropertyKey_Logicalname).toString();
+        String logicalname = n.getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
         if(n.hasLabel(Labels.Generic)){
-            if(n.hasProperty(PropertyKey_Neo4j_Id)){
-                out.append(nodeId+"\t"+PropertyKey_Neo4j_Id+"\t"+n.getProperty(PropertyKey_Neo4j_Id).toString()+"\r\n");
+            if(n.hasProperty(Configs.Neo4j_Key_For_Neo4j_Id)){
+                out.append(nodeId+"\t"+Configs.Neo4j_Key_For_Neo4j_Id+"\t"+n.getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString()+"\r\n");
             }
         }
         else{
@@ -97,20 +118,37 @@ public class TSVExportsImports {
                 return;
             }
             else{
-                if(n.hasProperty(PropertyKey_Neo4j_Id)){
-                    out.append(nodeId+"\t"+PropertyKey_Neo4j_Id+"\t"+n.getProperty(PropertyKey_Neo4j_Id).toString()+"\r\n");
+                if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id)){
+                    out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id).toString()+"\r\n");
                 }
             }
         }
-        if(n.hasProperty(PropertyKey_Logicalname)){
-            out.append(nodeId+"\t"+PropertyKey_Logicalname+"\t"+n.getProperty(PropertyKey_Logicalname).toString()+"\r\n");
+        
+        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname)){
+            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname).toString()+"\r\n");
+        }        
+        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration)){
+            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration).toString()+"\r\n");
         }
-        if(n.hasProperty(PropertyKey_Type)){
-            out.append(nodeId+"\t"+PropertyKey_Type+"\t"+n.getProperty(PropertyKey_Type).toString()+"\r\n");
+        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId)){
+            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId).toString()+"\r\n");
         }
-        if(n.hasProperty(PropertyKey_Value)){
-            out.append(nodeId+"\t"+PropertyKey_Value+"\t"+n.getProperty(PropertyKey_Value).toString().replace("\r\n", " ").replace("\n", " ").replace("\r", " ").replace("\t", " ")+"\r\n");
+        
+        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId)){
+            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId).toString()+"\t\t<!-- Just exporting the data found. It will be calculated again during import -->\r\n");
         }
+        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId)){
+            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId).toString()+"\t\t<!-- Just exporting the data found. It will be calculated again during import -->\r\n");
+        }
+        
+        if(n.hasProperty(Configs.Key_Primitive_Value_Type)){
+            out.append(nodeId+"\t"+Configs.Key_Primitive_Value_Type+"\t"+n.getProperty(Configs.Key_Primitive_Value_Type).toString()+"\r\n");
+        }
+        if(n.hasProperty(Configs.Key_Primitive_Value)){
+            out.append(nodeId+"\t"+Configs.Key_Primitive_Value+"\t"+n.getProperty(Configs.Key_Primitive_Value).toString().replace("\r\n", " ").replace("\n", " ").replace("\r", " ").replace("\t", " ")+"\r\n");
+        }
+        
+        
         Vector<String> labelLines = new Vector<String>();
         for(Label lbl : n.getLabels()){
             labelLines.add(nodeId+"\t"+LabelKey+"\t"+lbl.name()+"\r\n");
@@ -124,13 +162,13 @@ public class TSVExportsImports {
             Vector<String> outputLines = new Vector<String>();
             for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(PropertyKey_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                 outputLines.add(nodeId+"\t"+Rels.INSTANCEOF.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.INSTANCEOF.name()+"\t"+endlogicalname+" -->\r\n");
             }
             
@@ -146,11 +184,11 @@ public class TSVExportsImports {
             if(n.hasRelationship(Rels.INSTANCEOF, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(PropertyKey_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                     outputLines.add(genericStartNodeId+"\t"+Rels.INSTANCEOF.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.INSTANCEOF.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -163,13 +201,13 @@ public class TSVExportsImports {
             Vector<String> outputLines = new Vector<String>();
             for(Relationship rel: n.getRelationships(Rels.ISA, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(PropertyKey_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                 outputLines.add(nodeId+"\t"+Rels.ISA.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.ISA.name()+"\t"+endlogicalname+" -->\r\n");
             }
             Collections.sort(outputLines);
@@ -184,11 +222,11 @@ public class TSVExportsImports {
             if(n.hasRelationship(Rels.ISA, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.ISA, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(PropertyKey_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                      outputLines.add(genericStartNodeId+"\t"+Rels.ISA.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.ISA.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -201,13 +239,13 @@ public class TSVExportsImports {
             Vector<String> outputLines = new Vector<String>();
             for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(PropertyKey_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                 outputLines.add(nodeId+"\t"+Rels.RELATION.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.RELATION.name()+"\t"+endlogicalname+" -->\r\n");
             }
             Collections.sort(outputLines);
@@ -222,11 +260,11 @@ public class TSVExportsImports {
              if(n.hasRelationship(Rels.RELATION, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(PropertyKey_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(PropertyKey_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
                     outputLines.add(genericStartNodeId+"\t"+Rels.RELATION.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.RELATION.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -297,7 +335,7 @@ public class TSVExportsImports {
         return true;
     }
     
-    public boolean importSpecificFromFile(String filepath){
+    public boolean importSpecificFromFile(String filepath, boolean recomputeTransliteration){
         try{
         
             Hashtable<Long, Hashtable<String, Vector<String>>> nodeInfo = new Hashtable<Long,Hashtable<String, Vector<String>>>();
@@ -350,7 +388,7 @@ public class TSVExportsImports {
             
             
             try(Transaction tx = graphDb.beginTx()){
-                String query = "MATCH(n:"+GenericLabel+") return max (n."+PropertyKey_Neo4j_Id+") as newVal " ;
+                String query = "MATCH(n:"+GenericLabel+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
                 Result res = graphDb.execute(query);
 
                 try{
@@ -369,7 +407,7 @@ public class TSVExportsImports {
                     res = null;
                 }
                 
-                String query1 = "MATCH(n:"+CommonLabel+") return max (n."+PropertyKey_Neo4j_Id+") as newVal " ;
+                String query1 = "MATCH(n:"+CommonLabel+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
                 Result res1 = graphDb.execute(query1);
 
                 try{
@@ -442,22 +480,55 @@ public class TSVExportsImports {
                     }
                     
                     neo4jId = maxNeo4jId++;
-                    newNode.setProperty(PropertyKey_Neo4j_Id, neo4jId);
+                    newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
                     tsvToNeo4jIds.put(nodeId, neo4jId);
 
                     
+                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
+                    newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
                     
-                    newNode.setProperty(PropertyKey_Logicalname, strVals.get(PropertyKey_Logicalname).get(0));
-                    
-                    if(strVals.containsKey(PropertyKey_Type)){
-                        newNode.setProperty(PropertyKey_Type, strVals.get(PropertyKey_Type).get(0));
+                    //keep the same transliteration if recompute transliteration for all that do not have any value
+                    if(recomputeTransliteration){
+                        // for all individuals
+                        if(labels.contains(Labels.Type_Individual.name())){
+                            String transliterationName = Utilities.getTransliterationString(logName,true);
+                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration,transliterationName);
+                        }
                     }
-                    if(strVals.containsKey(PropertyKey_Value)){
-                        if(strVals.get(PropertyKey_Type).get(0).equals("INT")){
-                            newNode.setProperty(PropertyKey_Value, Integer.parseInt(strVals.get(PropertyKey_Value).get(0)));
+                    else{
+                        if(strVals.containsKey(Configs.Neo4j_Key_For_Transliteration)){
+                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration, strVals.get(Configs.Neo4j_Key_For_Transliteration).get(0));
+                        }
+                    }      
+                    if(strVals.containsKey(Configs.Neo4j_Key_For_ThesaurusReferenceId) && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0)!=null && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0).length()>0){
+                        try{
+                            long refId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            newNode.setProperty(Configs.Neo4j_Key_For_ThesaurusReferenceId,refId);
+                        }
+                        catch(NumberFormatException ex){
+                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                            Utils.StaticClass.handleException(ex);
+                            return false;
+                        }
+                    }
+                    
+                                        
+                    if(strVals.containsKey(Configs.Neo4j_Key_For_MaxThesaurusReferenceId)){
+                        long maxRefId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_MaxThesaurusReferenceId).get(0));
+                            
+                        newNode.setProperty(Configs.Neo4j_Key_For_MaxThesaurusReferenceId, maxRefId);
+                    }
+                    
+                    if(strVals.containsKey(Configs.Key_Primitive_Value_Type)){
+                        newNode.setProperty(Configs.Key_Primitive_Value_Type, strVals.get(Configs.Key_Primitive_Value_Type).get(0));
+                    }
+                    if(strVals.containsKey(Configs.Key_Primitive_Value)){
+                        if(strVals.get(Configs.Key_Primitive_Value_Type).get(0).equals("INT")){
+                            newNode.setProperty(Configs.Key_Primitive_Value, Integer.parseInt(strVals.get(Configs.Key_Primitive_Value).get(0)));
                         }
                         else{
-                            newNode.setProperty(PropertyKey_Value, strVals.get(PropertyKey_Value).get(0));
+                            newNode.setProperty(Configs.Key_Primitive_Value, strVals.get(Configs.Key_Primitive_Value).get(0));
                         }
                     }
 
@@ -526,37 +597,160 @@ public class TSVExportsImports {
                 tx.success();
             }
             
+            QClass Q = new neo4j_sisapi.QClass();
+            IntegerObject sis_session = new IntegerObject();
             
-            try(Transaction tx = graphDb.beginTx()){
-                String query3 = "MATCH(n:"+CommonLabel+") with max (n."+PropertyKey_Neo4j_Id+") as newVal " +
-                        "MATCH(t:"+CommonLabel+"{"+PropertyKey_Logicalname+":\""+MaxNeoIdNodeLogicalName+"\"}) " +
-                        "SET t."+PropertyKeyMaxNeo4jId+" = newVal " +
-                        "return t."+PropertyKeyMaxNeo4jId+" as "+ PropertyKeyMaxNeo4jId;
-                Result res3 = graphDb.execute(query3);
-
-                if (res3 == null) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Set Max Neo4j Id Failed.");
+              
+            Vector<String> thesauriVector = new Vector<String>();
+             
+            //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
+            
+            Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService());
+            Q.TEST_open_connection();
+            Q.TEST_begin_query();
+            DBGeneral dbGen = new DBGeneral();
+            
+            thesauriVector = dbGen.GetExistingThesaurus(false, thesauriVector, Q, sis_session);
+            
+            //update MaxNeo4j_Id property in Telos_Object node
+            if(Q.resetCounter_For_Neo4jId()==QClass.APIFail){
+                Utils.StaticClass.webAppSystemOutPrintln("Set Max Neo4j Id Failed.");
+                return false;
+            }
+          
+            for(int i=0; i< thesauriVector.size(); i++){
+                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i))==QClass.APIFail){
+                    Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
                     return false;
                 }
-                res3.close();
-                res3=null;
+            }
+
+            //end query and close connection
+            Q.free_all_sets();
+            Q.TEST_end_query();
+            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+        
+            
+            /*
+            for(int i=0; i< thesauriVector.size(); i++){
+                
+                String thesaurusName = thesauriVector.get(i);            
+                String FacetThesName = Neo4j_Node_LogicalName_For_MaxTHESFacetId.replace("%THES%", thesaurusName);
+                String HierarchyThesName = Neo4j_Node_LogicalName_For_MaxTHESHierarchyId.replace("%THES%", thesaurusName);
+                String TermThesName = Neo4j_Node_LogicalName_For_MaxTHESTermId.replace("%THES%", thesaurusName);
+
+                
+                //Facet Count:       (Store id in %THES%Facet - property MaxThesaurusFacetId. URI produced as /%Thes%/Facet/0001)
+                //===================
+                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
+
+                
+                //update MaxThesarusFacetId property in %THES%Facet node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
+                    String query4 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +FacetThesName+ "\"}) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+FacetThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusFacetId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusFacetId+" as "+ Neo4j_Key_For_MaxThesaurusFacetId;
+                    Result res4 = graphDb.execute(query4);
+
+                    if (res4 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Facet Id Failed.");
+                        return false;
+                    }
+                    res4.close();
+                    res4=null;
+                    tx.success();
+                }
+                
+                //Hierarchies Count:       (Store id in %THES%Hierarchy - property MaxThesaurusHierarchyId. URI produced as /%Thes%/Hierarchy/0001)
+                //===================
+                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
+
+                //update MaxThesaurusHierarchyId property in %THES%Hierarchy node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
+                    String query5 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+")  - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +HierarchyThesName+ "\"}) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+HierarchyThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" as "+ Neo4j_Key_For_MaxThesaurusHierarchyId;
+                    Result res5 = graphDb.execute(query5);
+
+                    if (res5 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Hierarchy Id Failed.");
+                        return false;
+                    }
+                    res5.close();
+                    res5=null;
+                    tx.success();
+                }
+                
+                //Terms Count:       (Store id in %THES%HierarchyTerm - property MaxThesaurusTermId. URI produced as /%Thes%/Term/0001) (includes TopTerms)
+                //===================
+                //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
+
+                //update MaxThesaurusTermId property in %THES%HierarchyTerm node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
+                    String query6 = "MATCH(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +TermThesName+ "\"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+TermThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusTermId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusTermId+" as "+ Neo4j_Key_For_MaxThesaurusTermId;
+                    Result res6 = graphDb.execute(query6);
+
+                    if (res6 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Term Id Failed.");
+                        return false;
+                    }
+                    res6.close();
+                    res6=null;
+                    tx.success();
+                }
+            }
+            
+            //Sources Count:       (Store id in Source - property MaxSourceId. URI produced as /Source/0001)
+            //===================
+            //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
+
+            //update MaxSourceId property in Source node
+            try(Transaction tx = graphDb.beginTx()){
+                //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
+                String query7 = "MATCH(n:"+Labels.Token.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +Neo4j_Node_LogicalName_For_MaxSourceId+ "\"}) with count(n) as newVal " +
+                        "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+Neo4j_Node_LogicalName_For_MaxSourceId+"\"}) " +
+                        "SET t."+Neo4j_Key_For_MaxSourceId+" = newVal " +
+                        "return t."+Neo4j_Key_For_MaxSourceId+" as "+ Neo4j_Key_For_MaxSourceId;
+                Result res7 = graphDb.execute(query7);
+
+                if (res7 == null) {
+                    Utils.StaticClass.webAppSystemOutPrintln("Set Max Source Id Failed.");
+                    return false;
+                }
+                res7.close();
+                res7=null;
                 tx.success();
             }
+            
+            */
+        
         }
         catch(Exception ex){
             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
             Utils.StaticClass.handleException(ex);
             return false;
         }
+        
+       
+        
+        
         return true;        
     }
     
-    public boolean importGenericFromFile(String filepath){
+    public boolean importGenericFromFile(String filepath, boolean recomputeTransliteration){
         
-        return globalImportFromFile(filepath);
+        return globalImportFromFile(filepath, recomputeTransliteration);
     }
     
-    boolean globalImportFromFile(String filepath){
+    boolean globalImportFromFile(String filepath, boolean recomputeTransliteration){
         try{
             Hashtable<Long, Hashtable<String, Vector<String>>> nodeInfo = new Hashtable<Long,Hashtable<String, Vector<String>>>();
             
@@ -613,7 +807,7 @@ public class TSVExportsImports {
                 long nodeId = nodeIdentifiers.nextElement();
                 Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
                 if(strVals.containsKey(LabelKey) && strVals.get(LabelKey).contains(GenericLabel)){
-                    long neo4jId = Long.parseLong(strVals.get(PropertyKey_Neo4j_Id).get(0));
+                    long neo4jId = Long.parseLong(strVals.get(Neo4j_Key_For_Neo4j_Id).get(0));
                     if(neo4jId>maxGenericNeo4jId){
                         maxGenericNeo4jId = neo4jId;
                     }
@@ -654,28 +848,59 @@ public class TSVExportsImports {
                     }
                     
                     //if(labels.contains(GenericLabel)){
-                        neo4jId = Long.parseLong(strVals.get(PropertyKey_Neo4j_Id).get(0));
-                        newNode.setProperty(PropertyKey_Neo4j_Id, neo4jId);
+                        neo4jId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_Neo4j_Id).get(0));
+                        newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
                       //  tsvToNeo4jIds.put(nodeId, neo4jId);
                     //}
                     //else{
                       //  neo4jId = maxGenericNeo4jId++;
-                        //newNode.setProperty(PropertyKey_Neo4j_Id, neo4jId);
+                        //newNode.setProperty(Neo4j_Key_For_Neo4j_Id, neo4jId);
                         //tsvToNeo4jIds.put(nodeId, neo4jId);
                     //}
                     
+                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
+                    newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
                     
-                    newNode.setProperty(PropertyKey_Logicalname, strVals.get(PropertyKey_Logicalname).get(0));
-                    
-                    if(strVals.containsKey(PropertyKey_Type)){
-                        newNode.setProperty(PropertyKey_Type, strVals.get(PropertyKey_Type).get(0));
+                    //keep the same transliteration if recompute transliteration for all that do not have any value
+                    if(recomputeTransliteration){ 
+                        // for all individuals
+                        if(labels.contains(Labels.Type_Individual.name())){
+                            String transliterationName = Utilities.getTransliterationString(logName,true);
+                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration,transliterationName);
+                        }
                     }
-                    if(strVals.containsKey(PropertyKey_Value)){
-                        if(strVals.get(PropertyKey_Type).get(0).equals("INT")){
-                            newNode.setProperty(PropertyKey_Value, Integer.parseInt(strVals.get(PropertyKey_Value).get(0)));
+                    else{
+                        if(strVals.containsKey(Configs.Neo4j_Key_For_Transliteration)){
+                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration, strVals.get(Configs.Neo4j_Key_For_Transliteration).get(0));
+                        }
+                    }      
+                    if(strVals.containsKey(Configs.Neo4j_Key_For_ThesaurusReferenceId) && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0)!=null && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0).length()>0){
+                        try{
+                            long refId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            newNode.setProperty(Configs.Neo4j_Key_For_ThesaurusReferenceId,refId);
+                        }
+                        catch(NumberFormatException ex){
+                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                            Utils.StaticClass.handleException(ex);
+                            return false;
+                        }
+                    }
+                    
+                    if(strVals.containsKey(Configs.Neo4j_Key_For_MaxThesaurusReferenceId)){
+                        long maxRefId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_MaxThesaurusReferenceId).get(0));
+                        newNode.setProperty(Configs.Neo4j_Key_For_MaxThesaurusReferenceId, maxRefId);
+                    }
+                    
+                    if(strVals.containsKey(Configs.Key_Primitive_Value_Type)){
+                        newNode.setProperty(Configs.Key_Primitive_Value_Type, strVals.get(Configs.Key_Primitive_Value_Type).get(0));
+                    }
+                    if(strVals.containsKey(Configs.Key_Primitive_Value)){
+                        if(strVals.get(Configs.Key_Primitive_Value_Type).get(0).equals("INT")){
+                            newNode.setProperty(Configs.Key_Primitive_Value, Integer.parseInt(strVals.get(Configs.Key_Primitive_Value).get(0)));
                         }
                         else{
-                            newNode.setProperty(PropertyKey_Value, strVals.get(PropertyKey_Value).get(0));
+                            newNode.setProperty(Configs.Key_Primitive_Value, strVals.get(Configs.Key_Primitive_Value).get(0));
                         }
                     }
 
@@ -692,22 +917,8 @@ public class TSVExportsImports {
                 tx.success();
             }
             
-            try(Transaction tx = graphDb.beginTx()){
-                String query3 = "MATCH(n:"+CommonLabel+") with max (n."+PropertyKey_Neo4j_Id+") as newVal " +
-                        "MATCH(t:"+CommonLabel+"{"+PropertyKey_Logicalname+":\""+MaxNeoIdNodeLogicalName+"\"}) " +
-                        "SET t."+PropertyKeyMaxNeo4jId+" = newVal " +
-                        "return t."+PropertyKeyMaxNeo4jId+" as "+ PropertyKeyMaxNeo4jId;
-                Result res3 = graphDb.execute(query3);
-
-                if (res3 == null) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Set Max Neo4j Id Failed.");
-                    return false;
-                }
-                res3.close();
-                res3=null;
-                tx.success();
-            }
-
+           
+            
             Utils.StaticClass.closeDb();
             graphDb = Utils.StaticClass.getDBService();
             
@@ -771,6 +982,140 @@ public class TSVExportsImports {
                 }
                 tx.success();
             }
+            
+             QClass Q = new neo4j_sisapi.QClass();
+            IntegerObject sis_session = new IntegerObject();
+            
+            
+            Vector<String> thesauriVector = new Vector<String>();
+             
+            //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
+            
+            
+            Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService());
+            Q.TEST_open_connection();
+            Q.TEST_begin_query();
+            DBGeneral dbGen = new DBGeneral();
+            
+            thesauriVector = dbGen.GetExistingThesaurus(false, thesauriVector, Q, sis_session);
+
+            //update MaxNeo4j_Id property in Telos_Object node
+            if(Q.resetCounter_For_Neo4jId()==QClass.APIFail){
+                Utils.StaticClass.webAppSystemOutPrintln("Set Max Neo4j Id Failed.");
+                    return false;
+            }
+            
+             for(int i=0; i< thesauriVector.size(); i++){
+                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i))==QClass.APIFail){
+                    Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
+                    return false;
+                }
+            }
+            
+            //end query and close connection
+            Q.free_all_sets();
+            Q.TEST_end_query();
+            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+        
+           
+            /*
+            for(int i=0; i< thesauriVector.size(); i++){
+                
+                String thesaurusName = thesauriVector.get(i);            
+                String FacetThesName = Neo4j_Node_LogicalName_For_MaxTHESFacetId.replace("%THES%", thesaurusName);
+                String HierarchyThesName = Neo4j_Node_LogicalName_For_MaxTHESHierarchyId.replace("%THES%", thesaurusName);
+                String TermThesName = Neo4j_Node_LogicalName_For_MaxTHESTermId.replace("%THES%", thesaurusName);
+
+                
+                //Facet Count:       (Store id in %THES%Facet - property MaxThesaurusFacetId. URI produced as /%Thes%/Facet/0001)
+                //===================
+                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
+
+                
+                //update MaxThesarusFacetId property in %THES%Facet node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
+                    String query4 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +FacetThesName+ "\"}) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+FacetThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusFacetId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusFacetId+" as "+ Neo4j_Key_For_MaxThesaurusFacetId;
+                    Result res4 = graphDb.execute(query4);
+
+                    if (res4 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Facet Id Failed.");
+                        return false;
+                    }
+                    res4.close();
+                    res4=null;
+                    tx.success();
+                }
+                
+                //Hierarchies Count:       (Store id in %THES%Hierarchy - property MaxThesaurusHierarchyId. URI produced as /%Thes%/Hierarchy/0001)
+                //===================
+                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
+
+                //update MaxThesaurusHierarchyId property in %THES%Hierarchy node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
+                    String query5 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+")  - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +HierarchyThesName+ "\"}) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+HierarchyThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" as "+ Neo4j_Key_For_MaxThesaurusHierarchyId;
+                    Result res5 = graphDb.execute(query5);
+
+                    if (res5 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Hierarchy Id Failed.");
+                        return false;
+                    }
+                    res5.close();
+                    res5=null;
+                    tx.success();
+                }
+                
+                //Terms Count:       (Store id in %THES%HierarchyTerm - property MaxThesaurusTermId. URI produced as /%Thes%/Term/0001) (includes TopTerms)
+                //===================
+                //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
+
+                //update MaxThesaurusTermId property in %THES%HierarchyTerm node
+                try(Transaction tx = graphDb.beginTx()){
+                    //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
+                    String query6 = "MATCH(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +TermThesName+ "\"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) with count(n) as newVal " +
+                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+TermThesName+"\"}) " +
+                            "SET t."+Neo4j_Key_For_MaxThesaurusTermId+" = newVal " +
+                            "return t."+Neo4j_Key_For_MaxThesaurusTermId+" as "+ Neo4j_Key_For_MaxThesaurusTermId;
+                    Result res6 = graphDb.execute(query6);
+
+                    if (res6 == null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Term Id Failed.");
+                        return false;
+                    }
+                    res6.close();
+                    res6=null;
+                    tx.success();
+                }
+            }
+            
+            //Sources Count:       (Store id in Source - property MaxSourceId. URI produced as /Source/0001)
+            //===================
+            //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
+
+            //update MaxSourceId property in Source node
+            try(Transaction tx = graphDb.beginTx()){
+                //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
+                String query7 = "MATCH(n:"+Labels.Token.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +Neo4j_Node_LogicalName_For_MaxSourceId+ "\"}) with count(n) as newVal " +
+                        "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+Neo4j_Node_LogicalName_For_MaxSourceId+"\"}) " +
+                        "SET t."+Neo4j_Key_For_MaxSourceId+" = newVal " +
+                        "return t."+Neo4j_Key_For_MaxSourceId+" as "+ Neo4j_Key_For_MaxSourceId;
+                Result res7 = graphDb.execute(query7);
+
+                if (res7 == null) {
+                    Utils.StaticClass.webAppSystemOutPrintln("Set Max Source Id Failed.");
+                    return false;
+                }
+                res7.close();
+                res7=null;
+                tx.success();
+            }*/
         }
         catch(Exception ex){
             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
@@ -802,7 +1147,7 @@ public class TSVExportsImports {
     Node getSingleNodesByNeo4jId(long neo4jId, GraphDatabaseService graphDb){
         Node returnNode = null;
         
-        String query = "MATCH(n:"+CommonLabel+"{"+PropertyKey_Neo4j_Id+":"+neo4jId+"}) RETURN n";
+        String query = "MATCH(n:"+CommonLabel+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+neo4jId+"}) RETURN n";
         Result res = graphDb.execute(query);
         try {
             while (res.hasNext()) {
@@ -846,11 +1191,11 @@ public class TSVExportsImports {
             String query = "";
             
             if(subSetofIds.size()==1){
-                query = "MATCH(n:"+CommonLabel+"{"+PropertyKey_Neo4j_Id+":"+subSetofIds.get(0)+"}) RETURN n";
+                query = "MATCH(n:"+CommonLabel+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+subSetofIds.get(0)+"}) RETURN n";
                 
             }
             else{
-                query = " Match (n:"+CommonLabel+") WHERE n."+PropertyKey_Neo4j_Id+" IN " + subSetofIds.toString() + " "+
+                query = " Match (n:"+CommonLabel+") WHERE n."+Configs.Neo4j_Key_For_Neo4j_Id+" IN " + subSetofIds.toString() + " "+
                         " RETURN n ";
             }
             
@@ -879,7 +1224,7 @@ public class TSVExportsImports {
     
     boolean CreateIndexesAndConstraints(GraphDatabaseService graphDb) {
 
-        String query = "CREATE INDEX ON :"+CommonLabel+"("+PropertyKey_Logicalname+") ";
+        String query = "CREATE INDEX ON :"+CommonLabel+"("+Configs.Neo4j_Key_For_Logicalname+") ";
         
         Result res = graphDb.execute(query);
 
@@ -890,7 +1235,7 @@ public class TSVExportsImports {
         res.close();
         res = null;
 
-        String query2 = "CREATE CONSTRAINT ON (n:"+CommonLabel+") ASSERT n."+PropertyKey_Neo4j_Id+" IS UNIQUE ";
+        String query2 = "CREATE CONSTRAINT ON (n:"+CommonLabel+") ASSERT n."+Configs.Neo4j_Key_For_Neo4j_Id+" IS UNIQUE ";
 
         Result res2 = graphDb.execute(query2);
 

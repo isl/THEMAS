@@ -157,7 +157,7 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             Utils.StaticClass.webAppSystemOutPrintln("3) Full path to the TSV to be loaded.");
             Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
-                    
+            Utils.StaticClass.webAppSystemOutPrintln("5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).");        
             return;
         }    
         if(mode.equals(exportToTsvMode)){
@@ -199,6 +199,7 @@ public class OfflineToolsClass {
         }
         return returnVal;
     }
+    
     private static String GetCurrentDateAndTime() {
         Calendar rightNow = Calendar.getInstance();
         int current_year = rightNow.get(Calendar.YEAR);
@@ -616,7 +617,7 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="tsvImport">
             if(mode.equals(importFromTsvMode)){
                 
-                if(arguements.size()!=3){
+                if(arguements.size()!=4){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
@@ -624,6 +625,10 @@ public class OfflineToolsClass {
                 boolean genericImport =false;
                 if(arguements.get(2).toLowerCase().trim().equals("true")|| arguements.get(2).toLowerCase().trim().equals("yes")){
                     genericImport = true;
+                }
+                boolean recomputeTransliterations =false;
+                if(arguements.get(3).toLowerCase().trim().equals("true")|| arguements.get(3).toLowerCase().trim().equals("yes")){
+                    recomputeTransliterations = true;
                 }
                 
                 TSVExportsImports expimp = new TSVExportsImports();
@@ -636,10 +641,10 @@ public class OfflineToolsClass {
                 boolean importCompleted = false;
 
                 if(genericImport){
-                    importCompleted = expimp.importGenericFromFile(import_export_file);
+                    importCompleted = expimp.importGenericFromFile(import_export_file,recomputeTransliterations);
                 }
                 else{
-                    importCompleted = expimp.importSpecificFromFile(import_export_file);
+                    importCompleted = expimp.importSpecificFromFile(import_export_file,recomputeTransliterations);
                 }
 
                 if(importCompleted==false){

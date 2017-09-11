@@ -37,6 +37,7 @@ package Utils;
 import DB_Admin.TSVExportsImports;
 import java.util.*;
 import java.text.Collator;
+import neo4j_sisapi.Configs;
 import org.neo4j.graphdb.Node;
 
 /**
@@ -60,8 +61,8 @@ public class Neo4jNodeComparator  implements Comparator{
         long o1Neo4jId = -1;
         long n1Neo4jId = -1;
         
-        if(o1.hasProperty(TSVExportsImports.PropertyKey_Neo4j_Id)){
-            Object val = o1.getProperty(TSVExportsImports.PropertyKey_Neo4j_Id);
+        if(o1.hasProperty(Configs.Neo4j_Key_For_Neo4j_Id)){
+            Object val = o1.getProperty(Configs.Neo4j_Key_For_Neo4j_Id);
             if(val instanceof Integer){
                 o1Neo4jId = (int) val;
             }
@@ -70,8 +71,8 @@ public class Neo4jNodeComparator  implements Comparator{
             }
         }
         
-        if(n1.hasProperty(TSVExportsImports.PropertyKey_Neo4j_Id)){
-            Object val = n1.getProperty(TSVExportsImports.PropertyKey_Neo4j_Id);
+        if(n1.hasProperty(Configs.Neo4j_Key_For_Neo4j_Id)){
+            Object val = n1.getProperty(Configs.Neo4j_Key_For_Neo4j_Id);
             if(val instanceof Integer){
                 n1Neo4jId = (int) val;
             }

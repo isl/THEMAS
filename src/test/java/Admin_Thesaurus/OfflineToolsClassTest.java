@@ -74,19 +74,110 @@ public class OfflineToolsClassTest {
     public void testMain() {
         System.out.println("main");
         
+        /*
+        Modes:
+        ======================================================
+        private static String shutDownDb = "ShutDownDatabase";
+        private static String importXMLMode = "ImportFromXML";
+        private static String exportXMLMode = "ExportToXML";
+        private static String mergeMode = "MergeThesauri";
+        private static String lockSystemMode = "LockSystem";
+        private static String unlockSystemMode =  "UnLockSystem";
+        private static String fixDbMode = "FixDB";    
+        private static String importFromTsvMode = "ImportFromTSV";
+        private static String exportToTsvMode = "ExportToTSV";
+        
+        */
+        
+        //String mode = "ExportToTSV";
         String mode = "ExportToXML";
-        //String basePath = "/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT";
-        String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
-        String thesaurusName = "XXXXXX";//export all thesauri
-        String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
+        OfflineToolsClass.printExpectedParametersAccordingToMode(mode);
         
-        String[] args = {mode,basePath, thesaurusName, exportPath};
+        // <editor-fold defaultstate="collapsed" desc="Test for ExportToXML">	
+        if(mode.equals("ImportFromXML")){
+            /*
+            For mode: ImportFromXML the expected arguments are:
+            1) ImportFromXML
+            2) Web Application Base Path
+            3) ThesaurusName (No spaces just latin chars)
+            4) Input XML Full File Path
+            5) Issues report xml file full path (an html will also be produeced with the same name but different extension)   
+            
+            */
+            //String basePath = "/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT";
+            String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
+            String thesaurusName = "ANCIENT";
+            String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
+            String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop\\temp\\testImport.xml"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
+
+            String[] args = {mode,basePath, thesaurusName, inputXML, exportPath};
+            OfflineToolsClass.main(args);
+        }
+        // </editor-fold>
         
+        // <editor-fold defaultstate="collapsed" desc="Test for ExportToXML">	
+        else if(mode.equals("ExportToXML")){
+            /*
+            For mode: ExportToXML the expected arguments are:
+            1) ExportToXML
+            2) Web Application Base Path
+            3) ThesaurusName (Thesaurus must exist or use value: XXXXXX in order to export all existing thesauri)
+            4) Export XML Full Folder Path 
+            
+            */
+            //String basePath = "/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT";
+            String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
+            String thesaurusName = "XXXXXX";//export all thesauri
+            String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop\\temp"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
+
+            String[] args = {mode,basePath, thesaurusName, exportPath};
+            OfflineToolsClass.main(args);
+        }
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Test for ImportFromTSV">	
+        else if (mode.equals("ImportFromTSV")){
+            /*
+             For mode: "ImportFromTSV" the expected arguments are:
+            ==========================================================================
+            1) ImportFromTSV
+            2) Web Application Base Path
+            3) Full path to the TSV to be loaded.
+            4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.
+            5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).
+            */
+            String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
+            String importTsvPath = "C:\\Projects\\THEMAS_DB_Folder\\TSVs\\Exporter_Output_at_2017-09-08-15-59-58.tsv";
+            String containsgeneric = "true";
+            String recomputeTransliterations = "true";
+            
+            String[] args = {mode,basePath, importTsvPath,containsgeneric,recomputeTransliterations};
+            OfflineToolsClass.main(args);
+        }
+        //</editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Test for ExportToTSV">	
+        else if (mode.equals("ExportToTSV")){
+            /*            
+            For mode: "ExportToTSV" the expected arguments are:
+            1) ExportToTSV
+            2) Web Application Base Path
+            3) Boolean value true or false that determines if the TSV will ONLY contain Generic data or Not.
+            4) Boolean value true or false that determines if the TSV will skip Generic data or Not.
+               If previous value was set tot true then this argument is just ignored.
+            5) Full Path To TSV outPutFolder (optional variable if not is used then TSVs folder will be selected.
+            */
+            String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
+            String onlygeneric = "false";
+            String skipgeneric = "false";
+            String exportPath = "C:\\Projects\\THEMAS_DB_Folder\\TSVs\\"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
+
+            String[] args = {mode,basePath, onlygeneric,skipgeneric, exportPath};
+            OfflineToolsClass.main(args);
+        }
+        
+        // </editor-fold>
         //fail("The test case is a prototype.");
-        // TODO review the generated test code and remove the default call to fail.
-        
-        //OfflineToolsClass.main(args);
-        
     }
     
 }
