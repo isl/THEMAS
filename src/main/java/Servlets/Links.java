@@ -81,7 +81,7 @@ public class Links extends ApplicationBasicServlet {
             String password = request.getParameter("password");
             String selectedThesaurusNAME = request.getParameter("selectedThesaurusNAME");            
             String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
+            //String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
             String language = context.getInitParameter("LocaleLanguage");
             String country = context.getInitParameter("LocaleCountry");
 
@@ -176,12 +176,9 @@ public class Links extends ApplicationBasicServlet {
             SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             String XMLMiddleCustomVal = "";
             if(CheckLength!=null && CheckLength.equals("true")){
-                DBGeneral dbGen = new DBGeneral();
                 //pathToMessagesXML
                 //SearchCriteria/LongName
-                StringObject errorObj = new StringObject("");
-                dbGen.Translate(errorObj, "root/SearchCriteria/LongName", null, pathToMessagesXML);
-                XMLMiddleCustomVal+=errorObj.getValue();//"Check Length";
+                XMLMiddleCustomVal+=u.translateFromMessagesXML("root/SearchCriteria/LongName", null);//"Check Length";
             }
             xml.append(u.getXMLStart(leftMenuMode));
             xml.append(u.getXMLMiddle(XMLMiddleCustomVal, currentTABup));

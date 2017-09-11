@@ -319,7 +319,7 @@ public class ConsistensyCheck {
             }
             if(count!=1){
                 errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Η δήλωση μίας μοναδικής μετάφρασης για κάθε περιγραφέα είναι υποχρεωτική.";// του όρου : '" + targetDescriptor + "' είναι υποχρεωτική.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
                 return false;
             }
         }
@@ -333,7 +333,7 @@ public class ConsistensyCheck {
         //Check if at least one dn is declared
         if (tcs_Vector.size() == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί ταξινομικός κωδικός.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No taxonomical code has been declared.";
             return false;
         }
         return true;
@@ -347,7 +347,7 @@ public class ConsistensyCheck {
         //Check if at least one greek source is declared
         if (greekSources == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί πηγή του ελληνικού όρου.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No term source has been declared.";
             return false;
         }
                     
@@ -362,7 +362,7 @@ public class ConsistensyCheck {
         //Check if at least one english source is declared
         if (enSources == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Δεν έχει δηλωθεί πηγή της αγγλικής μετάφρασης του όρου.";
+            //errorMsg.setValue(errorMsg.getValue().concat("No term translation source has been declared.";
             return false;
         }
 
@@ -401,7 +401,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs= new Vector<String>();
                 errorArgs.add(bts_Vector.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο ΠΟ : '" + UnclassifiedClass + "' που δηλώθηκε για την δημιουργία του νέου όρου δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("BT: '" + UnclassifiedClass + "' declared for the creation of the new term was not found in the database.";
                 Q.reset_name_scope();
                 return false;
             }
@@ -427,10 +427,9 @@ public class ConsistensyCheck {
 
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(targetDescriptor);
-                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Ο όρος '" + targetDescriptor + "' υπάρχει ήδη στη βάση.";
+                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Term '" + targetDescriptor + "' already exists in the database.";
                 
                 // append a sort description of the existing term
-                // Chatzimari: Όταν το σύστημα εμφανίζει μήνυμα "υπάρχει ήδη στη βάση" να εμφανίζει πού υπάρχει. 
                 errorMsg.setValue(errorMsg.getValue().concat(dbGen.ExistingTermSortDescription(selectedThesaurus,targetDescr,Q,sis_session).getValue()));
                 
                 Q.reset_name_scope();
@@ -454,7 +453,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(testTC);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Μη αποδεκτός Ταξινομικός κωδικός : '" + testDN + "'. ";
+                //errorMsg.setValue(errorMsg.getValue().concat("Non approved taxinomical code : '" + testDN + "'.";
                 return false;
             }
             /*
@@ -480,7 +479,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(testTC);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs);
-                //errorMsg.setValue(errorMsg.getValue().concat("Μη αποδεκτός Ταξινομικός κωδικός : '" + testDN + "'. ";
+                //errorMsg.setValue(errorMsg.getValue().concat("Non approved taxinomical code : '" + testDN + "'.";
                 return false;
             }
             */
@@ -543,7 +542,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(getStringList_Of_Set(Q, sis_session, dbGen, set_problematic_tcs, "', '") + "\n");
                 errorMsg.setValue(errorMsg.getValue().concat(translate(12, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο ταξινομικός κωδικός : '" + dns_Vector.get(i) + "' υπάρχει ήδη στη βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Taxinomical codes : '" + dns_Vector.get(i) + "' already exist in database and are used for other terms.";
 
 
                 Q.free_set(set_problematic_tcs);
@@ -595,7 +594,7 @@ public class ConsistensyCheck {
                     Vector<String> errorArgs = new Vector<String>();
                     errorArgs.add(sources_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(13, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Η πηγή : '" + sources_Vector.get(i) + "' δεν βρέθηκε στην βάση.";
+                    //errorMsg.setValue(errorMsg.getValue().concat("Source : '" + sources_Vector.get(i) + "' does not exist in database.";
                     Q.reset_name_scope();
                     return false;
                 }
@@ -622,7 +621,7 @@ public class ConsistensyCheck {
                     errorArgs.add(targetDescriptor);
                     errorArgs.add(bts_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(14, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Δεν μπορεί να δημιουργηθεί σχέση ΣΟ μεταξύ των '" + targetDescriptor + "' και '" + UnclassifiedClass + "' γιατί ανήκουν στο ίδιο ιεραρχικό κλαδί.";
+                    //errorMsg.setValue(errorMsg.getValue().concat("Relationship RT between the '" + targetDescriptor + "' and '" + UnclassifiedClass + "' cannot be implemented because they belong to the same hierarchical branch.";
                     return false;
                 }
             }
@@ -658,7 +657,7 @@ public class ConsistensyCheck {
                     Vector<String> errorArgs = new Vector<String>();
                     errorArgs.add(bts_or_rts_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+1), Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Η βάση δεν περιέχει τον ΣΟ '" + rts_Vector.get(i) + "'.";
+                    //errorMsg.setValue(errorMsg.getValue().concat("RT '" + rts_Vector.get(i) + "' does not exist in database.";
                     Q.free_set( set_bts_or_rts);
                     Q.reset_name_scope();
                     return false;
@@ -685,7 +684,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_bts_or_rts, "', '")+"\n");
                 errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+2), Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Οι όροι : '" + getStringList_Of_Set(set_rts, "', '") + "' \n δεν ανήκουν στους σχετικούς όρους ώστε να μπορούν να χρησιμοποιηθούν στο πεδίο ΣΟ.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Terms: '" + getStringList_Of_Set(set_rts, "', '") + "' do not belong in related terms in condition to be used in the field of RT.";
                 Q.free_set( set_bts_or_rts);
                 Q.reset_name_scope();
                 return false;
@@ -838,7 +837,7 @@ public class ConsistensyCheck {
                     Vector<String> errorArgs = new Vector<String>();
                     errorArgs.add(non_valid_uk_alts);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(17, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Οι εναλλακτικοί όροι : '" + non_valid_uk_alts + "' που δηλώθηκαν, χρησιμοποιούνται στην βάση πέρα από το σύνολο των εναλλακτικών όρων.";
+                    //errorMsg.setValue(errorMsg.getValue().concat("The Alternative terms : '" + non_valid_uk_alts + "', are used in database beyond of the set of the alternative terms.";
                     return false;
                 }
 
@@ -1020,8 +1019,8 @@ public class ConsistensyCheck {
                     Q.reset_name_scope();
                     Vector<String> errorArgs = new Vector<String>();
                     errorArgs.add(non_valid_uk_alts);
-                    errorMsg.setValue(errorMsg.getValue().concat(translate(19, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Οι UF όροι : '" + non_valid_uk_ufs + "' που δηλώθηκαν, χρησιμοποιούνται στην βάση πέρα από το σύνολο των UF όρων.";
+                    errorMsg.setValue(errorMsg.getValue().concat(translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                    //errorMsg.setValue(errorMsg.getValue().concat("UF terms:  '" + non_valid_uk_ufs + "' declared are already used in the database beyond the set of Used For Terms.";
                     return false;
                 }
 
@@ -1067,7 +1066,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs = new Vector<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(20, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + "  not found in database.";
             return false;
         }
 
@@ -1094,7 +1093,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs = new Vector<String>();
                 errorArgs.add(rts_Vector.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(20, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + rts_Vector.get(i) + "' δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Term '" + rts_Vector.get(i) + "'  was not found in database.";
                 
                 Q.free_set( set_1);
                 Q.free_set( set_rts);
@@ -1165,7 +1164,7 @@ public class ConsistensyCheck {
                    
                 } else {
                     errorMsg.setValue(errorMsg.getValue().concat(translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
-                    //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor + "' δεν μπορεί να έχει ΣΟ τους: \n'" + getStringList_Of_Set(set_2, "'\n'") + "'\nλόγω των προϋπαρχόντων αναδρομικών σχέσεων του με ΠΟ και ΕΟ.'";
+                    //errorMsg.setValue(errorMsg.getValue().concat("Term '" + descriptor + "' cannot has as RT the '" + getStringList_Of_Set(set_2, "'\n'") + "' due to the existance of recursive relationships with BT and NT.'";
                     Q.free_set( set_2);
                     return false;
                 }
@@ -1799,7 +1798,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " αποτελεί όρο κορυφής (Top Term) και δεν μπορεί να μετακινηθεί από την ιεραρχία."; //Do not Translate
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " is declared as Top Term and cannot be moved from the hierarchy."; //Do not Translate
             return false;
         }
         return true;        
@@ -1828,7 +1827,7 @@ public class ConsistensyCheck {
         }
         Q.reset_set( set_All_Target_BTs);
 
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Οι ακόλουθες ΒT σχέσεις του όρου " + newBT + " συλλέχθηκαν:\n" + getStringList_Of_Set(set_All_Target_BTs,"\n"));
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"The following BT relationships of term " + newBT + " were collected:\n" + getStringList_Of_Set(set_All_Target_BTs,"\n"));
         /*Check if target node exists*/
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
@@ -1836,7 +1835,7 @@ public class ConsistensyCheck {
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(2,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
         }
 
@@ -1847,7 +1846,7 @@ public class ConsistensyCheck {
         int set_RTs = Q.set_get_new();
 
         dbGen.collect_Direct_Links_Of_Set(set_Source_Node, set_RTs, false, rtFromObj.getValue(), rtLinkObj.getValue(), ConstantParameters.BOTH_Direction,Q,sis_session);
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Οι ακόλουθες RT σχέσεις του όρου " + descriptor + " συλλέχθηκαν:\n" + getStringList_Of_Set(set_RTs,"\n") );
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"The following RT relationships of term " + descriptor + " were collected:\n" + getStringList_Of_Set(set_RTs,"\n") );
 
         //Check Condition
         Q.reset_set( set_RTs);
@@ -1867,7 +1866,7 @@ public class ConsistensyCheck {
 
             errorMsg.setValue(errorMsg.getValue().concat(translate(2,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Οι ακόλουθοι ΣΟ του όρου '" + descriptor + "' : '" + getStringList_Of_Set(set_RTs, "', '") + "'  εμποδίζουν την δημιουργία σχέσης ΠΟ με τον όρο : '" + newBT + "'.";
+            //errorMsg.setValue(errorMsg.getValue().concat("The following RT of term '" + descriptor + "' : '" + getStringList_Of_Set(set_RTs, "', '") + "' prevent the creation of relationship BT with the term: '" + newBT + "'.";
             Q.free_set( set_RTs);
             return false;
         }
@@ -1900,7 +1899,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
         }
 
@@ -1942,7 +1941,7 @@ public class ConsistensyCheck {
         Q.reset_set( set_3);
         Q.reset_set( set_1);
 
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\nΟι αναδρομικοί ΠΟ από τους άμεσους ΕΟ του όρου : '" + descriptor + "' που συλλέχθηκαν, εξαιρουμένων των ιεραρχικών κλαδιών που περνάνε από τον όρο '" + descriptor + "' είναι οι εξής : \n'" + getStringList_Of_Set(set_3, "'\n'") + "'\n");
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\nThe Recursive BT of the immediate NTs of term: '" + descriptor + "', excluding the hierarchical brancehs that include term: '" + descriptor + "' are the following: \n'" + getStringList_Of_Set(set_3, "'\n'") + "'\n");
 
         Q.set_intersect( set_1, set_3);
         Q.reset_set( set_1);
@@ -1956,8 +1955,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
             errorMsg.setValue(errorMsg.getValue().concat(translate(3,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί λόγω των σχέσεων που θα δημιουργηθούν από τους ΕΟ του προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term '" + descriptor +
+            //        "' cannot be moved due to the relationships that will be created from the NTs of the terms: '" +
             //        getStringList_Of_Set(set_1, "'\n'") + "'.";
             Q.free_set( set_1);
             return false;
@@ -2003,7 +2002,7 @@ public class ConsistensyCheck {
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
         }
         
@@ -2037,7 +2036,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + newBT + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
             Q.free_set( set_1);
             Q.free_set( set_2);
             return false;
@@ -2075,8 +2074,8 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "'\n'")+"\n");
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων ιεραρχίας του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to the preexistance of hierarchical relationships of '" + descriptor + "' and its NTS from/to terms: '" +
             //        getStringList_Of_Set(set_3, "'\n'") + "'";
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2101,8 +2100,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "'\n'")+"\n");
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων συχέτισης του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to the preexistance of associative relationships of ''" + descriptor + "' and its NTS from/to terms: '" +
             //        getStringList_Of_Set(set_4, "'\n'") + "'";
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2145,7 +2144,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + newBT + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
             return false;
         }
         
@@ -2160,7 +2159,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             Q.free_set( set_0);
             return false;
         }
@@ -2197,8 +2196,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_2, "'\n'")+"\n");
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων του '" + newBT + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
             //        getStringList_Of_Set(set_3, "'\n'") + "'.";
             Q.free_set( set_0);
             Q.free_set( set_1);
@@ -2224,8 +2223,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "'\n'")+"\n");
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων του '" + newBT + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
             //        getStringList_Of_Set(set_3, "'\n'") + "'.";
             Q.free_set( set_0);
             Q.free_set( set_1);
@@ -2279,7 +2278,7 @@ public class ConsistensyCheck {
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
         }
         
@@ -2305,7 +2304,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + newBT + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
             Q.free_set( set_1);
             Q.free_set( set_2);
             return false;
@@ -2341,8 +2340,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "'\n'")+"\n");
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων ιεραρχίας του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting hierarchical relationships of '" + descriptor + "' and its NTS, From/to terms:  '" +
             //        getStringList_Of_Set(set_3, "'\n'") + "'";
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2369,8 +2368,8 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "', '"));
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-            //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων συχέτισης του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+            //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+            //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting associative relationships of '" + descriptor + "' and its NTS, From/to terms: '" +
             //        getStringList_Of_Set(set_4, "'\n'") + "'";
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2421,7 +2420,7 @@ public class ConsistensyCheck {
             Vector<String> errorArgs=new Vector<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
         }
 
@@ -2439,7 +2438,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs=new Vector<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + newBT + " δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
                 Q.free_set(set_1);
                 return false;
             }
@@ -2468,7 +2467,7 @@ public class ConsistensyCheck {
                 Vector<String> errorArgs=new Vector<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + newBT + " δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
                 Q.free_set(set_0);
                 Q.free_set(set_1);
                 Q.free_set(set_2patch);
@@ -2572,8 +2571,8 @@ public class ConsistensyCheck {
                     Utils.StaticClass.handleException(ex);
                 }
                 
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-                //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων του '" + newBT + "' και των ΕΟ του, από/προς τους όρους : '" +
+                //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+                //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
                 //        getStringList_Of_Set(set_3, "'\n'") + "'.";
                 
                
@@ -2603,8 +2602,8 @@ public class ConsistensyCheck {
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "', '"));
                 //errorMsg.setValue(errorMsg.getValue().concat(translate(7,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+);
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-                //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων του '" + newBT + "' και των ΕΟ του, από/προς τους όρους : '" +
+                //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+                //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
                 //        getStringList_Of_Set(set_3, "'\n'") + "'.";
                 Q.free_set(set_1);
                 Q.free_set(set_all_Bts);
@@ -2719,7 +2718,7 @@ public class ConsistensyCheck {
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+            //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
         }
         
@@ -2759,7 +2758,7 @@ public class ConsistensyCheck {
                 Q.free_set(set_1);
                 Q.free_set(set_2);
                 Q.free_set(set_allBts);
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
                 return false;
                 
             } else {
@@ -2787,7 +2786,7 @@ public class ConsistensyCheck {
                 Q.free_set(set_1);
                 Q.free_set(set_2);
                 Q.free_set(set_3);
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος " + descriptor + " δεν βρέθηκε στην βάση.";
+                //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
                 return false;
                 
             } else {
@@ -2852,8 +2851,8 @@ public class ConsistensyCheck {
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "', '"));
                 //errorMsg.setValue(errorMsg.getValue().concat(translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+);
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-                //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων ιεραρχίας του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+                //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+                //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting hierarchical relationships of '" + descriptor + "' and its NTS, From/to terms: '" +
                 //        getStringList_Of_Set(set_3, "'\n'") + "'";
                 Q.free_set( set_0);
                 Q.free_set( set_1);
@@ -2923,8 +2922,8 @@ public class ConsistensyCheck {
                 errorArgs.add(getStringList_Of_Set(Q, sis_session, dbGen, set_4, "', '") );
                 //errorMsg.setValue(errorMsg.getValue().concat(translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML));
-                //errorMsg.setValue(errorMsg.getValue().concat("Ο όρος '" + descriptor +
-                //        "' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '" + newBT + "'\nλόγω των προϋπάρχοντων σχέσεων συχέτισης του '" + descriptor + "' και των ΕΟ του, από/προς τους όρους : '" +
+                //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
+                //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting associative relationships of '" + descriptor + "' and its NTS, From/to terms: '" +
                 //        getStringList_Of_Set(set_4, "'\n'") + "'";
                 Q.free_set( set_0);
                 Q.free_set( set_1);
@@ -2999,13 +2998,12 @@ public class ConsistensyCheck {
     }
      
 
-    public boolean check_facet_deletion(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,DBGeneral dbGen, String targetFacet, StringObject errorMsg, Locale targetLocale, String pathToErrorsXML){
+    public boolean check_facet_deletion(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,DBGeneral dbGen, String targetFacet, StringObject errorMsg, Locale targetLocale){
        
-
         int index = Parameters.CLASS_SET.indexOf("FACET");
         String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
         SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
-        Vector<String>errorArgs = new Vector<String>();
+        
         
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject targetFacetObj = new StringObject();
@@ -3019,10 +3017,9 @@ public class ConsistensyCheck {
         targetFacetObj.setValue(prefixClass+targetFacet);
         long retL = Q.set_current_node(targetFacetObj);
         if(retL==QClass.APIFail){
-            errorArgs.add(targetFacet);
-            dbGen.Translate(errorMsg, "root/EditFacet/Deletion/FacetNotFound", errorArgs, pathToErrorsXML);
-            
-            //errorMsg.setValue("Δεν βρέθηκε ο μικροθησαυρός: " + targetFacet + ".");
+            Utilities u = new Utilities();
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet}));
+            //errorMsg.setValue("Facet " + targetFacet + " was not found.");
             return false;
         }
         set_sub_hiers = Q.get_all_subclasses( 0);
@@ -3062,11 +3059,10 @@ public class ConsistensyCheck {
         Q.free_set(set_f_nodes);
         if(allHiersMoreThanOneFacet==false){
             errorHierNames = errorHierNames.substring(0, errorHierNames.length()-2);
-            errorArgs.add(targetFacet);
-            errorArgs.add(errorHierNames);
-            dbGen.Translate(errorMsg, "root/EditFacet/Deletion/LastFacetForHierarchies", errorArgs, pathToErrorsXML);
-
-            //errorMsg.setValue("Ο μικροθησαυρός: " + targetFacet +" είναι ο μοναδικός στον οποίο υπάγονται οι ιεραρχίες: " + errorHierNames + ". Η λειτουργία διαγραφής ακυρώθηκε προκειμένου να παραμείνουν αυτές οι ιεραρχίες κάτω από έναν τουλάχιστον μικροθησαυρό.");
+            
+            Utilities u = new Utilities();
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/LastFacetForHierarchies", new String[]{targetFacet,errorHierNames}));
+            //errorMsg.setValue("Facet " + targetFacet +" is the only one under which heirarchies: " + errorHierNames + " are classifiesd. Facet deletion action was cancelled in order to maintain these hierarchies under at least one facet.");
             return false;
         }
         

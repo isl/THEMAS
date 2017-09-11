@@ -94,7 +94,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
             String action = u.getDecodedParameterValue(request.getParameter("action"));
             String TargetTermName = u.getDecodedParameterValue(request.getParameter("TargetTermName"));
             String MoveFromHierarchy = u.getDecodedParameterValue(request.getParameter("MoveFromHierarchy"));
-            String MoveΤοHierarchy = u.getDecodedParameterValue(request.getParameter("DestinationHierList"));
+            String MoveToHierarchy = u.getDecodedParameterValue(request.getParameter("DestinationHierList"));
             String MoveBTterm = u.getDecodedParameterValue(request.getParameter("MoveBTterm"));
             String MoveToHierarchyOption = u.getDecodedParameterValue(request.getParameter("MoveToHierarchyOption"));
             String TargetBTforDeletion = u.getDecodedParameterValue(request.getParameter("TargetBTforDeletion"));
@@ -121,7 +121,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
             boolean finalResult = true;
 
             if (action.compareTo("moveToHier") == 0) {
-                finalResult = this.moveToHierAction(SessionUserInfo, Q, TA, sis_session, tms_session, TargetTermName, MoveToHierarchyOption, MoveBTterm, MoveToHierarchyResultsMessage, errorMsg, pathToErrorsXML, MoveFromHierarchy, MoveΤοHierarchy);
+                finalResult = this.moveToHierAction(SessionUserInfo, Q, TA, sis_session, tms_session, TargetTermName, MoveToHierarchyOption, MoveBTterm, MoveToHierarchyResultsMessage, errorMsg, pathToErrorsXML, MoveFromHierarchy, MoveToHierarchy);
             }//Not Move to Hier Action --> Bypass Consistency checks
             else {
                 // action = deleteBT
@@ -220,7 +220,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
             String TargetTermName, String MoveToHierarchyOption, String MoveBTterm,
             StringObject MoveToHierarchyResultsMessage,
             StringObject errorMsg, String pathToErrorsXML,
-            String MoveFromHierarchy,String MoveΤοHierarchy) {
+            String MoveFromHierarchy,String MoveToHierarchy) {
 
         
         DBGeneral dbGen = new DBGeneral();
@@ -240,7 +240,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         } else {
             //Bug Fix --> If move node with/without subtree node looses all its bts--> Move from all hierarchie that it belongs to target hier and bt
             if (MoveToHierarchyOption.compareTo("MOVE_NODE_ONLY") == 0 || MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0) {
-                if (MoveToHierarchyAction(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, TargetTermName, MoveFromHierarchy, MoveΤοHierarchy, MoveBTterm, MoveToHierarchyOption, user, MoveToHierarchyResultsMessage) == false) {
+                if (MoveToHierarchyAction(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, TargetTermName, MoveFromHierarchy, MoveToHierarchy, MoveBTterm, MoveToHierarchyOption, user, MoveToHierarchyResultsMessage) == false) {
 
                     return false;
                 } else {
@@ -276,7 +276,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 }
             } else { // CONNECT_NODE_AND_SUBTREE
 
-                if (MoveToHierarchyAction(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, TargetTermName, MoveFromHierarchy, MoveΤοHierarchy, MoveBTterm, MoveToHierarchyOption, user, MoveToHierarchyResultsMessage) == false) {
+                if (MoveToHierarchyAction(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, TargetTermName, MoveFromHierarchy, MoveToHierarchy, MoveBTterm, MoveToHierarchyOption, user, MoveToHierarchyResultsMessage) == false) {
                     return false;
                 } else {
                     return true;
@@ -314,7 +314,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
     MoveToHierarchyAction()
     ----------------------------------------------------------------------*/
-    boolean MoveToHierarchyAction(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveΤοHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
+    boolean MoveToHierarchyAction(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveToHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
 
         Utilities u = new Utilities();
         DBConnect_Term dbCon = new DBConnect_Term();
@@ -327,7 +327,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject TargetTermNameUTF8WithPrefix = new StringObject(termPrefix.concat(TargetTermName));
         StringObject MoveFromHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveFromHierarchy));
-        StringObject MoveΤοHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveΤοHierarchy));
+        StringObject MoveToHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveToHierarchy));
         StringObject MoveBTtermUTF8WithPrefix = new StringObject(termPrefix.concat(MoveBTterm));
         int MTHoption = 0;
         //Move Node actions modify relations of some terms. Thus modified by and on fileds must be updated. 
@@ -349,7 +349,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         }
 
         int ret = TA.CHECK_MoveToHierarchy(TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix,
-                MoveΤοHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
+                MoveToHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
 
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
             Q.free_all_sets();
@@ -360,7 +360,8 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                MoveToHierarchyResultsMessage.setValue("Η μετακίνηση του όρου \"" + TargetTermName + "\", ολοκληρώθηκε επιτυχώς.");
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[]{TargetTermName}));
+                //MoveToHierarchyResultsMessage.setValue("Movement of term \"" + TargetTermName + "\" was successfully performed.");
                 return true;
             } else {
                 //MoveToHierarchyResultsMessage.setValue(errorMsg);
@@ -454,7 +455,8 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                MoveToHierarchyResultsMessage.setValue("Η διαγραφή του όρου \"" + TargetBTforDeletion + "\" ως ευρύτερου του όρου \"" + TargetTermName + "\" ολοκληρώθηκε επιτυχώς.");
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtSuccess", new String[]{TargetBTforDeletion,TargetTermName}));
+                //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" was successfully completed.");
 
                 return true;
             } else {
@@ -463,7 +465,8 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 return false;
             }
         } else {
-            MoveToHierarchyResultsMessage.setValue("Η διαγραφή του όρου \"" + TargetBTforDeletion + "\" ως ευρύτερου του όρου \"" + TargetTermName + "\" απέτυχε.");
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtFailure", new String[]{TargetBTforDeletion,TargetTermName}));
+            //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" failed.");
             Q.free_all_sets();
 
             return false;
@@ -563,6 +566,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
+        Utilities u = new Utilities();
 
         Vector<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
         StringObject TopTermObjClass = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("TopTerm"));
@@ -661,7 +665,8 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
                         ret = Q.CHECK_Delete_Instance( from, to);
                         if (ret == QClass.APIFail) {
-                            errorMsg.setValue("Παρουσιάστηκε σφάλμα κατά την εννημέρωση του κόμβου " + tempStr);
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
+                            //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
                     }
@@ -686,7 +691,8 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                             String tempStr = checkNodes.get(i);
                             tempStr = dbGen.removePrefix(tempStr);
 
-                            errorMsg.setValue("Παρουσιάστηκε σφάλμα κατά την εννημέρωση του κόμβου " + tempStr);
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
+                            //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
                     }

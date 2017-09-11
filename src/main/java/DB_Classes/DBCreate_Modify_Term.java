@@ -219,8 +219,9 @@ public class DBCreate_Modify_Term {
             Vector<Long> guideTermBugFixLinkCategIdsL, Vector<SortItem> guideTermBugFixBtsWithGuideTerms,
             Vector<String> old_bts, StringObject errorMsg) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        //String pathToMessagesXML = Utilities.getMessagesXml();
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
 
         StringObject fromClassObj = new StringObject();
@@ -296,22 +297,15 @@ public class DBCreate_Modify_Term {
             int ret = Q.CHECK_Add_Instance(currentLinkId, btLinkIdent);
             if (ret == QClass.APIFail) {
                 SortItem zongItem = guideTermBugFixBtsWithGuideTerms.get(i);
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(zongItem.getLogName());
-                dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/ZeroAdditionFailure", errorArgs, pathToMessagesXML);
-
-                //errorMsg.setValue("Αποτυχία προσθήκης του όρου " + zongItem.getLogName() + " στην μηδενική ετικέτα δεσμού: ");
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/ZeroAdditionFailure", new String[]{zongItem.getLogName()}));
+                //errorMsg.setValue("Addition failure of term  to the zero guide term category.");
                 return false;
             }
             ret = Q.CHECK_Delete_Instance(currentLinkId, currentLinkCategoryId);
             if (ret == QClass.APIFail) {
                 SortItem zongItem = guideTermBugFixBtsWithGuideTerms.get(i);
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(zongItem.getLogName());
-                errorArgs.add(zongItem.getLinkClass());
-                dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/DeletionFailure", errorArgs, pathToMessagesXML);
-
-                //errorMsg.setValue("Αποτυχία διαγραφής της σχέσης ΠΟ με τον όρο " + zongItem.getLogName() + " από την ετικέτα δεσμού: " + zongItem.getLinkClass());
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailure", new String[]{zongItem.getLogName(),zongItem.getLinkClass()}));
+                //errorMsg.setValue("Deletion failure of BT relation between term " + zongItem.getLogName() + " and guide term: " + zongItem.getLinkClass());
                 return false;
             }
 
@@ -324,10 +318,8 @@ public class DBCreate_Modify_Term {
             Vector<SortItem> guideTermBugFixBtsWithGuideTerms, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
-
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        Vector<String> errorArgs = new Vector<String>();
 
         StringObject fromClassObj = new StringObject();
         StringObject LinkObj = new StringObject();
@@ -394,14 +386,14 @@ public class DBCreate_Modify_Term {
             retL = Q.set_current_node_id(currentLinkCategoryId.getSysid());
             retL = Q.CHECK_Add_Instance(currentLinkId, currentLinkCategoryId);
             if (retL == QClass.APIFail) {
-                dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/GeneralAdditionFailure", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Αποτυχία προσθήκης του όρου στην ετικέτα δεσμού: " );
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralAdditionFailure", null));
+                //errorMsg.setValue("Failure during addition of term to guide term category. " );
                 return false;
             }
             retL = Q.CHECK_Delete_Instance(currentLinkId, btLinkIdent);
             if (retL == QClass.APIFail) {
-                dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/GeneralDeletionFailure", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Αποτυχία διαγραφής του όρου από την ετικέτα δεσμού: ");
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralDeletionFailure", null));
+                //errorMsg.setValue("Failure during deletion of term from guide term category.");
                 return false;
             }
 
@@ -420,8 +412,6 @@ public class DBCreate_Modify_Term {
             Utils.StaticClass.webAppSystemOutPrintln("Target Term: " + targetTerm + " Target relation: " + targetField + " Target Value: " + decodedValues.toString());
         }
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        Vector<String> errorArgs = new Vector<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         Utilities u = new Utilities();
@@ -505,8 +495,8 @@ public class DBCreate_Modify_Term {
             //<editor-fold defaultstate="collapsed" desc="Edit Bt...">
             //check consistency of at least one bt preserved
             if (decodedValues == null || decodedValues.size() == 0) {
-                dbGen.Translate(errorMsg, "root/EditTerm/BTs/AtLeastOne", null, pathToMessagesXML);
-                //errorMsg.setValue("Πρέπει να διατηρηθεί τουλάχιστον ένας όρος σαν ΠΟ.");
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null));
+                //errorMsg.setValue("One at least BT must be maintained.");
                 return;
             }
 
@@ -533,8 +523,8 @@ public class DBCreate_Modify_Term {
             }
 
             if (decodedValues.size() == 0) {
-                dbGen.Translate(errorMsg, "root/EditTerm/BTs/AtLeastOne", null, pathToMessagesXML);
-                //errorMsg.setValue("Πρέπει να διατηρηθεί τουλάχιστον ένας όρος σαν ΠΟ.");
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null));
+                //errorMsg.setValue("One at least BT must be maintained.");
                 return;
             }
 
@@ -622,13 +612,13 @@ public class DBCreate_Modify_Term {
             if (fromhiers.size() == 0) {
                 performmovement = false;
                 if (Parameters.DEBUG) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Ο όρος " + targetTerm + "  βρέθηκε χωρίς όρους κορυφής");
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Term " + targetTerm + " was found with no Top Terms.");
                 }
             }
             if (tohiers.size() == 0) {
                 performmovement = false;
                 if (Parameters.DEBUG) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Ο όρος " + targetTerm + "  βρέθηκε χωρίς νέους όρους κορυφής προς μετακίνηση");
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Term " + targetTerm + " was found without new Top Terms to be moved to.");
                 }
             }
             if (performmovement && MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTerm, fromhiers.get(0), tohiers.get(0), decodedValues.get(0), ConstantParameters.MOVE_NODE_AND_SUBTREE, user, errorMsg) == false) {
@@ -672,7 +662,7 @@ public class DBCreate_Modify_Term {
                     StringObject errorMsgPrefixObj = new StringObject();
 
                     if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg) == false) {
-                        dbGen.Translate(errorMsgPrefixObj, "root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null, pathToMessagesXML);
+                        errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null));
 
                         errorMsg.setValue(errorMsgPrefixObj.getValue() + errorMsg.getValue());
                         Q.free_set(check_nodes_set);
@@ -680,12 +670,8 @@ public class DBCreate_Modify_Term {
                     }
                     Q.free_set(check_nodes_set);
                 } else {
-                    StringObject errorMsgPrefixObj = new StringObject();
-                    dbGen.Translate(errorMsgPrefixObj, "root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null, pathToMessagesXML);
-                    errorArgs.add(targetTerm);
-                    dbGen.Translate(errorMsg, "root/EditTerm/BTs/NotFound", errorArgs, pathToMessagesXML);
-
-                    errorMsg.setValue(errorMsgPrefixObj.getValue() + errorMsg.getValue());
+                    
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null) +u.translateFromMessagesXML("root/EditTerm/BTs/NotFound", new String[]{targetTerm}));
                     return;
                 }
 
@@ -1868,8 +1854,9 @@ public class DBCreate_Modify_Term {
 
     int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        Vector<String> errorArgs = new Vector<String>();
+        //String pathToMessagesXML = Utilities.getMessagesXml();
+        //Vector<String> errorArgs = new Vector<String>();
+        Utilities u = new Utilities();
 
         // looking for Term prefix
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1881,19 +1868,18 @@ public class DBCreate_Modify_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject TargetTermNameUTF8WithPrefix = new StringObject(termPrefix.concat(TargetTermName));
         StringObject MoveFromHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveFromHierarchy));
-        StringObject MoveΤοHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
+        StringObject MoveToHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
         StringObject MoveBTtermUTF8WithPrefix = new StringObject(termPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
         int MTHoption = TMSAPIClass.MOVE_NODE_ONLY;
 
         int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix,
-                MoveΤοHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
+                MoveToHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
 
         StringObject MoveToHierarchyResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
-
-            errorArgs.add(TargetTermName);
-            dbGen.Translate(MoveToHierarchyResultsMessage, "root/EditTerm/Move2Hierarchy/SuccessMsg", errorArgs, pathToMessagesXML);
-            //MoveToHierarchyResultsMessage.setValue("Η μετακίνηση του όρου \"" + TargetTermName + "\" σε Ιεραρχία, ολοκληρώθηκε επιτυχώς.");
+            
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[] {TargetTermName}));
+            //MoveToHierarchyResultsMessage.setValue("Movement of term \"" + TargetTermName + "\" to Hierarchy waw successfully performed.");
 
         } else { // FAIL
             TA.ALMOST_DONE_GetTMS_APIErrorMessage( MoveToHierarchyResultsMessage);
@@ -1910,9 +1896,9 @@ public class DBCreate_Modify_Term {
     /*---------------------------------------------------------------------
     MoveToHierarchyAction()
     ----------------------------------------------------------------------*/
-    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveΤοHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
+    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveToHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        Utilities u = new Utilities();
 
 
 
@@ -1925,7 +1911,7 @@ public class DBCreate_Modify_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject TargetTermNameUTF8WithPrefix = new StringObject(termPrefix.concat(TargetTermName));
         StringObject MoveFromHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveFromHierarchy));
-        StringObject MoveΤοHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveΤοHierarchy));
+        StringObject MoveToHierarchyUTF8WithPrefix = new StringObject(classPrefix.concat(MoveToHierarchy));
         StringObject MoveBTtermUTF8WithPrefix = new StringObject(termPrefix.concat(MoveBTterm));
         int MTHoption = 0;
 
@@ -1938,7 +1924,7 @@ public class DBCreate_Modify_Term {
             MTHoption = TMSAPIClass.CONNECT_NODE_AND_SUBTREE;
         }
 
-        int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix, MoveΤοHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
+        int ret = TA.CHECK_MoveToHierarchy( TargetTermNameUTF8WithPrefix, MoveFromHierarchyUTF8WithPrefix, MoveToHierarchyUTF8WithPrefix, MoveBTtermUTF8WithPrefix, MTHoption);
 
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
             //Q.free_all_sets();
@@ -1946,9 +1932,7 @@ public class DBCreate_Modify_Term {
         } else { // FAIL
             TA.ALMOST_DONE_GetTMS_APIErrorMessage( MoveToHierarchyResultsMessage);
 
-            StringObject erroMsgPrefix = new StringObject();
-            dbGen.Translate(erroMsgPrefix, "root/EditTerm/BTs/ErrorPrefix", null, pathToMessagesXML);
-            MoveToHierarchyResultsMessage.setValue(erroMsgPrefix.getValue() + MoveToHierarchyResultsMessage.getValue());
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/ErrorPrefix", null) + MoveToHierarchyResultsMessage.getValue());
             //Q.free_all_sets();
             return false;
         }
@@ -2037,8 +2021,6 @@ public class DBCreate_Modify_Term {
     boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg) {
 
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
 
@@ -2048,6 +2030,7 @@ public class DBCreate_Modify_Term {
         StringObject TopTermHierRelationObj = new StringObject();//("belongs_to_" + SessionUserInfo.selectedThesaurus.toLowerCase().concat("_hierarchy"));
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
 
         dbtr.getThesaurusClass_TopTerm(selectedThesaurus, Q, sis_session.getValue(), TopTermObjClass);
         dbtr.getThesaurusCategory_belongs_to_hierarchy(selectedThesaurus, Q, sis_session.getValue(), TopTermHierRelationObj);
@@ -2139,10 +2122,9 @@ public class DBCreate_Modify_Term {
 
                         ret = Q.CHECK_Delete_Instance( from, to);
                         if (ret == QClass.APIFail) {
-                            Vector<String> errorArgs = new Vector<String>();
-                            errorArgs.add(tempStr);
-                            dbGen.Translate(errorMsg, "root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", errorArgs, pathToMessagesXML);
-                            //errorMsg.setValue("Παρουσιάστηκε σφάλμα κατά την εννημέρωση του κόμβου " + tempStr);
+                            
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}));
+                            //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
                     }
@@ -2166,11 +2148,8 @@ public class DBCreate_Modify_Term {
 
                             String tempStr = checkNodes.get(i);
                             tempStr = dbGen.removePrefix(tempStr);
-
-                            Vector<String> errorArgs = new Vector<String>();
-                            errorArgs.add(tempStr);
-                            dbGen.Translate(errorMsg, "root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", errorArgs, pathToMessagesXML);
-                            ///errorMsg.setValue("Παρουσιάστηκε σφάλμα κατά την εννημέρωση του κόμβου " + tempStr);
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}));
+                            ///errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
                     }
@@ -2192,8 +2171,7 @@ public class DBCreate_Modify_Term {
 
     public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, Vector<String> decodedNtsVec, Vector<String> decodedGuideTermsVec) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-        Vector<String> errorArgs = new Vector<String>();
+        Utilities u = new Utilities();
 
         //targetTerm
         //ntsVec
@@ -2283,10 +2261,8 @@ public class DBCreate_Modify_Term {
                     long decodedGuideTermLinkIdL = Q.set_current_node(decodedGuideTermLinkObj);
 
                     if (decodedGuideTermLinkIdL == QClass.APIFail) {
-                        errorArgs.add(decodedGuideTerm);
-                        errorArgs.add(currentNt);
-                        dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/NotFoundGuideTerm", errorArgs, pathToMessagesXML);
-                        //errorMsg.setValue("Η ετικέτα δεσμού '" + decodedGuideTerm+"' που επιλέχθηκε για τον όρο '" +currentNt+ "' δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε την οθόνη και επαναλάβετε την ενέργεια.");
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/NotFoundGuideTerm", new String[] {decodedGuideTerm,currentNt}));
+                        //errorMsg.setValue("Guide term '" + decodedGuideTerm+"' selected for term '" +currentNt+ "' was not found in the database. Please refresh screen and repeat the action.");
                         return;
                     }
 
@@ -2294,9 +2270,8 @@ public class DBCreate_Modify_Term {
                     Q.reset_name_scope();
                     int ret = Q.CHECK_Add_Instance(currentLinkId, new Identifier(decodedGuideTermLinkIdL));
                     if (ret == QClass.APIFail) {
-                        errorArgs.add(decodedGuideTerm);
-                        dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/AdditionFailureOfGuideTerm", errorArgs, pathToMessagesXML);
-                        //errorMsg.setValue("Αποτυχία προσθήκης του όρου στην ετικέτα δεσμού: "+ decodedGuideTerm);
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/AdditionFailureOfGuideTerm", new String[] {decodedGuideTerm}));
+                        //errorMsg.setValue("Failure during addition of term to guide term category: "+ decodedGuideTerm+".");
                         return;
                     }
 
@@ -2304,9 +2279,8 @@ public class DBCreate_Modify_Term {
                     Q.reset_name_scope();
                     ret = Q.CHECK_Delete_Instance(currentLinkId, new Identifier(oldGuideTermIDL));
                     if (ret == QClass.APIFail) {
-                        errorArgs.add(currentGuideTerm);
-                        dbGen.Translate(errorMsg, "root/EditTerm/GuideTerms/DeletionFailureOfGuideTerm", errorArgs, pathToMessagesXML);
-                        //errorMsg.setValue("Αποτυχία διαγραφής του όρου από την ετικέτα δεσμού: "+ currentGuideTerm);
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailureOfGuideTerm", new String[] {currentGuideTerm}));
+                        //errorMsg.setValue("Failure during deletion of term from guide term category: "+currentGuideTerm+".");
                         return;
                     }
 

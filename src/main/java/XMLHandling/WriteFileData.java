@@ -93,14 +93,12 @@ public class WriteFileData {
 
     public void WriteFileStart(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName) throws IOException {
 
-        DBGeneral dbGen = new DBGeneral();
-        StringObject msgObj = new StringObject();
-        String pathToTranslationsXml = Utilities.getTranslationsXml("translations.xml");
-        dbGen.Translate(msgObj, "locale/footer/tooltipappnameandversion", null, pathToTranslationsXml);
+        Utilities u = new Utilities();
+        
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
-        logFileWriter.append("<!-- " + msgObj.getValue() + " -->\r\n");
+        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null) + " -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
@@ -1099,7 +1097,7 @@ public class WriteFileData {
                                     if (Parameters.PrimaryLang.toLowerCase().equals("en")) {
                                         statusVal = "Under construction";
                                     } else {
-                                        //Υπό επεξεργασία in hex form
+                                        //greek translation of Under construction in hex form
                                         statusVal = "\u03A5\u03C0\u03CC \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03af\u03B1";
                                     }
                                 }

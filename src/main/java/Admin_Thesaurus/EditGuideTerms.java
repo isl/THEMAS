@@ -111,7 +111,7 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
-            String pathToMessagesXML = getServletContext().getRealPath("/translations/Messages.xml");
+            
 
 
             DBGeneral dbGen = new DBGeneral();
@@ -130,24 +130,25 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             }
             
             if (mode.compareTo("new") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,newGuideTerm,errorMsg, pathToMessagesXML);
+                operationSucceded = dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,newGuideTerm,errorMsg);
             }
             
             if (mode.compareTo("delete") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,errorMsg, pathToMessagesXML);
+                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,errorMsg);
             }
             
             if (mode.compareTo("rename") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.renameGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, renameGuideTermFrom, renameGuideTermTo, errorMsg, pathToMessagesXML);
+                operationSucceded = dbEdit_Guide_Terms.renameGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, renameGuideTermFrom, renameGuideTermTo, errorMsg);
             }
             
-            //check result of transaction. Prepend with Success or Failure any message returned and wirte it to PrintWriter out for ajax handling
+            //check result of transaction. 
+            //Any message returned should be prepended with 'Success' or 'Failure' 
+            //in order to be handled by the client via ajax.
             if(operationSucceded || errorMsg.getValue() == null || errorMsg.getValue().length()==0){
                 //commit transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_end_transaction();
                 dbGen.CloseDBConnection(Q, null, sis_session, tms_session, true);
-
                 out.println("Success");
             }else{        
 

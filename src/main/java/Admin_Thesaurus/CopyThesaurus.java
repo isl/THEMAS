@@ -151,7 +151,7 @@ public class CopyThesaurus extends ApplicationBasicServlet {
             String time = Utilities.GetNow();
             String Filename = "Copy_Thesaurus_" + sourceThesaurusName + "_in_" + targetThesaurusName + "_" + time;
             logFileNamePath += "/" + Filename + ".xml";
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή διαδικασίας αντιγραφής Θησαυρού στις: " + Utilities.GetNow());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Thesaurus copy operation at: " + Utilities.GetNow());
             
             //IMPORT ACTIONS
             if(dbImport.thesaurusCopyActions(SessionUserInfo, common_utils, config,
@@ -169,7 +169,7 @@ public class CopyThesaurus extends ApplicationBasicServlet {
             if (== false) {
 
                 //abortActions(context, sessionInstance, Q, TA, sis_session, tms_session, targetLocale, common_utils, initiallySelectedThesaurus, targetThesaurusName, DBbackupFileNameCreated, resultObj, out);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Η διαδικασία αντιγραφής Θησαυρού απέτυχε.");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus copy operation failed.");
             } 
             else {
                 //SUCESS
@@ -179,7 +179,7 @@ public class CopyThesaurus extends ApplicationBasicServlet {
 
 
                 commitActions(context, sessionInstance, common_utils, Q, TA, sis_session, tms_session, targetLocale, targetThesaurusName, out, Filename.concat(".html"));
-                logFileWriter.append("\r\n<creationInfo>Η διαδικασία αντιγραφής ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.</creationInfo>\r\n");
+                logFileWriter.append("\r\n<creationInfo>Thesaurus copy operation was successfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.</creationInfo>\r\n");
                 if (logFileWriter != null) {
                     logFileWriter.append("</page>");
                     logFileWriter.flush();
@@ -190,13 +190,13 @@ public class CopyThesaurus extends ApplicationBasicServlet {
              * 
              */
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος διαδικασίας αντιγραφής Θησαυρού στις: " + Utilities.GetNow() +". Χρόνος: "+((Utilities.stopTimer(startTime)) / 60) + " λεπτά.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of thesaurus copy operation at: " + Utilities.GetNow() +". Time passed: "+((Utilities.stopTimer(startTime)) / 60) + " minutes.");
 
             //Now XSL should be found and java xsl transformation should be performed
             u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
 
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Η διαδικασία αντιγραφής ολοκληρώθηκε με επιτυχία σε χρόνο : " + ((Utilities.stopTimer(startTime)) / 60) + " λεπτά.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus copy operation was sucessfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");
 
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in servlet " + getServletName() + ". Message:" + e.getMessage());            

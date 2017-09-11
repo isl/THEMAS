@@ -138,68 +138,10 @@ public class Utilities {
                 + // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page title=\"Δημιουργός Θησαυρού\" language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
-                + "\r\n<header>"
-                + "\r\n<name>Δημιουργός Θησαυρού</name>"
-                + //"\r\n<logo>images/thesaurusheader.jpg</logo>" +
-                "\r\n</header>"
+                "\r\n<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
                 + "\r\n<leftmenu>"
                 + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
-                + /*"\r\n<option>" +
-                "\r\n<name>Term</name>" +
-                "\r\n<new alt=\"Δημιουργία\" kind=\"Term\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των όρων\" url=\"/ViewAll_Terms\">images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Hierarchy</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Hierarchy\" >images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των ιεραρχιών\" url=\"/ViewAll_Hierarchies\">images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Facet</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Facet\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των μικροθησαυρών\" url=\"/ViewAll_Facets\" >images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Bibliography</name>" +
-                "</option>" +
-                "<option>" +
-                "<name>Sources</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Source\">images/newdoc.gif</new>" +
-                "<search alt=\"Αναζήτηση\">images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των πηγών\" url=\"/ViewAll_Sources\" >images/showalldocs.gif</viewAll>" +
-                "</option>" +
-                "<option>" +
-                "<name>Statistics</name>" +
-                "<statistics alt=\"Εμφάνιση Στατιστικών Θησαυρού\" href=\"Statistics?DIV=StatisticsOfTerms_DIV\">images/showalldocs.gif</statistics>" +
-                "</option>" +
-                "<option>" +
-                "<name>THES_Admin</name>" +
-                "<ThesOperations alt=\"Διαχείριση Θησαυρών\" href=\"ImportExportData?DIV=Import_Data_DIV\">images/db.gif</ThesOperations>" + 
-                "<ThesChange alt=\"Αλλαγή Τρέχοντος Θησαυρού\" href=\"#\">images/editdoc.gif</ThesChange>" + 
-                "</option>" +                
-                "<option>" +
-                "<name>DB Admin</name>" +
-                "<anchor alt=\"Διαχείριση Βάσης Δεδομένων\" href=\"DBadmin?DIV=Create_Restore_DB_backup_DIV\">images/db.gif</anchor>" +
-                "</option>" +
-                
-                "<option>" +
-                "<name>ReleaseThes</name>" +
-                "<anchor alt=\"Έκδοση Θησαυρού\" href=\"ReleaseThesaurus?DIV=ReleaseThesaurus_DIV\">images/ReleaseThesaurus.gif</anchor>" +
-                "</option>" +
-                "<option>" +
-                "<name>Users</name>" +
-                "<new alt=\"Δημιουργία\" kind=\"Users\">images/newdoc.gif</new>" +
-                // temporarily NO search for users
-                // "<search>images/searchdoc.gif</search>" +
-                "<viewAll alt=\"Εμφάνιση όλων των χρηστών\" url=\"/ViewAll_Users\">images/showalldocs.gif</viewAll>" +
-                "<shareThesaurus alt=\"Διαχείριση ιδιοτήτων χρηστών θησαυρού\">images/db.gif</shareThesaurus>" +
-                "</option>" +*//*
-                "<save>images/disk.gif</save>"+
-                "<save-xml>images/disk_xml.gif</save-xml>"+*/ "</leftmenu>";
+                + "</leftmenu>";
 
         return XMLStart;
     }
@@ -216,7 +158,6 @@ public class Utilities {
     public String getXMLMiddle(String resultsString, String upActiveTab/*, String downActiveTab*/) {
         // <tabset1>
         // the following strings must be the SAME with the strings defined in tabs.js!!!
-        //String[] tabsetArray1 = {"Αλφαβητικά", "Συστηματικά", "Ιεραρχικά", "Γραφικά", "Αποτ.Αναζήτησης", "Κριτ.Αναζήτησης", "Ρυθμίσεις","Αποτ.Αναζήτ.Ιεραρχιών", "Αποτ.Αναζήτ.Θεμάτων"};
         String[] tabsetArray1 = {"Alphabetical", "Systematic", "Hierarchical", "Graphical", "SearchResults", "SearchCriteria", "Settings",
             "SearchHierarchyResults", "SearchFacetResults", "SearchSourceResults", "SearchUsersResults", "HierarchiesSearchCriteria", "FacetsSearchCriteria", "SourcesSearchCriteria", "New",
             "NewHierarchy", "NewFacet", "Move2Hier", "HistoricalInfo_Term", "HistoricalInfo_Hierarchy", "HistoricalInfo_Facet", "Rename", "RenameHierarchy", "RenameFacet",
@@ -1480,61 +1421,61 @@ public class Utilities {
         switch(monthInt){
         case 1: {
 
-        Month = "Ιανουάριος";
+        Month = "January";
         break;
         }
         case 2: {
 
-        Month = "Φεβρουάριος";
+        Month = "February";
         break;
         }
         case 3: {
 
-        Month = "Μάρτιος";
+        Month = "March";
         break;
         }
         case 4: {
 
-        Month = "Απρίλιος";
+        Month = "April";
         break;
         }
         case 5: {
 
-        Month = "Μάιος";
+        Month = "May";
         break;
         }
         case 6: {
 
-        Month = "Ιούνιος";
+        Month = "June";
         break;
         }
         case 7: {
 
-        Month = "Ιούλιος";
+        Month = "July";
         break;
         }
         case 8: {
-        Month = "Αύγουστος";
+        Month = "August";
         break;
         }
         case 9: {
 
-        Month = "Σεπτέμβριος";
+        Month = "September";
         break;
         }
         case 10: {
 
-        Month = "Οκτώβριος";
+        Month = "October";
         break;
         }
         case 11: {
 
-        Month = "Νοέμβριος";
+        Month = "November";
         break;
         }
         case 12: {
 
-        Month = "Δεκέμβριος";
+        Month = "December";
         break;
         }
         default: {
@@ -2281,7 +2222,11 @@ public class Utilities {
         return dataNeeded;
     }
 
-    public void writeResultsInXMLFile(Vector<String> allTerms, String startXML, Vector<String> output, 
+    public void writeResultsInOutputStream(){
+        
+    }
+    
+    public void writeResultsInXMLFile(PrintWriter outStream, Vector<String> allTerms, String startXML, Vector<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
             QClass Q, IntegerObject sis_session, Hashtable<String, NodeInfoSortItemContainer> termsInfo, 
             Vector<Long> resultNodesIds, Locale targetLocale) {
@@ -2293,40 +2238,51 @@ public class Utilities {
         GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
         SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
 
-        OutputStreamWriter out = null;
-        try {
-            OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
-            OutputStream bout = new BufferedOutputStream(fout);
-            out = new OutputStreamWriter(bout, "UTF-8");
-            //out = new OutputStreamWriter(bout, "UTF8");
-
-            out.write(ConstantParameters.xmlHeader);
-            out.write(startXML);
-
-
-        } catch (Exception exc) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
-            Utils.StaticClass.handleException(exc);
+        boolean streamOutput = false;
+        if(outStream!=null){
+            streamOutput = true;
         }
+        
+        OutputStreamWriter out = null;
+        
+        String appendVal = ConstantParameters.xmlHeader+ startXML;
+        if(streamOutput){
+            outStream.append(appendVal);
+        }
+        else{
+            try {
+                OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
+                OutputStream bout = new BufferedOutputStream(fout);
+                out = new OutputStreamWriter(bout, "UTF-8");
+                //out = new OutputStreamWriter(bout, "UTF8");
 
+                out.append(appendVal);
+            } catch (Exception exc) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+                Utils.StaticClass.handleException(exc);
+            }
+        }
+        
         try {
-
-            out.append("<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
-
-            out.append("<output>");
+            appendVal = "<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">"+"<output>";
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
                 if (category.compareTo("id") == 0) {
                     continue;
                 } else {
-                    out.append("<" + category + "/>");
+                    appendVal+="<" + category + "/>";
                 }
             }
-            out.append("</output>");
-
-            out.append("<terms>");
-
+            appendVal+="</output><terms>";
+            
+            if(streamOutput){
+                outStream.append(appendVal);
+            }
+            else{
+                out.append(appendVal);
+            }
+            
             for (int i = 0; i < allTerms.size(); i++) {
                 String targetTerm = allTerms.get(i);
                 //Utils.StaticClass.webAppSystemOutPrintln(targetTerm);
@@ -2334,38 +2290,68 @@ public class Utilities {
                 String type = targetTermInfo.containerType;
 
                 if (type.compareTo(NodeInfoSortItemContainer.CONTAINER_TYPE_UF) == 0) {//Perhaps it is uf link
-                    out.append("<ufterm index=\"" + (i + 1) + "\">");
-                    out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
-                    out.append(escapeXML(targetTerm));
-                    out.append("</ufname>");
+                    
+                    
+                    //out.append("<ufterm index=\"" + (i + 1) + "\">");
+                    //out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                    //out.append(escapeXML(targetTerm));
+                    //out.append("</ufname>");
 
+                    appendVal = "<ufterm index=\"" + (i + 1) + "\">"+"<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">"+escapeXML(targetTerm)+"</ufname>";
+                    
+                    if(streamOutput){
+                        outStream.append(appendVal);
+                    }
+                    else{
+                        out.append(appendVal);
+                    }
+                    
                     Vector<SortItem> values = new Vector<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get("use"));
                     Collections.sort(values, sortComparator);
 
                     for (int k = 0; k < values.size(); k++) {
                         long valueIDL = values.get(k).getSysId();
+                        
                         if (resultNodesIds.contains(valueIDL)) {
-                            out.append("<use id=\"" + valueIDL + "\">");
+                            appendVal = "<use id=\"" + valueIDL + "\">";
                         } else {
-                            out.append("<use>");
+                            appendVal = "<use>";
                         }
-                        out.append(escapeXML(values.get(k).getLogName()));
-                        out.append("</use>");
+                        appendVal+=escapeXML(values.get(k).getLogName())+"</use>";
+                        if(streamOutput){
+                            outStream.append(appendVal);
+                        }
+                        else{
+                            out.append(appendVal);
+                        }
                     }
 
-
-                    out.append("</ufterm>");
+                    if(streamOutput){
+                        outStream.append("</ufterm>");
+                    }
+                    else{
+                        out.append("</ufterm>");
+                    }
+                    //out.append("</ufterm>");
                     continue;
                 }
-                out.append("<term index=\"" + (i + 1) + "\">");
-
+                
                 long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
+                //out.append("<term index=\"" + (i + 1) + "\">");
+                appendVal = "<term index=\"" + (i + 1) + "\">" +"<descriptor id=\"" + targetSysIdL + "\" >"+escapeXML(targetTerm)+"</descriptor>";
 
-                out.append("<descriptor id=\"" + targetSysIdL + "\" >");
-                out.append(escapeXML(targetTerm));
-                out.append("</descriptor>");
+                
 
+                //out.append("<descriptor id=\"" + targetSysIdL + "\" >");
+                //out.append(escapeXML(targetTerm));
+                //out.append("</descriptor>");
+                if(streamOutput){
+                    outStream.append(appendVal);
+                }
+                else{
+                    out.append(appendVal);
+                }
 
                 for (int m = 0; m < output.size(); m++) {
 
@@ -2383,6 +2369,7 @@ public class Utilities {
 
                     if (category.compareTo(ConstantParameters.bt_kwd) == 0
                             || category.compareTo(ConstantParameters.nt_kwd) == 0
+                            || category.compareTo(ConstantParameters.rnt_kwd) == 0
                             || category.compareTo(ConstantParameters.topterm_kwd) == 0
                             || category.compareTo(ConstantParameters.rt_kwd) == 0
                             || category.compareTo(ConstantParameters.uf_kwd) == 0
@@ -2390,31 +2377,49 @@ public class Utilities {
                             || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
 
                         if(values.size()>0){
-                        for (int k = 0; k < values.size(); k++) {
-
-                            SortItem currentItem = values.get(k);
-                            long valueIDL = currentItem.getSysId();
-                            String linkClass = currentItem.getLinkClass();
-                            if (resultNodesIds.contains(valueIDL)) {
-                                if (linkClass == null || linkClass.length() == 0) {
-                                    out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >");
+                            for (int k = 0; k < values.size(); k++) {
+                                appendVal ="";
+                                SortItem currentItem = values.get(k);
+                                long valueIDL = currentItem.getSysId();
+                                String linkClass = currentItem.getLinkClass();
+                                if (resultNodesIds.contains(valueIDL)) {
+                                    if (linkClass == null || linkClass.length() == 0) {
+                                        //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >");
+                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >";
+                                    } else {
+                                        //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">");
+                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">";
+                                    }
                                 } else {
-                                    out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">");
+                                    //Error in xslt transofrmation detected if linkClass attribute is missing (even if empty) in nt guide terms definitions
+                                    if (linkClass == null || linkClass.length() == 0) {
+                                        //out.append("<" + category + " linkClass=\"\">");
+                                        appendVal += "<" + category + " linkClass=\"\">";
+                                    } else {
+                                        //out.append("<" + category + " linkClass=\"" + linkClass + "\">");
+                                        appendVal += "<" + category + " linkClass=\"" + linkClass + "\">";
+                                    }
                                 }
-                            } else {
-                                //Error in xslt transofrmation detected if linkClass attribute is missing (even if empty) in nt guide terms definitions
-                                if (linkClass == null || linkClass.length() == 0) {
-                                    out.append("<" + category + " linkClass=\"\">");
-                                } else {
-                                    out.append("<" + category + " linkClass=\"" + linkClass + "\">");
+
+                                //out.append(escapeXML(values.get(k).getLogName()));
+                                //out.append("</" + category + ">");
+                                appendVal +=escapeXML(values.get(k).getLogName())+"</" + category + ">";
+                                if(streamOutput){
+                                    outStream.append(appendVal);
+                                }
+                                else{
+                                    out.append(appendVal);
                                 }
                             }
-                            out.append(escapeXML(values.get(k).getLogName()));
-                            out.append("</" + category + ">");
-                        }
                         }
                         else{
-                            out.append("<" + category + "/>");
+                            //out.append("<" + category + "/>");
+                            if(streamOutput){
+                                outStream.append("<" + category + "/>");
+                            }
+                            else{
+                                out.append("<" + category + "/>");
+                            }
                         }
                     } else if (category.equals(ConstantParameters.translations_scope_note_kwd)) {
                         String checkStr = "";
@@ -2430,40 +2435,57 @@ public class Utilities {
                         for (int k = 0; k < langcodes.size(); k++) {
                             String linkClass = langcodes.get(k);
                             String val = trSns.get(linkClass);
-                            out.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                            out.append(escapeXML(val));
-                            out.append("</" + category + ">");
+                            appendVal = "<" + category + " linkClass=\"" + linkClass + "\">"+escapeXML(val)+"</" + category + ">";
+                            if(streamOutput){
+                                 outStream.append(appendVal);
+                            }
+                            else{
+                                out.append(appendVal);
+                            }
                         }
 
 
                     } else {
 
                         for (int k = 0; k < values.size(); k++) {
-                            out.append("<" + category + ">");
-                            out.append(escapeXML(values.get(k).getLogName()));
-                            out.append("</" + category + ">");
+                            if(streamOutput){
+                                outStream.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                            }
+                            else{
+                                out.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                            }                            
                         }
 
                     }
                 }
 
-
-                out.append("</term>");
+                if(streamOutput){
+                    outStream.append("</term>");
+                }
+                else{
+                    out.append("</term>");
+                }
+                
             }
-            out.append("</terms>");
-            out.append("</data>");
+            if(streamOutput){
+                outStream.append("</terms></data></page>");                
+            }
+            else{
+                out.append("</terms></data></page>");
+            }
 
         } catch (Exception exc) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in writing results " + exc.getMessage());
             Utils.StaticClass.handleException(exc);
         }
 
-        try {
-            out.write("</page>");
-            out.close();
-        } catch (Exception exc) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
-            Utils.StaticClass.handleException(exc);
+        if(!streamOutput){
+            try {                
+                out.close();
+            } catch (Exception exc) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
+                Utils.StaticClass.handleException(exc);
+            }
         }
         //Q.reset_name_scope();
         Q.free_all_sets();
@@ -2557,6 +2579,51 @@ public class Utilities {
 
     }
 
+    public String translateFromMessagesXML( String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }
+            
+        }       
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getMessagesXml());
+    }
+    
+    public String translateFromTranslationsXML(String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }
+            
+        }        
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+    }
+    
+    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args){
+        
+        Vector<String> argsVector = null;
+        if(args!=null){            
+            argsVector = new Vector<String>();
+            int howmany = args.length;
+            for(int i=0; i< howmany; i++){
+                argsVector.add(args[i]);
+            }            
+        }        
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+    }
+    
+    
     public String translate(String messageXPath, Vector<String> args, String pathToErrorsXML) {
 
         String widgetNodeStr = "";

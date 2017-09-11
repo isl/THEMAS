@@ -113,8 +113,9 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
             if(targetTermUTF8==null){
                 targetTermUTF8=new String("");
                 targetTermCanBeMovedToHierarchy= false;
-                reasonTargetTermCannotBeMovedToHierarchy.setValue("Δεν δηλώθηκε όρος προς μετακίνηση");
-
+                
+                reasonTargetTermCannotBeMovedToHierarchy.setValue(u.translateFromMessagesXML( "root/EditTerm/Move2Hierarchy/NoTargetTermSpecified", null));
+                //reasonTargetTermCannotBeMovedToHierarchy.setValue("No target term was specified for the movement operation.");
             }
             else{   
                 StringObject targetTermUTF8WithPrefix = new StringObject(termPrefix.concat(targetTermUTF8));
@@ -129,7 +130,7 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
                 /*
                 if (!tmpVector.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
                     targetTermCanBeMovedToHierarchy = false;
-                    reasonTargetTermCannotBeMovedToHierarchy.setValue("Δεν ανήκει σε καμμία Ιεραρχία");
+                    reasonTargetTermCannotBeMovedToHierarchy.setValue("Does not belong to any Hierarchy");
                 }
                 else {
                  */

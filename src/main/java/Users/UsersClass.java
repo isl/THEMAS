@@ -364,15 +364,15 @@ public class UsersClass {
     public static final int NEW_USER_NAME_ALREADY_EXISTS_IN_XML                         = -15;
     public static final int NEW_USER_NAME_ALREADY_EXISTS_IN_DB                          = -16;
     public static final int USER_RENAME_FAILED                                          = -17;
-    public static final int TARGET_USER_DELETION_FAILED                                 = -18;//"Αποτυχία διαγραφής του χρήστη '" + targetUser +"' από την βάση"
-    public static final int FORMER_USER_DELETION_FAILED                                 = -19;//"Αποτυχία διαγραφής του χρήστη '" + olderUserName +"' από την βάση"    
-    public static final int TARGET_USER_RENAME_FAILED                                   = -20;//"Αποτυχία μετονομασίας του χρήστη '" + targetUser +"' σε '"+olderUserName+"'.";
-    public static final int FORMER_USER_RENAME_FAILED                                   = -21;//"Αποτυχία μετονομασίας του χρήστη '" + olderUserName +"' σε '"+OlderUserRenameName+"'.";
-    public static final int TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED                = -22;//"Αποτυχία διαγραφής των συνδέσμων δημιουργού προς τον συντάκτη '"+targetUser+"'.";
-    public static final int TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED               = -23;//"Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '"+targetUser+"'.";
-    public static final int FORMER_USER_INSTANCE_ADDITION_FAILED                        = -24;// "Αποτυχία προσθήκης του συντάκτη '" + olderUserName +"' στον θησαυρό '"+currentThes+"'.";
-    public static final int FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED                = -25;//"Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '"+olderUserName+"'.";
-    public static final int FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED               = -26;//"Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '"+olderUserName+"'.";
+    public static final int TARGET_USER_DELETION_FAILED                                 = -18;//"Failure of deleting user '" + targetUser +"' from the database."
+    public static final int FORMER_USER_DELETION_FAILED                                 = -19;//"Failure of deleting user '" + olderUserName +"' from the database."    
+    public static final int TARGET_USER_RENAME_FAILED                                   = -20;//"Failure of renaming user '" + targetUser +"' to '"+olderUserName+"'.";
+    public static final int FORMER_USER_RENAME_FAILED                                   = -21;//"Renaming of user '" + olderUserName +"' to '"+OlderUserRenameName+"' in database failed.";
+    public static final int TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED                = -22;//"Failure of deleting creator links to author '"+targetUser+"'.";
+    public static final int TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED               = -23;//"Failure of deleting modifier links to author '"+targetUser+"'.";
+    public static final int FORMER_USER_INSTANCE_ADDITION_FAILED                        = -24;//"Failure inserting user '" + olderUserName +"' to thesaurus where user '"+currentThes+"' belonged.";
+    public static final int FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED                = -25;//"Failure of moving creator links to author '"+olderUserName+"'.";
+    public static final int FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED               = -26;//"Failure of moving modifier links to author '"+olderUserName+"'.";
     
     public static final int NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML                  = -27;
     public static final int NO_NEW_FORMER_USER_NAME_GIVEN                               = -28;
@@ -1659,14 +1659,14 @@ public class UsersClass {
     
     /*
      RETURNS:
-     TARGET_USER_DELETION_FAILED --> "Αποτυχία διαγραφής του χρήστη '" + targetUser +"' από την βάση"
-     FORMER_USER_DELETION_FAILED --> "Αποτυχία διαγραφής του χρήστη '" + olderUserName +"' από την βάση"
-     TARGET_USER_RENAME_FAILED   --> "Αποτυχία μετονομασίας του χρήστη '" + targetUser +"' σε '"+olderUserName+"'.";
-     TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED  --> "Αποτυχία διαγραφής των συνδέσμων δημιουργού προς τον συντάκτη '"+targetUser+"'.";
-     TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED --> "Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '"+targetUser+"'.";
-     FORMER_USER_INSTANCE_ADDITION_FAILED          --> "Αποτυχία προσθήκης του συντάκτη '" + olderUserName +"' στον θησαυρό '"+currentThes+"'.";
-     FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED  --> "Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '"+olderUserName+"'.";
-     FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED --> "Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '"+olderUserName+"'.";
+     TARGET_USER_DELETION_FAILED --> "Failure of deleting user '" + targetUser +"' from the database."
+     FORMER_USER_DELETION_FAILED --> "Failure of deleting user '" + olderUserName +"' from the database."
+     TARGET_USER_RENAME_FAILED   --> "Failure of renaming user '" + targetUser +"' to '"+olderUserName+"'.";
+     TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED  --> "Failure of deleting creator links to author '"+targetUser+"'.";
+     TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED --> "Failure of deleting modifier links to author '"+targetUser+"'.";
+     FORMER_USER_INSTANCE_ADDITION_FAILED          --> "Failure inserting user '" + olderUserName +"' to thesaurus where user '"+currentThes+"' belonged.";
+     FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED  --> "Failure of moving creator links to author '"+olderUserName+"'.";
+     FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED --> "Failure of moving modifier links to author '"+olderUserName+"'.";
      TMS_USER_OPERATION_SUCCEDED --> SUCCESSS
     */
     public int  mergeEditorsTargetOverFormer(SessionWrapperClass sessionInstance,ServletContext context, String targetUser, String olderUserName){
@@ -1777,7 +1777,7 @@ public class UsersClass {
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
                 dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
-                return FORMER_USER_DELETION_FAILED;//"Αποτυχία διαγραφής του χρήστη '" + olderUserName +"' από την βάση";
+                return FORMER_USER_DELETION_FAILED;//"Failure of deleting user '" + olderUserName +"' from the database.";
             }
             
             if(Q.CHECK_Rename_Node(oldIdentifier, newIdentifier)==QClass.APIFail){
@@ -2118,7 +2118,7 @@ public class UsersClass {
             Q.TEST_abort_transaction();
             dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
             
-            return TARGET_USER_DELETION_FAILED;//"Αποτυχία διαγραφής του χρήστη '" + targetUser +"' από την βάση";
+            return TARGET_USER_DELETION_FAILED;//"Failure of deleting user '" + targetUser +"' from the database.";
         }
         
         //commit transaction and close connection

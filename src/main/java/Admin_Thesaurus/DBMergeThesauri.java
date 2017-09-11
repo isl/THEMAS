@@ -329,9 +329,11 @@ public class DBMergeThesauri {
                                 + "<name>" + Utilities.escapeXML(targetTerm) + "</name>"
                                 + "<errorType>" + ConstantParameters.guide_term_kwd + "</errorType>"
                                 + "<errorValue>" + Utilities.escapeXML(valueThatWillBeIgnored) + "</errorValue>"
-                                + "<reason>Για τον όρο: '" + Utilities.escapeXML(targetTerm) + "' έχει ήδη ορισθεί σχέση ΕΟ με τον όρο '" + Utilities.escapeXML(targetSortItem.getLogName())
-                                + "' και ετικέτα δεσμού '" + valueThatWillBeKept + "'. Ανιχνεύθηκε ωστόσο μεταξύ τους και σχέση ΕΟ με ετικέτα δεσμού '" + Utilities.escapeXML(valueThatWillBeIgnored)
-                                + "' η οποία παρακάμφθηκε.</reason>"
+                                
+                                +"<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipNodeLabel", new String[] { Utilities.escapeXML(targetTerm),Utilities.escapeXML(targetSortItem.getLogName()),valueThatWillBeKept,Utilities.escapeXML(valueThatWillBeIgnored)})+"</reason>"
+                                //+"<reason>Term: '" + Utilities.escapeXML(targetTerm) + "' has an already defined NT relationship with term: '" + Utilities.escapeXML(targetSortItem.getLogName())
+                                //+ "' and node label: '" + valueThatWillBeKept + "'. There was also detected though another NT relationship among them with node label: '" + Utilities.escapeXML(valueThatWillBeIgnored)
+                                //+ "' which was skipped.</reason>"
                                 + "</targetTerm>/r/n");
                     }
 
@@ -369,7 +371,7 @@ public class DBMergeThesauri {
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
         Q.free_all_sets();
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή δημιουργίας ετικετών δεσμού. Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of Guide terms /Node Labels. Time: " + Utilities.GetNow());
         DBEditGuideTerms dbEdit_Guide_Terms = new DBEditGuideTerms();
         int howmanyGts = allGuideTerms.size();
         for (int i = 0; i < howmanyGts; i++) {
@@ -381,14 +383,14 @@ public class DBMergeThesauri {
                 }
             }
 
-            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj, pathToMessagesXML) == false) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία δημιουργίας της ετικέτας δεσμού: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
+            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj) == false) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create guide term / node lable: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
                 return false;
             }
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος δημιουργίας ετικετών δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of guide terms / node labels.");
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ενημέρωσης σχέσεων με ετικέτες δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting update of BT relations with guide terms/ node labels notation.");
 
         DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
         int linkRelations = 0;
@@ -426,13 +428,13 @@ public class DBMergeThesauri {
 
             //error detection
             if (resultObj.getValue() != null && resultObj.getValue().length() > 0) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία προσθήκης στον όρο" + targetTerm + " των ετικετών δεσμού " + GuideTermsDecodedValues.toString() + " για τους ΕΟ " + ntsDecodedValues.toString() + ".\r\n" + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to add in term: " + targetTerm + " the node labels: " + GuideTermsDecodedValues.toString() + " for the NTs: " + ntsDecodedValues.toString() + ".\r\n" + resultObj.getValue());
                 return false;
             }
             //links++;
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ενημέρωσης σχέσεων με ετικέτες δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of update of BT relations with guide terms/ node labels notation.");
         return true;
     }
 
@@ -451,7 +453,7 @@ public class DBMergeThesauri {
             facets_thes2.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, thesaurusName2, null));
         }
 
-        //Get All Facets of New merged thesaurus --> ΘΈΜΑ ΚΟΡΥΦΗΣ 
+        //Get All Facets of New merged thesaurus --> UNCLASSFIED TERMS 
         Vector<String> mergedFacetNames = new Vector<String>();
         mergedFacetNames.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, mergedThesaurusName, null));
 
@@ -474,7 +476,7 @@ public class DBMergeThesauri {
     }
 
     public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, Vector<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή δημιουργίας μικροθησαυρών. Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
         String pathToMessagesXML = Utilities.getMessagesXml();
         DBGeneral dbGen = new DBGeneral();
 
@@ -484,15 +486,15 @@ public class DBMergeThesauri {
 
         for (int i = 0; i < merged_thesaurus_NEW_facets.size(); i++) {
             Q.reset_name_scope();
-            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false, pathToMessagesXML);
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false);
 
             if (FacetAdditionSucceded == false) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία δημιουργίας μικροθησαυρών: " + resultObj.getValue() + ".");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
                 return false;
             }
             resultObj.setValue("");
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος δημιουργίας μικροθησαυρών.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet creation.");
         return true;
     }
 
@@ -570,11 +572,11 @@ public class DBMergeThesauri {
     public boolean CreateHierarchies(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String targetThesaurus, String defaultFacet, Locale targetLocale, StringObject resultObj, OutputStreamWriter logFileWriter,
             Hashtable<String, Vector<String>> pairsOfMergedThesaurus) {
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή δημιουργίας ιεραρχιών. Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of Hierarchies creation. Time: " + Utilities.GetNow());
         boolean HierarchiesSucceeded = true;
         try {
 
-            String pathToMessagesXML = Utilities.getMessagesXml();
+            //String pathToMessagesXML = Utilities.getMessagesXml();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             UsersClass wtmsUsers = new UsersClass();
@@ -591,7 +593,7 @@ public class DBMergeThesauri {
             String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
             StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
+            //Vector<String> errorArgs = new Vector<String>();
 
             //Now for each pair of hierarchyplus facets create hierarchy and then change facets. If no facet is declared add hier under default facet
             Enumeration<String> pairsEnumMerged = pairsOfMergedThesaurus.keys();
@@ -600,14 +602,9 @@ public class DBMergeThesauri {
                 Vector<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
                 if (underFacets.size() == 0) {
 
-                    errorArgs.add(Utilities.escapeXML(hierarchy));
-                    errorArgs.add(Utilities.escapeXML(defaultFacet));
-                    dbGen.Translate(resultMessageObj, "root/CreateHierarchies/WrongHierarchyPosition", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
                     logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchy) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacet) + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
-                    //logFileWriter.append("<reason>Η ιεραρχία " + Utilities.escapeXML(hierarchy) + " βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα μικροθησαυρό. Υπαγωγή της στον μικροθησαυρό " + Utilities.escapeXML(defaultFacet) + ".</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchy),Utilities.escapeXML(defaultFacet)}) + "</reason>");
+                    //logFileWriter.append("<reason>Hierarchy: " + Utilities.escapeXML(hierarchy) + " was found without being classified under any Facet. It is therefore by default classified under the default Facet: " + Utilities.escapeXML(defaultFacet) + ".</reason>");
                     logFileWriter.append("</targetHierarchy>\r\n");
                     underFacets.add(defaultFacet);
                 }
@@ -618,22 +615,22 @@ public class DBMergeThesauri {
                 if (Q.set_current_node(hierarchyObj) == QClass.APIFail) {
                     //create hierarchy
                     Q.reset_name_scope();
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false);
                     //logFileWriter.append(resultObj.getValue()+"\r\n");
                     if (HierarchiesSucceeded == true && underFacets.size() > 1) {
 
                         resultObj.setValue("");
-                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
 
                         //logFileWriter.append(resultObj.getValue()+"\r\n");
                     }
                 } else {
                     //modify hierarchy
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false, pathToMessagesXML);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
                 }
 
                 if (HierarchiesSucceeded == false) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αποτυχία δημιουργίας ιεραρχιών: " + resultObj.getValue());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Hierarchies: " + resultObj.getValue());
                     break;
                 } else {
                     resultObj.setValue("");
@@ -641,7 +638,7 @@ public class DBMergeThesauri {
             }
 
             if (HierarchiesSucceeded) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος δημιουργίας ιεραρχιών.");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Hierarchies creation.");
             }
         } catch (Exception ex) {
             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass().toString());
@@ -652,6 +649,7 @@ public class DBMergeThesauri {
         return HierarchiesSucceeded;
     }
 
+    /* ABANDONED CODE
     public boolean CopyTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String sourceThesaurusName, String mergedThesaurusName, String pathToErrorsXML,
             Locale targetLocale, StringBuffer warnignsBuffer, StringObject resultObj, OutputStreamWriter logFileWriter, int ConsistencyCheckPolicy) throws IOException {
@@ -666,7 +664,7 @@ public class DBMergeThesauri {
             common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
         }
         //<editor-fold defaultstate="collapsed" desc="Terms and BTs">
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Όρων (και ΠΟ ).");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying terms (and BTs).");
         logFileWriter.flush();
         startTime = System.currentTimeMillis();
         keepCopying = CopyTermsLevelByLevel(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
@@ -680,11 +678,12 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Όρων (και ΠΟ ) σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΣΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying terms (and BTs) in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying RTs.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy/*, warnignsBuffer*/);
+            //keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy, warnignsBuffer);
+            keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
         }
         //</editor-fold>  
 
@@ -696,8 +695,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΣΟ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής κατάστασης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying RTs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying term Status.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyStatuses(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj);
@@ -712,8 +711,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής κατάστασης όρων σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΔΣ, SN και ΙΣ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying term status in " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying SN, tr_SN, HN.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
@@ -728,8 +727,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΔΣ, SN και ΙΣ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΑΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying SN, tr_SN, HN in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying translations.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.translation_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -744,13 +743,13 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΑΟ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying translations in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFs = new Vector<String>();
             errorProneUFs.addAll(CollectErrorProneUfs(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ΧΑ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying UFs.");
 
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.uf_kwd, errorProneUFs, resultObj, ConsistencyCheckPolicy);
 
@@ -765,7 +764,7 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ΧΑ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying UFs in time: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFTranslations = new Vector<String>();
@@ -774,7 +773,7 @@ public class DBMergeThesauri {
                 errorProneUFTranslations.addAll(CollectErrorProneUFTranslations(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
             }
 
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής UF.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying UF translations.");
 
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.uf_translations_kwd, errorProneUFTranslations, resultObj, ConsistencyCheckPolicy);
         }
@@ -788,8 +787,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής UF σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής TK.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying UF translations in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying TCs.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.tc_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -804,8 +803,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής TK σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής GS.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying TCs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart copying primary sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.primary_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -820,8 +819,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής GS σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής ES.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of coppying primary sources in:" + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying translation sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.translations_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -832,12 +831,12 @@ public class DBMergeThesauri {
             common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
         }
 
-        //<editor-fold defaultstate="collapsed" desc="Created By / ΟΝ ..."> 
+        //<editor-fold defaultstate="collapsed" desc="Created By / ON ..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής ES σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Created BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying translation sources in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying Created BY / ON fileds.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.created_by_kwd, resultObj);
@@ -848,12 +847,12 @@ public class DBMergeThesauri {
             common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
         }
 
-        //<editor-fold defaultstate="collapsed" desc="Modified By / ΟΝ ..."> 
+        //<editor-fold defaultstate="collapsed" desc="Modified By / ON ..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Created BY/ ON σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή αντιγραφής Modified BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying Created BY / ON fields in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying Modified BY /ON fields.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName, null, mergedThesaurusName, logFileWriter, ConstantParameters.modified_by_kwd, resultObj);
@@ -867,14 +866,14 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος αντιγραφής Modified ΒΥ / ON σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying Modified BY / ON fields in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
         }
 
         return keepCopying;
 
     }
-
+*/
     public boolean MergeTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String sourceThesaurusName1, String sourceThesaurusName2, String mergedThesaurusName, String pathToErrorsXML,
             Locale targetLocale, StringBuffer warnignsBuffer, StringObject resultObj, OutputStreamWriter logFileWriter, int ConsistencyCheckPolicy) throws IOException {
@@ -888,7 +887,7 @@ public class DBMergeThesauri {
         //------------------TERMS OF THES1 START----------------------------
 
         //<editor-fold defaultstate="collapsed" desc="Terms and BTs">
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης Όρων (και ΠΟ ).");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging terms (and BTs).");
         logFileWriter.flush();
         startTime = System.currentTimeMillis();
         keepCopying = CopyTermsLevelByLevel(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
@@ -898,8 +897,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης Όρων (και ΠΟ ) σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης ΣΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging terms (and BTs) in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging RTs .");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy/*, warnignsBuffer*/);
@@ -910,8 +909,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης ΣΟ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης κατάστασης όρων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging RTs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging term statuses.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyStatuses(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, resultObj);
@@ -922,8 +921,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης κατάστασης όρων σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης ΔΣ, SN και ΙΣ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging term statuses in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging SN, SN (Tra.) and HN.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, resultObj, ConsistencyCheckPolicy);
@@ -934,8 +933,8 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης ΔΣ, SN και ΙΣ σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης ΑΟ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging SN, SN (Tra.) and HN in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging translations.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.translation_kwd, null, resultObj, ConsistencyCheckPolicy);
@@ -946,12 +945,12 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης ΑΟ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging translations in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFs = new Vector<String>();
             errorProneUFs.addAll(CollectErrorProneUfs(refSessionUserInfo, Q, sis_session, sourceThesaurusName1, sourceThesaurusName2, logFileWriter));
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης ΧΑ.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of mergis UFs.");
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.uf_kwd, errorProneUFs, resultObj, ConsistencyCheckPolicy);
 
         }
@@ -961,7 +960,7 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης ΧΑ σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging UFs in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             Vector<String> errorProneUFTranslations = new Vector<String>();
@@ -969,7 +968,7 @@ public class DBMergeThesauri {
             if (Parameters.TermModificationChecks.contains(18)) {
                 errorProneUFTranslations.addAll(CollectErrorProneUFTranslations(refSessionUserInfo, Q, sis_session, sourceThesaurusName1, sourceThesaurusName2, logFileWriter));
             }
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης UF.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging UF (Tra.).");
             logFileWriter.flush();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.uf_translations_kwd, errorProneUFTranslations, resultObj, ConsistencyCheckPolicy);
         }
@@ -979,56 +978,56 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης UF σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης TK.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging UF (Tra.) in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging TCs.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.tc_kwd, null, resultObj, ConsistencyCheckPolicy);
         }
         //</editor-fold> 
 
-        //<editor-fold defaultstate="collapsed" desc="Greek Source..."> 
+        //<editor-fold defaultstate="collapsed" desc="Primary Source..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης TK σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης GS.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging TCs in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging primary sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.primary_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
         }
         //</editor-fold> 
 
-        //<editor-fold defaultstate="collapsed" desc="English Source..."> 
+        //<editor-fold defaultstate="collapsed" desc="Translations Source..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης GS σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης ES");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging primary sources in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging tranlation sources.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.translations_found_in_kwd, null, resultObj, ConsistencyCheckPolicy);
         }
         //</editor-fold> 
 
-        //<editor-fold defaultstate="collapsed" desc="Created By / ΟΝ ..."> 
+        //<editor-fold defaultstate="collapsed" desc="Created By / ON ..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης ES σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης Created BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging translation sources in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging Created BY / ON fields.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.created_by_kwd, resultObj);
         }
         //</editor-fold> 
 
-        //<editor-fold defaultstate="collapsed" desc="Modified By / ΟΝ ..."> 
+        //<editor-fold defaultstate="collapsed" desc="Modified BY / ON ..."> 
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης Created BY/ ON σε χρόνο " + elapsedTimeSec + " min.");
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΑρχή συγχώνευσης Modified BY / ON πεδίων.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging Created BY / ON fields in: " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of merging Modified BY / ON fields.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
             keepCopying = CopyDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.modified_by_kwd, resultObj);
@@ -1038,7 +1037,7 @@ public class DBMergeThesauri {
         if (keepCopying) {
             elapsedTimeMillis = System.currentTimeMillis() - startTime;
             elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tΤέλος συγχώνευσης Modified ΒΥ / ON σε χρόνο " + elapsedTimeSec + " min.");
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging Modified BY / ON fields in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
         }
 
@@ -2482,6 +2481,7 @@ public class DBMergeThesauri {
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2503,29 +2503,12 @@ public class DBMergeThesauri {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + thesaurusName1 + ".");
         Q.reset_name_scope();
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-
-            String pathToMessagesXML = pathToErrorsXML;
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            //logFileWriter.append("<!--Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName1 + ".-->\r\n");
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-            resultObj.setValue(resultMessageObj.getValue());
-            //resultObj.setValue("Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName1 + ".");
+           
+            //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName1}));
+            //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-            errorArgs.removeAllElements();
+            
             return false;
         }
 
@@ -2577,28 +2560,10 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + thesaurusName2 + ".");
             Q.reset_name_scope();
             if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = pathToErrorsXML;
-                StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                //logFileWriter.append("<!--Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName1 + ".-->\r\n");
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj_2, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-                resultObj.setValue(resultMessageObj_2.getValue());
-                //resultObj.setValue("Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName2 + ".");
+                //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName2}));
+                //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-                errorArgs.removeAllElements();
                 return false;
             }
 
@@ -2653,6 +2618,7 @@ public class DBMergeThesauri {
             Vector<Hashtable<String, Vector<String>>> allLevelsOfThes) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2671,30 +2637,12 @@ public class DBMergeThesauri {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tReading Process Started for thesaurus " + sourceThesaurus + ".");
         Q.reset_name_scope();
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = pathToErrorsXML;
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            //logFileWriter.append("<!--Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName1 + ".-->\r\n");
-            errorArgs.add(sourceThesaurus);
-            dbGen.Translate(resultMessageObj, "root/CopyTermsLevelByLevel/TopTermReferenceFailed", errorArgs, pathToErrorsXML);
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //logFileWriter.append("<!--Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + thesaurusName1 + ".-->\r\n");
-            resultObj.setValue("Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού : " + sourceThesaurus + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[] {sourceThesaurus}));
+            //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + sourceThesaurus + ".");
+            //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
-            errorArgs.removeAllElements();
+            
             return false;
         }
 
@@ -2869,31 +2817,16 @@ public class DBMergeThesauri {
                     if (exists) {
 
                         allBts.addAll(dbGen.returnResults(SessionUserInfo, term, ConstantParameters.bt_kwd, Q, TA, sis_session));
-                        /*
-                         *
-                         *
-                         *HARDCODED GREEKS TRANSLATE
-                         *
-                         *
-                         */
+                        
 
-                        StringObject resultMessageObj = new StringObject();
-                        StringObject resultMessageObj_2 = new StringObject();
-                        Vector<String> errorArgs = new Vector<String>();
-
+                        
                         if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
-
-                            errorArgs.add(Utilities.escapeXML(term));
-                            errorArgs.add(thesaurusName2);
-                            errorArgs.add(Utilities.escapeXML(term));
-                            dbGen.Translate(resultMessageObj, "root/CreateTermsLevelByLevel/TermFoundAsTopTerm", errorArgs, pathToMessagesXML);
-                            errorArgs.removeAllElements();
 
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "1</errorValue>");
-                            logFileWriter.append("<reason>" + resultMessageObj + "1.</reason>");
-                            //logFileWriter.append("<reason>Ο όρος " + Utilities.escapeXML(term) + " βρέθηκε σαν OK στον θησαυρό " + thesaurusName2 + ". Για την επιτυχή προσθήκη του μετονομάζεται σε " + Utilities.escapeXML(term) + "1.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(term),thesaurusName2,Utilities.escapeXML(term)}) + "1.</reason>");
+                            //logFileWriter.append("<reason>Term " + Utilities.escapeXML(term) + " found as a TT in Thesaurus '" + thesaurusName2 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "1.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             term += "1";
                             StringObject newtermobj = new StringObject(prefix_term.concat(term));
@@ -2929,38 +2862,20 @@ public class DBMergeThesauri {
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
-                        /*
-                         * 
-                         *
-                         *
-                         *
-                         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                         *
-                         *
-                         *
-                         *
-                         */
+                        
 
-                        StringObject resultMessageObj = new StringObject();
-                        Vector<String> errorArgs = new Vector<String>();
-
-                        errorArgs.add(thesaurusName1);
-                        errorArgs.add(Utilities.escapeXML(term));
-                        dbGen.Translate(resultMessageObj, "root/CreateTermsLevelByLevel/CopyTermFailure", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
-                        resultObj.setValue(resultMessageObj.getValue() + resultObj.getValue());
-                        //resultObj.setValue("Σφάλμα κατά την αντιγραφή όρου από τον θησαυρό " + thesaurusName1 + ". " + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(term)}) + resultObj.getValue());
+                        //resultObj.setValue("Term copy failure from Thesaurus: " + thesaurusName1 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Ο όρος : '" + term + " εμφάνισε το εξής λάθος : " + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + term + " raised the following error message: " + resultObj.getValue());
 
                         return false;
                     } else {
                         if (exists) {
-                            //  logFileWriter.append(i+1 +"." +termsPerLevel +". Ο όρος : '" + term+"' τροποποιήθηκε με επιτυχία. Προστέθηκαν οι ΠΟ : "+  allLevels.get(i).get(term).toString()+"\r\n");
+                            //  logFileWriter.append(i+1 +"." +termsPerLevel +". Term: '" + term+"' was successfully updated - modified. The following BTs were added: "+  allLevels.get(i).get(term).toString()+"\r\n");
                         } else {
-                            //logFileWriter.append(i+1 +"." +termsPerLevel +".Ο όρος : '" + term+"' προστέθηκε στην βάση με επιτυχία κάτω από τους ΠΟ : "+  allLevels.get(i).get(term).toString()+"\r\n");
+                            //logFileWriter.append(i+1 +"." +termsPerLevel +".Term : '" + term+"' was successfully added under the following BTs: "+  allLevels.get(i).get(term).toString()+"\r\n");
                         }
                     }
                     //logFileWriter.flush();                    
@@ -3000,8 +2915,8 @@ public class DBMergeThesauri {
                     Vector<String> additionalBTs = new Vector<String>();
                     additionalBTs.addAll(allLevelsOfThes2.get(i).get(term));
 
-                    StringObject resultMessageObj_2 = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
+                    //StringObject resultMessageObj_2 = new StringObject();
+                    //Vector<String> errorArgs = new Vector<String>();
 
                     if (exists) {
 
@@ -3009,17 +2924,11 @@ public class DBMergeThesauri {
 
                         if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
 
-                            errorArgs.add(Utilities.escapeXML(term));
-                            errorArgs.add(thesaurusName1);
-                            errorArgs.add(Utilities.escapeXML(term));
-                            dbGen.Translate(resultMessageObj_2, "root/CreateTermsLevelByLevel/TermFoundAsTopTerm", errorArgs, pathToMessagesXML);
-                            errorArgs.removeAllElements();
-
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "2</errorValue>");
-                            logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "2.</reason>");
-                            //logFileWriter.append("<reason> όρος " + Utilities.escapeXML(term) + " βρέθηκε σαν OK στον θησαυρό " + thesaurusName1 + ". Για την επιτυχή προσθήκη του μετονομάζεται σε " + Utilities.escapeXML(term) + "2.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(term),thesaurusName1,Utilities.escapeXML(term)}) + "2.</reason>");
+                            //logFileWriter.append("<reason>Term ' " + Utilities.escapeXML(term) + "' found as a TT in Thesaurus '" + thesaurusName1 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "2.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             term += "2";
                             StringObject newtermobj = new StringObject(prefix_term.concat(term));
@@ -3055,38 +2964,19 @@ public class DBMergeThesauri {
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
-                        /*
-                         * 
-                         *
-                         *
-                         *
-                         * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                         *
-                         *
-                         *
-                         *
-                         */
-
-                        StringObject resultMessageObj_3 = new StringObject();
-
-                        errorArgs.add(thesaurusName2);
-                        errorArgs.add(Utilities.escapeXML(term));
-                        dbGen.Translate(resultMessageObj_3, "root/CreateTermsLevelByLevel/CopyTermFailure", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
-                        resultObj.setValue(resultMessageObj_2.getValue() + resultObj.getValue());
-
-                        //resultObj.setValue("Σφάλμα κατά την αντιγραφή όρου από τον θησαυρό " + thesaurusName2 + ". " + resultObj.getValue());
+                        
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(term)}) + resultObj.getValue());
+                        //resultObj.setValue("Term copy failure from Thesaurus " + thesaurusName2 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Ο όρος : '" + term + " εμφάνισε το εξής λάθος : " + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + term + " raised the following error message: " + resultObj.getValue());
 
                         return false;
                     } else {
                         if (exists) {
-                            //  logFileWriter.append(i+1 +"." +termsPerLevel +". Ο όρος : '" + term+"' τροποποιήθηκε με επιτυχία. Προστέθηκαν οι ΠΟ : "+  allLevels.get(i).get(term).toString()+"\r\n");
+                            //  logFileWriter.append(i+1 +"." +termsPerLevel +". Term: '" + term+"' was successfully updated - modifgied. The following BTs were added: "+  allLevels.get(i).get(term).toString()+"\r\n");
                         } else {
-                            //logFileWriter.append(i+1 +"." +termsPerLevel +".Ο όρος : '" + term+"' προστέθηκε στην βάση με επιτυχία κάτω από τους ΠΟ : "+  allLevels.get(i).get(term).toString()+"\r\n");
+                            //logFileWriter.append(i+1 +"." +termsPerLevel +".Term: '" + term+"' was successfully added in the database under BTs: "+  allLevels.get(i).get(term).toString()+"\r\n");
                         }
                     }
 
@@ -3121,53 +3011,17 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
         if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(rtFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed_2_Param", errorArgs, pathToErrorsXML);
-            errorArgs.removeAllElements();
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + rtFromClassObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(),thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus : " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
         }
 
         if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(rtFromClassObj.getValue());
-            errorArgs.add(rtLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed", errorArgs, pathToErrorsXML);
-            errorArgs.removeAllElements();
-
-            resultObj.setValue(resultMessageObj.getValue());
-            //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
         }
@@ -3189,23 +3043,13 @@ public class DBMergeThesauri {
                 String term1Name = dbGen.removePrefix(row.get_v1_cls());
                 String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
                 if (term1Name.compareTo(term2Name) == 0) {
-
-                    errorArgs.add(Utilities.escapeXML(term1Name));
-                    errorArgs.add(thesaurusName1);
-                    dbGen.Translate(resultMessageObj, "root/CopyRTs/TermLinkToRT", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
 
                     rtsToThemSelves.add(term1Name);
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
-                    //logFileWriter.append("<reason>" + Utilities.escapeXML(term1Name) + " βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: " + thesaurusName1 + ". Η σχέση αυτή παρακάμπτεται.</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName1}) + "</reason>");
+                    //logFileWriter.append("<reason>" + Utilities.escapeXML(term1Name) + " found to have Link RT with itself at Thesaurus: ' " + thesaurusName1 + "' . This Relationship will be bypassed.</reason>");
                     logFileWriter.append("</targetTerm>/r/n");
                     continue; //ignore from reading
                 }
@@ -3254,7 +3098,7 @@ public class DBMergeThesauri {
          rtsToThemSelves.add(term1Name);
          logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
          logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-         logFileWriter.append("<reason>O Όρος : " + Utilities.escapeXML(term1Name) + " βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: " + thesaurusName1 + ". Η σχέση αυτή παρακάμπτεται.</reason>");
+         logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term1Name) + " was found to have RT relationship with himself in thesaurus: " + thesaurusName1 + ". This relation will be ignored.</reason>");
          logFileWriter.append("</targetTerm>/r/n");
          continue; //ignore from reading
          }
@@ -3303,56 +3147,17 @@ public class DBMergeThesauri {
 
             Q.reset_name_scope();
             if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(rtFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed_2_Param", errorArgs, pathToErrorsXML);
-                errorArgs.removeAllElements();
-
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Aποτυχία αναφοράς στην κλάση " + rtFromClassObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
             }
 
             if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(rtFromClassObj.getValue());
-                errorArgs.add(rtLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyRTs/CategoryReferenceFailed", errorArgs, pathToErrorsXML);
-                errorArgs.removeAllElements();
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
             }
@@ -3374,23 +3179,14 @@ public class DBMergeThesauri {
                     String term1Name = dbGen.removePrefix(row.get_v1_cls());
                     String term2Name = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    StringObject resultMessageObj_2 = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
 
                     if (term1Name.compareTo(term2Name) == 0) {
-
-                        errorArgs.add(Utilities.escapeXML(term1Name));
-                        errorArgs.add(thesaurusName2);
-                        dbGen.Translate(resultMessageObj_2, "root/CopyRTs/TermLinkToRT", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
 
                         rtsToThemSelves.add(term2Name);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                        logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "</reason>");
-                        //logFileWriter.append("<reason>O Όρος : " + Utilities.escapeXML(term1Name) + " βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: " + thesaurusName2 + ". Η σχέση αυτή παρακάμπτεται.</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName2}) + "</reason>");
+                        //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term1Name) + " was found to have RT relationship with himself in thesaurus: " + thesaurusName2 + ". This relation will be ignored.</reason>");
                         logFileWriter.append("</targetTerm>/r/n");
                         continue; //ignore from reading
                     }
@@ -3438,7 +3234,7 @@ public class DBMergeThesauri {
              rtsToThemSelves.add(term2Name);
              logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
              logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-             logFileWriter.append("<reason>O Όρος : " + Utilities.escapeXML(term1Name) + " βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: " + thesaurusName2 + ". Η σχέση αυτή παρακάμπτεται.</reason>");
+             logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term1Name) + " was found to have RT relationship with himself in thesaurus: " + thesaurusName2 + ". This relation will be ignored.</reason>");
              logFileWriter.append("</targetTerm>/r/n");
              continue; //ignore from reading
              }
@@ -3533,11 +3329,11 @@ public class DBMergeThesauri {
             if (resultObj.getValue().length() > 0) {
 
                 // Q.free_set(set_top_terms);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + rtRelations + ". Αποτυχία κατά την  προσθήκη των ΣΟ : " + allRTs.toString() + " του όρου : '" + term + "'." + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + rtRelations + ". Failed to add the following RTs: " + allRTs.toString() + " in term: '" + term + "'." + resultObj.getValue());
 
                 return false;
             } else {
-                // logFileWriter.append(rtRelations +". Ο όρος : '" + term+"' τροποποιήθηκε με επιτυχία. Προστέθηκαν οι ΣΟ : "+  allRTs.toString()+"\r\n");
+                // logFileWriter.append(rtRelations +". Term: '" + term+"' was successfully updated - modified. The following RTs were added: "+  allRTs.toString()+"\r\n");
             }
             //logFileWriter.flush();
             //rtRelations++;
@@ -3757,26 +3553,15 @@ public class DBMergeThesauri {
                     StatusThes2StrGR = Parameters.Status_Approved;
                 }
 
-                //HARDCODED GREEKS
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
                 StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
+                
                 int priority = getStatusPriority(StatusThes2, mergedThesaurusName) - getStatusPriority(StatusThes1, mergedThesaurusName);
                 if (priority > 0) {
-                    //change             
-                    errorArgs.add(Utilities.escapeXML(term));
-                    errorArgs.add(StatusThes1StrGR);
-                    errorArgs.add(StatusThes2StrGR);
-                    errorArgs.add(StatusThes1StrGR);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/FoundInStatus", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
+                    
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + StatusThes2StrGR + "</errorValue>");
-                    logFileWriter.append("<reason>" + resultMessageObj.getValue() + "</reason>");
-                    //logFileWriter.append("<reason>O όρος : " + Utilities.escapeXML(term) + " βρέθηκε με κατάσταση '" + StatusThes1StrGR + "' και '" + StatusThes2StrGR + "'.\r\n\t\tΕπιλέχθηκε με σειρά προτεραιότητας η κατάσταση '" + StatusThes1StrGR + "'.</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
+                    //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes1StrGR + "' was chosen.</reason>");
                     logFileWriter.append("</targetTerm>\r\n");
                     logFileWriter.flush();
                     Identifier I_Status = new Identifier(merged_thesaurus_status_classIds.get(StatusThes1).longValue());
@@ -3792,17 +3577,11 @@ public class DBMergeThesauri {
 
                 } else { //both status != null
                     if (priority < 0) {
-                        errorArgs.add(Utilities.escapeXML(term));
-                        errorArgs.add(StatusThes1StrGR);
-                        errorArgs.add(StatusThes2StrGR);
-                        errorArgs.add(StatusThes1StrGR);
-                        dbGen.Translate(resultMessageObj_2, "root/CreateStatuses/FoundInStatus", errorArgs, pathToMessagesXML);
-                        errorArgs.removeAllElements();
-
+                        
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + StatusThes1StrGR + "</errorValue>");
-                        logFileWriter.append("<reason>" + resultMessageObj_2.getValue() + "</reason>");
-                        //logFileWriter.append("<reason>O όρος : " + Utilities.escapeXML(term) + " βρέθηκε με κατάσταση '" + StatusThes1StrGR + "' και '" + StatusThes2StrGR + "'.\r\n\t\tΕπιλέχθηκε με σειρά προτεραιότητας η κατάσταση '" + StatusThes2StrGR + "'.</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
+                        //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes2StrGR + "' was chosen.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
                     }
@@ -3813,26 +3592,9 @@ public class DBMergeThesauri {
             }
 
             if (ret == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(term);
-                dbGen.Translate(resultMessageObj, "root/CreateStatuses/FailedToUpdateTermStatus", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                //resultObj.setValue("Αποτυχία ενημέρρωσης της κατάστασης του όρου : " + term);
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
+                //resultObj.setValue("Failed to update status of term: " + term);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
             }
@@ -3850,27 +3612,9 @@ public class DBMergeThesauri {
                 long termIDL = Q.set_current_node(new StringObject(mergedTermPrefix.concat(term)));
 
                 if (termIDL == QClass.APIFail) {
-                    /*
-                     * 
-                     *
-                     *
-                     *
-                     * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                     *
-                     *
-                     *
-                     *
-                     */
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
-
-                    errorArgs.add(term);
-                    errorArgs.add(mergedThesaurusName);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/TermReferenceFailed", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-                    resultObj.setValue(resultMessageObj.getValue());
-                    //resultObj.setValue("Αποτυχία αναφοράς στον όρο " + term + " του θησαυρού: " + mergedThesaurusName);
+                    
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/TermReferenceFailed", new String[]{term,mergedThesaurusName}));
+                    //resultObj.setValue("Failed to refer to " + term + " of thesaurus: " + mergedThesaurusName);
                     return false;
                 }
                 Q.reset_name_scope();
@@ -3885,27 +3629,9 @@ public class DBMergeThesauri {
                 }
 
                 if (ret == QClass.APIFail) {
-                    /*
-                     * 
-                     *
-                     *
-                     *
-                     * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                     *
-                     *
-                     *
-                     *
-                     */
-                    String pathToMessagesXML = Utilities.getMessagesXml();
-                    StringObject resultMessageObj = new StringObject();
-                    Vector<String> errorArgs = new Vector<String>();
 
-                    errorArgs.add(term);
-                    dbGen.Translate(resultMessageObj, "root/CreateStatuses/FailedToUpdateTermStatus", errorArgs, pathToMessagesXML);
-                    errorArgs.removeAllElements();
-
-                    resultObj.setValue(resultMessageObj.getValue());
-                    //resultObj.setValue("Αποτυχία ενημέρρωσης της κατάστασης του όρου : " + term);
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
+                    //resultObj.setValue("Failed to update status of term: " + term);
                     return false;
                 }
             }
@@ -4018,10 +3744,15 @@ public class DBMergeThesauri {
                     if (firstScopeNote == null) {
                         firstScopeNote = secondScopenote;
                     } else if (firstScopeNote.equals(secondScopenote) == false) { //if not equal then keep both with a seperator
+                        
+                        
+                        
+                        
                         firstScopeNote = firstScopeNote.concat(" ### " + scopeNote.get(0));
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.scope_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstScopeNote) + "</errorValue>");
-                        logFileWriter.append("<reason>Βρέθηκαν 2 ΔΣ για τον όρο : '" + Utilities.escapeXML(termNames.get(i)) + "'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermSNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        //logFileWriter.append("<reason>Two SNs were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
                     }
@@ -4039,7 +3770,8 @@ public class DBMergeThesauri {
                         firstScopeNoteEN = firstScopeNoteEN.concat(" ### " + secondScopenoteEN);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.translations_scope_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstScopeNoteEN) + "</errorValue>");
-                        logFileWriter.append("<reason>Βρέθηκαν 2 SN για τον όρο : '" + Utilities.escapeXML(termNames.get(i)) + "'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTerm_trSNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        //logFileWriter.append("<reason>Two SNs (Tra.) were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
 
@@ -4059,7 +3791,8 @@ public class DBMergeThesauri {
                         firstHistoricalNote = firstHistoricalNote.concat(" ### " + secondHistoricalNote);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.historical_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstHistoricalNote) + "</errorValue>");
-                        logFileWriter.append("<reason>Βρέθηκαν 2 ΙΣ για τον όρο : '" + Utilities.escapeXML(termNames.get(i)) + "'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermHNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        //logFileWriter.append("<reason>Two HNs were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
                     }
@@ -4092,7 +3825,7 @@ public class DBMergeThesauri {
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING SCOPE_NOTES in " + mergedThesaurusName + ".  Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING SCOPE_NOTES in " + mergedThesaurusName + ".  Time: " + Utilities.GetNow());
         //common_utils.restartTransactionAndDatabase(Q,TA,sis_session,tms_session,mergedThesaurusName);
         logFileWriter.flush();
         int commentCounter = 0;
@@ -4124,10 +3857,10 @@ public class DBMergeThesauri {
             }
             if (resultObj.getValue().length() > 0) {
 
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Αποτυχία κατά την προσθήκη ΔΣ στον όρο : '" + term + "'." + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add SN in term: '" + term + "'. " + resultObj.getValue());
                 return false;
             } else {
-                //logFileWriter.append(commentCounter +". Η ΔΣ του όρου : '" + term+"' προστέθηκε με επιτυχία.\r\n");
+                //logFileWriter.append(commentCounter +". SN of term: '" + term+"' was successfully added.\r\n");
             }
 
             //commentCounter++;
@@ -4135,7 +3868,7 @@ public class DBMergeThesauri {
 
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING TRANSLATION SCOPE_NOTES in " + mergedThesaurusName + " Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING TRANSLATION SCOPE_NOTES in " + mergedThesaurusName + " Time: " + Utilities.GetNow());
 
         pairsEnumMerged = scope_notes_EN_HASH.keys();
         while (pairsEnumMerged.hasMoreElements()) {
@@ -4158,9 +3891,9 @@ public class DBMergeThesauri {
             if (resultObj.getValue().length() > 0) {
 
                 // Q.free_set(set_top_terms);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Αποτυχία κατά την προσθήκη SN στον όρο : '" + term + "'." + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add SN (Tra.) in term: '" + term + "'." + resultObj.getValue());
                 return false;
-            } else {                //logFileWriter.append(commentCounter +". Η SN του όρου : '" + term+"' προστέθηκε με επιτυχία.\r\n");
+            } else {                //logFileWriter.append(commentCounter +". SN (Tra.) was succesfully added in term: '" + term+"'.\r\n");
             }
             //logFileWriter.flush();
             //commentCounter++;
@@ -4169,7 +3902,7 @@ public class DBMergeThesauri {
             //logFileWriter.append(commentCounter + ". " + term + " ----- " + scope_notes.get(term).toString() + "\r\n");
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING HISTORICAL_NOTES in " + mergedThesaurusName + ". Ώρα: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING HISTORICAL_NOTES in " + mergedThesaurusName + ". Time: " + Utilities.GetNow());
 
         pairsEnumMerged = historical_notes_HASH.keys();
         while (pairsEnumMerged.hasMoreElements()) {
@@ -4191,9 +3924,9 @@ public class DBMergeThesauri {
             if (resultObj.getValue().length() > 0) {
 
                 // Q.free_set(set_top_terms);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Αποτυχία κατά την προσθήκη ΙΣ στον όρο : '" + term + "'." + resultObj.getValue());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add HN in term: '" + term + "'." + resultObj.getValue());
                 return false;
-            } else {                //logFileWriter.append(commentCounter +". Η IΣ του όρου : '" + term+"' προστέθηκε με επιτυχία.\r\n");
+            } else {                //logFileWriter.append(commentCounter +". HN of term: '" + term+"' was successfully added.\r\n");
             }
             //logFileWriter.flush();
             //commentCounter++;
@@ -4211,6 +3944,7 @@ public class DBMergeThesauri {
             OutputStreamWriter logFileWriter, String editorKeyWordStr, StringObject resultObj) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
 
         Hashtable<String, Vector<String>> term_Editor_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
@@ -4246,56 +3980,16 @@ public class DBMergeThesauri {
         //READ EDITOR LINKS OF THES1
         Q.reset_name_scope();
         if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(editorFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + editorFromClassObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(editorFromClassObj.getValue());
-            errorArgs.add(editorLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
@@ -4349,55 +4043,16 @@ public class DBMergeThesauri {
         Q.free_all_sets();
         Q.reset_name_scope();
         if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED GREEKS, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(dateFromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + dateFromClassObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED GREEKS, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(dateFromClassObj.getValue());
-            errorArgs.add(dateLinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
@@ -4460,56 +4115,16 @@ public class DBMergeThesauri {
             //READ EDITOR LINKS OF THES2
             Q.reset_name_scope();
             if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(editorFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + editorFromClassObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(),thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(editorFromClassObj.getValue());
-                errorArgs.add(editorLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
@@ -4562,55 +4177,16 @@ public class DBMergeThesauri {
             Q.free_all_sets();
             Q.reset_name_scope();
             if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(dateFromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + dateFromClassObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus : " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(dateFromClassObj.getValue());
-                errorArgs.add(dateLinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopyDatesAndEditors/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
@@ -4733,7 +4309,7 @@ public class DBMergeThesauri {
                 for (int i = 0; i < editorsThes1.size(); i++) {
                     resultObj.setValue(resultObj.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTermObj, prefixPerson.concat(editorsThes1.get(i)), editorFromClassObj.getValue(), editorLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                     if (resultObj.getValue().length() > 0) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + editorLinkObj.getValue() + " : " + editorsThes1.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName1 + "." + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + editorLinkObj.getValue() + " : " + editorsThes1.get(i) + " of term: '" + term + "' from thesaurus: " + thesaurusName1 + "." + resultObj.getValue());
                         return false;
                     }
                 }
@@ -4744,7 +4320,7 @@ public class DBMergeThesauri {
                 for (int i = 0; i < datesThes1.size(); i++) {
                     resultObj.setValue(resultObj.getValue().concat(dbCon.connectSpecificTime(SessionUserInfo.selectedThesaurus, targetTermObj, datesThes1.get(i), dateFromClassObj.getValue(), dateLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                     if (resultObj.getValue().length() > 0) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + dateLinkObj.getValue() + " : " + datesThes1.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName1 + "." + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + dateLinkObj.getValue() + " : " + datesThes1.get(i) + " of term: '" + term + "' from thesaurus: " + thesaurusName1 + "." + resultObj.getValue());
                         return false;
                     }
                 }
@@ -4779,7 +4355,7 @@ public class DBMergeThesauri {
                 for (int i = 0; i < editorsThes1.size(); i++) {
                     resultObj.setValue(resultObj.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTermObj, prefixPerson.concat(editorsThes1.get(i)), editorFromClassObj.getValue(), editorLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                     if (resultObj.getValue().length() > 0) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + editorLinkObj.getValue() + " : " + editorsThes1.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName1 + "." + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + editorLinkObj.getValue() + " : " + editorsThes1.get(i) + " of term: '" + term + "' from thesaurus: " + thesaurusName1 + "." + resultObj.getValue());
                         return false;
                     }
                 }
@@ -4815,7 +4391,7 @@ public class DBMergeThesauri {
                             //create editor link
                             resultObj.setValue(resultObj.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTermObj, prefixPerson.concat(editorsThes2.get(i)), editorFromClassObj.getValue(), editorLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                             if (resultObj.getValue().length() > 0) {
-                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + editorLinkObj.getValue() + " : " + editorsThes2.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName2 + "." + resultObj.getValue());
+                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + editorLinkObj.getValue() + " : " + editorsThes2.get(i) + " of term: '" + term + "' from thesaurus:" + thesaurusName2 + "." + resultObj.getValue());
                                 return false;
                             }
                         }//else value is already copied
@@ -4829,7 +4405,7 @@ public class DBMergeThesauri {
                             //create date link
                             resultObj.setValue(resultObj.getValue().concat(dbCon.connectSpecificTime(SessionUserInfo.selectedThesaurus, targetTermObj, datesThes2.get(i), dateFromClassObj.getValue(), dateLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                             if (resultObj.getValue().length() > 0) {
-                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + dateLinkObj.getValue() + " : " + datesThes2.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName2 + "." + resultObj.getValue());
+                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + dateLinkObj.getValue() + " : " + datesThes2.get(i) + " of term: '" + term + "' from thesaurus: " + thesaurusName2 + "." + resultObj.getValue());
                                 return false;
                             }
                         }//else value is already copied
@@ -4869,7 +4445,7 @@ public class DBMergeThesauri {
                     if (editorsThes1 == null || editorsThes1.size() == 0 || editorsThes1.contains(editorsThes2.get(i)) == false) {
                         resultObj.setValue(resultObj.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTermObj, prefixPerson.concat(editorsThes2.get(i)), editorFromClassObj.getValue(), editorLinkObj.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                         if (resultObj.getValue().length() > 0) {
-                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Αποτυχία κατά την  προσθήκη των τιμών " + editorLinkObj.getValue() + " : " + editorsThes2.get(i) + " του όρου : '" + term + "' από τον θησαυρό " + thesaurusName2 + "." + resultObj.getValue());
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + termsModified + ". Failed to add values: " + editorLinkObj.getValue() + " : " + editorsThes2.get(i) + " of term: '" + term + "' from thesaurus: " + thesaurusName2 + "." + resultObj.getValue());
                             return false;
                         }
                     }
@@ -4889,6 +4465,7 @@ public class DBMergeThesauri {
         //Copy Links to EnglishWords, Taxonomic Codes, Sources
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
 
         StringObject fromClassObj = new StringObject();
@@ -4910,55 +4487,16 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
         if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(fromClassObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + fromClassObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(LinkObj) == QClass.APIFail) {
-            /*
-             * 
-             *
-             *
-             *
-             * HARDCODED, CHANGE IT THROUGH TRANSLATION
-             *
-             *
-             *
-             *
-             */
-            String pathToMessagesXML = Utilities.getMessagesXml();
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(fromClassObj.getValue());
-            errorArgs.add(LinkObj.getValue());
-            errorArgs.add(thesaurusName1);
-            dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-            resultObj.setValue(resultMessageObj.getValue());
-
-            //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " του θησαυρού : " + thesaurusName1 + ".");
+            
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(),LinkObj.getValue(), thesaurusName1}));
+            //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
@@ -4977,7 +4515,7 @@ public class DBMergeThesauri {
                 String linkValue = dbGen.removePrefix(row.get_v3_cmv().getString());
                 Vector<String> otherVals = term_Links_HASH.get(termName);
                 if (skipNodes != null && skipNodes.contains(linkValue)) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Παρακάμπτεται η αντιγραφή του " + LinkObj.getValue() + " συνδέσμου : " + linkValue + " για τον όρο : " + termName + " του θησαυρού " + thesaurusName1 + ".");
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName1 + ".");
                     continue; // skip
                 }
                 if (otherVals == null) {
@@ -4998,7 +4536,7 @@ public class DBMergeThesauri {
          String linkValue = dbGen.removePrefix(cmv.getString());
          Vector<String> otherVals = term_Links_HASH.get(termName);
          if (skipNodes != null && skipNodes.contains(linkValue)) {
-         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Παρακάμπτεται η αντιγραφή του " + LinkObj.getValue() + " συνδέσμου : " + linkValue + " για τον όρο : " + termName + " του θησαυρού " + thesaurusName1 + ".");
+         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName1 + ".");
          continue; // skip
          }
          if (otherVals == null) {
@@ -5025,55 +4563,16 @@ public class DBMergeThesauri {
 
             Q.reset_name_scope();
             if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(fromClassObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/ClassReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κλάση " + fromClassObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(LinkObj) == QClass.APIFail) {
-                /*
-                 * 
-                 *
-                 *
-                 *
-                 * HARDCODED, CHANGE IT THROUGH TRANSLATION
-                 *
-                 *
-                 *
-                 *
-                 */
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(fromClassObj.getValue());
-                errorArgs.add(LinkObj.getValue());
-                errorArgs.add(thesaurusName2);
-                dbGen.Translate(resultMessageObj, "root/CopySimpleLinks/CategoryReferenceFailure", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-                resultObj.setValue(resultMessageObj.getValue());
-
-                //resultObj.setValue("Αποτυχία αναφοράς στην κατηγορία " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " του θησαυρού : " + thesaurusName2 + ".");
+                
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(), LinkObj.getValue(), thesaurusName2}));
+                //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
@@ -5092,7 +4591,7 @@ public class DBMergeThesauri {
                     Vector<String> otherVals = term_Links_HASH.get(termName);
                     if (skipNodes != null && skipNodes.contains(linkValue)) {
 
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Παρακάμπτεται η αντιγραφή του " + LinkObj.getValue() + " συνδέσμου : " + linkValue + " για τον όρο : " + termName + " του θησαυρού " + thesaurusName2 + ".");
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName2 + ".");
                         continue; // skip
                     }
                     if (otherVals == null) {
@@ -5114,7 +4613,7 @@ public class DBMergeThesauri {
              Vector<String> otherVals = term_Links_HASH.get(termName);
              if (skipNodes != null && skipNodes.contains(linkValue)) {
 
-             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Παρακάμπτεται η αντιγραφή του " + LinkObj.getValue() + " συνδέσμου : " + linkValue + " για τον όρο : " + termName + " του θησαυρού " + thesaurusName2 + ".");
+             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName2 + ".");
              continue; // skip
              }
              if (otherVals == null) {
@@ -5196,10 +4695,10 @@ public class DBMergeThesauri {
             if (resultObj.getValue().length() > 0) {
 
                 // Q.free_set(set_top_terms);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + linkRelations + ". Αποτυχία κατά την  προσθήκη των τιμών " + LinkObj.getValue() + " : " + linkValues.toString() + " του όρου : '" + term + "'." + resultObj.getValue() + ".");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + linkRelations + ". Failed to add values: " + LinkObj.getValue() + " : " + linkValues.toString() + " in term: '" + term + "'." + resultObj.getValue() + ".");
                 return false;
             } else {
-                //logFileWriter.append(linkRelations + ". Ο όρος : '" + term + "' τροποποιήθηκε με επιτυχία. Προστέθηκαν οι τιμές " + LinkObj.getValue() + " : " + linkValues.toString() + "\r\n");
+                //logFileWriter.append(linkRelations + ". Term: '" + term + "' was successfully updated - modified. The following values were added: " + LinkObj.getValue() + " : " + linkValues.toString() + "\r\n");
             }
             //logFileWriter.flush();
             resultObj.setValue("");
@@ -5338,7 +4837,9 @@ public class DBMergeThesauri {
                 logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                 logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(results.get(i)) + "</errorValue>");
-                logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του UF συνδέσμου : " + Utilities.escapeXML(results.get(i)) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό " + thesaurusName1 + ". Το όνομα αυτό χρησιμοποιείται για ΑΟ του θησαυρού " + thesaurusName1 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή UF συνδέσμου στον νέο θησαυρό.</reason>");
+                
+                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName1})+"</reason>");                
+                //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName1 + ". This name is already used as a translation of thesaurus " + thesaurusName1 + " and cannot be used as a UF term in the new thesaurus.</reason>");                
                 logFileWriter.append("</targetTerm>\r\n");
             }
         }
@@ -5401,7 +4902,8 @@ public class DBMergeThesauri {
                     logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                     logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(results2.get(i)) + "</errorValue>");
-                    logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του UF συνδέσμου : " + Utilities.escapeXML(results2.get(i)) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό " + thesaurusName2 + ". Το όνομα αυτό χρησιμοποιείται για ΑΟ του θησαυρού " + thesaurusName2 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή UF συνδέσμου στον νέο θησαυρό.</reason>");
+                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName2})+"</reason>");                
+                    //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results2.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName2 + ". This name is already used as a translation of thesaurus " + thesaurusName2 + " and cannot be used as a UF term in the new thesaurus.</reason>");                
                     logFileWriter.append("</targetTerm>\r\n");
                 }
 
@@ -5439,7 +4941,8 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του UF συνδέσμου : " + Utilities.escapeXML(SearchKwd) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό: " + thesaurusName2 + ". Το όνομα αυτό χρησιμοποιείται για AO του θησαυρού " + thesaurusName1 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή UF συνδέσμου στον νέο θησαυρό.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName1})+"</reason>");                
+                        //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName2 + ". This name is already used as a translation of thesaurus " + thesaurusName1 + " and cannot be used as a UF (Tra.) term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
                     if (results.contains(SearchKwd) == false) {
@@ -5478,7 +4981,8 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του UF συνδέσμου : " + Utilities.escapeXML(SearchKwd) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό: " + thesaurusName1 + ". Το όνομα αυτό χρησιμοποιείται για AO του θησαυρού " + thesaurusName2 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για την περιγραφή UF συνδέσμου στον νέο θησαυρό.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName2})+"</reason>");                
+                        //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName1 + ". This name is already used as a translation of thesaurus " + thesaurusName2 + " and cannot be used as a UF (Tra.) term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
 
@@ -5568,7 +5072,8 @@ public class DBMergeThesauri {
                 logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                 logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(results.get(i)) + "</errorValue>");
-                logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του XA συνδέσμου : " + Utilities.escapeXML(results.get(i)) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + ". Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού " + thesaurusName1 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή αδόκιμου όρου στον νέο θησαυρό.</reason>");
+                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1})+"</reason>");                
+                //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName1 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                 logFileWriter.append("</targetTerm>\r\n");
             }
         }
@@ -5629,7 +5134,8 @@ public class DBMergeThesauri {
                     logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                     logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(results2.get(i)) + "</errorValue>");
-                    logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του XA συνδέσμου : " + Utilities.escapeXML(results2.get(i)) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + ". Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού " + thesaurusName2 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή αδόκιμου όρου στον νέο θησαυρό.</reason>");
+                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2})+"</reason>");                
+                    //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results2.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName2 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                     logFileWriter.append("</targetTerm>\r\n");
                 }
 
@@ -5669,7 +5175,8 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του XA συνδέσμου : " + Utilities.escapeXML(SearchKwd) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό: " + thesaurusName2 + ". Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού " + thesaurusName1 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή αδόκιμου όρου στον νέο θησαυρό.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1})+"</reason>");                
+                        //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName1 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
                     if (results.contains(SearchKwd) == false) {
@@ -5709,7 +5216,8 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>Παρακάμφθηκε η αντιγραφή του XA συνδέσμου : " + Utilities.escapeXML(SearchKwd) + " για τον όρο : " + Utilities.escapeXML(referencesToNode.get(k)) + " από τον θησαυρό: " + thesaurusName1 + ". Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού " + thesaurusName2 + " και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή αδόκιμου όρου στον νέο θησαυρό.</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2})+"</reason>");                
+                        //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName2 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
 

@@ -125,15 +125,15 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             if(targetField.compareTo("facet_create")==0){
                     
                 succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, "create",  null, errorMsg,true,pathToMessagesXML);
+                         dbGen,  targetFacet, "create",  null, errorMsg,true);
             }
             if(targetField.compareTo("delete_facet")==0){
                     
                 ConsistensyCheck consistencies = new ConsistensyCheck();
-                boolean continueDeletion = consistencies.check_facet_deletion(SessionUserInfo, Q, sis_session, dbGen, targetFacet,errorMsg, targetLocale,pathToMessagesXML);
+                boolean continueDeletion = consistencies.check_facet_deletion(SessionUserInfo, Q, sis_session, dbGen, targetFacet,errorMsg, targetLocale);
                 
                 succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, "modify",  "delete", errorMsg,true,pathToMessagesXML);
+                         dbGen,  targetFacet, "modify",  "delete", errorMsg,true);
             }
             
             //check result of transaction. Prepend with Success or Failure any message returned and write it to PrintWriter out for ajax handling

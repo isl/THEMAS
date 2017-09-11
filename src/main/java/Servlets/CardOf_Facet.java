@@ -105,8 +105,6 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             String country  = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             String targetFacet = u.getDecodedParameterValue(request.getParameter("facet"));
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
             //String outputMode  = u .getDecodedParameterValue(request.getParameter("mode"));
             
             //Data storage
@@ -114,8 +112,8 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             String output[] = {"name", "hierarchy"};
             
             if(targetFacet==null || targetFacet.length()==0){
-                dbGen.Translate(resultMessageObj, "root/CardOfFacet/NoFacetSelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";
+                
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfFacet/NoFacetSelected", null)+"</errorMsg>";
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 return;
             }

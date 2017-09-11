@@ -72,8 +72,16 @@ public class CardOf_Term extends ApplicationBasicServlet {
     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        
         request.setCharacterEncoding("UTF-8");
+        // popup display card / edit mode / XML Stream Mode
+        String outputMode = request.getParameter("mode");
+        if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+            response.setContentType("text/xml;charset=UTF-8");            
+        }
+        else{
+            response.setContentType("text/html;charset=UTF-8");
+        }
         
         if (SystemIsLockedForAdministrativeJobs(request, response)) return;
         
@@ -91,7 +99,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
-            String outputMode = request.getParameter("mode"); // popup display card or edit mode
+             
             if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(outputMode==null){
                     out.println("Session Invalidate");                
@@ -115,11 +123,11 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             String targetTerm = u.getDecodedParameterValue(request.getParameter("term"));
             String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
+            //StringObject resultMessageObj = new StringObject();
             
             if(targetTerm==null || targetTerm.length()==0){
-                dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";                
+                //dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/NoTermSelected", null)+"</errorMsg>";                
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 
                 return;
@@ -137,6 +145,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             float elapsedTimeSec;             
             
             output.add("id");
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+                output.add(ConstantParameters.facet_kwd);
+            }
             output.add(ConstantParameters.tc_kwd);
             output.add(ConstantParameters.translation_kwd);
             output.add(ConstantParameters.scope_note_kwd);
@@ -176,11 +187,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_name_scope();
             if(Q.set_current_node(targetTermObj)==QClass.APIFail){
 
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(targetTerm);
-
-                dbGen.checkIfErrorFreeAndTranslate(QClass.APIFail, resultMessageObj, "root/CardOfTerm/TermNotFound", errorArgs, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/TermNotFound", new String[]{targetTerm})+"</errorMsg>";
                 
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 Q.free_all_sets();
@@ -235,28 +242,32 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
             
            
-            if(outputMode==null){
-                xml.append(ConstantParameters.xmlHeader + "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
-                xml.append(xmlResults);
-                xml.append(u.getXMLUserInfo(SessionUserInfo));
-                xml.append("</page>");
-                u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/EditTermActions/PopUpInfo_Term.xsl");
-            }
-            else if(outputMode.compareTo("edit")==0){
+            if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
                 xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
                 xml.append(xmlResults);
                 xml.append(u.getXMLMiddle("", "Details"));
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"HEREEE");
-               u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
-            }
-                
+                if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+                    out.append(xml.toString());
+                }
+                else{
+                    u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
+                }
+            } else if(outputMode==null){
+                xml.append(ConstantParameters.xmlHeader + "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append(xmlResults);
+                xml.append(u.getXMLUserInfo(SessionUserInfo));
+                xml.append("</page>");
+                u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/EditTermActions/PopUpInfo_Term.xsl");
+            }   
         
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+".Exception catched in servlet " +getServletName()+". Message:" +e.getMessage());
             Utils.StaticClass.handleException(e);
         }finally { 
+            out.flush();
             out.close();
             sessionInstance.writeBackToSession(session);
         }
@@ -269,10 +280,15 @@ public class CardOf_Term extends ApplicationBasicServlet {
         xml.append(u.getXMLMiddle(errorMsg, "Details"));
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());
-        if (outputMode == null) {
-            u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/EditTermActions/PopUpInfo_Term.xsl");
-        } else if (outputMode.compareTo("edit") == 0) {
+            
+        if (outputMode.compareTo("edit") == 0) {
             u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
+        }
+        else if (outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+            out.append(xml.toString());
+        }
+        else{
+            u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/EditTermActions/PopUpInfo_Term.xsl");
         }
               
     }

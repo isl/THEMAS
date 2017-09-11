@@ -36,6 +36,7 @@ package Admin_Thesaurus;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Utils.ConstantParameters;
+import Utils.Utilities;
 
 
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -52,21 +53,18 @@ public class DBEditGuideTerms {
     public DBEditGuideTerms() {
     }
 
-    public boolean addGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String newGuideTerm, StringObject errorMsg, String pathToMessagesXML) {
-
+    public boolean addGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String newGuideTerm, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-
-        Vector<String> errorArgs = new Vector<String>();
 
         Vector<String> guideTermLinks = new Vector<String>();
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(newGuideTerm)) {
-            errorArgs.add(newGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/Exists", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η ετικέτα δεσμού '" + newGuideTerm + "' χρησιμοποιείται ήδη στην βάση.");
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/Exists", new String[]{newGuideTerm}));
+            //errorMsg.setValue("Guide Term '" + newGuideTerm + "' is already defined in the database.");
             return false;
         }
 
@@ -78,6 +76,7 @@ public class DBEditGuideTerms {
                 
                 int maxChars = dbtr.getMaxBytesForGuideTerm(selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxChars) {
+                    errorArgs.clear();
                     errorArgs.add("" + maxChars);
                     errorArgs.add("" + byteArray.length);
                     dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/LongName", errorArgs, pathToMessagesXML);                    
@@ -141,9 +140,8 @@ public class DBEditGuideTerms {
         int ret = Q.CHECK_Add_Named_Attribute(newCategIdent, fromClassIdent, toClassCMV, QClass.SIS_API_S_CLASS, -1,true);
 
         if (ret == QClass.APIFail) {
-            errorArgs.add(newGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/AdditionError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία δημιουργίας νέας ετικέτας δεσμού: " + newGuideTerm);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AdditionError", new String[]{newGuideTerm}));
+            //errorMsg.setValue("Creation failure of new Guide Term: " + newGuideTerm);
             return false;
         }
 
@@ -152,18 +150,16 @@ public class DBEditGuideTerms {
         //long newLinkIdL = Q.set_current_node(newLinkObj);
 
         if (newCategIdent.getSysid() == QClass.APIFail) {
-            errorArgs.add(newGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/AccessError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία πρόσβασης στην νέα ετικέτα δεσμού: " + newGuideTerm);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AccessError", new String[]{newGuideTerm}));
+            //errorMsg.setValue("Failed to refer to the new Guide Term: " + newGuideTerm);
             return false;
         }
         
 
         ret = Q.CHECK_Add_IsA(newCategIdent, new Identifier(bt_LinkIdL));
         if (ret == QClass.APIFail) {
-            errorArgs.add(newGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/InstatiationError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία υπαγωγής της νέας ετικέτας δεσμού κάτω από τον σύνδεσμο ΠΟ");
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationError", new String[]{newGuideTerm}));
+            //errorMsg.setValue("Failed to classify new guide term %s under BT category.");
             return false;
         }
 
@@ -171,28 +167,26 @@ public class DBEditGuideTerms {
             //ret = Q.CHECK_Add_Instance(new Identifier(newLinkIdL), new Identifier(newGuideTermInstanceOfL[k]));
             ret = Q.CHECK_Add_Instance(newCategIdent, new Identifier(newGuideTermInstanceOfL[k]));
             if (ret == QClass.APIFail) {
-                errorArgs.add(""+newGuideTermInstanceOfL[k]);
-                dbGen.Translate(errorMsg, "root/EditGuideTerms/Creation/InstatiationIDError", errorArgs, pathToMessagesXML);
-                //errorMsg.setValue("Αποτυχία ένταξης της νέας ετικέτας δεσμού κάτω από τον σύνδεσμο με sys id: " + newGuideTermInstanceOf[k]);
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationIDError", new String[]{newGuideTerm,""+newGuideTermInstanceOfL[k]}));
+                //errorMsg.setValue("Failed to classify new guide term %s under link-node with id: " + newGuideTermInstanceOf[k]);
                 return false;
             }
         }
         return true;
     }
 
-    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String deleteGuideTerm, StringObject errorMsg, String pathToMessagesXML) {
+    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String deleteGuideTerm, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
 
-        Vector<String> errorArgs = new Vector<String>();
         Vector<String> guideTermLinks = new Vector<String>();
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(deleteGuideTerm) == false) {
-            errorArgs.add(deleteGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Delete/NotFound", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η ετικέτα δεσμού '" + deleteGuideTerm + "' δεν βρέθηκε στην βάση.");
+            
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/NotFound", new String[]{deleteGuideTerm}));
+            //errorMsg.setValue(Guide Term '" + deleteGuideTerm + "' was not found in the database.");
             return false;
         }
 
@@ -214,17 +208,15 @@ public class DBEditGuideTerms {
         long toIdL = Q.set_current_node(BTLinkObj);
         int ret = Q.CHECK_IMPROVE_Add_Instance_Set(set_move_instances, new Identifier(toIdL));
         if (ret == QClass.APIFail) {
-            errorArgs.add(deleteGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Delete/BTLinksCopyError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία αντιγραφής των συνδέσμων ΠΟ της ετικέτας δεσμού: " + deleteGuideTerm);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksCopyError", new String[]{deleteGuideTerm}));
+            //errorMsg.setValue("Copying failure of BT links of guide term: " + deleteGuideTerm);
             return false;
         }
 
         ret = Q.CHECK_IMPROVE_Delete_Instance_Set(set_move_instances, new Identifier(fromIdL));
         if (ret == QClass.APIFail) {
-            errorArgs.add(deleteGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Delete/BTLinksDeletionError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία διαγραφής των συνδέσμων ΠΟ της ετικέτας δεσμού: " + deleteGuideTerm);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksDeletionError", new String[]{deleteGuideTerm}));
+            //errorMsg.setValue("Deletion failure of BT links of guide term: " + deleteGuideTerm);
             return false;
         }
 
@@ -234,20 +226,18 @@ public class DBEditGuideTerms {
         Identifier fromIdIdentifier = new Identifier(fromIdL);     //ALLGRETHE_BTMyGuideTermLink
         ret = Q.CHECK_Delete_Named_Attribute(fromIdIdentifier, fromClsIdentifier);
         if (ret == QClass.APIFail) {
-            errorArgs.add(deleteGuideTerm);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Delete/GeneralError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Αποτυχία διαγραφής της ετικέτας δεσμού: " + deleteGuideTerm);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/GeneralError", new String[]{deleteGuideTerm}));
+            //errorMsg.setValue("Deletion failure of guide term: " + deleteGuideTerm);
             return false;
         }
         return true;
     }
 
     public boolean renameGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session,
-            String renameGuideTermFrom, String renameGuideTermTo, StringObject errorMsg, String pathToMessagesXML) {
+            String renameGuideTermFrom, String renameGuideTermTo, StringObject errorMsg) {
         DBGeneral dbGen = new DBGeneral();
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        Vector<String> errorArgs = new Vector<String>();
-
+        Utilities u = new Utilities();
+        
         if (renameGuideTermTo != null && renameGuideTermTo.length() > 0) {
             /*
             try {
@@ -255,7 +245,7 @@ public class DBEditGuideTerms {
 
                 int maxChars = dbtr.getMaxBytesForGuideTerm(selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxChars) {
-
+                    errorArgs.clear();
                     errorArgs.add("" + maxChars);
                     errorArgs.add("" + byteArray.length);
                     dbGen.Translate(errorMsg, "root/EditGuideTerms/Rename/LongName", errorArgs, pathToMessagesXML);
@@ -273,16 +263,14 @@ public class DBEditGuideTerms {
 
         if (guideTermLinks.contains(renameGuideTermFrom) == false) {
 
-            errorArgs.add(renameGuideTermFrom);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Rename/NotFound", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η ετικέτα δεσμού '" + renameGuideTermFrom + "' δεν βρέθηκε στην βάση.");
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NotFound", new String[]{renameGuideTermFrom}));
+            //errorMsg.setValue("Guide Term '" + renameGuideTermFrom + "' was not found in the database.");
             return false;
         }
 
         if (guideTermLinks.contains(renameGuideTermTo)) {
-            errorArgs.add(renameGuideTermFrom);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Rename/NewNameExists", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η ετικέτα δεσμού '" + renameGuideTermTo + "' χρησιμοποιείται ήδη στην βάση.");
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NewNameExists", new String[]{renameGuideTermFrom}));
+            //errorMsg.setValue("New Guide Term name '" + renameGuideTermTo + "' is already defined in the database.");
             return false;
         }
 
@@ -301,10 +289,9 @@ public class DBEditGuideTerms {
         Q.reset_name_scope();
         int ret = Q.CHECK_Rename_Named_Attribute(new Identifier(tagetIdL), new Identifier(descriptorIdL), new Identifier(renameGuideTermToObj.getValue()));
         if (ret == QClass.APIFail) {
-            errorArgs.add(renameGuideTermFrom);
-            errorArgs.add(renameGuideTermTo);
-            dbGen.Translate(errorMsg, "root/EditGuideTerms/Rename/GeneralError", errorArgs, pathToMessagesXML);
-            //errorMsg.setValue("Η μετονομασία της ετικέτας δεσμού: '"+renameGuideTermFrom+"'\n σε '"+renameGuideTermTo+"' απέτυχε.");
+            
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/GeneralError", new String[]{renameGuideTermFrom,renameGuideTermTo}));
+            //errorMsg.setValue("Renaming action of Guide Term  '"+renameGuideTermFrom+"'\n to '"+renameGuideTermTo+"' failed.");
             return false;
         }
 

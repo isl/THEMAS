@@ -102,13 +102,11 @@ public class CardOf_Source extends ApplicationBasicServlet {
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            StringObject resultMessageObj = new StringObject();
-
+            
             
             if(targetSource==null || targetSource.length()==0){
-                dbGen.Translate(resultMessageObj, "root/CardOfSource/NoSourceSelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+resultMessageObj.getValue()+"</errorMsg>";
+                
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfSource/NoSourceSelected", null)+"</errorMsg>";
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);                
                 return;
             }

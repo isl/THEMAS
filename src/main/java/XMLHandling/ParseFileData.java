@@ -275,7 +275,7 @@ public class ParseFileData {
     }
 
     public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<String> xmlFacets) {
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης μικροθησαυρών από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets from file: " + xmlFilePath + ".");
 
         try {
 
@@ -490,7 +490,7 @@ public class ParseFileData {
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης μικροθησαυρών. Βρέθηκαν " + xmlFacets.size() + " μικροθησαυροί.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacets.size() + " Dacets.");
         return true;
     }
 
@@ -975,7 +975,7 @@ public class ParseFileData {
     public boolean readXMLHierarchies(String importThesaurusName,
             String xmlFilePath, String xmlSchemaType,
             Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> xmlFacets) {
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης ιεραρχιών από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Hierarchies from file: " + xmlFilePath + ".");
 
         int mainLanguageNotFound = 0;
 
@@ -1290,14 +1290,14 @@ public class ParseFileData {
             Utils.StaticClass.handleException(ex);
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης ιεραρχιών. Βρέθηκαν " + hierarchyFacets.size() + " ιεραρχίες.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading Hierarchies. Found: " + hierarchyFacets.size() + " hierarchies.");
         return true;
     }
 
     public boolean readXMLSources(String xmlFilePath, String xmlSchemaType, Hashtable<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης πηγών από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Sources from file: " + xmlFilePath + ".");
 
         XmlPullParserFactory factory;
         try {
@@ -1342,7 +1342,7 @@ public class ParseFileData {
             Utils.StaticClass.handleException(ex);
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης πηγών.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading Sources.");
         return true;
     }
 
@@ -2188,7 +2188,7 @@ public class ParseFileData {
     public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, Vector<String> guideTerms,
             Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης ετικετών δεσμού από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Guide Terms / Node labels from file: " + xmlFilePath + ".");
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -2437,7 +2437,7 @@ public class ParseFileData {
             Utils.StaticClass.handleException(ex);
         }
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης ετικετών δεσμού. Βρέθηκαν " + guideTerms.size() + " ετικέτες δεσμού.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading Guide Terms / Node Labels. Found: " + guideTerms.size() + " Guide Terms / Node Labels.");
         return true;
     }
 
@@ -3964,7 +3964,7 @@ public class ParseFileData {
     public boolean readTranslationCategories(String xmlFilePath, String xmlSchemaType, Vector<String> userSelectedTranslationWords,
             Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
 
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Αρχή ανάγνωσης κατηγοριών μετάφρασης από το αρχείο: " + xmlFilePath + ".");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading translation categories from file: " + xmlFilePath + ".");
 
         XmlPullParserFactory factory;
         try {
@@ -4127,7 +4127,7 @@ public class ParseFileData {
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Τέλος ανάγνωσης κατηγοριών μετάφρασης. Βρέθηκαν " + userSelections.size() + " κατηγορίες.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading translation categories. Found " + userSelections.size() + " translation categories.");
         return true;
     }
 

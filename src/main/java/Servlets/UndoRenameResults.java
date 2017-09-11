@@ -174,7 +174,7 @@ public class UndoRenameResults extends ApplicationBasicServlet {
     boolean UndoRenameAction(String selectedThesaurus, String TargetTermName,StringObject UndoRenameResultsMessage, QClass Q,IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
         // begin transaction
         Q.TEST_begin_transaction();    
-
+        
         // looking for Term prefix
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String termPrefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q,sis_session.getValue());
@@ -186,7 +186,9 @@ public class UndoRenameResults extends ApplicationBasicServlet {
         
         UndoRenameResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
-            UndoRenameResultsMessage.setValue("Η αναίρεση μετονομασίας του όρου \"" + TargetTermName + "\", ολοκληρώθηκε επιτυχώς.");
+            Utilities u = new Utilities();
+            UndoRenameResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/UndoRenameSuccess", new String[]{TargetTermName}));
+            //UndoRenameResultsMessage.setValue("Undo rename operation of term " + TargetTermName + " was successfully completed.");
             return true;
         }
         else { // FAIL

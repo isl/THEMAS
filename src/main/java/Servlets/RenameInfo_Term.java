@@ -110,10 +110,11 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
 
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
 
-            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+term_decoded+"</targetTerm><targetEditField>name</targetEditField>", "Rename" ));
+            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+term_decoded+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
 
+            
             //u.XmlPrintWriterTransform(out, xml, path + "/xml-xsl/rename_term.xsl");
             u.XmlPrintWriterTransform(out, xml,sessionInstance.path +  "/xml-xsl/EditTermActions/Edit_Term.xsl");
 

@@ -650,7 +650,7 @@ public class DBAdminUtilities {
             IntegerObject tms_session, DBGeneral dbGen,
             String targetThesaurus, StringObject errorMsg) {
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        Utilities u = new Utilities();
         // timer begin
         long startTime = Utilities.startTimer();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " STARTED ############");
@@ -674,38 +674,14 @@ public class DBAdminUtilities {
         ret = tmsUsers.EditUserThesaurus(request, session, sessionInstance, targetUser, targetThesaurus);
         switch (ret) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
-                /*
-                 *
-                 *HARDCODED GREEKS
-                 *
-                 */
-                StringObject resultMessageObj = new StringObject();
-                Vector<String> errorArgs = new Vector<String>();
-
-                errorArgs.add(targetUser);
-                dbGen.Translate(resultMessageObj, "root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", errorArgs, pathToMessagesXML);
-                errorArgs.removeAllElements();
-
-                errorMsg.setValue(resultMessageObj.getValue());
-                //errorMsg.setValue("Ο χρήστης '" + targetUser + "' δεν υπάρχει.");
+                
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
+                //errorMsg.setValue("The renaming user: '" + targetUser + "' could not be found as a user of the system.");
                 return;
             case UsersClass.AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED:
-                /*
-                 *
-                 *HARDCODED GREEKS
-                 *
-                 */
-
-                StringObject resultMessageObj_2 = new StringObject();
-                Vector<String> errorArgs_2 = new Vector<String>();
-
-                errorArgs_2.add(targetUser);
-                errorArgs_2.add(targetThesaurus);
-                dbGen.Translate(resultMessageObj_2, "root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", errorArgs_2, pathToMessagesXML);
-                errorArgs_2.removeAllElements();
-
-                errorMsg.setValue(resultMessageObj_2.getValue());
-                //errorMsg.setValue("Ο χρήστης '" + targetUser + "' δεν έχει το δικαίωμα διαγραφής του θησαυρού " + targetThesaurus);
+                
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", new String[]{targetUser,targetThesaurus}));
+                //errorMsg.setValue(User '" + targetUser + "' does not have permission to delete the thesaurus '" + targetThesaurus+ "'.");
                 // ATTENTION: the following is necessary so as to restore the old valid state of the "SessionUser" session attribute
                 sessionInstance.setAttribute("SessionUser", refSessionUserInfo);
                 return;
@@ -713,22 +689,9 @@ public class DBAdminUtilities {
         // check if target thesaurus exists
         Q.reset_name_scope();
         if (Q.set_current_node(targetThesaurusObj) == QClass.APIFail) {
-            /*
-             *
-             *HARDCODED GREEKS
-             *
-             */
-
-            StringObject resultMessageObj = new StringObject();
-            Vector<String> errorArgs = new Vector<String>();
-
-            errorArgs.add(targetThesaurus);
-            dbGen.Translate(resultMessageObj, "root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", errorArgs, pathToMessagesXML);
-            errorArgs.removeAllElements();
-
-            errorMsg.setValue(resultMessageObj.getValue());
-
-            //errorMsg.setValue(errorMsg.getValue().concat("Ο θησαυρός " + targetThesaurus + " δεν βρέθηκε στην βάση."));
+            
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", new String[]{targetThesaurus}));
+            //errorMsg.setValue(errorMsg.getValue().concat("Thesaurus '" + targetThesaurus + "' does not exist in database."));
             return;
         }
 
@@ -748,16 +711,16 @@ public class DBAdminUtilities {
         String hierarchyPrefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, SISApiSession);
         // looking for descriptor prefix AAAEL`
         String termPrefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, SISApiSession);
-        // looking for AAAClass`Ορφανοί όροι
+        // looking for AAAClass`Unclassified terms
         StringObject orphansHierarchyObj = new StringObject(hierarchyPrefix.concat(Parameters.UnclassifiedTermsLogicalname));
-        // looking for AAAEL`Ορφανοί όροι
+        // looking for AAAEN`Unclassified terms
         StringObject orphansHierarchyTopTermObj = new StringObject(orphansHierarchyObj.getValue().replaceFirst(hierarchyPrefix, termPrefix));
-        // looking for AAAClass`ΘΈΜΑ ΚΟΡΥΦΉΣ
+        // looking for AAAClass`UNCLASSIFIED TERMS
         Q.reset_name_scope();
         Q.set_current_node(orphansHierarchyTopTermObj);
 
         //Find out Orphan Terms facet --> default facet
-        //StringObject orphansHierarchyFacet = new StringObject(hierarchyPrefix + "ΘΈΜΑ ΚΟΡΥΦΉΣ");
+        //StringObject orphansHierarchyFacet = new StringObject(hierarchyPrefix + "UNCLASSIFIED TERMS");
         StringObject orphansHierarchyFacet = new StringObject();
         Q.reset_name_scope();
         Q.set_current_node(orphansHierarchyObj);
@@ -795,14 +758,14 @@ public class DBAdminUtilities {
         Vector<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
             String GuideTermForDeletion = guideTerms.get(i);
-            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg, pathToMessagesXML);
+            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg);
             if (errorMsg.getValue().equals("") == false) {
                 return;
             }
         }
 
-        // 1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Ορφανοί όροι} ---
-        // a. get all hierarchies of thesaurus AAA (ALL instances of AAAHierarchy) EXCEPT{AAAClass`Ορφανοί όροι}
+        // 1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms} ---
+        // a. get all hierarchies of thesaurus AAA (ALL instances of AAAHierarchy) EXCEPT{AAAClass`Unclassfied terms}
         Q.reset_name_scope();
         Q.set_current_node(thesHierarchy);
         int hierarchiesSet = Q.get_all_instances(0);
@@ -828,7 +791,7 @@ public class DBAdminUtilities {
         //    hierarchiesToBeDeleted.add(name.getValue());
         //}
         Q.free_set(hierarchiesSetWithoutOrphansHierarchy);
-        // b. delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Ορφανοί όροι}
+        // b. delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms}
         DBCreate_Modify_Hierarchy creation_modificationOfHierarchy = new DBCreate_Modify_Hierarchy();
         int hierarchiesToBeDeletedSize = hierarchiesToBeDeleted.size();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting " + hierarchiesToBeDeletedSize + " hierarchies...");
@@ -846,7 +809,7 @@ public class DBAdminUtilities {
         }
 
         /*
-         // 2. --- clean the terms of hierarchy AAAClass`Ορφανοί όροι EXCEPT{AAAEL`Ορφανοί όροι} without deleting this hieracrchy itself
+         // 2. --- clean the terms of hierarchy AAAClass`Unclassfied terms EXCEPT{AAAEN`Unclassfied terms} without deleting this hieracrchy itself
         
          boolean continueOrphanDeletion = true;
          Q.reset_name_scope();
@@ -928,8 +891,8 @@ public class DBAdminUtilities {
          Q.free_set(set_orphan_top_term_only);
         
          */
-        // 2. --- clean the terms of hierarchy AAAClass`Ορφανοί όροι EXCEPT{AAAEL`Ορφανοί όροι} without deleting this hieracrchy itself
-        // a. get all terms of (hierarchy AAAClass`Ορφανοί όροι) EXCEPT{AAAEL`Ορφανοί όροι}
+        // 2. --- clean the terms of hierarchy AAAClass`Unclassfied terms EXCEPT{AAAEN`Unclassfied terms} without deleting this hieracrchy itself
+        // a. get all terms of (hierarchy AAAClass`Unclassfied terms) EXCEPT{AAAEN`Unclassfied terms}
         /*
          Q.end_transaction();
          //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"DEBUG PURPOSE");
@@ -963,7 +926,7 @@ public class DBAdminUtilities {
          orphanTermsToBeDeleted.add(name.getValue());
          }*/
         Q.free_set(orphanTermsSetWithoutOrphansTopTerm);
-        // b. delete all terms of (hierarchy AAAClass`Ορφανοί όροι) EXCEPT{AAAEL`Ορφανοί όροι}
+        // b. delete all terms of (hierarchy AAAClass`Unclassfied terms) EXCEPT{AAAEN`Unclassfied terms}
         int orphanTermsToBeDeletedSize = orphanTermsToBeDeleted.size();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting " + orphanTermsToBeDeletedSize + " orphan terms...");
         for (int i = 0; i < orphanTermsToBeDeletedSize; i++) {
@@ -976,7 +939,7 @@ public class DBAdminUtilities {
         }
 
         // 3. --- delete all facets of thesaurus AAA
-        // get all facets of thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`ΘΈΜΑ ΚΟΡΥΦΉΣ})
+        // get all facets of thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`UNCLASSIFIED TERMS})
         Q.reset_name_scope();
         Q.set_current_node(thesFacet);
         int facetsOfThesaurusSet = Q.get_instances(0); // do NOT get ALL instances
@@ -1002,7 +965,7 @@ public class DBAdminUtilities {
          facetsToBeDeleted.add(name.getValue());
          }*/
         Q.free_set(facetsOfThesaurusSetWithoutOrphansFacet);
-        // b. delete all facets thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`ΘΈΜΑ ΚΟΡΥΦΉΣ})
+        // b. delete all facets thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`UNCLASSIFIED TERMS})
         DBCreate_Modify_Facet creation_modificationOfFacet = new DBCreate_Modify_Facet();
         int facetsToBeDeletedSize = facetsToBeDeleted.size();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting " + facetsToBeDeletedSize + " facets...");
@@ -1010,12 +973,12 @@ public class DBAdminUtilities {
             String facetToBeDeleted = (String) facetsToBeDeleted.get(i);
             String facetToBeDeletedUIWithoutPrefix = dbGen.removePrefix(facetToBeDeleted);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + i + 1 + ". Delete facet: " + facetToBeDeletedUIWithoutPrefix);
-            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true, pathToMessagesXML) == false) {
+            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true) == false) {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- facet deletion cancelled");
                 return;
             } else {
                 // ATTENTION: reset error message after every successful call to Create_Or_ModifyFacet() 
-                // because it is set to "Ο μικροθησαυρός : xxx διαγράφηκε με επιτυχία." and any next call to it
+                // because it is set to "Facet: xxx was successfully deleted." and any next call to it
                 // fails because it checks if error message is empty
                 errorMsg.setValue("");
             }

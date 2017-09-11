@@ -231,7 +231,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 //Collections.sort(resultUFNodes, new SortItemLocaleComparator(targetLocale)); 
                 
                 //Write XML file
-                u.writeResultsInXMLFile(allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
+                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
                 
                 //end query and close connection
                 Q.free_all_sets();

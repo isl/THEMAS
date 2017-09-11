@@ -35,6 +35,7 @@ package DB_Classes;
 
 
 
+import Utils.Utilities;
 import javax.servlet.http.*;
 import java.util.Vector;
 import neo4j_sisapi.*;
@@ -70,14 +71,13 @@ public class DBConnect_Facet {
         String errorMSG = new String("");
         StringObject errorMsgObj = new StringObject("");
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus,Q,sis_session.getValue());
 
         
         if (targetFacet.getValue().trim().equals(prefix)) {
-            dbGen.Translate(errorMsgObj, "root/EditFacet/Creation/EmptyName", null, pathToErrorsXML);
-            errorMSG = errorMSG.concat(errorMsgObj.getValue());
-            return errorMSG;
+            return  u.translateFromMessagesXML("root/EditFacet/Creation/EmptyName", null);
         }
 
         if (dbGen.check_exist(targetFacet.getValue(),Q,sis_session) == false) {
@@ -92,12 +92,9 @@ public class DBConnect_Facet {
         } else {
             if(errorIfExists){
                 
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(dbGen.removePrefix(targetFacet.getValue()));
-                dbGen.Translate(errorMsgObj, "root/EditFacet/Creation/FacetExists", errorArgs, pathToErrorsXML);
-
-                errorMSG = errorMSG.concat(/*"<tr><td>" +*/ dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,errorMsgObj.getValue()
-                        /*"Ο μικροθησαυρός " + dbGen.removePrefix(targetFacet.getValue()) + " υπάρχει ήδη στη βάση."*/
+                errorMSG = errorMSG.concat(/*"<tr><td>" +*/ dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
+                        u.translateFromMessagesXML("root/EditFacet/Creation/FacetExists", new String[]{dbGen.removePrefix(targetFacet.getValue())})
+                        /*"Facet " + dbGen.removePrefix(targetFacet.getValue()) + " already exists in the database."*/
                         ,tms_session)/* +
                         "</td></tr>"*/);
                 return errorMSG;

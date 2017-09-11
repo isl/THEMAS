@@ -34,6 +34,8 @@
 package DB_Classes;
 
 
+import Utils.Utilities;
+import java.util.Vector;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -107,8 +109,11 @@ public class DBRemove_Hierarchy {
         String errorMsg = new String("");
  
         if (dbGen.check_exist(targetHierarchy.getValue(),Q,sis_session) == false) {
+            
+            Utilities u = new Utilities();            
+            errorMsg = u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy.getValue()});
             //errorMsg = "Hierarchy " + targetHierarchy + " does not exist";
-            errorMsg = "Η ιεραρχία " + targetHierarchy + " δεν υπάρχει.";
+            
             return errorMsg;
         }
 

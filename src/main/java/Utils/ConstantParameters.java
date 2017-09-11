@@ -177,6 +177,8 @@ public class ConstantParameters {
     public static final String translation_kwd = "translations";
     public static final String bt_kwd = "bt";
     public static final String nt_kwd = "nt";
+    //addition standing for output of recursive nts
+    public static final String rnt_kwd = "rnt";
     public static final String rt_kwd = "rt";
     public static final String uf_kwd = "uf";
     public static final String uf_translations_kwd ="uf_translations";
@@ -358,5 +360,7 @@ public class ConstantParameters {
     //public static final int MAX_LOGINAM_SIZE = 100;
     //public static final int MAX_COMMENT_SIZE = 19000;
 
+    //output option supported for specific servlets in order to provide the output as xml stream
+    public static final String XMLSTREAM = "XMLSTREAM";
     
 }

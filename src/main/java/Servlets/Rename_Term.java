@@ -34,9 +34,11 @@
 package Servlets;
 
 import DB_Classes.DBConnect_Term;
+import DB_Classes.DBCreate_Modify_Term;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
+import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 
@@ -78,18 +80,26 @@ public class Rename_Term extends ApplicationBasicServlet {
             }
 
             DBGeneral dbGen = new DBGeneral();
+            Utilities u = new Utilities();
             StringObject errorMsgObj = new StringObject();
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
             IntegerObject tms_session = new IntegerObject();
 
+            
+            String pathToErrorsXML = getServletContext().getRealPath("/translations/Consistencies_Error_Codes.xml");            
+            //String pathToMessagesXml = Utilities.getMessagesXml();
+            
+            
+            //"Renamed succesfully!!" ;
+            
+            String RenameResult = u.translateFromMessagesXML("root/EditTerm/Rename/Success", null);
+            
             String end = "\0";
             String empty = "";
-            //String RenameResult = "Renamed succesfully!!" ;
-            String RenameResult = "Η μετονομασία ολοκληρώθηκε με επιτυχία.";
             int Numcouples;
 
-            Utilities u = new Utilities();
+            
 
             //THIS REFERS TO RELEASED DESCRIPTORS AN MUST PASS THROUGH u.Decode
             String[] tempInput = request.getParameterValues("NewnameForServlet");
@@ -103,6 +113,10 @@ public class Rename_Term extends ApplicationBasicServlet {
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
             String oldName = u.getDecodedParameterValue(request.getParameter("target"));
             String newName = u.getDecodedParameterValue(request.getParameter("newname"));
+            String saveAsUf = u.getDecodedParameterValue(request.getParameter("saveasuf")); 
+            
+            
+            
             newName = newName.replaceAll(" +", " ").trim();
 
             
@@ -125,7 +139,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 byte[] byteArray = newName.getBytes("UTF-8");
                 int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxTermChars) {
-                    //errorMsgObj.setValue("Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.");
+                    //errorMsgObj.setValue("No term selected for rename. Operation cancelled.");
                         errorArgs.add("" + maxTermChars);
                         errorArgs.add("" + byteArray.length);
                         dbGen.Translate(errorMsgObj, "root/EditTerm/Creation/LongName", errorArgs, pathToMessagesXML);
@@ -155,9 +169,9 @@ public class Rename_Term extends ApplicationBasicServlet {
 
             if ((oldtermobj.getValue().trim()).equals(prefix.toString().trim())) {
                 //OLD NAME NULL?
-                errorMsgObj.setValue("Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.");
+                //No term selected for rename. Operation cancelled.
                 ret1 = TMSAPIClass.TMS_APIFail;
-
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NoTermSelected", null));
                 //abort transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
@@ -168,7 +182,8 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             } else if (!dbGen.check_exist(oldtermobj.getValue(), Q, sis_session)) {
                 //OLD NAME EXISTS?
-                errorMsgObj.setValue("Ο όρος προς μετονομασία δεν είναι έγκυρος. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.");
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null));
+                //errorMsgObj.setValue("Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.");
                 ret1 = TMSAPIClass.TMS_APIFail;
 
                 //abort transaction and close connection
@@ -182,7 +197,8 @@ public class Rename_Term extends ApplicationBasicServlet {
             } else if ((newtermobj.getValue().trim()).equals(prefix.toString().trim())) {
 
                 //NEW NAME ONY PREFIX?
-                errorMsgObj.setValue("Δεν δόθηκε νέο όνομα για τον όρο προς μετονομασία. Ακύρωση μετονομασίας.");
+                //errorMsgObj.setValue("A new term name was not provided. Operation cancelled.");
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/EmptyNewName", null));
                 ret1 = TMSAPIClass.TMS_APIFail;
                 
                 //abort transaction and close connection
@@ -195,7 +211,8 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             } else if (dbGen.check_exist(newtermobj.getValue(), Q, sis_session)) {
                 //NEW NAME EXISTS?
-                errorMsgObj.setValue("Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.");
+                //errorMsgObj.setValue("New term name already exists in the database. Operation cancelled.");
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NewNameExists", null));                
                 ret1 = TMSAPIClass.TMS_APIFail;
 
                 //abort transaction and close connection
@@ -208,10 +225,18 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             } else {
 
+                //in case the option to save old name as uf is enabled
+                Vector<String> existingUFs = new Vector<String>();
 
+                if(Parameters.AtRenameSaveOldNameAsUf && saveAsUf!=null && saveAsUf.equalsIgnoreCase("yes")){
+
+                    
+                    existingUFs.addAll(dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.uf_kwd, Q,TA, sis_session));
+                    
+                    
+                }
+                
                 //==========Start of Rename_Term New Descriptor===================================================================
-
-
                 Vector<String> modifiedNodes = new Vector<String>();
 
                 Vector<String> bts_vec = new Vector<String>();
@@ -257,9 +282,30 @@ public class Rename_Term extends ApplicationBasicServlet {
                     //rename scope note historical note and comment if exist
                     ret1 = dbGen.renameCommentNodes(SessionUserInfo.selectedThesaurus, oldtermobj, newtermobj, Q, sis_session);
                 }
+                
 
                 if (ret1 == TMSAPIClass.TMS_APISucc) {
 
+                    if(Parameters.AtRenameSaveOldNameAsUf && saveAsUf!=null && saveAsUf.equalsIgnoreCase("yes")){
+                        existingUFs.add(oldName);
+                        StringObject errorMsg = new StringObject("");
+                        DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
+                        creation_modificationOfTerm.commitTermTransaction(SessionUserInfo, newName, ConstantParameters.uf_kwd, existingUFs, SessionUserInfo.name, errorMsg, Q, sis_session,TA,tms_session,dbGen, pathToErrorsXML,false,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
+                        
+                        if(errorMsg.getValue().trim().length()>0){
+                            errorMsgObj.setValue(errorMsg.getValue());
+                            ret1 = TMSAPIClass.TMS_APIFail;
+
+                            //abort transaction and close connection
+                            Q.free_all_sets();
+                            Q.TEST_abort_transaction();
+                            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+
+                            out.println(errorMsgObj.getValue());
+                            out.flush();
+                            return;
+                        }
+                    }
                     Q.free_all_sets();
                     Q.TEST_end_transaction();
                     Q.TEST_begin_transaction();
@@ -305,9 +351,9 @@ public class Rename_Term extends ApplicationBasicServlet {
                     if (errorMessageStr.indexOf("`") != -1) {
                         errorMessageStr = errorMessageStr.substring(errorMessageStr.indexOf("`") + 1);
                     }
-                    errorMessageStr = "Ο όρος: " + errorMessageStr;
-                    errorMessageStr = errorMessageStr.replaceAll("does not exist in data base", "δεν υπάρχει στη βάση δεδομένων");
-                    errorMsgObj.setValue(errorMessageStr);
+                    
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{errorMessageStr}));                    
+                    
                 }
                 out.println(errorMsgObj.toString());
                 

@@ -327,7 +327,7 @@ public class ScheduledBackups extends TimerTask {
                 //logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
                 //logFileWriter.append("<data ofThes=\"" + exprortThesaurus + "\"  >\r\n");
 
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile εξαγωγής δεδομένων του θησαυρού : " + exprortThesaurus + " στο αρχείο: " + logFileNamePath);
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile of data export of thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath);
 
             } catch (Exception exc) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + logFileNamePath + " " + exc.getMessage());
@@ -415,12 +415,14 @@ public class ScheduledBackups extends TimerTask {
         //IntegerObject sis_session = new IntegerObject();
         //IntegerObject tms_session = new IntegerObject();
         
+        
         StringObject CreateDBbackupResultMessage = new StringObject("");
         StringObject DBbackupFileNameCreated = new StringObject("");
         StringObject resultObj = new StringObject("");
 
         //tools
-        //DBGeneral dbGen = new DBGeneral();
+        DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
         //UsersClass WTMSUsers = new UsersClass();
         //DBexportData dbExport = new DBexportData();
         DBImportData dbImport = new DBImportData();
@@ -442,12 +444,13 @@ public class ScheduledBackups extends TimerTask {
                 OutputStream fout = new FileOutputStream(logFileNamePath);
                 OutputStream bout = new BufferedOutputStream(fout);
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
+                
                 logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
                 //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../" + webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
                 logFileWriter.append("<importActions>\r\n");
-                logFileWriter.append("<title>Αναφορά εισαγωγής δεδομένων στον θησαυρό " + importThesaurus + "</title>\r\n");
-                //logFileWriter.append("<!--"+time + " LogFile λειτουργίας εισαγωγής δεδομένων στον θησαυρό: " + importThesaurusName +".-->\r\n");
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile λειτουργίας εισαγωγής δεδομένων στον θησαυρό: " + importThesaurus + ".");
+                logFileWriter.append("<title>"+u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurus,Utilities.GetNow()})+"</title>\r\n");
+                //logFileWriter.append("<!--"+time + " LogFile  of import data in thesaurus: " + importThesaurusName +".-->\r\n");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile of import data in thesaurus: " + importThesaurus + ".");
 
 
             } catch (Exception exc) {

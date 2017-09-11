@@ -78,19 +78,24 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 return;
             }
 
-            String pathToMessagesXML = getServletContext().getRealPath("/translations/Messages.xml");
+            
 
             // open SIS and TMS connection
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
             IntegerObject tms_session = new IntegerObject();
 
-                        //StringBuffer xml = new StringBuffer();
+            DBGeneral dbGen = new DBGeneral();
+            Utilities u = new Utilities();
+            
+            //StringBuffer xml = new StringBuffer();
             //String RenameResult = "Renamed succesfully!!";
-            String RenameResult = "Η μετονομασία ολοκληρώθηκε με επιτυχία.";
+            
+            String RenameResult =  u.translateFromMessagesXML("root/EditFacet/Rename/Success", null);
+            
             String Xmlresult = "";
             StringObject ob = new StringObject();
-            Utilities u = new Utilities();
+            
 
             String oldName = u.getDecodedParameterValue(request.getParameter("oldfacetname"));
             String newName = u.getDecodedParameterValue(request.getParameter("newfacetname"));
@@ -99,7 +104,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
 
 
 
-            DBGeneral dbGen = new DBGeneral();
+            
             //Parameters.initParams(this.getServletContext());
 
             //open connection and start Transaction
@@ -116,7 +121,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 byte[] byteArray = newName.getBytes("UTF-8");
                 int maxTermChars = dbtr.getMaxBytesForFacet(SessionUserInfo.selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxTermChars) {
-                    //errorMsgObj.setValue("Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.");
+                    //errorMsgObj.setValue("No facet selected for rename. Operation cancelled.");
                         errorArgs.add("" + maxTermChars);
                         errorArgs.add("" + byteArray.length);
                         dbGen.Translate(ob, "root/EditFacet/Edit/LongName", errorArgs, pathToMessagesXML);
@@ -178,7 +183,9 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((OldFacet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //OLD NAME NULL?
-                ob.setValue("Δεν επιλέχθηκε μικροθησαυρός για μετονομασία. Ακύρωση μετονομασίας.");
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NoFacetSelected", null));
+                //ob.setValue("No Facet selected for rename. Operation cancelled.");
+                
                 ret1 = TMSAPIClass.TMS_APIFail;
 
                 //abort transaction and close connection
@@ -188,8 +195,9 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if (!dbG.check_exist(OldFacet.toString(), Q, sis_session)) {
 
                 //OLD NAME EXISTS?
-                ob.setValue("Ο μικροθησαυρός προς μετονομασία δεν είναι έγκυρος."
-                        + " Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.");
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null));
+                //ob.setValue("Facet selected for rename does not exist anymore. Please search again for this facet and try again. Operation cancelled.");
+                
                 //abort transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
@@ -200,7 +208,8 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((facet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //NEW NAME ONY PREFIX?
-                ob.setValue("Δεν δόθηκε νέο όνομα για τον μικροθησαυρό προς μετονομασία. Ακύρωση μετονομασίας.");
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/EmptyNewName", null));
+                //ob.setValue("A new facet name was not provided. Operation cancelled.");
                 //abort transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
@@ -209,7 +218,8 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 ret1 = TMSAPIClass.TMS_APIFail;
             } else if (dbG.check_exist(facet, Q, sis_session)) {
                 //NEW NAME EXISTS?
-                ob.setValue("Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.");
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NewNameExists", null));
+                //ob.setValue("New Facet name already exists in the database. Operation cancelled.");
                 
                 //abort transaction and close connection
                 Q.free_all_sets();

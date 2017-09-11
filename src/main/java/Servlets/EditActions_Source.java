@@ -42,6 +42,7 @@ import Utils.Parameters;
 import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +100,7 @@ public class EditActions_Source extends ApplicationBasicServlet {
             String source_note  = u.getDecodedParameterValue(request.getParameter("source_note")); 
             String newValue     = u.getDecodedParameterValue(request.getParameter(targetField)); 
             String deleteCurrentThesaurusReferences = request.getParameter("deleteRefs"); 
-            String pathToMessagesXML = getServletContext().getRealPath("/translations/Messages.xml");
+            String pathToMessagesXML = Utilities.getMessagesXml();
                        
             
             if(targetField.compareTo(DBCreate_Modify_Source.source_create_kwd)==0){
@@ -119,7 +120,7 @@ public class EditActions_Source extends ApplicationBasicServlet {
             
             if(targetField.compareTo(DBCreate_Modify_Source.source_create_kwd)==0){
                 
-                succeded = creation_modificationOfSource.createNewSource(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetSource, source_note, errorMsg,pathToMessagesXML);
+                succeded = creation_modificationOfSource.createNewSource(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetSource, source_note, errorMsg);
             }
             else {
                 succeded = creation_modificationOfSource.commitSourceTransaction(SessionUserInfo, this.getServletContext(),Q,TA,sis_session,tms_session,targetSource,targetField,newValue,deleteCurrentThesaurusReferences,errorMsg);
@@ -130,7 +131,8 @@ public class EditActions_Source extends ApplicationBasicServlet {
                     targetField= DBCreate_Modify_Source.source_delete_kwd;
                     succeded = creation_modificationOfSource.commitSourceTransaction(SessionUserInfo,this.getServletContext(),Q,TA,sis_session,tms_session,targetSource,targetField,newValue,deleteCurrentThesaurusReferences,errorMsg);
                     if(succeded==false){
-                        errorMsg.setValue("Η μεταφορά αναφορών για τον τρέχων θησαυρό ολοκληρώθηκε επιτυχώς.\nΑπέτυχε ωστόσο η διαγραφή της πηγής " + targetSource +" λόγω αναφορών σε αυτήν από άλλους θησαυρούς.");
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/OtherThesauriReferences", null));
+                        //errorMsg.setValue("Source references from current thesaurus were deleted successfully. The source could not be though deleted due to references from other thesauri of the database.");                        
                     }
                 }
             }

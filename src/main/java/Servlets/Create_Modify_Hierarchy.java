@@ -132,7 +132,7 @@ public class Create_Modify_Hierarchy extends ApplicationBasicServlet {
             //Perform Checks and commit/Abort modification
             boolean succeeded = creation.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,
                       dbGen,  targetHierarchy,  targetHierarchyFacets,createORmodify, deletionOperator,
-                    SessionUserInfo.name, targetLocale, resultObj, true, pathToMessagesXML);
+                    SessionUserInfo.name, targetLocale, resultObj, true);
 
             Q.free_all_sets();
             if(succeeded){

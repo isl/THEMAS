@@ -56,27 +56,6 @@ public class Linguist {
     Hashtable<String, String> newLanguages = new Hashtable<String, String>();
 
     /**
-     * Gets a text, checks about language and returns the html acronym.
-     *
-     * @param temp  String variable which contains text for language check.
-     * @return  String variable with html language acronym.
-     */
-    protected String getLanguageAcronym(String temp) {
-        //NEED IMPROVEMENT                                                                                                                                                                //NEED IMPROVEMENT
-        String tempOrig = temp;
-        temp = temp.toLowerCase();
-        if (temp.contains("ν") || temp.contains("γ") || temp.contains("ψ") || temp.contains("φ") || temp.contains("ρ") || temp.contains("χ") || temp.contains("τ") || temp.contains("η") || temp.contains("δ") || temp.contains("υ") || temp.contains("σ") || temp.contains("λ") || temp.contains("μ") || temp.contains("οι") || temp.contains("ξ") || temp.contains("ζ") || temp.contains("β") || temp.contains("ε") || temp.contains("κ") || temp.contains("π")) {
-            temp = "el";
-        } else if (temp.contains("d") || temp.contains("w") || temp.contains("s") || temp.contains("r") || temp.contains("e") || temp.contains("i") || temp.contains("u") || temp.contains("b") || temp.contains("g") || temp.contains("c") || temp.contains("l") || temp.contains("y")) {
-            temp = "en";
-        } else {
-            temp = "";
-            errorBuffer += "\nText :" + tempOrig + " can't be matched for English or Greek\n";
-        }
-        return temp;
-    }
-
-    /**
      * Takes a text and checks about known languages, which included in AAT model.
      * Return the html acronyms of the language.
      * @param String variable with language for check and replace.
