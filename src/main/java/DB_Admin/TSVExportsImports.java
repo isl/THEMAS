@@ -67,7 +67,7 @@ import org.neo4j.graphdb.Transaction;
  */
 public class TSVExportsImports {
     private String GenericLabel = "Generic";
-    private String CommonLabel = "Common";
+    //private String CommonLabel = "Common";
     
     private String LabelKey = "LABEL";
     //private String Neo4j_Key_For_Type = "Type";
@@ -318,7 +318,7 @@ public class TSVExportsImports {
             
             out.flush();
             
-        }catch(Exception ex){
+        } catch(Exception ex){
             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
             Utils.StaticClass.handleException(ex);
             if(tx!=null){
@@ -336,7 +336,7 @@ public class TSVExportsImports {
     }
     
     public boolean importSpecificFromFile(String filepath, boolean recomputeTransliteration){
-        try{
+        try{//called from create thesaurus indexes should have been created
         
             Hashtable<Long, Hashtable<String, Vector<String>>> nodeInfo = new Hashtable<Long,Hashtable<String, Vector<String>>>();
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF8"));
@@ -407,7 +407,7 @@ public class TSVExportsImports {
                     res = null;
                 }
                 
-                String query1 = "MATCH(n:"+CommonLabel+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
+                String query1 = "MATCH(n:"+Configs.CommonLabelName+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
                 Result res1 = graphDb.execute(query1);
 
                 try{
@@ -619,7 +619,7 @@ public class TSVExportsImports {
             }
           
             for(int i=0; i< thesauriVector.size(); i++){
-                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i))==QClass.APIFail){
+                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
                     Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
                     return false;
                 }
@@ -629,108 +629,6 @@ public class TSVExportsImports {
             Q.free_all_sets();
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-        
-            
-            /*
-            for(int i=0; i< thesauriVector.size(); i++){
-                
-                String thesaurusName = thesauriVector.get(i);            
-                String FacetThesName = Neo4j_Node_LogicalName_For_MaxTHESFacetId.replace("%THES%", thesaurusName);
-                String HierarchyThesName = Neo4j_Node_LogicalName_For_MaxTHESHierarchyId.replace("%THES%", thesaurusName);
-                String TermThesName = Neo4j_Node_LogicalName_For_MaxTHESTermId.replace("%THES%", thesaurusName);
-
-                
-                //Facet Count:       (Store id in %THES%Facet - property MaxThesaurusFacetId. URI produced as /%Thes%/Facet/0001)
-                //===================
-                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
-
-                
-                //update MaxThesarusFacetId property in %THES%Facet node
-                try(Transaction tx = graphDb.beginTx()){
-                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Facet'}) RETURN count(n) // n.Logicalname order by n.Logicalname
-                    String query4 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +FacetThesName+ "\"}) with count(n) as newVal " +
-                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+FacetThesName+"\"}) " +
-                            "SET t."+Neo4j_Key_For_MaxThesaurusFacetId+" = newVal " +
-                            "return t."+Neo4j_Key_For_MaxThesaurusFacetId+" as "+ Neo4j_Key_For_MaxThesaurusFacetId;
-                    Result res4 = graphDb.execute(query4);
-
-                    if (res4 == null) {
-                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Facet Id Failed.");
-                        return false;
-                    }
-                    res4.close();
-                    res4=null;
-                    tx.success();
-                }
-                
-                //Hierarchies Count:       (Store id in %THES%Hierarchy - property MaxThesaurusHierarchyId. URI produced as /%Thes%/Hierarchy/0001)
-                //===================
-                //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
-
-                //update MaxThesaurusHierarchyId property in %THES%Hierarchy node
-                try(Transaction tx = graphDb.beginTx()){
-                    //MATCH (n:S_Class:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'%THES%Hierarchy'}) RETURN  count(n) // n.Logicalname order by n.Logicalname
-                    String query5 = "MATCH(n:"+Labels.S_Class.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+")  - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +HierarchyThesName+ "\"}) with count(n) as newVal " +
-                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+HierarchyThesName+"\"}) " +
-                            "SET t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" = newVal " +
-                            "return t."+Neo4j_Key_For_MaxThesaurusHierarchyId+" as "+ Neo4j_Key_For_MaxThesaurusHierarchyId;
-                    Result res5 = graphDb.execute(query5);
-
-                    if (res5 == null) {
-                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Hierarchy Id Failed.");
-                        return false;
-                    }
-                    res5.close();
-                    res5=null;
-                    tx.success();
-                }
-                
-                //Terms Count:       (Store id in %THES%HierarchyTerm - property MaxThesaurusTermId. URI produced as /%Thes%/Term/0001) (includes TopTerms)
-                //===================
-                //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
-
-                //update MaxThesaurusTermId property in %THES%HierarchyTerm node
-                try(Transaction tx = graphDb.beginTx()){
-                    //MATCH(m:Common{Logicalname:"%THES%HierarchyTerm"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) RETURN count(n) // n.Logicalname order by n.Logicalname;
-                    String query6 = "MATCH(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +TermThesName+ "\"}) <-[:ISA*0..]-(k)<-[:INSTANCEOF]-(n) with count(n) as newVal " +
-                            "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+TermThesName+"\"}) " +
-                            "SET t."+Neo4j_Key_For_MaxThesaurusTermId+" = newVal " +
-                            "return t."+Neo4j_Key_For_MaxThesaurusTermId+" as "+ Neo4j_Key_For_MaxThesaurusTermId;
-                    Result res6 = graphDb.execute(query6);
-
-                    if (res6 == null) {
-                        Utils.StaticClass.webAppSystemOutPrintln("Set Max Thesaurus Term Id Failed.");
-                        return false;
-                    }
-                    res6.close();
-                    res6=null;
-                    tx.success();
-                }
-            }
-            
-            //Sources Count:       (Store id in Source - property MaxSourceId. URI produced as /Source/0001)
-            //===================
-            //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
-
-            //update MaxSourceId property in Source node
-            try(Transaction tx = graphDb.beginTx()){
-                //MATCH (n:Token:Type_Individual:Common) - [:INSTANCEOF]->(m:Common{Logicalname:'Source'}) RETURN count(n) // n.Logicalname order by n.Logicalname;
-                String query7 = "MATCH(n:"+Labels.Token.name()+":"+Labels.Type_Individual.name()+":"+CommonLabel+") - [:INSTANCEOF]->(m:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\"" +Neo4j_Node_LogicalName_For_MaxSourceId+ "\"}) with count(n) as newVal " +
-                        "MATCH(t:"+CommonLabel+"{"+Neo4j_Key_For_Logicalname+":\""+Neo4j_Node_LogicalName_For_MaxSourceId+"\"}) " +
-                        "SET t."+Neo4j_Key_For_MaxSourceId+" = newVal " +
-                        "return t."+Neo4j_Key_For_MaxSourceId+" as "+ Neo4j_Key_For_MaxSourceId;
-                Result res7 = graphDb.execute(query7);
-
-                if (res7 == null) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Set Max Source Id Failed.");
-                    return false;
-                }
-                res7.close();
-                res7=null;
-                tx.success();
-            }
-            
-            */
         
         }
         catch(Exception ex){
@@ -908,16 +806,12 @@ public class TSVExportsImports {
                 tx.success();
             }
 
-                        
-            try(Transaction tx =  graphDb.beginTx()){
-                //create the indexes
-                if(CreateIndexesAndConstraints(graphDb)==false){
-                    return false;
-                }
-                tx.success();
-            }
+            QClass Q = new neo4j_sisapi.QClass();
+            IntegerObject sis_session = new IntegerObject();
             
-           
+            if(!Q.createDatabaseIndexesAndConstraints(graphDb)){
+                return false;
+            }
             
             Utils.StaticClass.closeDb();
             graphDb = Utils.StaticClass.getDBService();
@@ -983,8 +877,6 @@ public class TSVExportsImports {
                 tx.success();
             }
             
-             QClass Q = new neo4j_sisapi.QClass();
-            IntegerObject sis_session = new IntegerObject();
             
             
             Vector<String> thesauriVector = new Vector<String>();
@@ -1006,7 +898,7 @@ public class TSVExportsImports {
             }
             
              for(int i=0; i< thesauriVector.size(); i++){
-                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i))==QClass.APIFail){
+                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
                     Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
                     return false;
                 }
@@ -1147,7 +1039,7 @@ public class TSVExportsImports {
     Node getSingleNodesByNeo4jId(long neo4jId, GraphDatabaseService graphDb){
         Node returnNode = null;
         
-        String query = "MATCH(n:"+CommonLabel+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+neo4jId+"}) RETURN n";
+        String query = "MATCH(n:"+Configs.CommonLabelName+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+neo4jId+"}) RETURN n";
         Result res = graphDb.execute(query);
         try {
             while (res.hasNext()) {
@@ -1191,11 +1083,11 @@ public class TSVExportsImports {
             String query = "";
             
             if(subSetofIds.size()==1){
-                query = "MATCH(n:"+CommonLabel+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+subSetofIds.get(0)+"}) RETURN n";
+                query = "MATCH(n:"+Configs.CommonLabelName+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+subSetofIds.get(0)+"}) RETURN n";
                 
             }
             else{
-                query = " Match (n:"+CommonLabel+") WHERE n."+Configs.Neo4j_Key_For_Neo4j_Id+" IN " + subSetofIds.toString() + " "+
+                query = " Match (n:"+Configs.CommonLabelName+") WHERE n."+Configs.Neo4j_Key_For_Neo4j_Id+" IN " + subSetofIds.toString() + " "+
                         " RETURN n ";
             }
             
@@ -1222,33 +1114,5 @@ public class TSVExportsImports {
         return returnVec;
     }
     
-    boolean CreateIndexesAndConstraints(GraphDatabaseService graphDb) {
-
-        String query = "CREATE INDEX ON :"+CommonLabel+"("+Configs.Neo4j_Key_For_Logicalname+") ";
-        
-        Result res = graphDb.execute(query);
-
-        if (res == null) {
-            Utils.StaticClass.webAppSystemOutPrintln("Creation of Indexes Failed.");
-            return false;
-        }
-        res.close();
-        res = null;
-
-        String query2 = "CREATE CONSTRAINT ON (n:"+CommonLabel+") ASSERT n."+Configs.Neo4j_Key_For_Neo4j_Id+" IS UNIQUE ";
-
-        Result res2 = graphDb.execute(query2);
-
-        if (res2 == null) {
-            Utils.StaticClass.webAppSystemOutPrintln("Creation Constraints Failed.");
-            return false;
-        }
-        res2.close();
-        res2=null;
-
-        
-        
-        Utils.StaticClass.webAppSystemOutPrintln("\nFinished Creation of Indexes and Constraints.\n");
-        return true;
-    }
+    
 }

@@ -288,6 +288,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                 String tmp = allResultsFacets.get(i + facetsPagingFirst - 1).toString();
                 resultsFacets.addElement(tmp);
             }
+            
 
             String xmlResults = u.getResultsInXml_Facet(SessionUserInfo, resultsFacets, output, Q, sis_session, targetLocale, dbGen);
 
@@ -804,7 +805,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             for (int m = 0; m < output.length; m++) {
 
                 String category = output[m];
-                if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                     continue;
                 } else {
                     out.write("<" + category + "/>");

@@ -51,6 +51,7 @@ import Utils.SessionWrapperClass;
 import Utils.SortItem;
 import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
+import Utils.NodeInfoSortItemContainer;
 
 import XMLHandling.ParseFileData;
 import java.io.BufferedOutputStream;
@@ -236,445 +237,155 @@ public class DBImportData {
         
     }
 
-    public void checkLengths(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
-            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String importThesaurusName,
-            Vector<String> guideTerms, Hashtable<String, String> XMLsources,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
-            Hashtable<String, Vector<String>> hierarchyFacets,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
-            OutputStreamWriter logFileWriter) throws IOException {
+    //this function will find out all the thesaurusReferenceIds that have been used by searching in facets and terms
+    private long findThesaurusMaxRefernceId(Vector<SortItem> xmlFacets, Hashtable<String, NodeInfoStringContainer> termsInfo){
+        long retVal = -1;
+        
+        for(SortItem facetSortItem : xmlFacets){
+            if(facetSortItem.getThesaurusReferenceId()>retVal){
+                retVal = facetSortItem.getThesaurusReferenceId();
+            }
+        }
+        Enumeration<String> termEnum = termsInfo.keys();
 
-        DBGeneral dbGen = new DBGeneral();
+        
+        while (termEnum.hasMoreElements()) {
+            
+            String targetTerm = termEnum.nextElement();
+            long compareVal = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(termsInfo.get(targetTerm));
+            if(compareVal>retVal){
+                retVal = compareVal;
+            }            
+        }
+
+        
+        return retVal;
+    }
+    
+    public boolean writeThesaurusDataFromSortItems(UserInfoClass refSessionUserInfo, 
+                                                    CommonUtilsDBadmin common_utils,
+                                                    QClass Q, 
+                                                    TMSAPIClass TA, 
+                                                    IntegerObject sis_session, 
+                                                    IntegerObject tms_session,
+                                                    Vector<SortItem> xmlFacets, 
+                                                    Vector<String> guideTerms, 
+                                                    Hashtable<String, String> XMLsources,
+                                                    Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
+                                                    Hashtable<String, Vector<String>> hierarchyFacets,
+                                                    Hashtable<String, NodeInfoStringContainer> termsInfo,
+                                                    Vector<String> userSelectedTranslationWords,
+                                                    Vector<String> userSelectedTranslationIdentifiers,
+                                                    Hashtable<String, String> userSelections,
+                                                    Vector<SortItem> topTerms,
+                                                    Hashtable<SortItem, Vector<SortItem>> descriptorRts,
+                                                    Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+                                                    Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
+                                                    String importThesaurusName,
+                                                    String pathToErrorsXML, 
+                                                    Locale targetLocale,
+                                                    StringObject resultObj, 
+                                                    OutputStreamWriter logFileWriter) {
+        
+
+        DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass webappusers = new UsersClass();
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
-
+        
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         webappusers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
 
-        /*
-        //open connection and start Transaction
-        if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, SessionUserInfo.selectedThesaurus, false) == QClass.APIFail) {
-            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class DBImportData writeThesaurusData()");
-            return;
+        
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of new thesaurus creation: " + importThesaurusName + ".");
+
+        Q.reset_name_scope();
+        if (readAndSyncronizeTranslationCategories(importThesaurusName, resultObj, Q, TA, sis_session, tms_session,
+                userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections) == false) {
+            return false;
         }
 
-        */
-        Vector<String> errorArgs = new Vector<String>();
-        Vector<String> removeTerms = new Vector<String>();
-        Hashtable<String, String> AllLengthRenames = new Hashtable<String, String>();
-        int unlabeledCounter = 1;
-        Vector<String> allTermsVec = new Vector<String>();
-        allTermsVec.addAll(termsInfo.keySet());
-        /*
-        for (int k = 0; k < allTermsVec.size(); k++) {
-            String targetTerm = allTermsVec.get(k);
-            try {
-                byte[] byteArray = targetTerm.getBytes("UTF-8");
-
-                int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    removeTerms.add(targetTerm);
-                    String newName = XMLHandling.ParseFileData.UnlabeledPrefix + (unlabeledCounter++);
-                    AllLengthRenames.put(targetTerm, newName);
-                    StringObject warningMsg = new StringObject();
-                    errorArgs.clear();
-                    errorArgs.add(targetTerm);
-                    errorArgs.add(newName);
-                    errorArgs.add("" + maxTermChars);
-                    errorArgs.add("" + byteArray.length);
-                    dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                    try {
-                        logFileWriter.append("\r\n<targetTerm>");
-                        logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                        logFileWriter.append("<errorType>" + "termname" + "</errorType>");
-                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
-                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                        logFileWriter.append("</targetTerm>\r\n");
-                    } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                        Utils.StaticClass.handleException(ex);
-                    }
-
-
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
+        long maxExistingRefId = findThesaurusMaxRefernceId(xmlFacets, termsInfo);
+        if(maxExistingRefId>0){
+            if(Q.resetCounter_For_ThesarusReferenceId(importThesaurusName,maxExistingRefId)==QClass.APIFail){
+                Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + importThesaurusName);
+                return false;
             }
         }
-        */
-        /*
-        for (int k = 0; k < topTerms.size(); k++) {
-        String targetTerm = topTerms.get(k);
-        try {
-        byte[] byteArray = targetTerm.getBytes("UTF-8");
-
-        int maxTermChars = dbtr.getMaxBytesForDescriptor(refSessionUserInfo.selectedThesaurus, Q, sis_session);
-        if (byteArray.length > maxTermChars) {
-        if (removeTerms.contains(targetTerm) == false) {
-        removeTerms.add(targetTerm);
-        }
-        StringObject warningMsg = new StringObject();
-        errorArgs.clear();
-        errorArgs.add(targetTerm);
-        errorArgs.add("" + maxTermChars);
-        errorArgs.add("" + byteArray.length);
-        dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-        try {
-        logFileWriter.append("\r\n<targetTerm>");
-        logFileWriter.append("<name>" + targetTerm + "</name>");
-        logFileWriter.append("<errorType>" + "termname" + "</errorType>");
-        logFileWriter.append("<errorValue>" + targetTerm + "</errorValue>");
-        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-        logFileWriter.append("</targetTerm>\r\n");
-        } catch (IOException ex) {
-        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-        Utils.StaticClass.handleException(ex);
-        }
-
-
-
-        }
-        } catch (UnsupportedEncodingException ex) {
-        Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-        Utils.StaticClass.handleException(ex);
-        }
-        }
-
-
-         */
-
-        if (removeTerms.size() > 0) {
-            for (int k = 0; k < removeTerms.size(); k++) {
-                String termToRemove = removeTerms.get(k);
-
-                String newName = AllLengthRenames.get(termToRemove);
-                if (termsInfo.containsKey(termToRemove)) {
-                    NodeInfoStringContainer targetTermInfo = termsInfo.get(termToRemove);
-                    termsInfo.remove(termToRemove);
-                    termsInfo.put(newName, targetTermInfo);
-                }
-
-                Enumeration<String> termEnum = termsInfo.keys();
-                while (termEnum.hasMoreElements()) {
-                    String checkTerm = termEnum.nextElement();
-
-                    Vector<String> bts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd);
-                    Vector<String> nts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd);
-                    Vector<String> rts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd);
-
-                    if (bts.contains(termToRemove)) {
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd).remove(termToRemove);
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd).add(newName);
-                    }
-                    if (nts.contains(termToRemove)) {
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd).remove(termToRemove);
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd).add(newName);
-                    }
-                    if (rts.contains(termToRemove)) {
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd).remove(termToRemove);
-                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd).add(newName);
-                    }
-                }
-
-                /*
-                if (topTerms.contains(termToRemove)) {
-                topTerms.remove(termToRemove);
-                }
-
-                if (descriptorRts.containsKey(termToRemove)) {
-                descriptorRts.remove(termToRemove);
-                }
-
-                if (descriptorUfs.containsKey(termToRemove)) {
-                descriptorUfs.remove(termToRemove);
-                }
-
-                Enumeration<String> rtsEnum = descriptorRts.keys();
-                while (rtsEnum.hasMoreElements()) {
-                String targetTerm = rtsEnum.nextElement();
-                Vector<String> rts = descriptorRts.get(targetTerm);
-                if (rts.contains(termToRemove)) {
-                descriptorRts.get(targetTerm).remove(termToRemove);
-                }
-                }
-                 */
-                /*
-                for (int m = 0; m < allLevelsOfImportThes.size(); m++) {
-                if (allLevelsOfImportThes.get(m).containsKey(termToRemove)) {
-                allLevelsOfImportThes.get(m).remove(termToRemove);
-                }
-
-                Enumeration<String> levelTermsEnum = allLevelsOfImportThes.get(m).keys();
-                while (levelTermsEnum.hasMoreElements()) {
-                String targetTerm = levelTermsEnum.nextElement();
-                Vector<String> bts = allLevelsOfImportThes.get(m).get(targetTerm);
-                if (bts.contains(termToRemove)) {
-                allLevelsOfImportThes.get(m).get(targetTerm).remove(termToRemove);
-                }
-                if (bts.size() == 1) {
-
-                allLevelsOfImportThes.get(m).get(targetTerm).add(Parameters.UnclassifiedTermsLogicalname);
-                }
-                }
-                }
-                 */
-                if (guideTerms.contains(termToRemove)) {
-
-                    guideTerms.remove(termToRemove);
-                    guideTerms.add(newName);
-                }
-
-                if (XMLguideTermsRelations.containsKey(termToRemove)) {
-                    Vector<SortItem> existingRelations = XMLguideTermsRelations.get(termToRemove);
-                    XMLguideTermsRelations.remove(termToRemove);
-                    XMLguideTermsRelations.put(newName, existingRelations);
-                }
-
-
-                Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
-                while (guideTermsEnum.hasMoreElements()) {
-                    String targetTerm = guideTermsEnum.nextElement();
-                    Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
-                    for (int m = 0; m < gts.size(); m++) {
-                        SortItem item = gts.get(m);
-                        if (item.log_name.equals(termToRemove)) {
-                            XMLguideTermsRelations.get(targetTerm).get(m).log_name = newName;
-                        }
-                    }
-                    /*
-                    Vector<SortItem> gtsToRemove = new Vector<SortItem>();
-                    for (int m = 0; m < gts.size(); m++) {
-                    SortItem item = gts.get(m);
-                    if (item.log_name.equals(termToRemove)) {
-                    gtsToRemove.add(item);
-                    }
-                    }
-
-                    XMLguideTermsRelations.get(targetTerm).removeAll(gtsToRemove);
-                     *
-                     */
-
-                }
-
-
-            }
-        }
-
-        Enumeration<String> termsInfoEnumForSources = termsInfo.keys();
-        while (termsInfoEnumForSources.hasMoreElements()) {
-            String targetTerm = termsInfoEnumForSources.nextElement();
-            Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
-            Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
-            if (primarySources != null) {
-                for (int k = 0; k < primarySources.size(); k++) {
-                    String checkSource = primarySources.get(k);
-                    if (XMLsources.containsKey(checkSource) == false) {
-                        XMLsources.put(checkSource, "");
-                    }
-                }
-
-            }
-
-            if (translationSources != null) {
-                for (int k = 0; k < translationSources.size(); k++) {
-                    String checkSource = translationSources.get(k);
-                    if (XMLsources.containsKey(checkSource) == false) {
-                        XMLsources.put(checkSource, "");
-                    }
-                }
-
-            }
-
-        }
-
-        Vector<String> sourcesToRemove = new Vector<String>();
-        Hashtable<String, String> sourcesToRename = new Hashtable<String, String>();
-        Vector<String> allSources = new Vector<String>(XMLsources.keySet());
-        /*
-        for (int k = 0; k < allSources.size(); k++) {
-            String targetSource = allSources.get(k);
-            String newName = "";
-            try {
-                byte[] byteArray = targetSource.getBytes("UTF-8");
-
-                int maxTermChars = dbtr.getMaxBytesForSource(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-
-                    if (sourcesToRemove.contains(targetSource) == false) {
-                        sourcesToRemove.add(targetSource);
-                    }
-                    newName = XMLHandling.ParseFileData.UnlabeledPrefix + (unlabeledCounter++);
-                    String oldSn = XMLsources.get(targetSource);
-                    sourcesToRename.put(targetSource, newName);
-                    XMLsources.remove(targetSource);
-                    XMLsources.put(newName, oldSn);
-
-                    StringObject warningMsg = new StringObject();
-                    errorArgs.clear();
-                    errorArgs.add(targetSource);
-                    errorArgs.add(newName);
-                    errorArgs.add("" + maxTermChars);
-                    errorArgs.add("" + byteArray.length);
-                    dbGen.Translate(warningMsg, "root/EditSource/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                    try {
-                        logFileWriter.append("\r\n<targetTerm>");
-                        logFileWriter.append("<name>" + Utilities.escapeXML(targetSource) + "</name>");
-                        logFileWriter.append("<errorType>" + "sourcename" + "</errorType>");
-                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
-                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                        logFileWriter.append("</targetTerm>\r\n");
-                    } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                        Utils.StaticClass.handleException(ex);
-                    }
-
-
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-
-            //check source_note
-            String srcname = "";
-            String sourceNoteStr = "";
-            if (sourcesToRemove.contains(targetSource) == false) {
-                srcname = targetSource;
-                sourceNoteStr = XMLsources.get(targetSource);
-            } else {
-                srcname = newName;
-                sourceNoteStr = XMLsources.get(newName);
-            }
-            try {
-                byte[] byteArray = sourceNoteStr.getBytes("UTF-8");
-
-                int maxTermChars = dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-
-                    XMLsources.put(srcname, "");
-
-                    StringObject warningMsg = new StringObject();
-                    errorArgs.clear();
-                    errorArgs.add(srcname);
-                    errorArgs.add("" + maxTermChars);
-                    errorArgs.add("" + byteArray.length);
-                    dbGen.Translate(warningMsg, "root/EditSource/Creation/LongSourceNoteErrorResolve", errorArgs, pathToMessagesXML);
-                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                    try {
-                        logFileWriter.append("\r\n<targetTerm>");
-                        logFileWriter.append("<name>" + Utilities.escapeXML(srcname) + "</name>");
-                        logFileWriter.append("<errorType>" + ConstantParameters.source_note_kwd + "</errorType>");
-                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(sourceNoteStr) + "</errorValue>");
-                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                        logFileWriter.append("</targetTerm>\r\n");
-                    } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                        Utils.StaticClass.handleException(ex);
-                    }
-
-
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-
-
-        }
-*/
-
-        if (sourcesToRemove.size() > 0) {
-            for (int k = 0; k < sourcesToRemove.size(); k++) {
-                String sourceForRemoval = sourcesToRemove.get(k);
-                String newName = sourcesToRename.get(sourceForRemoval);
-                Enumeration<String> termsInfoEnum = termsInfo.keys();
-                while (termsInfoEnum.hasMoreElements()) {
-                    String targetTerm = termsInfoEnum.nextElement();
-                    Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
-                    Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
-                    if (primarySources != null && primarySources.contains(sourceForRemoval)) {
-                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).remove(sourceForRemoval);
-                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).add(newName);
-                    }
-                    if (translationSources != null && translationSources.contains(sourceForRemoval)) {
-                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd).remove(sourceForRemoval);
-                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd).add(newName);
-                    }
-                }
-            }
-        }
-
-
-        /*
-        Vector<String> gtsToRemove = new Vector<String>();
-
-        Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
-        while (guideTermsEnum.hasMoreElements()) {
-            String targetTerm = guideTermsEnum.nextElement();
-            Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
-
+        
+        Q.reset_name_scope();
+        // Step8 Get and put default Status per user for Unclassified terms
+        if (termsInfo.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
             
-            for (int m = 0; m < gts.size(); m++) {
-                SortItem item = gts.get(m);
-                String gtTerm = item.linkClass;
-                try {
-                    byte[] byteArray = gtTerm.getBytes("UTF-8");
-
-                    int maxTermChars = dbtr.getMaxBytesForGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxTermChars) {
-
-                        //resolve error
-                        item.linkClass = "";
-                        gtsToRemove.add(gtTerm);
-                        XMLguideTermsRelations.get(targetTerm).set(m, item);
-                        if (guideTerms.contains(gtTerm)) {
-                            guideTerms.remove(gtTerm);
-                        }
-
-                        StringObject warningMsg = new StringObject();
-                        errorArgs.clear();
-                        errorArgs.add(gtTerm);
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(warningMsg, "root/EditGuideTerms/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                        try {
-                            logFileWriter.append("\r\n<targetTerm>");
-                            logFileWriter.append("<name>" + Utilities.escapeXML(gtTerm) + "</name>");
-                            logFileWriter.append("<errorType>" + ConstantParameters.guide_term_kwd + "</errorType>");
-                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(gtTerm) + "</errorValue>");
-                            logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                            logFileWriter.append("</targetTerm>\r\n");
-                        } catch (IOException ex) {
-                            Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                            Utils.StaticClass.handleException(ex);
-                        }
-
-
-
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-
+            specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
+        } else {
+            if (termsInfo.get(Parameters.UnclassifiedTermsLogicalname).descriptorInfo.get(ConstantParameters.status_kwd).isEmpty()) {
+                specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
             }
-            
-
         }
-*/
-        //dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
+        
+        Q.reset_name_scope();
+        //common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+
+        if (CreateSources(SessionUserInfo.selectedThesaurus, common_utils, importThesaurusName,
+                Q, TA, sis_session, tms_session, XMLsources, resultObj, logFileWriter) == false) {
+            return false;
+        }
+        
+        // Step9 Create Facets specified by XML
+        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj) == false) {
+            return false;
+        }
+
+        SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, importThesaurusName);
+        
+        //retrieve from termInfo the TopTerm Reference id and the transliteration values used
+        Hashtable<SortItem,Vector<String>> hierarchyFacetSortItems = new Hashtable<SortItem,Vector<String>>();
+        for(String hierarchy : hierarchyFacets.keySet()){
+            String transliteration = "";
+            long refId = -1;
+            NodeInfoStringContainer targetTopTermInfo = null;
+            
+            if(termsInfo.containsKey(hierarchy)){
+                 targetTopTermInfo= termsInfo.get(hierarchy);                
+            }
+            transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetTopTermInfo, hierarchy, false);
+            refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetTopTermInfo);
+            hierarchyFacetSortItems.put(new SortItem(hierarchy,-1,transliteration,refId), hierarchyFacets.get(hierarchy));
+        }
+        
+        // Step10 Create Hierarchies specified by XML
+        if (dbMerge.CreateHierarchiesFromSortItems(SessionUserInfo, Q, TA, sis_session, tms_session,
+                importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, logFileWriter, hierarchyFacetSortItems) == false) {
+            return false;
+        }
+
+        // Step11 Create Hierarchies specified by topterms of Step2
+        if (importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTerms, targetLocale, logFileWriter, resultObj) == false) {
+            return false;
+        }
+
+        // Step12 Create Terms
+        if (importTermsInSortItems(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
+                        pathToErrorsXML, 
+                        importThesaurusName, 
+                        termsInfo, 
+                        resultObj, 
+                        allLevelsOfImportThes,
+                        descriptorRts, 
+                        descriptorUfs, 
+                        logFileWriter) == false) {
+            return false;
+        }
+
+        //Step 13 Guide Terms Addition Patch
+        if (dbMerge.CreateGuideTerms(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session, guideTerms, XMLguideTermsRelations, importThesaurusName, resultObj) == false) {
+            return false;
+        }
+
+        return true;
     }
 
+    
     public boolean writeThesaurusData(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             Vector<String> xmlFacets, Vector<String> guideTerms, Hashtable<String, String> XMLsources,
@@ -1001,15 +712,16 @@ public class DBImportData {
         SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         webappusers.UpdateSessionUserSessionAttribute(refSessionUserInfo, targetThesaurusName);
 
-
-        try {
+        //No need to check lengths any more
+        /*
+		try {
             this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
                     targetThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
 
         } catch (Exception ex) {
             Utils.StaticClass.webAppSystemOutPrintln("Exception Caught: " + ex.getMessage());
             Utils.StaticClass.handleException(ex);
-        }
+        }*/
         // Step3 Read XML file in order to fill basic datastructures concerning terms
         // Step4 Process these data structures in order to define topterms and orphans
         //filling all structures passed as parameters except xmlFilePath parameter and then process data in order to classify terms in levels
@@ -1357,9 +1069,9 @@ public class DBImportData {
             SessionUserInfo = new UserInfoClass(refSessionUserInfo);
             webappusers.UpdateSessionUserSessionAttribute(refSessionUserInfo, targetThesaurusName);
 
-            //try {
-            this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
-                    targetThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
+            //No need to check lengths any more 
+            //this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
+            //        targetThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
 
         //} catch (Exception ex) {
             //  Utils.StaticClass.webAppSystemOutPrintln("Exception Caught: " + ex.getMessage());
@@ -1709,12 +1421,17 @@ public class DBImportData {
         ParseFileData parser = new ParseFileData();
 
         //Structures to fill
-        Vector<String> xmlFacets = new Vector<String>();
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        Vector<SortItem> xmlFacetSortItems = new Vector<SortItem>();
         Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        
+        Vector<String> guideTerms = new Vector<String>();
+        Hashtable<String, String> XMLsources = new Hashtable<String, String>();        
+        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        
+        //key should only be string (instead of SortItem) in case we do not have all information about uri and transliteration in every reference in the XML       
         Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        
+        
         Vector<String> userSelectedTranslationWords = new Vector<String>();
         Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
         Hashtable<String, String> userSelections = new Hashtable<String, String>();
@@ -1743,18 +1460,27 @@ public class DBImportData {
         String inputScheme = ConstantParameters.xmlschematype_THEMAS;
 
         // Step1 Read Facets specified by XML
-        if (parser.readXMLFacets(importThesaurusName, xmlFilePath, inputScheme, xmlFacets) == false) {
+        if (parser.readXMLFacetsInSortItems(importThesaurusName, xmlFilePath, inputScheme, xmlFacetSortItems) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read FACETS.");
             processSucceded = false;
         }
 
 
+        
+        Vector<String> xmlFacetsInStrs = new Vector<String>();
+        if(xmlFacetSortItems!=null){
+            for(SortItem item : xmlFacetSortItems){
+                xmlFacetsInStrs.add(item.getLogName());
+            }
+        }
+            
         /* Step2 Read Hierarchies specified by XML************************************************/
-        if (processSucceded && parser.readXMLHierarchies(importThesaurusName, xmlFilePath, inputScheme, hierarchyFacets, xmlFacets) == false) {
+        if (processSucceded && parser.readXMLHierarchies(importThesaurusName, xmlFilePath, inputScheme, hierarchyFacets, xmlFacetsInStrs) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read HIERARCHIES.");
             processSucceded = false;
         }
-
+        
+        
         if (processSucceded) {
             parser.readTranslationCategories(xmlFilePath, inputScheme, userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections);
         }
@@ -1837,23 +1563,25 @@ public class DBImportData {
         }*/
 
 
-        this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
-                importThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
-        Vector<String> topTerms = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+        //No need to check lengths any more
+        //this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
+        
+        Vector<SortItem> topTerms = new Vector<SortItem>();
+        Hashtable<SortItem, Vector<SortItem>> descriptorRts = new Hashtable<SortItem, Vector<SortItem>>();
+        Hashtable<SortItem, Vector<SortItem>> descriptorUfs = new Hashtable<SortItem, Vector<SortItem>>();
+        
+        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes = new Vector<Hashtable<SortItem, Vector<SortItem>>>();
 
         // Step3 Read XML file in order to fill basic datastructures concerning terms
         // Step4 Process these data structures in order to define topterms and orphans
         //filling all structures passed as parameters except xmlFilePath parameter and then process data in order to classify terms in levels
 
-        processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
+        processXMLTermsInSortItems(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
 
 
-        returnVal= writeThesaurusData(refSessionUserInfo, common_utils,
+        returnVal= writeThesaurusDataFromSortItems(refSessionUserInfo, common_utils,
                 Q, TA, sis_session, tms_session,
-                xmlFacets, guideTerms, XMLsources, XMLguideTermsRelations,
+                xmlFacetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
                 hierarchyFacets, termsInfo, userSelectedTranslationWords,
                 userSelectedTranslationIdentifiers, userSelections,
                 topTerms, descriptorRts, descriptorUfs,
@@ -2379,6 +2107,395 @@ public class DBImportData {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Xml TERMS processing.");
     }
 
+    public void processXMLTermsInSortItems(Hashtable<String, NodeInfoStringContainer> termsInfo, 
+                                           Hashtable<SortItem, Vector<SortItem>> descriptorRts,
+                                           Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+                                           Hashtable<String, Vector<String>> hierarchyFacets, 
+                                           Vector<SortItem> topTerms, 
+                                           Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes) {
+
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Xml TERMS processing.");
+        
+        Vector<SortItem> allTermsHavingBTs = new Vector<SortItem>();
+        Vector<SortItem> allTermsHavingNTs = new Vector<SortItem>();
+        Vector<SortItem> allTermsWithoutBTsorNTs = new Vector<SortItem>();
+        Hashtable<SortItem, Vector<SortItem>> descriptorNts = new Hashtable<SortItem, Vector<SortItem>>();
+
+
+        Vector<String> nodesOfInterest = new Vector<String>();
+        nodesOfInterest.add("descriptor");
+        nodesOfInterest.add(ConstantParameters.bt_kwd);
+        nodesOfInterest.add(ConstantParameters.nt_kwd);
+        nodesOfInterest.add(ConstantParameters.rt_kwd);
+        nodesOfInterest.add(ConstantParameters.uf_kwd);
+
+        //DEBUG int counter=1;
+        String targetNode = "";
+        String targetNodeTranslit = "";
+        long targetNodeRef = -1;
+        //DEBUG int counter=1;
+        
+        Enumeration<String> termInfoIterator = termsInfo.keys();
+
+        while (termInfoIterator.hasMoreElements()) {
+
+
+            targetNode = termInfoIterator.nextElement();
+            targetNodeTranslit = "";
+            targetNodeRef = -1;
+
+            NodeInfoStringContainer targetNodeInfo = termsInfo.get(targetNode);
+            
+            targetNodeRef = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetNodeInfo);
+            targetNodeTranslit = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetNodeInfo, targetNode, false);   
+            
+            SortItem targetSortItem = new SortItem(targetNode, -1, targetNodeTranslit, targetNodeRef);
+
+            Vector<String> BTnodes = new Vector<String>();
+            Vector<String> NTnodes = new Vector<String>();
+            Vector<String> RTnodes = new Vector<String>();
+            Vector<String> UFnodes = new Vector<String>();
+
+            BTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.bt_kwd));
+            NTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.nt_kwd));
+            RTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.rt_kwd));
+            UFnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.uf_kwd));
+
+            int howmanyBTs = BTnodes.size();
+            int howmanyNTs = NTnodes.size();
+            int howmanyRTs = RTnodes.size();
+            int howmanyUFs = UFnodes.size();
+
+
+            if (descriptorNts.containsKey(targetSortItem) == false) {
+                descriptorNts.put(targetSortItem, new Vector<SortItem>());
+            }
+            if (descriptorRts.containsKey(targetSortItem) == false) {
+                descriptorRts.put(targetSortItem, new Vector<SortItem>());
+            }
+
+
+            boolean validValueDetected = false;
+            //Bts relations may define a new Descriptor. in this case hashTables
+            //should be updated with parsedBt as new key and no values.
+            //target node should be added to nts of each bt child Node
+            String parsedBt = "";
+            String parsedBtTranslit = "";
+            long parsedBtRef = -1;
+            for (int k = 0; k < howmanyBTs; k++) {
+                parsedBt = BTnodes.get(k);
+                parsedBtTranslit = "";
+                parsedBtRef = -1;
+
+                if (parsedBt == null || parsedBt.length() == 0) {
+                    continue;
+                }
+                
+                NodeInfoStringContainer parsedBtInfo = termsInfo.get(parsedBt);
+
+                parsedBtRef = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(parsedBtInfo);
+                parsedBtTranslit = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(parsedBtInfo, parsedBt, false);
+
+                SortItem parsedBtSortItem = new SortItem(parsedBt,-1,parsedBtTranslit,parsedBtRef);
+                
+                if (descriptorNts.containsKey(parsedBtSortItem) == false) {
+                    descriptorNts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+                if (descriptorRts.containsKey(parsedBtSortItem) == false) {
+                    descriptorRts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+
+                if (targetNode.compareTo(parsedBt) == 0) {
+                    ///LinkingToSelf.add(targetNode);
+                } else {
+                    validValueDetected = true;
+                    if (descriptorNts.get(parsedBtSortItem).contains(targetSortItem) == false) {
+                        descriptorNts.get(parsedBtSortItem).add(targetSortItem);//targetNode is nt of parsedBt
+                    }
+
+                    if (allTermsHavingNTs.contains(parsedBtSortItem) == false) {
+                        allTermsHavingNTs.add(parsedBtSortItem);
+                    }
+                }
+            }
+
+            if (validValueDetected && allTermsHavingBTs.contains(targetSortItem) == false) {
+                allTermsHavingBTs.add(targetSortItem);
+            }
+
+            validValueDetected = false;
+            //Nts relations may also define a new Descriptor. in this case hashTables
+            //should be updated with parsedNt as new key and no values.
+            //each child nt element should be added to targetNode's nts
+            
+            String parsedNt = "";
+            String parsedNtTranslit = "";
+            long parsedNtRef = -1;
+            
+            for (int k = 0; k < howmanyNTs; k++) {
+                parsedNt = NTnodes.get(k);
+                parsedNtTranslit = "";
+                parsedNtRef = -1;
+
+                if (parsedNt == null || parsedNt.length() == 0) {
+                    continue;
+                }
+                
+                NodeInfoStringContainer parsedNtInfo = termsInfo.get(parsedNt);
+                
+                parsedNtRef = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(parsedNtInfo);
+                parsedNtTranslit = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(parsedNtInfo, parsedNt, false);
+                SortItem parsedNtSortItem = new SortItem(parsedNt,-1,parsedNtTranslit,parsedNtRef);
+                
+                if (descriptorNts.containsKey(parsedNtSortItem) == false) {
+                    descriptorNts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+                if (descriptorRts.containsKey(parsedNtSortItem) == false) {
+                    descriptorRts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+
+                if (targetNode.compareTo(parsedNt) == 0) {
+                    //LinkingToSelf.add(targetNode);
+                } else {
+                    validValueDetected = true;
+                    if (descriptorNts.get(targetSortItem).contains(parsedNtSortItem) == false) {
+                        descriptorNts.get(targetSortItem).add(parsedNtSortItem);//parsedNt is nt of targetNode
+                    }
+
+                    if (allTermsHavingBTs.contains(parsedNtSortItem) == false) {
+                        allTermsHavingBTs.add(parsedNtSortItem);
+                    }
+                }
+            }
+
+            if (validValueDetected && allTermsHavingNTs.contains(targetSortItem) == false) {
+                allTermsHavingNTs.add(targetSortItem);
+            }
+
+            //Rts relations may also define a new Descriptor. in this case hashTables
+            //should be updated with parsedRt as new key and no values.
+            //each rt content should be added to targetNode's rts
+            String parsedRt = "";
+            String parsedRtTranslit = "";
+            long parsedRtRef = -1;
+            for (int k = 0; k < howmanyRTs; k++) {
+                parsedRt = RTnodes.get(k);
+                parsedRtTranslit = "";
+                parsedRtRef = -1;
+
+                if (parsedRt == null || parsedRt.length() == 0) {
+                    continue;
+                }
+                NodeInfoStringContainer parsedRtInfo = termsInfo.get(parsedRt);
+                
+                parsedRtRef = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(parsedRtInfo);
+                parsedRtTranslit = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(parsedRtInfo, parsedRt, false);
+                
+                SortItem parsedRtSortItem = new SortItem(parsedRt,-1,parsedRtTranslit,parsedRtRef);
+                
+                if (descriptorNts.containsKey(parsedRtSortItem) == false) {
+                    descriptorNts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+                if (descriptorRts.containsKey(parsedRtSortItem) == false) {
+                    descriptorRts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+
+                if (targetNode.compareTo(parsedRt) == 0) {
+                    //LinkingToSelf.add(targetNode);
+                } else {
+                    if (descriptorRts.get(targetSortItem).contains(parsedRtSortItem) == false) {
+                        descriptorRts.get(targetSortItem).add(parsedRtSortItem);
+                    }
+                }
+            }
+
+            //READ UF Links
+            String parsedUF = "";
+            String parsedUFTranslit = "";
+            long parsedUFRef = -1;
+            for (int k = 0; k < howmanyUFs; k++) {
+                parsedUF = UFnodes.get(k);
+                parsedUFTranslit = "";
+                parsedUFRef = -1;
+
+                if (parsedUF == null || parsedUF.length() == 0) {
+                    continue;
+                }
+
+                parsedUFTranslit = Utilities.getTransliterationString(parsedUF, false);
+                
+                SortItem ufSortItem = new SortItem(parsedUF,-1,parsedUFTranslit,-1);
+                
+                if (descriptorUfs.containsKey(targetSortItem) == false) {
+                    descriptorUfs.put(targetSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                }
+
+                if (targetNode.compareTo(parsedUF) == 0) {
+                    //LinkingToSelf.add(targetNode);
+                } else {
+                    if (descriptorUfs.get(targetSortItem).contains(targetSortItem) == false) {
+                        descriptorUfs.get(targetSortItem).add(targetSortItem);
+                    }
+                }
+            }
+        }
+
+        findOutTermLevelsInSortItems(descriptorNts, allTermsHavingBTs, allTermsHavingNTs, allTermsWithoutBTsorNTs, topTerms, hierarchyFacets, allLevelsOfImportThes);
+
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Xml TERMS processing.");
+    }
+
+    public void findOutTermLevelsInSortItems(Hashtable<SortItem, Vector<SortItem>> descriptorNts, 
+                                             Vector<SortItem> allTermsHavingBTs, 
+                                             Vector<SortItem> allTermsHavingNTs, 
+                                             Vector<SortItem> allTermsWithoutBTsorNTs, 
+                                             Vector<SortItem> topTerms, 
+                                             Hashtable<String, Vector<String>> hierarchyFacets, 
+                                             Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of classification of terms in hierarchical levels.");
+
+        
+        //filling structures allTermsWithoutBTsorNTs, topTerms and find out hierarchies and top terms
+        findOutTopTermsAndOrphansUsingSortItems(descriptorNts, allTermsHavingBTs, allTermsHavingNTs, allTermsWithoutBTsorNTs, topTerms, hierarchyFacets);
+        
+        //classify terms in levels of creation kept level by level in allLevelsOfImportThes
+
+
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with bt " + allTermsHavingBTs.size() + ".");
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with nt " + allTermsHavingNTs.size() + ".");
+
+        Vector<String> currentLevel = new Vector<String>();
+        for(SortItem item :topTerms){
+            currentLevel.add(item.getLogName());
+        }
+        
+
+        /*
+        if(Parameters.DEBUG){
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nList of terms promoted to Top Terms");
+        for(int i=0; i< topTerms.size(); i++){
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+i + "\t" + topTerms.get(i));
+        }
+        }
+         */
+        //Now add all hierarchies created in current level
+        Enumeration<String> parsedHierarchies = hierarchyFacets.keys();
+        while (parsedHierarchies.hasMoreElements()) {
+            String targetHierarchy = parsedHierarchies.nextElement();
+            if (currentLevel.contains(targetHierarchy) == false) {
+                currentLevel.add(targetHierarchy);
+            }
+        }
+
+        Vector<String> parsedTerms = new Vector<String>();
+        int levelIndex = 0;
+        while (currentLevel.size() > 0) {
+
+            int termsperlevel = 0;
+            //logFileWriter.append("\r\nTerm Level No: " + (levelIndex+2) +"\r\n");
+
+            allLevelsOfImportThes.add(readNextLevelSetTermsAndBtsInSortItems(currentLevel, descriptorNts, parsedTerms));
+            Vector<String> nextLevel = new Vector<String>();
+            Enumeration<SortItem> parseLevel = allLevelsOfImportThes.get(levelIndex).keys();
+            while (parseLevel.hasMoreElements()) {
+                termsperlevel++;
+                SortItem term = parseLevel.nextElement();
+
+                if (nextLevel.contains(term.getLogName()) == false) {
+                    nextLevel.add(term.getLogName());
+                }
+            }
+
+            levelIndex++;
+            if (nextLevel.isEmpty()) {
+                break;
+            } else {
+                currentLevel.removeAllElements();
+                currentLevel.addAll(nextLevel);
+            }
+        }
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of classification of terms in hierarchical levels.");
+
+    }
+
+    
+    public void findOutTopTermsAndOrphansUsingSortItems(Hashtable<SortItem, Vector<SortItem>> descriptorNts, 
+                                                        Vector<SortItem> allTermsHavingBTs, 
+                                                        Vector<SortItem> allTermsHavingNTs, 
+                                                        Vector<SortItem> allTermsWithoutBTsorNTs, 
+                                                        Vector<SortItem> topTerms, 
+                                                        Hashtable<String, Vector<String>> hierarchyFacets) {
+
+        //find out topTerms and unclassifed terms
+        Enumeration<SortItem> parseAllTerms = descriptorNts.keys();
+        while (parseAllTerms.hasMoreElements()) {
+
+            SortItem term = parseAllTerms.nextElement();
+
+            if (allTermsHavingBTs.contains(term) == false) {
+
+                if (allTermsHavingNTs.contains(term) == false) {
+
+                    if (hierarchyFacets.containsKey(term.getLogName()) == false) {
+                        allTermsWithoutBTsorNTs.add(term);
+                    }
+                } else {
+                    if (hierarchyFacets.containsKey(term.getLogName()) == false) {
+                        topTerms.add(term);
+                    }
+                }
+            }
+
+        }
+        boolean foundUnclassifiedInTopTerms = false;
+        for(SortItem item : topTerms){
+            if(item.getLogName().endsWith(Parameters.UnclassifiedTermsLogicalname))
+            {
+                foundUnclassifiedInTopTerms = true;
+                break;
+            }
+        }
+        
+        //Update read structures affected
+        if (!foundUnclassifiedInTopTerms && hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
+            topTerms.add(new SortItem(Parameters.UnclassifiedTermsLogicalname,-1,Utilities.getTransliterationString(Parameters.UnclassifiedTermsLogicalname, false),-1));
+        }
+
+        boolean foundUnclassifiedInTermsHavingNts = false;
+        for(SortItem item : allTermsHavingNTs){
+            if(item.getLogName().endsWith(Parameters.UnclassifiedTermsLogicalname))
+            {
+                foundUnclassifiedInTermsHavingNts = true;
+                break;
+            }
+        }
+        
+        if (!foundUnclassifiedInTermsHavingNts) {
+            allTermsHavingNTs.add(new SortItem(Parameters.UnclassifiedTermsLogicalname,-1,Utilities.getTransliterationString(Parameters.UnclassifiedTermsLogicalname, false),-1));
+        }
+
+        //boolean foundUnclassifiedInDescriptorNts = false;
+        SortItem keyfound = null;
+        for(SortItem item : descriptorNts.keySet()){
+            if(item.getLogName().endsWith(Parameters.UnclassifiedTermsLogicalname))
+            {
+                //foundUnclassifiedInDescriptorNts = true;
+                keyfound = item.getACopy();
+                break;
+            }
+        }
+        
+        if (keyfound==null) {
+            descriptorNts.put(new SortItem(Parameters.UnclassifiedTermsLogicalname,-1,Utilities.getTransliterationString(Parameters.UnclassifiedTermsLogicalname, false),-1), allTermsWithoutBTsorNTs);
+        } else {
+            //check one by one no dublicates should exist
+            descriptorNts.get(keyfound).addAll(allTermsWithoutBTsorNTs);
+        }
+
+        allTermsHavingBTs.addAll(allTermsWithoutBTsorNTs);
+    }
+
+    
     public void findOutTermLevels(Hashtable<String, Vector<String>> descriptorNts, Vector<String> allTermsHavingBTs, Vector<String> allTermsHavingNTs, Vector<String> allTermsWithoutBTsorNTs, Vector<String> topTerms, Hashtable<String, Vector<String>> hierarchyFacets, Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of classification of terms in hierarchical levels.");
 
@@ -2542,6 +2659,72 @@ public class DBImportData {
 
     }
 
+    public Hashtable<SortItem, Vector<SortItem>> readNextLevelSetTermsAndBtsInSortItems(Vector<String> currentLevel, Hashtable<SortItem, Vector<SortItem>> allNts, Vector<String> parsedTerms) {
+
+        Hashtable<String, SortItem> allNtsKeysDictionary = new Hashtable<String,SortItem>();
+        //Hashtable<String, Vector<SortItem>> allNtsWithLogicalnameAsKey = new Hashtable<String,Vector<SortItem>>();
+        
+        Enumeration<SortItem> allNtsEnum = allNts.keys();
+        while(allNtsEnum.hasMoreElements()){
+            SortItem targetItem = allNtsEnum.nextElement();
+            allNtsKeysDictionary.put(targetItem.getLogName(), targetItem);
+            //allNtsWithLogicalnameAsKey.put(targetItem.getLogName(),allNts.get(targetItem));
+        }
+        Hashtable<SortItem, Vector<SortItem>> nextLevelSet_Terms_and_Bts = new Hashtable<SortItem, Vector<SortItem>>();
+
+        for (int i = 0; i < currentLevel.size(); i++) {
+
+            String currentTerm = currentLevel.get(i);
+            //System.out.print("currentTerm: "+currentTerm + " with nts: ");
+            if (parsedTerms.contains(currentTerm)) {
+                continue;
+            } else {
+                parsedTerms.add(currentTerm);
+            }
+            SortItem currentTermSortItem = allNtsKeysDictionary.get(currentTerm);
+            Vector<SortItem> nts = allNts.get(currentTermSortItem);
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"i= " + i + " currentTerm = " + currentTerm );
+            if (nts == null) {
+                continue;
+            }
+
+            while (nts.contains(currentTermSortItem)) {
+                nts.remove(currentTermSortItem);
+            }
+
+            //Utils.StaticClass.webAppSystemOutPrintln(nts.toString());
+            for (int k = 0; k < nts.size(); k++) {
+
+                SortItem currentNt = nts.get(k);
+
+
+                /* BUG Not NEEDED A->B and C->D->B 
+                A,C top terms diffenrent 
+                In this case B would not be created as a child of D parsed terms works well in case of cyrcles
+                if (currentLevel.contains(currentNt)) {
+                    continue;
+                }*/
+
+                if (nextLevelSet_Terms_and_Bts.containsKey(currentNt) == false) {
+                    Vector<SortItem> bts = new Vector<SortItem>();
+                    bts.add(currentTermSortItem);
+                    nextLevelSet_Terms_and_Bts.put(currentNt, bts);
+
+                } else {
+                    if (nextLevelSet_Terms_and_Bts.get(currentNt).contains(currentTermSortItem) == false) {
+                        nextLevelSet_Terms_and_Bts.get(currentNt).add(currentTermSortItem);
+                    }
+                }
+
+            }
+        }
+
+
+
+        return nextLevelSet_Terms_and_Bts;
+
+    }
+
     public void specifyOrphansStatus(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, StringObject resultObj) {
 
         DBFilters dbf = new DBFilters();
@@ -2556,23 +2739,26 @@ public class DBImportData {
         dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, orphanTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, resultObj);
 
     }
-
-    private boolean importMoreHierarchiesFromTopTerms(UserInfoClass SessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String importThesaurusName, Vector<String> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
+    
+    private boolean importMoreHierarchiesFromTopTermsInsortItems(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
+            String importThesaurusName, Vector<SortItem> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "String creation of additional hierarchies - specified by terms without bt but not declared as hierarchies. Time: " + Utilities.GetNow());
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         //Before any addition to merged thesaurus find out which facet is used for Unclassified terms --> UNCLASSIFIED TERMS
         //in order to instanciate possible hierarchies that do not belong in any Facet
         String defaultFacet = new String(dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, importThesaurusName));
-
-        Hashtable<String, Vector<String>> hierFacetsPairsOfNewThesaurus = new Hashtable<String, Vector<String>>();
+        SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, importThesaurusName);
+        
+        Hashtable<SortItem, Vector<String>> hierFacetsPairsOfNewThesaurus = new Hashtable<SortItem, Vector<String>>();
+        
         Vector<String> facets = new Vector<String>();
         facets.add(defaultFacet);
         for (int i = 0; i < topTerms.size(); i++) {
             hierFacetsPairsOfNewThesaurus.put(topTerms.get(i), facets);
         }
         //try {
-            if (dbMerge.CreateHierarchies(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, defaultFacet, targetLocale, resultObj, logFileWriter, hierFacetsPairsOfNewThesaurus) == false) {
+            if (dbMerge.CreateHierarchiesFromSortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, logFileWriter, hierFacetsPairsOfNewThesaurus) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The creation of additional hierarchies failed.");
                 return false;
             }
@@ -2587,6 +2773,240 @@ public class DBImportData {
         return true;
     }
 
+    private boolean importMoreHierarchiesFromTopTerms(UserInfoClass SessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, 
+            TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String importThesaurusName,
+            Vector<String> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
+        
+        Vector<SortItem> topTermSortItems = new Vector<SortItem>();
+        if(topTerms!=null){
+            for(String toptermStr :topTerms){
+                topTermSortItems.add(new SortItem(toptermStr,-1,Utilities.getTransliterationString(toptermStr, false),-1));
+            }
+        }
+
+        boolean returnVal = importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTermSortItems, targetLocale,logFileWriter, resultObj);
+        
+        if(returnVal){
+            topTerms.clear();
+            return true;
+        }
+        else{
+            return false;
+        }        
+    }
+
+    private boolean importTermsInSortItems(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
+            String pathToErrorsXML, String importThesaurusName,
+            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            StringObject resultObj,
+            Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
+            Hashtable<SortItem, Vector<SortItem>> descriptorRts,
+            Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+            OutputStreamWriter logFileWriter) {
+
+
+        DBMergeThesauri dbMerge = new DBMergeThesauri();
+
+
+
+        long startTime;
+        long elapsedTimeMillis;
+        float elapsedTimeSec;
+
+
+        try{
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Descriptors ...">
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of TERMS. Time: " + Utilities.GetNow());
+        startTime = System.currentTimeMillis();
+        if (dbMerge.CreateTermsLevelByLevelInSortItems(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, " " + importThesaurusName, null, importThesaurusName, logFileWriter, resultObj, allLevelsOfImportThes, null, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Term creation operation failed.");
+            return false;
+        }
+        allLevelsOfImportThes.clear();
+        allLevelsOfImportThes = null;
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\nEnd of terms creation in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="rt ...">
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of RTs. Time: " + Utilities.GetNow());
+        startTime = System.currentTimeMillis();
+        Hashtable<String,Vector<String>> descRts = new Hashtable<String,Vector<String>> ();
+        if(descriptorRts!=null){
+            Enumeration<SortItem> rtsenum = descriptorRts.keys();
+            while(rtsenum.hasMoreElements()){
+                SortItem item = rtsenum.nextElement();
+                Vector<SortItem> rtsSortItems =    descriptorRts.get(item);
+                Vector<String> newRtValues = new Vector<String>();
+                if(rtsSortItems!=null){
+                    for(SortItem rtSi : rtsSortItems){
+                        newRtValues.add(rtSi.getLogName());
+                    }
+                }
+                descRts.put(item.getLogName(), newRtValues);
+            }
+        }
+        if (dbMerge.CreateRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, resultObj, descRts, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation of RTS failed.");
+            return false;
+        }
+        descriptorRts.clear();
+        descriptorRts = null;
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\nEnd of RTs creation in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="uf ...">
+        
+        Hashtable<String,Vector<String>> descUFs = new Hashtable<String,Vector<String>> ();
+        if(descriptorUfs!=null){
+            Enumeration<SortItem> ufsEnum = descriptorUfs.keys();
+            while(ufsEnum.hasMoreElements()){
+                SortItem item = ufsEnum.nextElement();
+                Vector<SortItem> ufsSortItems =    descriptorUfs.get(item);
+                Vector<String> newUFValues = new Vector<String>();
+                if(ufsSortItems!=null){
+                    for(SortItem rtSi : ufsSortItems){
+                        newUFValues.add(rtSi.getLogName());
+                    }
+                }
+                descUFs.put(item.getLogName(), newUFValues);
+            }
+        }
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of UFs. Time: " + Utilities.GetNow());
+        startTime = System.currentTimeMillis();
+        if (dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, ConstantParameters.uf_kwd, new Vector<String>(), resultObj, descUFs, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation of UFs FAILED.");
+            return false;
+        }
+        descriptorUfs.clear();
+        descriptorUfs = null;
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of UFS in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Statuses ...">
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting updating the status of terms. Time: " + Utilities.GetNow());
+        startTime = System.currentTimeMillis();
+        if (importStatuses(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, termsInfo, resultObj, logFileWriter, true) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The Status update procedure FAILED.");
+            return false;
+        }
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of updating the status of terms in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+
+        //clear some memory
+
+        Enumeration<String> termsEnum = termsInfo.keys();
+        while (termsEnum.hasMoreElements()) {
+            String targetTerm = termsEnum.nextElement();
+            NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
+            if (targetInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)) {
+                targetInfo.descriptorInfo.remove(ConstantParameters.bt_kwd);
+            }
+            if (targetInfo.descriptorInfo.containsKey(ConstantParameters.nt_kwd)) {
+                targetInfo.descriptorInfo.remove(ConstantParameters.nt_kwd);
+            }
+            if (targetInfo.descriptorInfo.containsKey(ConstantParameters.rt_kwd)) {
+                targetInfo.descriptorInfo.remove(ConstantParameters.rt_kwd);
+            }
+            if (targetInfo.descriptorInfo.containsKey(ConstantParameters.uf_kwd)) {
+                targetInfo.descriptorInfo.remove(ConstantParameters.uf_kwd);
+            }
+            if (targetInfo.descriptorInfo.containsKey(ConstantParameters.status_kwd)) {
+                targetInfo.descriptorInfo.remove(ConstantParameters.status_kwd);
+            }
+        }
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Simple term links --> en, uk_uf,primary_found_in, translations_found_in ...">
+        String[] readNodes = {ConstantParameters.translation_kwd,
+            ConstantParameters.uf_translations_kwd,
+            ConstantParameters.tc_kwd,
+            ConstantParameters.primary_found_in_kwd,
+            ConstantParameters.translations_found_in_kwd};
+        //uf not in this list as we already had read uf links
+        for (int i = 0; i < readNodes.length; i++) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of: " + readNodes[i] + " Time: " + Utilities.GetNow()); //data may also be found as attributes of nodes
+            startTime = System.currentTimeMillis();
+            if (importSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, pathToErrorsXML, termsInfo, resultObj, logFileWriter, readNodes[i]) == false) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Insert opearion of node: " + readNodes[i] + " failed.");
+                return false;
+            }
+            elapsedTimeMillis = System.currentTimeMillis() - startTime;
+            elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of: " + readNodes[i] + " in: " + elapsedTimeSec + " min.");
+            common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        }
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Comment categories SN, tr_SN, HN ...">
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of comment categories SN, tr_SN, HN. Time: " + Utilities.GetNow());
+        startTime = System.currentTimeMillis();
+        if (importCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, pathToErrorsXML, termsInfo, resultObj, logFileWriter) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The creation of comment categories  SN, tr_SN, HN failed.");
+            return false;
+        }
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of comment categories  SN, tr_SN, HN in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Created By / ON ...">
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of Created BY / ON fields. Time: " + Utilities.GetNow());
+        logFileWriter.flush();
+        startTime = System.currentTimeMillis();
+        if (importDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, ConstantParameters.created_by_kwd, importThesaurusName, termsInfo, resultObj, logFileWriter) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The creation of Created BY / ON fields FAILED.");
+            return false;
+        }
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\"End of creation of Created BY / ON fields in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        //<editor-fold defaultstate="collapsed" desc="Modified By / ON ...">
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of Modified BY / ON fields. Time: " + Utilities.GetNow());
+        logFileWriter.flush();
+        startTime = System.currentTimeMillis();
+        if (importDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, ConstantParameters.modified_by_kwd, importThesaurusName, termsInfo, resultObj, logFileWriter) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The creation of Modified BY / ON fields FAILED.");
+            return false;
+        }
+        elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        elapsedTimeSec = (elapsedTimeMillis / 1000F) / 60;
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of Modified BY / ON fields in: " + elapsedTimeSec + " min.");
+        //</editor-fold>
+
+        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+        }
+        catch(Exception ex){
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass().toString());
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+            Utils.StaticClass.handleException(ex);
+            return false;
+        }
+        return true;
+    }
+    
     private boolean importTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String pathToErrorsXML, String importThesaurusName,
@@ -2776,8 +3196,6 @@ public class DBImportData {
         DBFilters dbF = new DBFilters();
         DBGeneral dbGen = new DBGeneral();
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2789,7 +3207,6 @@ public class DBImportData {
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
 
 
-        Vector<String> errorArgs = new Vector<String>();
         //Read Statuses defined in XML
         Enumeration<String> termEnum = termsInfo.keys();
         while (termEnum.hasMoreElements()) {
@@ -3124,3 +3541,444 @@ public class DBImportData {
         return Parameters.BaseRealPath + File.separator + "xml-xsl" + File.separator + "page_contents.xsl";
     }
 }
+
+
+/*
+    public void checkLengths(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
+            String importThesaurusName,
+            Vector<String> guideTerms, Hashtable<String, String> XMLsources,
+            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
+            Hashtable<String, Vector<String>> hierarchyFacets,
+            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            OutputStreamWriter logFileWriter) throws IOException {
+
+        DBGeneral dbGen = new DBGeneral();
+        UsersClass webappusers = new UsersClass();
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        webappusers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
+
+        
+        //open connection and start Transaction
+        //if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, SessionUserInfo.selectedThesaurus, false) == QClass.APIFail) {
+        //    Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class DBImportData writeThesaurusData()");
+        //    return;
+        //}
+
+        
+        Vector<String> errorArgs = new Vector<String>();
+        Vector<String> removeTerms = new Vector<String>();
+        Hashtable<String, String> AllLengthRenames = new Hashtable<String, String>();
+        int unlabeledCounter = 1;
+        Vector<String> allTermsVec = new Vector<String>();
+        allTermsVec.addAll(termsInfo.keySet());
+        
+//        for (int k = 0; k < allTermsVec.size(); k++) {
+//            String targetTerm = allTermsVec.get(k);
+//            try {
+//                byte[] byteArray = targetTerm.getBytes("UTF-8");
+//
+//                int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
+//              if (byteArray.length > maxTermChars) {
+//                    removeTerms.add(targetTerm);
+//                    String newName = XMLHandling.ParseFileData.UnlabeledPrefix + (unlabeledCounter++);
+//                    AllLengthRenames.put(targetTerm, newName);
+//                    StringObject warningMsg = new StringObject();
+//                    errorArgs.clear();
+//                    errorArgs.add(targetTerm);
+//                    errorArgs.add(newName);
+//                    errorArgs.add("" + maxTermChars);
+//                    errorArgs.add("" + byteArray.length);
+//                    dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
+//                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
+//                    try {
+//                        logFileWriter.append("\r\n<targetTerm>");
+//                        logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
+//                        logFileWriter.append("<errorType>" + "termname" + "</errorType>");
+//                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
+//                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
+//                        logFileWriter.append("</targetTerm>\r\n");
+//                    } catch (IOException ex) {
+//                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
+//                        Utils.StaticClass.handleException(ex);
+//                    }
+//
+//
+//
+//                }
+//            } catch (UnsupportedEncodingException ex) {
+//                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+//                Utils.StaticClass.handleException(ex);
+//            }
+//        }
+//        
+//        
+//        for (int k = 0; k < topTerms.size(); k++) {
+//        String targetTerm = topTerms.get(k);
+//        try {
+//        byte[] byteArray = targetTerm.getBytes("UTF-8");
+//
+//        int maxTermChars = dbtr.getMaxBytesForDescriptor(refSessionUserInfo.selectedThesaurus, Q, sis_session);
+//        if (byteArray.length > maxTermChars) {
+//        if (removeTerms.contains(targetTerm) == false) {
+//        removeTerms.add(targetTerm);
+//        }
+//        StringObject warningMsg = new StringObject();
+//        errorArgs.clear();
+//        errorArgs.add(targetTerm);
+//        errorArgs.add("" + maxTermChars);
+//        errorArgs.add("" + byteArray.length);
+//        dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
+//        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
+//        try {
+//        logFileWriter.append("\r\n<targetTerm>");
+//        logFileWriter.append("<name>" + targetTerm + "</name>");
+//        logFileWriter.append("<errorType>" + "termname" + "</errorType>");
+//        logFileWriter.append("<errorValue>" + targetTerm + "</errorValue>");
+//        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
+//        logFileWriter.append("</targetTerm>\r\n");
+//        } catch (IOException ex) {
+//        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
+//        Utils.StaticClass.handleException(ex);
+//        }
+//
+//
+//
+//        }
+//        } catch (UnsupportedEncodingException ex) {
+//        Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+//        Utils.StaticClass.handleException(ex);
+//        }
+//        }
+//
+//
+//         
+
+        if (removeTerms.size() > 0) {
+            for (int k = 0; k < removeTerms.size(); k++) {
+                String termToRemove = removeTerms.get(k);
+
+                String newName = AllLengthRenames.get(termToRemove);
+                if (termsInfo.containsKey(termToRemove)) {
+                    NodeInfoStringContainer targetTermInfo = termsInfo.get(termToRemove);
+                    termsInfo.remove(termToRemove);
+                    termsInfo.put(newName, targetTermInfo);
+                }
+
+                Enumeration<String> termEnum = termsInfo.keys();
+                while (termEnum.hasMoreElements()) {
+                    String checkTerm = termEnum.nextElement();
+
+                    Vector<String> bts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd);
+                    Vector<String> nts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd);
+                    Vector<String> rts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd);
+
+                    if (bts.contains(termToRemove)) {
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd).remove(termToRemove);
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd).add(newName);
+                    }
+                    if (nts.contains(termToRemove)) {
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd).remove(termToRemove);
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd).add(newName);
+                    }
+                    if (rts.contains(termToRemove)) {
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd).remove(termToRemove);
+                        termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd).add(newName);
+                    }
+                }
+
+//
+//                if (topTerms.contains(termToRemove)) {
+//                topTerms.remove(termToRemove);
+//                }
+//
+//                if (descriptorRts.containsKey(termToRemove)) {
+//                descriptorRts.remove(termToRemove);
+//                }
+//
+//                if (descriptorUfs.containsKey(termToRemove)) {
+//                descriptorUfs.remove(termToRemove);
+//                }
+//
+//                Enumeration<String> rtsEnum = descriptorRts.keys();
+//                while (rtsEnum.hasMoreElements()) {
+//                String targetTerm = rtsEnum.nextElement();
+//                Vector<String> rts = descriptorRts.get(targetTerm);
+//                if (rts.contains(termToRemove)) {
+//                descriptorRts.get(targetTerm).remove(termToRemove);
+//                }
+//                }
+//                 
+//                
+//                for (int m = 0; m < allLevelsOfImportThes.size(); m++) {
+//                if (allLevelsOfImportThes.get(m).containsKey(termToRemove)) {
+//                allLevelsOfImportThes.get(m).remove(termToRemove);
+//                }
+//
+//                Enumeration<String> levelTermsEnum = allLevelsOfImportThes.get(m).keys();
+//                while (levelTermsEnum.hasMoreElements()) {
+//                String targetTerm = levelTermsEnum.nextElement();
+//                Vector<String> bts = allLevelsOfImportThes.get(m).get(targetTerm);
+//                if (bts.contains(termToRemove)) {
+//                allLevelsOfImportThes.get(m).get(targetTerm).remove(termToRemove);
+//                }
+//                if (bts.size() == 1) {
+//
+//                allLevelsOfImportThes.get(m).get(targetTerm).add(Parameters.UnclassifiedTermsLogicalname);
+//                }
+//                }
+//                }
+//                 
+                if (guideTerms.contains(termToRemove)) {
+
+                    guideTerms.remove(termToRemove);
+                    guideTerms.add(newName);
+                }
+
+                if (XMLguideTermsRelations.containsKey(termToRemove)) {
+                    Vector<SortItem> existingRelations = XMLguideTermsRelations.get(termToRemove);
+                    XMLguideTermsRelations.remove(termToRemove);
+                    XMLguideTermsRelations.put(newName, existingRelations);
+                }
+
+
+                Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
+                while (guideTermsEnum.hasMoreElements()) {
+                    String targetTerm = guideTermsEnum.nextElement();
+                    Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
+                    for (int m = 0; m < gts.size(); m++) {
+                        SortItem item = gts.get(m);
+                        if (item.log_name.equals(termToRemove)) {
+                            XMLguideTermsRelations.get(targetTerm).get(m).log_name = newName;
+                        }
+                    }
+//
+//                    Vector<SortItem> gtsToRemove = new Vector<SortItem>();
+//                    for (int m = 0; m < gts.size(); m++) {
+//                    SortItem item = gts.get(m);
+//                    if (item.log_name.equals(termToRemove)) {
+//                    gtsToRemove.add(item);
+//                    }
+//                    }
+//
+//                    XMLguideTermsRelations.get(targetTerm).removeAll(gtsToRemove);
+//                     
+//                     
+
+                }
+
+
+            }
+        }
+
+        Enumeration<String> termsInfoEnumForSources = termsInfo.keys();
+        while (termsInfoEnumForSources.hasMoreElements()) {
+            String targetTerm = termsInfoEnumForSources.nextElement();
+            Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
+            Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
+            if (primarySources != null) {
+                for (int k = 0; k < primarySources.size(); k++) {
+                    String checkSource = primarySources.get(k);
+                    if (XMLsources.containsKey(checkSource) == false) {
+                        XMLsources.put(checkSource, "");
+                    }
+                }
+
+            }
+
+            if (translationSources != null) {
+                for (int k = 0; k < translationSources.size(); k++) {
+                    String checkSource = translationSources.get(k);
+                    if (XMLsources.containsKey(checkSource) == false) {
+                        XMLsources.put(checkSource, "");
+                    }
+                }
+
+            }
+
+        }
+
+        Vector<String> sourcesToRemove = new Vector<String>();
+        Hashtable<String, String> sourcesToRename = new Hashtable<String, String>();
+        Vector<String> allSources = new Vector<String>(XMLsources.keySet());
+
+//        for (int k = 0; k < allSources.size(); k++) {
+//            String targetSource = allSources.get(k);
+//            String newName = "";
+//            try {
+//                byte[] byteArray = targetSource.getBytes("UTF-8");
+//
+//                int maxTermChars = dbtr.getMaxBytesForSource(SessionUserInfo.selectedThesaurus, Q, sis_session);
+//                if (byteArray.length > maxTermChars) {
+//
+//                    if (sourcesToRemove.contains(targetSource) == false) {
+//                        sourcesToRemove.add(targetSource);
+//                    }
+//                    newName = XMLHandling.ParseFileData.UnlabeledPrefix + (unlabeledCounter++);
+//                    String oldSn = XMLsources.get(targetSource);
+//                    sourcesToRename.put(targetSource, newName);
+//                    XMLsources.remove(targetSource);
+//                    XMLsources.put(newName, oldSn);
+//
+//                    StringObject warningMsg = new StringObject();
+//                    errorArgs.clear();
+//                    errorArgs.add(targetSource);
+//                    errorArgs.add(newName);
+//                    errorArgs.add("" + maxTermChars);
+//                    errorArgs.add("" + byteArray.length);
+//                    dbGen.Translate(warningMsg, "root/EditSource/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
+//                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
+//                    try {
+//                        logFileWriter.append("\r\n<targetTerm>");
+//                        logFileWriter.append("<name>" + Utilities.escapeXML(targetSource) + "</name>");
+//                        logFileWriter.append("<errorType>" + "sourcename" + "</errorType>");
+//                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
+//                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
+//                        logFileWriter.append("</targetTerm>\r\n");
+//                    } catch (IOException ex) {
+//                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
+//                        Utils.StaticClass.handleException(ex);
+//                    }
+//
+//
+//
+//                }
+//            } catch (UnsupportedEncodingException ex) {
+//                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+//                Utils.StaticClass.handleException(ex);
+//            }
+//
+//            //check source_note
+//            String srcname = "";
+//            String sourceNoteStr = "";
+//            if (sourcesToRemove.contains(targetSource) == false) {
+//                srcname = targetSource;
+//                sourceNoteStr = XMLsources.get(targetSource);
+//            } else {
+//                srcname = newName;
+//                sourceNoteStr = XMLsources.get(newName);
+//            }
+//            try {
+//                byte[] byteArray = sourceNoteStr.getBytes("UTF-8");
+//
+//                int maxTermChars = dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session);
+//                if (byteArray.length > maxTermChars) {
+//
+//                    XMLsources.put(srcname, "");
+//
+//                    StringObject warningMsg = new StringObject();
+//                    errorArgs.clear();
+//                    errorArgs.add(srcname);
+//                    errorArgs.add("" + maxTermChars);
+//                    errorArgs.add("" + byteArray.length);
+//                    dbGen.Translate(warningMsg, "root/EditSource/Creation/LongSourceNoteErrorResolve", errorArgs, pathToMessagesXML);
+//                    Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
+//                    try {
+//                        logFileWriter.append("\r\n<targetTerm>");
+//                        logFileWriter.append("<name>" + Utilities.escapeXML(srcname) + "</name>");
+//                        logFileWriter.append("<errorType>" + ConstantParameters.source_note_kwd + "</errorType>");
+//                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(sourceNoteStr) + "</errorValue>");
+//                        logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
+//                        logFileWriter.append("</targetTerm>\r\n");
+//                    } catch (IOException ex) {
+//                        Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
+//                        Utils.StaticClass.handleException(ex);
+//                    }
+//
+//
+//
+//                }
+//            } catch (UnsupportedEncodingException ex) {
+//                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+//                Utils.StaticClass.handleException(ex);
+//            }
+//
+//
+//        }
+//
+
+        if (sourcesToRemove.size() > 0) {
+            for (int k = 0; k < sourcesToRemove.size(); k++) {
+                String sourceForRemoval = sourcesToRemove.get(k);
+                String newName = sourcesToRename.get(sourceForRemoval);
+                Enumeration<String> termsInfoEnum = termsInfo.keys();
+                while (termsInfoEnum.hasMoreElements()) {
+                    String targetTerm = termsInfoEnum.nextElement();
+                    Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
+                    Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
+                    if (primarySources != null && primarySources.contains(sourceForRemoval)) {
+                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).remove(sourceForRemoval);
+                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).add(newName);
+                    }
+                    if (translationSources != null && translationSources.contains(sourceForRemoval)) {
+                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd).remove(sourceForRemoval);
+                        termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd).add(newName);
+                    }
+                }
+            }
+        }
+
+
+//        Vector<String> gtsToRemove = new Vector<String>();
+//
+//        Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
+//        while (guideTermsEnum.hasMoreElements()) {
+//            String targetTerm = guideTermsEnum.nextElement();
+//            Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
+//
+//            
+//            for (int m = 0; m < gts.size(); m++) {
+//                SortItem item = gts.get(m);
+//                String gtTerm = item.linkClass;
+//                try {
+//                    byte[] byteArray = gtTerm.getBytes("UTF-8");
+//
+//                    int maxTermChars = dbtr.getMaxBytesForGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session);
+//                    if (byteArray.length > maxTermChars) {
+//
+//                        //resolve error
+//                        item.linkClass = "";
+//                        gtsToRemove.add(gtTerm);
+//                        XMLguideTermsRelations.get(targetTerm).set(m, item);
+//                        if (guideTerms.contains(gtTerm)) {
+//                            guideTerms.remove(gtTerm);
+//                        }
+//
+//                        StringObject warningMsg = new StringObject();
+//                        errorArgs.clear();
+//                        errorArgs.add(gtTerm);
+//                        errorArgs.add("" + maxTermChars);
+//                        errorArgs.add("" + byteArray.length);
+//                        dbGen.Translate(warningMsg, "root/EditGuideTerms/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
+//                        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
+//                        try {
+//                            logFileWriter.append("\r\n<targetTerm>");
+//                            logFileWriter.append("<name>" + Utilities.escapeXML(gtTerm) + "</name>");
+//                            logFileWriter.append("<errorType>" + ConstantParameters.guide_term_kwd + "</errorType>");
+//                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(gtTerm) + "</errorValue>");
+//                            logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
+//                            logFileWriter.append("</targetTerm>\r\n");
+//                        } catch (IOException ex) {
+//                            Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
+//                            Utils.StaticClass.handleException(ex);
+//                        }
+//
+//
+//
+//                    }
+//                } catch (UnsupportedEncodingException ex) {
+//                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+//                    Utils.StaticClass.handleException(ex);
+//                }
+//
+//            }
+//            
+//
+//        }
+//
+        //dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+
+    }
+*/

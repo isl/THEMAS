@@ -498,6 +498,35 @@ public class DBMergeThesauri {
         return true;
     }
 
+    public boolean CreateFacetsFromSortItemsVector(String selectedThesaurus, 
+                                                   QClass Q, 
+                                                   TMSAPIClass TA, 
+                                                   IntegerObject sis_session, 
+                                                   IntegerObject tms_session, 
+                                                   Vector<SortItem> merged_thesaurus_NEW_facets, 
+                                                   StringObject resultObj) {
+        
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
+        DBGeneral dbGen = new DBGeneral();
+
+        DBCreate_Modify_Facet creationModificationOfFacet = new DBCreate_Modify_Facet();
+
+        boolean FacetAdditionSucceded = true;
+
+        for (int i = 0; i < merged_thesaurus_NEW_facets.size(); i++) {
+            Q.reset_name_scope();
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacetSortItem(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false);
+
+            if (FacetAdditionSucceded == false) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
+                return false;
+            }
+            resultObj.setValue("");
+        }
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet creation.");
+        return true;
+    }
+
     public boolean CopyHierarchies(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String thesaurusName1, String thesaurusName2, String mergeThesaurus, DBGeneral dbGen,
             String defaultFacet, Locale targetLocale, StringObject resultObj, OutputStreamWriter logFileWriter) throws IOException {
@@ -627,6 +656,103 @@ public class DBMergeThesauri {
                 } else {
                     //modify hierarchy
                     HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
+                }
+
+                if (HierarchiesSucceeded == false) {
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Hierarchies: " + resultObj.getValue());
+                    break;
+                } else {
+                    resultObj.setValue("");
+                }
+            }
+
+            if (HierarchiesSucceeded) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Hierarchies creation.");
+            }
+        } catch (Exception ex) {
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass().toString());
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+            Utils.StaticClass.handleException(ex);
+            return false;
+        }
+        return HierarchiesSucceeded;
+    }
+    
+    public boolean CreateHierarchiesFromSortItems(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
+                                                 String targetThesaurus, 
+                                                 SortItem defaultFacet, 
+                                                 Locale targetLocale, 
+                                                 StringObject resultObj, 
+                                                 OutputStreamWriter logFileWriter,
+                                                 Hashtable<SortItem, Vector<String>> pairsOfMergedThesaurus) {
+        
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of Hierarchies creation. Time: " + Utilities.GetNow());
+        boolean HierarchiesSucceeded = true;
+        try {
+
+            
+            //String pathToMessagesXML = Utilities.getMessagesXml();
+            Utilities u = new Utilities();
+            DBGeneral dbGen = new DBGeneral();
+            UsersClass wtmsUsers = new UsersClass();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
+
+            DBCreate_Modify_Hierarchy creationModificationOfHierarchy = new DBCreate_Modify_Hierarchy();
+
+            //Set session user info to mergedThesaurus
+            //THEMASUserInfo SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+            //update all fields in order to keep it in consistent state
+            UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+            wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, targetThesaurus);
+
+            String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+
+            String defaultFacetNameWithoutPrefix = defaultFacet.getLogName();
+            if(defaultFacetNameWithoutPrefix.startsWith(prefix_class)){
+                defaultFacetNameWithoutPrefix = dbGen.removePrefix(defaultFacetNameWithoutPrefix);
+            }
+            StringObject resultMessageObj = new StringObject();
+            //Vector<String> errorArgs = new Vector<String>();
+
+            //Now for each pair of hierarchyplus facets create hierarchy and then change facets. If no facet is declared add hier under default facet
+            Enumeration<SortItem> pairsEnumMerged = pairsOfMergedThesaurus.keys();
+            while (pairsEnumMerged.hasMoreElements()) {
+                SortItem hierarchy = pairsEnumMerged.nextElement();
+                Vector<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
+                
+                String hierarchyNameWithoutPrefix = hierarchy.getLogName();
+                if(hierarchyNameWithoutPrefix.startsWith(prefix_class)){
+                    hierarchyNameWithoutPrefix = dbGen.removePrefix(hierarchyNameWithoutPrefix);
+                }                
+                
+                if (underFacets.size() == 0) {
+
+                    logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchyNameWithoutPrefix) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacetNameWithoutPrefix) + "</errorValue>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchyNameWithoutPrefix),Utilities.escapeXML(defaultFacetNameWithoutPrefix)}) + "</reason>");
+                    //logFileWriter.append("<reason>Hierarchy: " + Utilities.escapeXML(hierarchy) + " was found without being classified under any Facet. It is therefore by default classified under the default Facet: " + Utilities.escapeXML(defaultFacet) + ".</reason>");
+                    logFileWriter.append("</targetHierarchy>\r\n");
+                    underFacets.add(defaultFacet.getLogName());
+                }
+
+                StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNameWithoutPrefix));
+                Q.reset_name_scope();
+
+                
+                if (Q.set_current_node(hierarchyObj) == QClass.APIFail) {
+                    //create hierarchy
+                    Q.reset_name_scope();
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false);
+                    //logFileWriter.append(resultObj.getValue()+"\r\n");
+                    if (HierarchiesSucceeded == true && underFacets.size() > 1) {
+
+                        resultObj.setValue("");
+                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
+
+                        //logFileWriter.append(resultObj.getValue()+"\r\n");
+                    }
+                } else {
+                    //modify hierarchy
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
                 }
 
                 if (HierarchiesSucceeded == false) {
@@ -1057,7 +1183,16 @@ public class DBMergeThesauri {
     public Vector<String> ReadThesaurusFacets(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
 
+        Vector<String> returnResults = new Vector<String>();
+        returnResults.addAll(Utilities.getStringVectorFromSortItemVector(ReadThesaurusFacetsInSortItems(refSessionUserInfo,Q,sis_session,thesaurusName1,thesaurusName2)));
+        return returnResults;
+    }
+
+    public Vector<SortItem> ReadThesaurusFacetsInSortItems(UserInfoClass refSessionUserInfo,
+            QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
+
         DBGeneral dbGen = new DBGeneral();
+        Vector<SortItem> thesaurus_facets = new Vector<SortItem>();
 
         //update all fields in order to keep it in consistent state
         UsersClass wtmsUsers = new UsersClass();
@@ -1072,8 +1207,8 @@ public class DBMergeThesauri {
         int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
         Q.reset_set(set_facets);
 
-        Vector<String> thesaurus_facets = new Vector<String>();
-        thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
+        
+        thesaurus_facets.addAll(dbGen.get_Node_SortItems_Of_Set(set_facets, true, Q, sis_session));
         Q.free_set(set_facets);
 
         if (thesaurusName2 != null && thesaurusName2.length() > 0 && thesaurusName2.equals(thesaurusName1) == false) {
@@ -1088,20 +1223,34 @@ public class DBMergeThesauri {
             set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
             Q.reset_set(set_facets);
 
-            Vector<String> thesaurus_facetsOfThes2 = new Vector<String>();
-            thesaurus_facetsOfThes2.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
+            Vector<SortItem> thesaurus_facetsOfThes2 = new Vector<SortItem>();
+            thesaurus_facetsOfThes2.addAll(dbGen.get_Node_SortItems_Of_Set(set_facets, true, Q, sis_session));
             Q.free_set(set_facets);
+            
+            Vector<String> thesaurus_facetsOfThes1Strs = new Vector<String>();
+            if(thesaurus_facets!=null){
+                for(SortItem item: thesaurus_facets){
+                    thesaurus_facetsOfThes1Strs.add(item.getLogName());
+                }
+            }
 
             for (int k = 0; k < thesaurus_facetsOfThes2.size(); k++) {
-                String checkFacet = thesaurus_facetsOfThes2.get(k);
-                if (thesaurus_facets.contains(checkFacet) == false) {
-                    thesaurus_facets.add(checkFacet);
+                SortItem checkFacet = thesaurus_facetsOfThes2.get(k);
+                
+            //skipping id a new one will be assigned
+                String checkLogName = checkFacet.getLogName();
+                String translit = checkFacet.getLogNameTransliteration();
+                        
+                if (thesaurus_facetsOfThes1Strs.contains(checkFacet.getLogName()) == false) {
+                    
+                    
+                    thesaurus_facets.add(new SortItem(checkLogName,-1,translit,-1));
                 }
             }
         }
         return thesaurus_facets;
     }
-
+    
     public void ReadTheasaurusTermCommentCategories(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             String thesaurusName1, String thesaurusName2, Hashtable<String, NodeInfoStringContainer> termsInfo) {
         DBGeneral dbGen = new DBGeneral();
@@ -1858,8 +2007,8 @@ public class DBMergeThesauri {
 
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-                    //newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId, category));
-                    newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(targetTermReferenceId+"");
+                    //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId, category));
+                    newContainer.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(targetTermReferenceId+"");
                     newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(targetTransliterationTerm);
                     
                     termsInfo.put(targetTerm, newContainer);
@@ -1894,9 +2043,9 @@ public class DBMergeThesauri {
                     if (termsInfo.containsKey(value) == false) {
                         NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
                         
-                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(valueRefIdL+"");
+                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(valueRefIdL+"");
                         newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(valueTranslit);
-                        //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+                        //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
                         termsInfo.put(value, newContainer);
                         allTerms.add(value);
                     }
@@ -1915,9 +2064,9 @@ public class DBMergeThesauri {
                 } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
                     if (termsInfo.containsKey(value) == false) {
                         NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceId_kwd).add(valueRefIdL+"");
+                        newContainer.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(valueRefIdL+"");
                         newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(valueTranslit);
-                        //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+                        //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
                         termsInfo.put(value, newContainer);
                         allTerms.add(value);
                     }
@@ -1976,7 +2125,7 @@ public class DBMergeThesauri {
 
          if (termsInfo.containsKey(targetTerm) == false) {
          NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-         //newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId, category));
+         //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId, category));
          termsInfo.put(targetTerm, newContainer);
          allTerms.add(targetTerm);
          }
@@ -2007,7 +2156,7 @@ public class DBMergeThesauri {
          if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
          if (termsInfo.containsKey(value) == false) {
          NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-         //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+         //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
          termsInfo.put(value, newContainer);
          allTerms.add(value);
          }
@@ -2028,7 +2177,7 @@ public class DBMergeThesauri {
          } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
          if (termsInfo.containsKey(value) == false) {
          NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-         //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+         //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
          termsInfo.put(value, newContainer);
          allTerms.add(value);
          }
@@ -2106,7 +2255,7 @@ public class DBMergeThesauri {
 
                     if (termsInfo.containsKey(targetTerm) == false) {
                         NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-                        //newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId, category));
+                        //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId, category));
                         termsInfo.put(targetTerm, newContainer);
                         allTerms.add(targetTerm);
                     }
@@ -2136,7 +2285,7 @@ public class DBMergeThesauri {
                     if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-                            //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+                            //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
@@ -2159,7 +2308,7 @@ public class DBMergeThesauri {
                     } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-                            //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+                            //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
@@ -2223,7 +2372,7 @@ public class DBMergeThesauri {
 
              if (termsInfo.containsKey(targetTerm) == false) {
              NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-             //newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId, category));
+             //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId, category));
              termsInfo.put(targetTerm, newContainer);
              allTerms.add(targetTerm);
              }
@@ -2254,7 +2403,7 @@ public class DBMergeThesauri {
              if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
              if (termsInfo.containsKey(value) == false) {
              NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-             //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+             //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
              termsInfo.put(value, newContainer);
              allTerms.add(value);
              }
@@ -2280,7 +2429,7 @@ public class DBMergeThesauri {
              } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
              if (termsInfo.containsKey(value) == false) {
              NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, output);
-             //newContainer.descriptorInfo.get("id").add(new SortItem("" + valueId, valueId, category));
+             //newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueId, valueId, category));
              termsInfo.put(value, newContainer);
              allTerms.add(value);
              }
@@ -2704,17 +2853,86 @@ public class DBMergeThesauri {
 
     public boolean CreateTermsLevelByLevel(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML,
-            String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, Vector<Hashtable<String, Vector<String>>> allLevelsOfThes1, Vector<Hashtable<String, Vector<String>>> allLevelsOfThes2, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
+            String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, 
+            Vector<Hashtable<String, Vector<String>>> allLevelsOfThes1, Vector<Hashtable<String, Vector<String>>> allLevelsOfThes2, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
+
+        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes1SortItems = null;
+        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes2SortItems = null;
+        if(allLevelsOfThes1!=null){
+            allLevelsOfThes1SortItems = new Vector<Hashtable<SortItem, Vector<SortItem>>> (); 
+            
+            
+            for(Hashtable<String, Vector<String>> item : allLevelsOfThes1){
+                
+                Hashtable<SortItem, Vector<SortItem>> levelSortItems = new Hashtable<SortItem,Vector<SortItem>>();
+                
+                Enumeration<String> itemKeysEnum = item.keys();
+                while(itemKeysEnum.hasMoreElements()){
+                    String target = itemKeysEnum.nextElement();
+                    Vector<String> targetTermBts = item.get(target);
+                    Vector<SortItem> targetTermBtSortItems = new Vector<SortItem>();
+                    for(String str : targetTermBts){
+                        targetTermBtSortItems.add(new SortItem(str,-1,Utilities.getTransliterationString(str, false),-1));
+                    }
+                    
+                    levelSortItems.put(new SortItem(target,-1,Utilities.getTransliterationString(target, false),-1),targetTermBtSortItems );
+                    
+                }
+                
+               allLevelsOfThes1SortItems.add(levelSortItems);
+            }
+        }
+        if(allLevelsOfThes2!=null){
+            allLevelsOfThes2SortItems = new Vector<Hashtable<SortItem, Vector<SortItem>>> (); 
+            
+            
+            for(Hashtable<String, Vector<String>> item : allLevelsOfThes2){
+                
+                Hashtable<SortItem, Vector<SortItem>> levelSortItems = new Hashtable<SortItem,Vector<SortItem>>();
+                
+                Enumeration<String> itemKeysEnum = item.keys();
+                while(itemKeysEnum.hasMoreElements()){
+                    String target = itemKeysEnum.nextElement();
+                    Vector<String> targetTermBts = item.get(target);
+                    Vector<SortItem> targetTermBtSortItems = new Vector<SortItem>();
+                    for(String str : targetTermBts){
+                        targetTermBtSortItems.add(new SortItem(str,-1,Utilities.getTransliterationString(str, false),-1));
+                    }
+                    
+                    levelSortItems.put(new SortItem(target,-1,Utilities.getTransliterationString(target, false),-1),targetTermBtSortItems );
+                    
+                }
+                
+               allLevelsOfThes2SortItems.add(levelSortItems);
+            }
+        }
+        
+        return CreateTermsLevelByLevelInSortItems(refSessionUserInfo,common_utils,Q,TA,sis_session,tms_session,pathToErrorsXML,thesaurusName1,thesaurusName2,mergedThesaurusName,logFileWriter,resultObj,allLevelsOfThes1SortItems,allLevelsOfThes2SortItems,resolveError,ConsistencyCheckPolicy);
+    }
+
+    public boolean CreateTermsLevelByLevelInSortItems(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
+                                                      QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML,
+                                                      String thesaurusName1, String thesaurusName2, String mergedThesaurusName, 
+                                                      OutputStreamWriter logFileWriter, StringObject resultObj, 
+                                                      Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes1, 
+                                                      Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes2, 
+                                                      boolean resolveError, 
+                                                      int ConsistencyCheckPolicy) 
+            throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        
+        
+        //SortItem orphanTopTerm = getDefaultUnclassifiedTopTermSortItem(refSessionUserInfo,Q,sis_session,mergedThesaurusName);
+        //orphanTopTerm.setLogName(dbGen.removePrefix(orphanTopTerm.getLogName()));
+        
 
         DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
         UsersClass wtmsUsers = new UsersClass();
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
-
+        
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tCREATION Process Started for thesaurus " + mergedThesaurusName);
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
@@ -2752,7 +2970,7 @@ public class DBMergeThesauri {
 
             if (allLevelsOfThes1.size() > i) {
 
-                Enumeration<String> pairsEnumMerged = allLevelsOfThes1.get(i).keys();
+                Enumeration<SortItem> pairsEnumMerged = allLevelsOfThes1.get(i).keys();
                 while (pairsEnumMerged.hasMoreElements()) {
 
                     if (termsPerLevel % restartInterval == 0) {
@@ -2764,7 +2982,7 @@ public class DBMergeThesauri {
                     }
                     termsPerLevel++;
 
-                    String term = pairsEnumMerged.nextElement();
+                    SortItem termSortItem = pairsEnumMerged.nextElement();
 
                     Q.free_all_sets();
 
@@ -2816,7 +3034,7 @@ public class DBMergeThesauri {
                      }
                      */
                     if (lengthOK) {
-                        StringObject termobj = new StringObject(prefix_term.concat(term));
+                        StringObject termobj = new StringObject(prefix_term.concat(termSortItem.getLogName()));
                         Q.reset_name_scope();
 
                         if (Q.set_current_node(termobj) != QClass.APIFail) {
@@ -2827,24 +3045,31 @@ public class DBMergeThesauri {
                     Q.reset_name_scope();
                     Vector<String> allBts = new Vector<String>();
                     Vector<String> additionalBTs = new Vector<String>();
-                    additionalBTs.addAll(allLevelsOfThes1.get(i).get(term));
+                    Vector<SortItem> additionalBTsSortItems = allLevelsOfThes1.get(i).get(termSortItem);
+                    
+                    if(additionalBTsSortItems!=null){
+                        for(SortItem btitem : additionalBTsSortItems){
+                            additionalBTs.add(btitem.getLogName());
+                        }
+                    }
+                    
 
                     if (exists) {
 
-                        allBts.addAll(dbGen.returnResults(SessionUserInfo, term, ConstantParameters.bt_kwd, Q, TA, sis_session));
+                        allBts.addAll(dbGen.returnResults(SessionUserInfo, termSortItem.getLogName(), ConstantParameters.bt_kwd, Q, TA, sis_session));
                         
 
                         
-                        if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
+                        if (allBts.isEmpty()) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
 
-                            logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
+                            logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termSortItem.getLogName()) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
-                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "1</errorValue>");
-                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(term),thesaurusName2,Utilities.escapeXML(term)}) + "1.</reason>");
+                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(termSortItem.getLogName()) + "1</errorValue>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(termSortItem.getLogName()),thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())}) + "1.</reason>");
                             //logFileWriter.append("<reason>Term " + Utilities.escapeXML(term) + " found as a TT in Thesaurus '" + thesaurusName2 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "1.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
-                            term += "1";
-                            StringObject newtermobj = new StringObject(prefix_term.concat(term));
+                            termSortItem.setLogName(termSortItem.getLogName()+ "1"); 
+                            StringObject newtermobj = new StringObject(prefix_term.concat(termSortItem.getLogName()));
                             Q.reset_name_scope();
                             if (Q.set_current_node(newtermobj) != QClass.APIFail) {
                                 exists = true;
@@ -2854,9 +3079,9 @@ public class DBMergeThesauri {
 
                         }
 
-                        for (int k = 0; k < additionalBTs.size(); k++) {
-                            if (allBts.contains(additionalBTs.get(k)) == false) {
-                                allBts.add(additionalBTs.get(k));
+                        for (String checkBT : additionalBTs) {
+                            if (allBts.contains(checkBT) == false) {
+                                allBts.add(checkBT);
                             }
                         }
 
@@ -2865,25 +3090,27 @@ public class DBMergeThesauri {
                         }
                     }
                     if (exists) {
-                        creation_modificationOfTerm.commitTermTransaction(SessionUserInfo, term, ConstantParameters.bt_kwd, allBts, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
+                        creation_modificationOfTerm.commitTermTransactionInSortItem(SessionUserInfo, termSortItem, ConstantParameters.bt_kwd, allBts, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
                         //logFileWriter.append("Skipping Term : '" + term+"' under BTs : "+  allLevels.get(i).get(term).toString()+"\r\n");
                         //continue;
                     } else {
                         if (additionalBTs.size() > 1 && additionalBTs.contains(Parameters.UnclassifiedTermsLogicalname)) {
                             additionalBTs.remove(Parameters.UnclassifiedTermsLogicalname);
                         }
-                        creation_modificationOfTerm.createNewTerm(SessionUserInfo, term, additionalBTs, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
+                        
+                        
+                        creation_modificationOfTerm.createNewTermSortItem(SessionUserInfo, termSortItem, additionalBTs, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
                     }
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
                         
 
-                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(term)}) + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())}) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus: " + thesaurusName1 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + term + " raised the following error message: " + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + termSortItem.getLogName() + " raised the following error message: " + resultObj.getValue());
 
                         return false;
                     } else {
@@ -2901,7 +3128,7 @@ public class DBMergeThesauri {
 
             if (allLevelsOfThes2 != null && allLevelsOfThes2.size() > i) {
 
-                Enumeration<String> pairsEnumMerged = allLevelsOfThes2.get(i).keys();
+                Enumeration<SortItem> pairsEnumMerged = allLevelsOfThes2.get(i).keys();
                 while (pairsEnumMerged.hasMoreElements()) {
 
                     if (termsPerLevel % restartInterval == 0) {
@@ -2913,13 +3140,13 @@ public class DBMergeThesauri {
                     }
                     termsPerLevel++;
                     //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+" i = " + i + " termsPerLevel = " + termsPerLevel);
-                    String term = pairsEnumMerged.nextElement();
+                    SortItem termSortItem = pairsEnumMerged.nextElement();
 
                     Q.free_all_sets();
 
                     //createNewTerm(sessionInstance,newName,decodedValues,SessionUserInfo.name,errorMsg, Q,sis_session,TA,tms_session,dbGen, pathToErrorsXML);
                     //NOW COPY TO NEW THESAURUS
-                    StringObject termobj = new StringObject(prefix_term.concat(term));
+                    StringObject termobj = new StringObject(prefix_term.concat(termSortItem.getLogName()));
                     Q.reset_name_scope();
                     boolean exists = false;
                     if (Q.set_current_node(termobj) != QClass.APIFail) {
@@ -2928,25 +3155,31 @@ public class DBMergeThesauri {
                     Q.reset_name_scope();
                     Vector<String> allBts = new Vector<String>();
                     Vector<String> additionalBTs = new Vector<String>();
-                    additionalBTs.addAll(allLevelsOfThes2.get(i).get(term));
+                    Vector<SortItem> additionalBTSortItems = allLevelsOfThes2.get(i).get(termSortItem);
+                    
+                    if(additionalBTSortItems!=null){
+                        for(SortItem btSortItem : additionalBTSortItems){
+                            additionalBTs.add(btSortItem.getLogName());
+                        }
+                    }
 
                     //StringObject resultMessageObj_2 = new StringObject();
                     //Vector<String> errorArgs = new Vector<String>();
 
                     if (exists) {
 
-                        allBts.addAll(dbGen.returnResults(SessionUserInfo, term, ConstantParameters.bt_kwd, Q, TA, sis_session));
+                        allBts.addAll(dbGen.returnResults(SessionUserInfo, termSortItem.getLogName(), ConstantParameters.bt_kwd, Q, TA, sis_session));
 
                         if (allBts.size() == 0) {//ALREADY EXISTS BUT WITHOUT BTS --> IT IS ALREADY DEFINED AS TOP TERM
 
-                            logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name>");
+                            logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termSortItem.getLogName()) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
-                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(term) + "2</errorValue>");
-                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(term),thesaurusName1,Utilities.escapeXML(term)}) + "2.</reason>");
+                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(termSortItem.getLogName()) + "2</errorValue>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(termSortItem.getLogName()),thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())}) + "2.</reason>");
                             //logFileWriter.append("<reason>Term ' " + Utilities.escapeXML(term) + "' found as a TT in Thesaurus '" + thesaurusName1 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "2.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
-                            term += "2";
-                            StringObject newtermobj = new StringObject(prefix_term.concat(term));
+                            termSortItem.setLogName((termSortItem.getLogName() + "2"));
+                            StringObject newtermobj = new StringObject(prefix_term.concat(termSortItem.getLogName()));
                             Q.reset_name_scope();
                             if (Q.set_current_node(newtermobj) != QClass.APIFail) {
                                 exists = true;
@@ -2967,24 +3200,24 @@ public class DBMergeThesauri {
                     }
 
                     if (exists) {
-                        creation_modificationOfTerm.commitTermTransaction(SessionUserInfo, term, ConstantParameters.bt_kwd, allBts, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
+                        creation_modificationOfTerm.commitTermTransactionInSortItem(SessionUserInfo, termSortItem, ConstantParameters.bt_kwd, allBts, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
                         //logFileWriter.append("Skipping Term : '" + term+"' under BTs : "+  allLevels.get(i).get(term).toString()+"\r\n");
                         //continue;
                     } else {
                         if (additionalBTs.size() > 1 && additionalBTs.contains(Parameters.UnclassifiedTermsLogicalname)) {
                             additionalBTs.remove(Parameters.UnclassifiedTermsLogicalname);
                         }
-                        creation_modificationOfTerm.createNewTerm(SessionUserInfo, term, additionalBTs, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
+                        creation_modificationOfTerm.createNewTermSortItem(SessionUserInfo, termSortItem, additionalBTs, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, resolveError, logFileWriter, ConsistencyCheckPolicy);
                     }
                     //logFileWriter.append(termsPerLevel+". " +term + " ----- " + nextLevelSet_Terms_and_Bts.get(term).toString()+"\r\n");
 
                     if (resultObj.getValue().length() > 0) {
                         
-                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(term)}) + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())}) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus " + thesaurusName2 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + term + " raised the following error message: " + resultObj.getValue());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "ERROR: " + (i + 1) + "." + termsPerLevel + ". Term: '" + termSortItem.getLogName() + " raised the following error message: " + resultObj.getValue());
 
                         return false;
                     } else {
@@ -3006,6 +3239,7 @@ public class DBMergeThesauri {
         return true;
     }
 
+    
     public boolean CopyRTs(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, int ConsistencyCheckPolicy/*, StringBuffer warnignsBuffer*/) throws IOException {
         //reading both directions
 
@@ -4725,7 +4959,13 @@ public class DBMergeThesauri {
 
     }
 
+    
     public String getDefaultFacet(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String mergedThesaurusName) {
+        
+        return getDefaultFacetSortItem(refSessionUserInfo, Q, sis_session, mergedThesaurusName).getLogName();        
+    }
+
+    public SortItem getDefaultFacetSortItem(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String mergedThesaurusName) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
@@ -4749,14 +4989,14 @@ public class DBMergeThesauri {
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
-        Vector<String> defaultClassName = new Vector<String>();
-        defaultClassName.addAll(dbGen.get_Node_Names_Of_Set(set_classes, true, Q, sis_session));
+        Vector<SortItem> defaultClassName = new Vector<SortItem>();
+        defaultClassName.addAll(dbGen.get_Node_SortItems_Of_Set(set_classes, true, Q, sis_session));
         Q.free_set(set_classes);
         Q.free_set(set_facets);
 
         return defaultClassName.get(0);
     }
-
+    
     public int getStatusPriority(String status, String thesaurus) {
 
         String genericStatus = status.replaceFirst(thesaurus, "");
@@ -5246,4 +5486,183 @@ public class DBMergeThesauri {
 
         return results;
     }
+	
+    
+
+
+    
+    public Hashtable<CMValue, Vector<CMValue>> ReadThesaurusHierarchiesInCMValues(UserInfoClass refSessionUserInfo,
+            QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
+
+        if (thesaurusName1 == null) { // supporting copy operation
+            return new Hashtable<CMValue, Vector<CMValue>>();
+        }
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        DBGeneral dbGen = new DBGeneral();
+
+        //update all fields in order to keep it in consistent state
+        UsersClass wtmsUsers = new UsersClass();
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
+
+        String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+
+        Q.reset_name_scope();
+        //Find out hierarchy Classes and get their instances
+        int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
+        String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+        SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(HierarchyClasses);
+        int set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
+        Q.reset_set(set_hierarchies);
+
+        Vector<CMValue> hierarchyNames = new Vector<CMValue>();
+        hierarchyNames.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchies, true, Q, sis_session));
+        Q.free_set(set_hierarchies);
+
+        //Create a set with all facets used as a filter to the get all classes call taht will follow
+        Q.reset_name_scope();
+        //Find out facet Classes and get their instances
+        index = Parameters.CLASS_SET.indexOf("FACET");
+        String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+        SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
+        int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
+        Q.reset_set(set_facets);
+
+        Hashtable<CMValue, Vector<CMValue>> thesaurus_hierarchy_Facets_Relations = new Hashtable<CMValue, Vector<CMValue>>();
+
+        for (int i = 0; i < hierarchyNames.size(); i++) {
+            StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNames.get(i).getString()));
+            Vector<CMValue> hierarchyFacets = new Vector<CMValue>();
+            Q.reset_name_scope();
+            if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
+                int set_hierarchy_classes = Q.get_superclasses(0);
+
+                Q.reset_set(set_hierarchy_classes);
+                Q.set_intersect(set_hierarchy_classes, set_facets);
+                Q.reset_set(set_hierarchy_classes);
+                hierarchyFacets.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchy_classes, true, Q, sis_session));
+                Q.free_set(set_hierarchy_classes);
+            }
+
+            thesaurus_hierarchy_Facets_Relations.put(hierarchyNames.get(i), hierarchyFacets);
+        }
+        //thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
+
+        Q.free_set(set_facets);
+
+        if (thesaurusName2 != null && thesaurusName2.length() > 0 && thesaurusName2.equals(thesaurusName1) == false) {
+
+            wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName2);
+
+            prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+
+            Q.reset_name_scope();
+            //Find out hierarchy Classes and get their instances
+            index = Parameters.CLASS_SET.indexOf("HIERARCHY");
+            HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(HierarchyClasses);
+            set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
+            Q.reset_set(set_hierarchies);
+
+            Vector<CMValue> hierarchyNamesOfThes2 = new Vector<CMValue>();
+            hierarchyNamesOfThes2.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchies, true, Q, sis_session));
+            Q.free_set(set_hierarchies);
+
+            //Create a set with all facets used as a filter to the get all classes call taht will follow
+            Q.reset_name_scope();
+            //Find out facet Classes and get their instances
+            index = Parameters.CLASS_SET.indexOf("FACET");
+            FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
+            set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
+
+            Q.reset_set(set_facets);
+
+            Hashtable<CMValue, Vector<CMValue>> thesaurus_hierarchy_Facets_RelationsOfThes2 = new Hashtable<CMValue, Vector<CMValue>>();
+
+            for (int i = 0; i < hierarchyNamesOfThes2.size(); i++) {
+                StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNamesOfThes2.get(i).getString()));
+                Vector<CMValue> hierarchyFacets = new Vector<CMValue>();
+                Q.reset_name_scope();
+                if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
+                    int set_hierarchy_classes = Q.get_superclasses(0);
+
+                    Q.reset_set(set_hierarchy_classes);
+                    Q.set_intersect(set_hierarchy_classes, set_facets);
+                    Q.reset_set(set_hierarchy_classes);
+                    hierarchyFacets.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchy_classes, true, Q, sis_session));
+
+                    Q.free_set(set_hierarchy_classes);
+                }
+
+                thesaurus_hierarchy_Facets_RelationsOfThes2.put(hierarchyNamesOfThes2.get(i), hierarchyFacets);
+            }
+            //thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
+
+            Q.free_set(set_facets);
+
+            //merge the two thesauri
+            Enumeration<CMValue> secondThesHiers = thesaurus_hierarchy_Facets_RelationsOfThes2.keys();
+            while (secondThesHiers.hasMoreElements()) {
+                CMValue targetHier = secondThesHiers.nextElement();
+                Vector<CMValue> targetHierFacets = thesaurus_hierarchy_Facets_RelationsOfThes2.get(targetHier);
+
+                if (thesaurus_hierarchy_Facets_Relations.containsKey(targetHier)) {
+
+                    Vector<CMValue> existingFacets = thesaurus_hierarchy_Facets_Relations.get(targetHier);
+
+                    for (int k = 0; k < targetHierFacets.size(); k++) {
+                        CMValue checkFacet = targetHierFacets.get(k);
+                        if (existingFacets.contains(checkFacet) == false) {
+                            existingFacets.add(checkFacet);
+                        }
+                    }
+                    thesaurus_hierarchy_Facets_Relations.put(targetHier, existingFacets);
+
+                } else {
+                    thesaurus_hierarchy_Facets_Relations.put(targetHier, targetHierFacets);
+                }
+            }
+        }
+        return thesaurus_hierarchy_Facets_Relations;
+    }
+	
+    
+    public CMValue getDefaultUnclassifiedHierarchyCmv(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String mergedThesaurusName) {
+
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        UsersClass wtmsUsers = new UsersClass();
+
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
+
+        String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        StringObject mergedUnclassifiedObj = new StringObject(prefix_class.concat(Parameters.UnclassifiedTermsLogicalname));
+        Q.reset_name_scope();
+        CMValue returnCmv = new CMValue();
+        Q.set_current_node_and_retrieve_Cmv(mergedUnclassifiedObj, returnCmv);
+        Q.reset_name_scope();
+        
+        return returnCmv;
+    }
+    
+    public SortItem getDefaultUnclassifiedTopTermSortItem(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String mergedThesaurusName) {
+
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        UsersClass wtmsUsers = new UsersClass();
+
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
+
+        String prefix_descriptor = dbtr.getThesaurusPrefix_TopTerm(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        StringObject mergedUnclassifiedObj = new StringObject(prefix_descriptor.concat(Parameters.UnclassifiedTermsLogicalname));
+        Q.reset_name_scope();
+        CMValue returnCmv = new CMValue();
+        Q.set_current_node_and_retrieve_Cmv(mergedUnclassifiedObj, returnCmv);
+        Q.reset_name_scope();
+        
+        return new SortItem(returnCmv);
+    }
+    
+    
 }

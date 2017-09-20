@@ -172,11 +172,14 @@ public class ConstantParameters {
 
     public static final String XMLLinkClassAttributeName = "linkClass";
 
+    public static final String id_kwd = "id";
     public static final String facet_kwd = "facet";
     public static final String topterm_kwd = "topterm";
     public static final String translation_kwd = "translations";
     public static final String bt_kwd = "bt";
     public static final String nt_kwd = "nt";
+    //addition standing for output of recursive bts
+    public static final String rbt_kwd = "rbt";
     //addition standing for output of recursive nts
     public static final String rnt_kwd = "rnt";
     public static final String rt_kwd = "rt";
@@ -205,7 +208,8 @@ public class ConstantParameters {
     public static final String accepted_kwd ="accepted";
     public static final String status_kwd   ="status";
     
-    public static final String system_referenceId_kwd   ="ReferenceUri";
+    public static final String system_referenceUri_kwd   ="ReferenceUri";
+    public static final String system_referenceIdAttribute_kwd   ="referenceId";
     public static final String system_transliteration_kwd   ="transliteration";
 
 

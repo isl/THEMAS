@@ -384,7 +384,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if(category.compareTo("id")==0 ||category.compareTo("name")==0 ){
+            if(category.compareTo(ConstantParameters.id_kwd)==0 ||category.compareTo("name")==0 ){
                 continue;
             }
             else{

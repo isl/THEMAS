@@ -64,8 +64,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
         
         
         request.setCharacterEncoding("UTF-8");
-        String answerType = request.getParameter("answerType");
-        if(answerType!=null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+        String outputMode = request.getParameter("answerType");
+        if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
             response.setContentType("text/xml;charset=UTF-8");
         }
         else{
@@ -310,11 +310,14 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
             Vector<String> output = new Vector<String>();
             output.addAll(searchCriteria.output);
-            if (output.contains("id") == false) { //id will always be requested
-                output.add("id");
+            if (output.contains(ConstantParameters.id_kwd) == false) { //id will always be requested
+                output.add(ConstantParameters.id_kwd);
             }
             if (output.contains("name")) { //name is also always requested but no special handling is needed
                 output.remove("name");
+            }
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
+                output.add(ConstantParameters.system_transliteration_kwd);
             }
 
             // handle search operators (not) starts / ends with
@@ -357,17 +360,17 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
                                         + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
-                if (answerType != null && ( answerType.compareTo("XML") == 0 ||answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 )) {
+                if (outputMode != null && ( outputMode.compareTo("XML") == 0 ||outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 )) {
                     //nothing
                 } else {
                     startXML += "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>";
                 }
 
-                if(answerType != null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
-                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale);
+                if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
+                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,true);
                 }
                 else{
-                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale);
+                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,false);
                 }
                 // timer end
                 elapsedTimeSec = Utilities.stopTimer(startTime);
@@ -381,7 +384,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                 
-                if (answerType != null && answerType.compareTo("XML") == 0 ) {
+                if (outputMode != null && outputMode.compareTo("XML") == 0 ) {
                     if (Parameters.FormatXML) {
                         WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
                     }
@@ -390,7 +393,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     out.flush();
                     
                 } 
-                else if(answerType != null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+                else if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
                     //nothing to do results already streamed
                     out.flush();
                 }

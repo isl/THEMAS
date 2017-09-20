@@ -70,13 +70,22 @@ public class DBConnect_Hierarchy {
  
     public String ConnectHierarchy(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, StringObject targetHierarchyObj, StringObject targetHierarchyFacetObj, String pathToErrorsXML) {
 
+        CMValue cmv = new CMValue();
+        cmv.assign_node(targetHierarchyObj.getValue(),-1, Utilities.getTransliterationString(targetHierarchyObj.getValue(), true), -1);
+        
+        return ConnectHierarchyCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,targetHierarchyFacetObj,pathToErrorsXML);
+
+    }
+    
+    public String ConnectHierarchyCMValue(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, CMValue targetHierarchyCmv, StringObject targetHierarchyFacetObj, String pathToErrorsXML) {
+
         StringObject errorMsgObj = new StringObject("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus,Q,sis_session.getValue());
 
-        if (targetHierarchyObj.getValue().trim().equals(prefix)) {
+        if (targetHierarchyCmv.getString().trim().equals(prefix)) {
             //errorMSG = errorMSG.concat("A name must be specified for the new hierarchy.");
             return u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null);
         }
@@ -86,14 +95,7 @@ public class DBConnect_Hierarchy {
             return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null) ;
         }
         
-        
-        String transliterationString ="";
-        if(targetHierarchyObj.getValue()!=null && targetHierarchyObj.getValue().length()>0){
-
-            transliterationString = Utilities.getTransliterationString(targetHierarchyObj.getValue(),true);            
-        }
-        
-        int ret = TA.CHECK_CreateHierarchy(targetHierarchyObj, targetHierarchyFacetObj,transliterationString);
+        int ret = TA.CHECK_CreateHierarchy(targetHierarchyCmv, targetHierarchyFacetObj);
 
         if (ret == TMSAPIClass.TMS_APIFail) {
 

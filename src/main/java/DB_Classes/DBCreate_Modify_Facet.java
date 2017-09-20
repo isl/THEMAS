@@ -35,6 +35,7 @@ package DB_Classes;
 
 
 import Utils.ConstantParameters;
+import Utils.SortItem;
 import Utils.Utilities;
 
 import java.io.UnsupportedEncodingException;
@@ -97,7 +98,11 @@ public class DBCreate_Modify_Facet {
     ----------------------------------------------------------------------*/
     public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
 
+        //targetFacet shold come without prefix
+        SortItem facetSortItem = new SortItem(targetFacet,-1,Utilities.getTransliterationString(targetFacet, false),-1);        
+        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists);
         
+        /*
         DBConnect_Facet dbCon = new DBConnect_Facet();
         Utilities u = new Utilities();
 
@@ -117,24 +122,7 @@ public class DBCreate_Modify_Facet {
         // convert target Facet to DB encoding with prefix
         StringObject targetFacetObj = new StringObject(prefix.concat(targetFacet));
 
-        /*
-        try {
-            byte[] byteArray = targetFacet.getBytes("UTF-8");
-
-            int maxFacetChars =  dbtr.getMaxBytesForFacet(selectedThesaurus, Q, sis_session);
-            if(byteArray.length > maxFacetChars){
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(""+maxFacetChars);
-                errorArgs.add(""+byteArray.length);
-
-                dbGen.Translate(errorMsg, "root/EditFacet/Edit/LongName", errorArgs, pathToMessagesXml);                
-                return false;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            Utils.StaticClass.webAppSystemOut(ex.getMessage());
-            Utils.StaticClass.handleException(ex);
-        }
-        */
+        
         // in case of empty Facet
         if (targetFacetObj.getValue().trim().equals(prefix) == true) {
 
@@ -171,11 +159,7 @@ public class DBCreate_Modify_Facet {
                 }
 
 
-            } /*else {
-        
-        //letter code modification and parent facets modifications should be handled 
-        modifyLetterCodes(targetFacet, targetFacetLetterCodes);
-        }*/
+            } 
         }
 
         if (errorMsg != null && errorMsg.getValue() != null && errorMsg.getValue().length() > 0) { // case of error
@@ -221,10 +205,119 @@ public class DBCreate_Modify_Facet {
 
             return true;
         }
-
+*/
     }
 
-    
+    public boolean Create_Or_ModifyFacetSortItem(String selectedThesaurus,
+                                                 QClass Q, 
+                                                 TMSAPIClass TA, 
+                                                 IntegerObject sis_session, 
+                                                 IntegerObject tms_session,  
+                                                 DBGeneral dbGen, 
+                                                 SortItem targetFacetSortItem, 
+                                                 String createORmodify, 
+                                                 String deletionOperator, 
+                                                 StringObject errorMsg, 
+                                                 boolean errorIfExists) {
+
+        
+        DBConnect_Facet dbCon = new DBConnect_Facet();
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
+
+        StringObject errorMsgPrefix = new StringObject();
+        if (createORmodify.equals("create")) {            
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/ErrorPrefix", null));
+        } else {
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/ErrorPrefix", null));
+        }
+
+        Q.reset_name_scope();
+        
+        // looking for Facet prefix (EKTClass`)        
+        String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
+        //loking for facet name without the prefix
+        String targetFacetWithoutPrefix = targetFacetSortItem.getLogName();
+        if(targetFacetWithoutPrefix.startsWith(prefix)){
+            targetFacetWithoutPrefix = dbGen.removePrefix(targetFacetWithoutPrefix);
+        }
+        
+        StringObject targetFacetObj = new StringObject(prefix.concat(targetFacetWithoutPrefix));
+
+        // in case of empty Facet
+        if (targetFacetObj.getValue().trim().equals(prefix) == true) {
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/NoTargetSpecified", null));            
+            return false;
+        }
+        
+        //Facet of kind New / released or obsolete
+        int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
+        
+        CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
+        
+        if (createORmodify.equals("create")) {
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getMessagesXml())));
+
+        } else // modify
+        {
+            if (deletionOperator != null) { // delete / (undo) abandon facet
+
+                DBRemove_Facet dbRemF = new DBRemove_Facet();
+                if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) { // new facet => delete 
+                    errorMsg.setValue(errorMsg.getValue().concat(dbRemF.DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, targetFacetCMV)));
+                } else {
+                    //Facet_CreationOrModificationSucceded = true;
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) { // obsolete facet => undo abandon
+                        // convert BT_for_undo_abandon to DB encoding with prefix ?????
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemF.UndoAbandonFacetCMValue(TA, tms_session, dbGen, targetFacetCMV)));
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) { // released facet => abandon
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemF.AbandonFacetCMValue(TA, tms_session, dbGen, targetFacetCMV)));
+                    }
+                }
+            } 
+        }
+
+        if (errorMsg != null && errorMsg.getValue() != null && errorMsg.getValue().length() > 0) { // case of error
+            
+            errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
+            return false;
+
+        } else { // case of NO error
+            
+            if (createORmodify.equals("create")) {
+
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+            
+
+            } else { // modify
+                if (deletionOperator != null) { // delete / (undo) abandon descriptor
+                    //String message = "";
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Undo abandonment action of facet '%s' was successfully performed.";
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
+                    }
+                     
+                    //errorMsg.setValue(message);
+                    //return message;
+                } else {
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                    //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
+                }
+            }
+
+            return true;
+        }
+
+    }
     /*
     private void modifyLetterCodes(String selectedThesaurus,TMSAPIClass TA, String targetFacet, Vector targetFacetLetterCodes, Locale targetLocale) {
     

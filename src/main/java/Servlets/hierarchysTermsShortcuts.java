@@ -338,7 +338,9 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                         +"</pathToSaveScriptingAndLocale>" ;
                 //Output required for alphabetical
                 Vector<String> output = new Vector<String>();
-                output.add("id");
+                output.add(ConstantParameters.id_kwd);
+                output.add(ConstantParameters.system_referenceUri_kwd);
+                output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.tc_kwd);
                 output.add(ConstantParameters.translation_kwd);
                 output.add(ConstantParameters.scope_note_kwd);
@@ -375,7 +377,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));         
                 
                 //Write XML file
-                u.writeResultsInXMLFile(null,allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
+                u.writeResultsInXMLFile(null,allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo.selectedThesaurus,false);
                 
                 //end query and close connection
                 Q.free_all_sets();

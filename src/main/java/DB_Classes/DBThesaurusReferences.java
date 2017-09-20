@@ -956,6 +956,7 @@ public class DBThesaurusReferences {
         CMValue cmv = new CMValue();
         Q.return_link( set, cls, label, cmv);
         Q.free_set( set);
+        //Q.reset_name_scope();
 
         String prefix = cmv.getString();
         return prefix;

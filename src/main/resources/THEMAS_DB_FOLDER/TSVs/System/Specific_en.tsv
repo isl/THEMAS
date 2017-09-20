@@ -553,7 +553,8 @@
 1072	LABEL	Type_Individual
 1072	ISA	1065		<!-- SIS_XXXXX_SISStatusTermNotAccepted	ISA	SIS_XXXXX_SISStatusOfTerm -->
 1073	Logicalname	SIS_XXXXX_SISClass`UNCLASSIFIED TERMS
-1073	ThesaurusReferenceId	1
+1073	ThesaurusReferenceId	2
+1073	Transliteration	unclassified terms
 1073	LABEL	Common
 1073	LABEL	S_Class
 1073	LABEL	Type_Individual
@@ -562,7 +563,6 @@
 1073	INSTANCEOF	1063		<!-- SIS_XXXXX_SISClass`UNCLASSIFIED TERMS	INSTANCEOF	SIS_XXXXX_SISNewThesaurusClass -->
 1073	ISA	1038		<!-- SIS_XXXXX_SISClass`UNCLASSIFIED TERMS	ISA	SIS_XXXXX_SISHierarchyClass -->
 1074	Logicalname	SIS_XXXXX_SISClass`Unclassified terms
-1074	ThesaurusReferenceId	2
 1074	LABEL	Common
 1074	LABEL	S_Class
 1074	LABEL	Type_Individual
@@ -587,6 +587,7 @@
 1077	LABEL	Type_Individual
 1077	INSTANCEOF	23		<!-- SIS_XXXXX_SISClass`	INSTANCEOF	Prefix -->
 1078	Logicalname	Thesaurus`SIS_XXXXX_SIS
+1078	ThesaurusReferenceId	1
 1078	MaxThesaurusReferenceId	3	<!-- Unclassified Terms Hierarachy Top Term and Facet -->
 1078	LABEL	Common
 1078	LABEL	Token
@@ -595,6 +596,7 @@
 1078	RELATION	1003		<!-- Thesaurus`SIS_XXXXX_SIS	RELATION	Label800046 -->
 1079	Logicalname	SIS_XXXXX_SISSIS_zzzzz_SIS`Unclassified terms
 1079	ThesaurusReferenceId	3
+1079	Transliteration	unclassified terms
 1079	LABEL	Common
 1079	LABEL	Token
 1079	LABEL	Type_Individual

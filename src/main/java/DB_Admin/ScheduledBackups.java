@@ -325,7 +325,7 @@ public class ScheduledBackups extends TimerTask {
                 bout = new BufferedOutputStream(fout);
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
                 //logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
-                //logFileWriter.append("<data ofThes=\"" + exprortThesaurus + "\"  >\r\n");
+                //logFileWriter.append("<data thesaurus=\"" + exprortThesaurus + "\"  >\r\n");
 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile of data export of thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath);
 

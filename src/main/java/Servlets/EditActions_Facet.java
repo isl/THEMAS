@@ -102,7 +102,7 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             String targetFacet  = u.getDecodedParameterValue(request.getParameter("targetFacet"));           
             String targetField  = u.getDecodedParameterValue(request.getParameter("targetEditField"));
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
+            
 
             
             if(targetField.compareTo("facet_create")==0){

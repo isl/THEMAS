@@ -90,10 +90,10 @@ public class OfflineToolsClassTest {
         */
         
         //String mode = "ExportToTSV";
-        String mode = "ExportToXML";
+        String mode = "";
         OfflineToolsClass.printExpectedParametersAccordingToMode(mode);
         
-        // <editor-fold defaultstate="collapsed" desc="Test for ExportToXML">	
+        // <editor-fold defaultstate="collapsed" desc="Test for ImportFromXML">	
         if(mode.equals("ImportFromXML")){
             /*
             For mode: ImportFromXML the expected arguments are:
@@ -101,13 +101,14 @@ public class OfflineToolsClassTest {
             2) Web Application Base Path
             3) ThesaurusName (No spaces just latin chars)
             4) Input XML Full File Path
-            5) Issues report xml file full path (an html will also be produeced with the same name but different extension)   
-            
+            5) Issues report xml file full path (an html will also be produeced with the same name but different extension)            
             */
             //String basePath = "/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT";
             String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
             String thesaurusName = "ANCIENT";
-            String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
+            //String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
+            //String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
+            String inputXML = "C:\\\\Users\\\\Elias\\\\BackupFiles\\\\Desktop\\ANCIENT_2017-09-13_15-18-25-135.xml";
             String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop\\temp\\testImport.xml"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
 
             String[] args = {mode,basePath, thesaurusName, inputXML, exportPath};
@@ -127,7 +128,7 @@ public class OfflineToolsClassTest {
             */
             //String basePath = "/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT";
             String basePath = "C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\THEMAS\\target\\THEMAS-1.1-SNAPSHOT";
-            String thesaurusName = "XXXXXX";//export all thesauri
+            String thesaurusName = "ANCIENT";//export all thesauri
             String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop\\temp"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
 
             String[] args = {mode,basePath, thesaurusName, exportPath};

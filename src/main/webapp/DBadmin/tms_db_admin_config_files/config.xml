@@ -91,6 +91,14 @@
                 <Source dellimeterChar=";">ώ;ὠ;ὡ;ὢ;ὣ;ὤ;ὥ;ὦ;ὧ;ὼ;ώ;ᾠ;ᾡ;ᾢ;ᾣ;ᾤ;ᾥ;ᾦ;ᾧ;ῲ;ῳ;ῴ;ῶ;ῷ</Source>
                 <Replacement>ω</Replacement>
             </ReplacementGroup>
+            <!--<ReplacementGroup>
+                <Source dellimeterChar=";">ς</Source>
+                <Replacement>σ</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source dellimeterChar=";">·,</Source>
+                <Replacement> </Replacement>
+            </ReplacementGroup>-->            
         </Transliterations>
     </BehaviorConfigs>
     

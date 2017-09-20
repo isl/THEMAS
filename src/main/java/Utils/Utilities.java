@@ -122,26 +122,32 @@ public class Utilities {
         }
         return returnVal;
     }
+    
+    public String getXMLStart(String LeftMenuMode) {
+        return getXMLStart(LeftMenuMode, false);
+    }
     /*---------------------------------------------------------------------
     getXMLStart()
     -----------------------------------------------------------------------
     OUTPUT: - String XMLStart: an XML string
     CALLED BY: all servlets in order to get the first part of their XML representation
     ----------------------------------------------------------------------*/
-    public String getXMLStart(String LeftMenuMode) {
+    public String getXMLStart(String LeftMenuMode, boolean skipLeftMenu) {
         String XMLStart =
                 //"<?xml version=\"1.0\" encoding=\"windows-1253\"?>" +
                 // changed by karam (6/2/2008) and also the xslTransform() 
                 // method of this class so as to work properly.
                 // the xslTransform_OLD() was working ONLY for encoding "windows-1253" and NOT for UTF-8 !!!
-                ConstantParameters.xmlHeader
-                + // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
+                ConstantParameters.xmlHeader+
+                 // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
-                + "\r\n<leftmenu>"
-                + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
-                + "</leftmenu>";
+                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                if(!skipLeftMenu){
+                    XMLStart+= "\r\n<leftmenu>"
+                    + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
+                    + "</leftmenu>";
+                }
 
         return XMLStart;
     }
@@ -281,24 +287,26 @@ public class Utilities {
     }
 
     //ALMOST IDENTICAL TO getResultsInXml
-    public void getResultsInXmlGuideTermSorting(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public void getResultsInXmlGuideTermSorting(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale, String selectedThesaurus, boolean skipOutput, boolean skipIds) {
         GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
         SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
 
 
-        xmlResults.append("<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
-        xmlResults.append("<output>");
-        for (int m = 0; m < output.size(); m++) {
+        
+        xmlResults.append("<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
+        if(!skipOutput){
+            xmlResults.append("<output>");
+            for (int m = 0; m < output.size(); m++) {
 
-            String category = output.get(m);
-            if (category.compareTo("id") == 0) {
-                continue;
-            } else {
-                xmlResults.append("<" + category + "/>");
+                String category = output.get(m);
+                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+                    continue;
+                } else {
+                    xmlResults.append("<" + category + "/>");
+                }
             }
+            xmlResults.append("</output>");
         }
-        xmlResults.append("</output>");
-
         xmlResults.append("<terms>");
         for (int i = 0; i < allTerms.size(); i++) {
 
@@ -308,7 +316,7 @@ public class Utilities {
 
             if (type.compareTo(NodeInfoSortItemContainer.CONTAINER_TYPE_UF) == 0) {//Perhaps it is uf link
                 xmlResults.append("<ufterm index=\"" + (i + 1) + "\">");
-                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                xmlResults.append("<ufname"+(skipIds?"":(" id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\"")) +">");
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
@@ -317,7 +325,7 @@ public class Utilities {
                 Collections.sort(values, sortComparator);
 
                 for (int k = 0; k < values.size(); k++) {
-                    xmlResults.append("<use id=\"" + values.get(k).getSysId() + "\" >");
+                    xmlResults.append("<use"+(skipIds?"":(" id=\"" + values.get(k).getSysId() + "\""))+">");
                     xmlResults.append(escapeXML(values.get(k).getLogName()));
                     xmlResults.append("</use>");
                 }
@@ -327,58 +335,113 @@ public class Utilities {
 
             xmlResults.append("<term index=\"" + (i + 1) + "\">");
 
-            long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
-            xmlResults.append("<descriptor id=\"" + targetSysIdL + "\" >");
+            long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
+            long refIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+            String transliteration = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getLogNameTransliteration();
+            
+            xmlResults.append("<descriptor"+(skipIds?"":(" id=\"" + targetSysIdL + "\"")));
+            
+            if(refIdL>0){
+                xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
+                if(Parameters.ShowReferenceURIalso){
+                    xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
+                }
+            }
+            /*
+            if(transliteration!=null && transliteration.length()>0){
+                xmlResults.append(" "+ConstantParameters.system_transliteration_kwd+"=\""+transliteration+"\""); 
+            }*/
             //xmlResults.append("<descriptor>");
+            xmlResults.append(">");
             xmlResults.append(escapeXML(targetTerm));
             xmlResults.append("</descriptor>");
 
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
-                if (category.compareTo("id") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+                    continue;
+                }
+                else if (category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
+                    xmlResults.append("<" + category + ">");
+                    xmlResults.append(escapeXML(transliteration));
+                    xmlResults.append("</" + category + ">");
                     continue;
                 }
                 Vector<SortItem> values = new Vector<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
-                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || 
+                        category.compareTo(ConstantParameters.translation_kwd) == 0 || 
+                        category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                     Collections.sort(values, guideTermComparator);
                 } else {
                     Collections.sort(values, sortComparator);
                 }
-                if (category.compareTo(ConstantParameters.uf_kwd) == 0
+                
+                if (category.compareTo(ConstantParameters.facet_kwd) == 0
+                        || category.compareTo(ConstantParameters.uf_kwd) == 0
+                        || category.compareTo(ConstantParameters.topterm_kwd) == 0
                         || category.compareTo(ConstantParameters.bt_kwd) == 0
+                        || category.compareTo(ConstantParameters.rt_kwd) == 0
                         || category.compareTo(ConstantParameters.nt_kwd) == 0
                         || category.compareTo(ConstantParameters.translation_kwd) == 0
                         || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) { // add id info in order to add anchors in paging
-                    for (int k = 0; k < values.size(); k++) {
-                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + values.get(k).getLinkClass() + "\" >");
-                        xmlResults.append(escapeXML(values.get(k).getLogName()));
+                    for (SortItem valueSortItem : values) {
+                        
+                        long linkRefIdL = valueSortItem.getThesaurusReferenceId();
+                        String linkTransliteration =valueSortItem.getLogNameTransliteration();
+            
+                        ReferenceUriKind whatKind = (category.compareTo(ConstantParameters.facet_kwd) == 0)? ReferenceUriKind.FACET: ReferenceUriKind.TERM;
+                        xmlResults.append("<" + category + (skipIds?"":(" id=\"" + valueSortItem.getSysId() + "\"")));
+                        
+                        if(category.compareTo(ConstantParameters.nt_kwd) == 0 || 
+                                category.compareTo(ConstantParameters.translation_kwd) == 0 ||
+                                category.compareTo(ConstantParameters.uf_translations_kwd)==0  ){
+                            if(valueSortItem.getLinkClass()!=null && valueSortItem.getLinkClass().length()>0){
+                                xmlResults.append(" linkClass=\"" + valueSortItem.getLinkClass() + "\"");
+                            }
+                        }
+                        if(linkRefIdL>0){
+                          xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefIdL+"\"");
+                          if(Parameters.ShowReferenceURIalso){
+                              xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), whatKind, linkRefIdL)+"\"");
+                          } 
+                        }
+                        if(Parameters.ShowTransliterationInAllXMLStream){
+                            if(linkTransliteration!=null && linkTransliteration.length()>0){
+                                xmlResults.append(" "+ConstantParameters.system_transliteration_kwd+"=\""+linkTransliteration+"\""); 
+                            }
+                        }
+                        
+                        xmlResults.append(">");
+                        xmlResults.append(escapeXML(valueSortItem.getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
                 } else if (category.compareTo(ConstantParameters.translations_scope_note_kwd) == 0) {
                     String checkStr = "";
-                    for (int k = 0; k < values.size(); k++) {
-                        if (k > 0) {
+                    for (SortItem valueSortItem : values) {
+                        if (checkStr.length() > 0) {
                             checkStr += "\n";
                         }
-                        checkStr += values.get(k).log_name;
+                        checkStr += valueSortItem.getLogName();
                     }
-                    Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                    Vector<String> langcodes = new Vector<String>(trSns.keySet());
-                    Collections.sort(langcodes);
-                    for (int k = 0; k < langcodes.size(); k++) {
-                        String linkClass = langcodes.get(k);
-                        String val = trSns.get(linkClass);
-                        xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                        xmlResults.append(escapeXML(val));
-                        xmlResults.append("</" + category + ">");
+                    if(checkStr.length()>0){
+                        Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                        Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                        Collections.sort(langcodes);
+
+                        for (String linkClass : langcodes) {
+                            String val = trSns.get(linkClass);
+                            xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
+                            xmlResults.append(escapeXML(val));
+                            xmlResults.append("</" + category + ">");
+                        }
                     }
 
                 } else {
-                    for (int k = 0; k < values.size(); k++) {
+                    for (SortItem valueSortItem : values) {
                         xmlResults.append("<" + category + ">");
-                        xmlResults.append(escapeXML(values.get(k).getLogName()));
+                        xmlResults.append(escapeXML(valueSortItem.getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
                 }
@@ -410,7 +473,7 @@ public class Utilities {
         for (int m = 0; m < output.size(); m++) {
 
             String category = output.get(m);
-            if (category.compareTo("id") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                 continue;
             } else {
                 xmlResults.append("<" + category + "/>");
@@ -427,7 +490,7 @@ public class Utilities {
 
             if (type.compareTo(NodeInfoSortItemContainer.CONTAINER_TYPE_UF) == 0) {//Perhaps it is uf link
                 xmlResults.append("<ufterm index=\"" + (i + 1) + "\">");
-                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\">");
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
@@ -446,7 +509,7 @@ public class Utilities {
 
             xmlResults.append("<term index=\"" + (i + 1) + "\">");
 
-            long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
+            long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
             xmlResults.append("<descriptor id=\"" + targetSysIdL + "\" >");
             //xmlResults.append("<descriptor>");
             xmlResults.append(escapeXML(targetTerm));
@@ -455,7 +518,7 @@ public class Utilities {
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
-                if (category.compareTo("id") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                     continue;
                 }
                 Vector<SortItem> values = new Vector<SortItem>();
@@ -612,7 +675,7 @@ public class Utilities {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
                 XMLresults.append("<" + category + "/>");
@@ -661,7 +724,7 @@ public class Utilities {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
                 xmlResults.append("<" + category + "/>");
@@ -707,15 +770,14 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, Vector displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, Vector<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
 
         StringBuffer XMLresults = new StringBuffer();
         ;
         XMLresults.append("<data>");
         XMLresults.append("<output>");
-        for (int m = 0; m < output.length; m++) {
+        for (String category : output) {
 
-            String category = output[m];
             if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
@@ -725,19 +787,18 @@ public class Utilities {
         XMLresults.append("</output>");
 
         XMLresults.append("<facets>");
-        int resultsLIMIT = displayFacets.size();
-        for (int i = 0; i < resultsLIMIT; i++) {
+        
+        for (String currentFacet : displayFacets) {
             XMLresults.append("<facet>");
             for (int j = 0; j < output.length; j++) {
                 if (output[j].equals("name")) {
-                    String currentFacet = (String) (displayFacets.get(i));
                     XMLresults.append("<name>");
                     XMLresults.append(escapeXML(currentFacet));
                     XMLresults.append("</name>");
 
                 } else {
-
-                    Vector<String> v = dbGen.returnResults_Facet(SessionUserInfo, displayFacets.get(i).toString(), output[j], Q, sis_session, targetLocale);
+            
+                    Vector<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
                     }
@@ -746,6 +807,80 @@ public class Utilities {
                         XMLresults.append("<" + output[j] + ">");
                         XMLresults.append(escapeXML(v.get(k)));
                         XMLresults.append("</" + output[j] + ">");
+                            }
+                            
+                        }
+                    }
+            XMLresults.append("</facet>");
+        }
+        XMLresults.append("</facets>");
+        XMLresults.append("</data>");
+
+        return XMLresults.toString();
+    }
+        
+    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, Vector<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
+
+        StringBuffer XMLresults = new StringBuffer();
+        
+        XMLresults.append("<data thesaurus=\""+SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
+        if(!skipOutput){
+            XMLresults.append("<output>");
+            for (int m = 0; m < output.length; m++) {
+
+                String category = output[m];
+                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
+                    continue;
+                } else {
+                    XMLresults.append("<" + category + "/>");
+                }
+            }
+            XMLresults.append("</output>");
+        }
+        XMLresults.append("<facets>");
+        for (SortItem currentFacetsortItem : displayFacets) {
+            
+            XMLresults.append("<facet>");
+            for (String outputField : output) {
+                
+                if (outputField.equals("name")) {
+                    String appendVal = "<name";
+                    if(currentFacetsortItem.getThesaurusReferenceId()>0){
+                        appendVal += " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+currentFacetsortItem.getThesaurusReferenceId()+"\"";
+                        if(Parameters.ShowReferenceURIalso){
+                            appendVal += " "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.FACET, currentFacetsortItem.getThesaurusReferenceId())) +"\"";
+                        }
+                    }
+                    appendVal+=">";
+                    XMLresults.append(appendVal);
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogName()));
+                    XMLresults.append("</name>");
+
+                } else if(outputField.equals(ConstantParameters.system_transliteration_kwd) && currentFacetsortItem.getLogNameTransliteration()!=null && currentFacetsortItem.getLogNameTransliteration().length()>0){
+                    XMLresults.append("<"+ConstantParameters.system_transliteration_kwd+">");
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogNameTransliteration()));
+                    XMLresults.append("</"+ConstantParameters.system_transliteration_kwd+">");
+                }
+                else {
+
+                    Vector<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
+                    if (v != null && v.size() > 0) {
+                        Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+                    }
+
+                    for (SortItem hierItem : v) {
+                        String appendVal = "<" + outputField;
+                        if(hierItem.getThesaurusReferenceId()>0){
+                            appendVal+=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+hierItem.getThesaurusReferenceId()+"\"";
+                            if(Parameters.ShowReferenceURIalso){
+                                appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.TOPTERM, hierItem.getThesaurusReferenceId())) +"\"";
+                            }
+                            
+                        }
+                        appendVal+=">";
+                        XMLresults.append(appendVal);
+                        XMLresults.append(escapeXML(hierItem.getLogName()));
+                        XMLresults.append("</" + outputField + ">");
                     }
 
                 }
@@ -2229,7 +2364,7 @@ public class Utilities {
     public void writeResultsInXMLFile(PrintWriter outStream, Vector<String> allTerms, String startXML, Vector<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
             QClass Q, IntegerObject sis_session, Hashtable<String, NodeInfoSortItemContainer> termsInfo, 
-            Vector<Long> resultNodesIds, Locale targetLocale) {
+            Vector<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds) {
 
 
 
@@ -2264,17 +2399,22 @@ public class Utilities {
         }
         
         try {
-            appendVal = "<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">"+"<output>";
-            for (int m = 0; m < output.size(); m++) {
+            appendVal = "<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+            if(!streamOutput){
+                //not of interest in xmlstream
+                appendVal+="<output>";
+                for (int m = 0; m < output.size(); m++) {
 
-                String category = output.get(m);
-                if (category.compareTo("id") == 0) {
-                    continue;
-                } else {
-                    appendVal+="<" + category + "/>";
+                    String category = output.get(m);
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+                        continue;
+                    } else {
+                        appendVal+="<" + category + "/>";
+                    }
                 }
+                appendVal+="</output>";
             }
-            appendVal+="</output><terms>";
+            appendVal+="<terms>";
             
             if(streamOutput){
                 outStream.append(appendVal);
@@ -2293,11 +2433,15 @@ public class Utilities {
                     
                     
                     //out.append("<ufterm index=\"" + (i + 1) + "\">");
-                    //out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                    //out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\">");
                     //out.append(escapeXML(targetTerm));
                     //out.append("</ufname>");
 
-                    appendVal = "<ufterm index=\"" + (i + 1) + "\">"+"<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">"+escapeXML(targetTerm)+"</ufname>";
+                    appendVal = "<ufterm index=\"" + (i + 1) + "\">"+"<ufname";
+                    if(!skipIds){
+                        appendVal += " id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\"";
+                    }
+                    appendVal +=">"+escapeXML(targetTerm)+"</ufname>";
                     
                     if(streamOutput){
                         outStream.append(appendVal);
@@ -2313,7 +2457,7 @@ public class Utilities {
                     for (int k = 0; k < values.size(); k++) {
                         long valueIDL = values.get(k).getSysId();
                         
-                        if (resultNodesIds.contains(valueIDL)) {
+                        if (resultNodesIds.contains(valueIDL) && !skipIds) {
                             appendVal = "<use id=\"" + valueIDL + "\">";
                         } else {
                             appendVal = "<use>";
@@ -2337,11 +2481,41 @@ public class Utilities {
                     continue;
                 }
                 
-                long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
+                long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
+                long refIdL =  targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+                String transliteration =  targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getLogNameTransliteration();
                 //out.append("<term index=\"" + (i + 1) + "\">");
-                appendVal = "<term index=\"" + (i + 1) + "\">" +"<descriptor id=\"" + targetSysIdL + "\" >"+escapeXML(targetTerm)+"</descriptor>";
+                appendVal = "<term index=\"" + (i + 1) + "\">" +
+                        "<descriptor";
+                if(!skipIds){
+                    appendVal+=" " + ConstantParameters.id_kwd+"=\"" + targetSysIdL + "\"";
+                }
+                /*
+                if(refIdL>0){
+                    appendVal+="\t\t\t<" + ConstantParameters.system_referenceUri_kwd + " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\">";
+                    appendVal+=Utilities.escapeXML(consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL));
+                    appendVal+="</" + ConstantParameters.system_referenceUri_kwd + ">\r\n";
+                }
+                if(transliteration!=null && transliteration.length()>0){
+                    appendVal+="\t\t\t<" + ConstantParameters.system_transliteration_kwd+">";
+                    appendVal+=Utilities.escapeXML(transliteration);
+                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">\r\n";
+                }
+                */
+                if(refIdL>0){
+                    appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"";
+                    if(Parameters.ShowReferenceURIalso){
+                        appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\"";
+                    }
+                 }
+                /*
+                 if(transliteration!=null && transliteration.length()>0){
+                     appendVal +=" "+ConstantParameters.system_transliteration_kwd+"=\""+transliteration+"\""; 
+                 }
+                  */              
+                                
 
-                
+                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>";
 
                 //out.append("<descriptor id=\"" + targetSysIdL + "\" >");
                 //out.append(escapeXML(targetTerm));
@@ -2356,9 +2530,19 @@ public class Utilities {
                 for (int m = 0; m < output.size(); m++) {
 
                     String category = output.get(m);
-                    if (category.compareTo("id") == 0) {
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                         continue;
                     }
+                    else if (category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
+                        if(streamOutput){
+                            outStream.append("<" + category + ">"+escapeXML(transliteration)+"</" + category + ">");                            
+                        }
+                        else{
+                            out.append("<" + category + ">"+escapeXML(transliteration)+"</" + category + ">");                            
+                        }    
+                        continue;
+                    }
+                    
                     Vector<SortItem> values = new Vector<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get(category));
                     if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
@@ -2367,8 +2551,10 @@ public class Utilities {
                         Collections.sort(values, sortComparator);
                     }
 
-                    if (category.compareTo(ConstantParameters.bt_kwd) == 0
+                    if (category.compareTo(ConstantParameters.facet_kwd) == 0
+                            || category.compareTo(ConstantParameters.bt_kwd) == 0
                             || category.compareTo(ConstantParameters.nt_kwd) == 0
+                            || category.compareTo(ConstantParameters.rbt_kwd) == 0
                             || category.compareTo(ConstantParameters.rnt_kwd) == 0
                             || category.compareTo(ConstantParameters.topterm_kwd) == 0
                             || category.compareTo(ConstantParameters.rt_kwd) == 0
@@ -2378,32 +2564,54 @@ public class Utilities {
 
                         if(values.size()>0){
                             for (int k = 0; k < values.size(); k++) {
+                                ReferenceUriKind whatKind = (category.compareTo(ConstantParameters.facet_kwd) == 0) ? ReferenceUriKind.FACET : ReferenceUriKind.TERM;
+                                
                                 appendVal ="";
                                 SortItem currentItem = values.get(k);
                                 long valueIDL = currentItem.getSysId();
                                 String linkClass = currentItem.getLinkClass();
+                                
+                                long linkRefId = currentItem.getThesaurusReferenceId();
+                                String linkTransliteration = currentItem.getLogNameTransliteration();
+                                
                                 if (resultNodesIds.contains(valueIDL)) {
                                     if (linkClass == null || linkClass.length() == 0) {
                                         //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >");
-                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >";
+                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"");// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">";
-                                    }
+                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"")+" linkClass=\"" + linkClass + "\"";
+                                    }                                    
+                                    
                                 } else {
                                     //Error in xslt transofrmation detected if linkClass attribute is missing (even if empty) in nt guide terms definitions
                                     if (linkClass == null || linkClass.length() == 0) {
                                         //out.append("<" + category + " linkClass=\"\">");
-                                        appendVal += "<" + category + " linkClass=\"\">";
+                                        appendVal += "<" + category + "";// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + " linkClass=\"" + linkClass + "\">";
+                                        appendVal += "<" + category + " linkClass=\"" + linkClass + "\"";
                                     }
                                 }
+                                
+                                if(linkRefId>0){
+                                       appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefId+"\"";
+                                       if(Parameters.ShowReferenceURIalso){
+                                            appendVal +=" " +ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), whatKind, linkRefId)+"\""; 
+                                       }
+                                }
+                                if(Parameters.ShowTransliterationInAllXMLStream)
+                                {
+                                    if(linkTransliteration!=null && linkTransliteration.length()>0){
+                                        appendVal +=" "+ConstantParameters.system_transliteration_kwd+"=\""+linkTransliteration+"\""; 
+                                    }
+                                }
+                                
+                                appendVal+=">";
 
                                 //out.append(escapeXML(values.get(k).getLogName()));
                                 //out.append("</" + category + ">");
-                                appendVal +=escapeXML(values.get(k).getLogName())+"</" + category + ">";
+                                appendVal +=escapeXML(currentItem.getLogName())+"</" + category + ">";
                                 if(streamOutput){
                                     outStream.append(appendVal);
                                 }
@@ -2503,7 +2711,7 @@ public class Utilities {
 
     public String writeXMLTranslations(String targetThesaurus, Hashtable<String, String> translationHash, String extraTranslationXML) {
         String returnXML = "";
-        returnXML += "<Translations ofthes=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
 
         if (translationHash != null) {
             Enumeration<String> languagesEnumeration = translationHash.keys();
@@ -2663,7 +2871,7 @@ public class Utilities {
             ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
             ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
             ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd, ConstantParameters.system_referenceId_kwd, ConstantParameters.system_transliteration_kwd
+            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd, ConstantParameters.system_referenceUri_kwd, ConstantParameters.system_transliteration_kwd
         };
         return output;
     }
@@ -2696,16 +2904,40 @@ public class Utilities {
         return returnArray;
     }
 
-    public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TERM /*,SOURCE*/};
+    public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TOPTERM,TERM /*,SOURCE*/};
 
     public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
         String retVal ="";
-        
         switch(kind){
             case FACET:{
-                if(thesaurusName!=null && thesaurusName.length()>0){
-                    retVal += thesaurusName+"/";
-                }
+                retVal = "/CardOf_Facet?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            case HIERARCHY:{
+                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            case TOPTERM:{
+                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            case TERM:{
+                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+        /*
+        if(thesaurusName!=null && thesaurusName.length()>0){
+            retVal += thesaurusName+"/";
+        }
+        
+        switch(kind){
+            
+            case FACET:{
+                
                 retVal += "Facet/";
                 break;
             }
@@ -2723,23 +2955,25 @@ public class Utilities {
                 retVal += "Term/";
                 break;
             }
-            /*
-            Source might raise issues during merge thesauri operations.
-            It is not unique per thesaurus -> Thus logicalname may have 
-            different 
-            case SOURCE:{
-                retVal += "Source/";
-                break;
-            }
-            */
+//            
+//            Source might raise issues during merge thesauri operations.
+//            It is not unique per thesaurus -> Thus logicalname may have 
+//            different 
+//            case SOURCE:{
+//                retVal += "Source/";
+//                break;
+//            }
+//            
             default:{
                 break;
             }
             
             
         }
-        retVal += String.format("%07d", referenceId);
-        return retVal;
+        */
+        //retVal += String.format("%07d", referenceId);
+        
+        return escapeXML(retVal);
     }
     
     public static String getMessagesXml() {
@@ -2772,7 +3006,71 @@ public class Utilities {
             transliterationString = transliterationString.replaceAll(replaceRegEx, replaceWith);
 
         }
+        //normalize gaps keep just one if multiple defined
+        transliterationString = transliterationString.replaceAll(" +", " ");
         return transliterationString;
+    }
+    
+    public static long retrieveThesaurusReferenceFromNodeInfoStringContainer(NodeInfoStringContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
+            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
+                    try{
+                        retVal = Long.parseLong(valStr);
+                    }
+                    catch(Exception ex){
+                        Utils.StaticClass.handleException(ex);
+                    }
+                }
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
+    public static String retrieveTransliterationStringFromNodeInfoStringContainer(NodeInfoStringContainer container, String originalName, boolean removePrefix){
+        String retVal = "";
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd)){
+            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.system_transliteration_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 ){
+                    retVal = valStr.trim();
+                }
+                else{
+                    retVal = Utilities.getTransliterationString(originalName, removePrefix);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    public static Vector<String> getStringVectorFromSortItemVector(Vector<SortItem> v){
+        
+        Vector<String>  returnResults = new Vector<String>();
+        if(v!=null){
+            for(SortItem item : v){
+                returnResults.add(item.getLogName());
+            }
+        }
+        return returnResults;
+    }
+    
+    public static Vector<SortItem> getSortItemVectorFromStringVector(Vector<String> v, boolean removeTransliterationPrefix){
+        
+        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        if(v!=null){
+            for(String item : v){
+                returnResults.add(new SortItem( item,-1,Utilities.getTransliterationString(item, removeTransliterationPrefix),-1));
+            }
+        }
+        return returnResults;
     }
 }
 

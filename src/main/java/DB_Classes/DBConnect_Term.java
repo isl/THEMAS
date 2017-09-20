@@ -108,6 +108,27 @@ public class DBConnect_Term {
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
     public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+       CMValue cmv = new CMValue();
+       cmv.assign_node(targetDescriptor.getValue(), -1, Utilities.getTransliterationString(targetDescriptor.getValue(), true),-1);
+       
+       return connectDescriptorCMValue(selectedThesaurus,cmv,bts,Q,sis_session,dbGen,TA,tms_session);
+    }
+
+    /*---------------------------------------------------------------------
+    connectDescriptorCMValue()
+    -----------------------------------------------------------------------
+    INPUT: - CMValue targetDescriptor: the Descriptor to be created
+    - String bts: the BT values to be added separated with "###"
+    OUTPUT: - String errorMsg: an error description (if any), "" otherwise
+    FUNCTION: creates a new Descriptor and associates it with the given BTs.
+    It creates relations of the type BT from the Descriptor given as 
+    parameter with the BTs that the user has specified.
+    The BTs must exist in the database otherwise the function returns error.
+    Besides creating the BTs relations, the Descriptor is also added under 
+    all the hierarchies of the BTs.
+    CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
+    ----------------------------------------------------------------------*/
+    public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         // initialize output
         String errorMsg = new String("");
         Utilities u = new Utilities();
@@ -115,12 +136,6 @@ public class DBConnect_Term {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String b_prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
 
-        String transliterationString ="";
-        if(targetDescriptor.getValue()!=null && targetDescriptor.getValue().length()>0){
-            
-            transliterationString = Utilities.getTransliterationString(targetDescriptor.getValue(),true);            
-        }
-        
         //Utils.StaticClass.webAppSystemOutPrintln("targetDescriptor: "+ targetDescriptor + "  transliteration: " + transliterationString);
         
         // in case of empty targetDescriptor
@@ -148,8 +163,8 @@ public class DBConnect_Term {
         }
 
         // create targetDescriptor if it doesn't exist
-        if (dbGen.check_exist(targetDescriptor.getValue(),Q,sis_session) == false) {
-            int ret = TA.CHECK_CreateDescriptor(targetDescriptor, (StringObject) vec_bt.get(0), transliterationString);
+        if (dbGen.checkCMV_exist(targetDescriptorCmv, Q,sis_session) == false) {
+            int ret = TA.CHECK_CreateDescriptor(targetDescriptorCmv, (StringObject) vec_bt.get(0));
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMsg = errorMsg.concat("" + dbGen.check_success(ret, TA,null,tms_session) + "");
                 return errorMsg;
@@ -159,7 +174,7 @@ public class DBConnect_Term {
             //Term dbGen.removePrefix(targetDescriptor.getValue()) already exists in the database.
             errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,
                                        TA, 
-                                       u.translateFromMessagesXML("root/EditTerm/Creation/TermAlreadyExists", new String[] { dbGen.removePrefix(targetDescriptor.getValue())}),
+                                       u.translateFromMessagesXML("root/EditTerm/Creation/TermAlreadyExists", new String[] { dbGen.removePrefix(targetDescriptorCmv.getString())}),
                                        tms_session) 
                                     + "");
             return errorMsg;
@@ -171,7 +186,7 @@ public class DBConnect_Term {
             hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i),Q,sis_session);
             if (i == 0) {
                 prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus,
-                                                          (StringObject) targetDescriptor,
+                                                          new StringObject(targetDescriptorCmv.getString()),
                                                            Q,
                                                            sis_session);
             } else {
@@ -180,7 +195,7 @@ public class DBConnect_Term {
             
             for (int j = 0; j < hiers.size(); j++) {
                 
-                int ret = TA.CHECK_MoveToHierarchy(targetDescriptor, 
+                int ret = TA.CHECK_MoveToHierarchy(new StringObject(targetDescriptorCmv.getString()), 
                                                    new StringObject(prevHiers.get(0)),
                                                    new StringObject(hiers.get(j)), 
                                                    vec_bt.get(i), 

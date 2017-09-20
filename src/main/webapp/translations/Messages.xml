@@ -183,6 +183,10 @@
             <option lang="en">No facet is selected in order to display its card.</option>
             <option lang="el">Δεν έχει προσδιοριστεί μικροθησαυρός για προβολή της κάρτας του.</option>
         </NoFacetSelected>
+        <FacetNotFound>
+            <option lang="en">Facet '%s' was not found in order to display its card.</option>
+            <option lang="el">Δεν βρέθηκε ο μικροθησαυρός '%s' για προβολή της κάρτας του.</option>
+        </FacetNotFound>
     </CardOfFacet>
     <CardOfHierarchy>
         <NoHierarchySelected>

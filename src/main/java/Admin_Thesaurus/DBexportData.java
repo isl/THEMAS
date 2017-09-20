@@ -94,7 +94,8 @@ public class DBexportData {
         DBImportData dbImport = new DBImportData();
 
         Hashtable<String, String> translationCategories = new Hashtable<String, String>();
-        Vector<String> xmlFacets = new Vector<String>();
+        
+        Vector<SortItem> xmlFacetsInSortItem = new Vector<SortItem>();
         Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
 
         
@@ -129,19 +130,20 @@ public class DBexportData {
 
 
             translationCategories = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, exprortThesaurus, null, false, true);
-            String defaultFacet = dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, exprortThesaurus);
+            
+            SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, exprortThesaurus);
 
-            xmlFacets.addAll(dbMerge.ReadThesaurusFacets(SessionUserInfo, Q, sis_session, exprortThesaurus, null));
+            xmlFacetsInSortItem.addAll(dbMerge.ReadThesaurusFacetsInSortItems(SessionUserInfo, Q, sis_session, exprortThesaurus, null));
 
-            if (xmlFacets.contains(defaultFacet) == false) {
-                xmlFacets.add(defaultFacet);
+            if (xmlFacetsInSortItem.contains(defaultFacetSortItem) == false) {
+                xmlFacetsInSortItem.add(defaultFacetSortItem);
             }
 
             //read hierarchies
             hierarchyFacets = dbMerge.ReadThesaurusHierarchies(SessionUserInfo, Q, sis_session, exprortThesaurus, null);
             if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
                 Vector<String> unclassifiedFacets = new Vector<String>();
-                unclassifiedFacets.add(defaultFacet);
+                unclassifiedFacets.add(defaultFacetSortItem.getLogName());
                 hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
             }
 
@@ -195,7 +197,7 @@ public class DBexportData {
                 writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus);
                 writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
 
-                writer.WriteFacets(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacets, hierarchyFacets, termsInfo, null, null);
+                writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
                 writer.WriteHierarchies(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, null);
                 writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
@@ -604,7 +606,7 @@ public class DBexportData {
 
                             if (termsInfo.containsKey(targetUITerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                                 termsInfo.put(targetUITerm, newContainer);
                                 allTerms.add(targetUITerm);
                             }
@@ -618,7 +620,7 @@ public class DBexportData {
 
                         if (termsInfo.containsKey(targetUITerm) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                             termsInfo.put(targetUITerm, newContainer);
                             allTerms.add(targetUITerm);
                         }
@@ -663,7 +665,7 @@ public class DBexportData {
                             if (resultNodesIds.contains(targetTermIdL)) {
                                 if (termsInfo.containsKey(targetTerm) == false) {
                                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                    newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermIdL, targetTermIdL));
+                                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL));
                                     termsInfo.put(targetTerm, newContainer);
                                     allTerms.add(targetTerm);
                                 }
@@ -678,7 +680,7 @@ public class DBexportData {
                         if (resultNodesIds.contains(targetTermId)) {
                             if (termsInfo.containsKey(targetTerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId));
                                 termsInfo.put(targetTerm, newContainer);
                                 allTerms.add(targetTerm);
                             }
@@ -746,7 +748,7 @@ public class DBexportData {
 
                             if (termsInfo.containsKey(targetUITerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                                 termsInfo.put(targetUITerm, newContainer);
                                 allTerms.add(targetUITerm);
                             }
@@ -761,7 +763,7 @@ public class DBexportData {
 
                         if (termsInfo.containsKey(targetUITerm) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get("id").add(new SortItem("" + termId, termId));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termId, termId));
                             termsInfo.put(targetUITerm, newContainer);
                             allTerms.add(targetUITerm);
                         }
@@ -827,7 +829,7 @@ public class DBexportData {
                             if (resultNodesIds.contains(targetTermIdL)) {
                                 if (termsInfo.containsKey(targetTerm) == false) {
                                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                    newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermIdL, targetTermIdL));
+                                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL));
                                     termsInfo.put(targetTerm, newContainer);
                                     allTerms.add(targetTerm);
                                 }
@@ -842,7 +844,7 @@ public class DBexportData {
                         if (resultNodesIds.contains(targetTermId)) {
                             if (termsInfo.containsKey(targetTerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId));
                                 termsInfo.put(targetTerm, newContainer);
                                 allTerms.add(targetTerm);
                             }
@@ -853,6 +855,183 @@ public class DBexportData {
                     Q.free_set(set_all_such_terms);
                 }
             }
+            Q.free_set(set_h);
+        }
+
+
+
+    }
+    
+    public void ReadTermFacetAndHierarchiesInSortItems(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,
+            int set_terms, Vector<String> output, Vector<String> allTerms, 
+            Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+
+        DBGeneral dbGen = new DBGeneral();
+        
+        String[] outputTable = new String[output.size()];
+        output.toArray(outputTable);
+        int cardinalityOfTerms = Q.set_get_card(set_terms);
+
+        IntegerObject sysIdObj = new IntegerObject();
+        //StringObject nodeName = new StringObject();
+        StringObject cls = new StringObject();
+
+        if (output.contains(ConstantParameters.facet_kwd)) {
+
+            int facetIndex = Parameters.CLASS_SET.indexOf("FACET");
+            String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(facetIndex).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(facetIndex).toArray(FacetClasses);
+
+            int set_f = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
+            Q.reset_set(set_f);
+
+            //int cardinalityOfFacets = Q.set_get_card(set_f);
+
+
+            //set current node for each term
+            Vector<SortItem> terms = new Vector<SortItem>();
+            Q.reset_set(set_terms);
+            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+                    terms.add(newTermSortItem);
+                }
+            }
+            /*
+            while (Q.retur_nodes(set_terms, nodeName) != QClass.APIFail) {
+                terms.add(nodeName.getValue());
+            }*/
+
+            for (SortItem targetTermSortItem : terms) {
+
+                StringObject targetTerm = new StringObject(targetTermSortItem.getLogName());
+                String targetUITerm = dbGen.removePrefix(targetTermSortItem.getLogName());
+
+                Q.reset_name_scope();
+                long termIdL = Q.set_current_node_id(targetTermSortItem.getSysId());
+                int set_all_classes = Q.get_all_classes(0);
+                Q.reset_set(set_all_classes);
+                Q.reset_set(set_f);
+                Q.set_intersect(set_all_classes, set_f);
+                Q.reset_set(set_all_classes);
+
+                retVals.clear();
+                if(Q.bulk_return_nodes(set_all_classes, retVals)!=QClass.APIFail){
+                    for(Return_Nodes_Row row:retVals){
+                        String targetFacet = dbGen.removePrefix(row.get_v1_cls_logicalname());
+                        long targetFacetIdL = row.get_Neo4j_NodeId();
+                        long targetFacetRefIdL = row.get_v2_long_referenceId();
+                        String targetFacetTransliteration = row.get_v3_cls_transliteration();
+
+                        if (termsInfo.containsKey(targetUITerm) == false) {
+                            NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL,targetTermSortItem.getLogNameTransliteration(),targetTermSortItem.getThesaurusReferenceId()));
+                            termsInfo.put(targetUITerm, newContainer);
+                            allTerms.add(targetUITerm);
+                        }
+                        termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.facet_kwd).add(new SortItem(targetFacet, targetFacetIdL,targetFacetTransliteration,targetFacetRefIdL));
+                    }
+                }
+                /*
+                while (Q.retur_full_nodes(set_all_classes, sysIdObj, nodeName, cls) != QClass.APIFail) {
+                    String targetFacet = dbGen.removePrefix(nodeName.getValue());
+                    int targetFacetId = sysIdObj.getValue();
+
+                    if (termsInfo.containsKey(targetUITerm) == false) {
+                        NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                        newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
+                        termsInfo.put(targetUITerm, newContainer);
+                        allTerms.add(targetUITerm);
+                    }
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.facet_kwd).add(new SortItem(targetFacet, targetFacetId));
+
+                }
+                */
+                Q.free_set(set_all_classes);
+            }
+            Q.free_set(set_f);
+        }
+
+        if (output.contains(ConstantParameters.topterm_kwd)) {
+
+            StringObject belongsToHierarchyClass = new StringObject();
+            StringObject belongsToHierarchyLink = new StringObject();
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierarchyClass, belongsToHierarchyLink, Q, sis_session);
+
+            int hierIndex = Parameters.CLASS_SET.indexOf("HIERARCHY");
+            String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(hierIndex).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(hierIndex).toArray(HierarchyClasses);
+
+
+            int set_h = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
+            Q.reset_set(set_h);
+
+            int cardinalityOfHierarchies = Q.set_get_card(set_h);
+
+             //set current node for each term
+
+            //set current node for each term
+            Vector<SortItem> terms = new Vector<SortItem>();
+            Q.reset_set(set_terms);
+            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+                    terms.add(newTermSortItem);
+                }
+            }
+            /*while (Q.retur_nodes(set_terms, nodeName) != QClass.APIFail) {
+                terms.add(nodeName.getValue());
+            }*/
+
+            /*
+            if(Parameters.OnlyTopTermsHoldReferenceId){
+                int set_topterms = Q.get_from_node_by_category(set_sub_classes, belongsToHierClass, belongsToHierarchyLink);
+                results.addAll(get_Node_SortItems_Of_Set(set_topterms, true, Q, sis_session));
+            }
+            else{
+                results.addAll(get_Node_SortItems_Of_Set(set_sub_classes, true, Q, sis_session));
+            }*/
+            for (SortItem targetTerm: terms) {
+
+                String targetUITerm = dbGen.removePrefix(targetTerm.getLogName());
+
+                Q.reset_name_scope();
+                long termIdL = Q.set_current_node_id(targetTerm.getSysId());
+                int set_all_classes = Q.get_classes(0);
+                Q.reset_set(set_all_classes);
+
+                Q.reset_set(set_h);
+                Q.set_intersect(set_all_classes, set_h);
+                Q.reset_set(set_all_classes);
+
+
+                if(Parameters.OnlyTopTermsHoldReferenceId){
+                    set_all_classes = Q.get_from_node_by_category(set_all_classes, belongsToHierarchyClass, belongsToHierarchyLink);
+                }
+
+                retVals.clear();
+                if(Q.bulk_return_nodes(set_all_classes, retVals)!=QClass.APIFail){
+                    for(Return_Nodes_Row row:retVals){
+                        String targetHierarchy = dbGen.removePrefix(row.get_v1_cls_logicalname());
+                        long targetHierarchyIdL = row.get_Neo4j_NodeId();
+                        long targetHierarchyRefIdL = row.get_v2_long_referenceId();
+                        String targetHierarchyTransliteration = row.get_v3_cls_transliteration();
+
+                        if (termsInfo.containsKey(targetUITerm) == false) {
+                            NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL,targetTerm.getLogNameTransliteration(),targetTerm.getThesaurusReferenceId()));
+                            termsInfo.put(targetUITerm, newContainer);
+                            allTerms.add(targetUITerm);
+                        }
+                        termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.topterm_kwd).add(new SortItem(targetHierarchy, targetHierarchyIdL,targetHierarchyTransliteration,targetHierarchyRefIdL));
+
+                    }
+                }                   
+                Q.free_set(set_all_classes);
+            }
+
             Q.free_set(set_h);
         }
 
@@ -881,7 +1060,7 @@ public class DBexportData {
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.translations_found_in_kwd, etFromClassObj, etLinkObj, Q, sis_session);
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.source_note_kwd, sourceNoteFromObj, sourceNoteLinkObj, Q, sis_session);
         
-        String[] output = {"id",ConstantParameters.source_note_kwd}; 
+        String[] output = {ConstantParameters.id_kwd,ConstantParameters.source_note_kwd}; 
         
         Q.reset_set(set_terms);
         
@@ -937,7 +1116,7 @@ public class DBexportData {
         //else{
         //    sourcesInfo.put(targetSourceUIFormat, new String(""));
         //}
-        newContainer.descriptorInfo.get("id").add(new SortItem(""+sourceItemId,sourceItemId));
+        newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem(""+sourceItemId,sourceItemId));
         sourcesInfo.put(targetSourceUIFormat,newContainer);
 
         allSources.add(targetSourceUIFormat);
@@ -979,7 +1158,7 @@ public class DBexportData {
         StringObject sourceNoteFromObj = new StringObject();
         StringObject sourceNoteLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.source_note_kwd, sourceNoteFromObj, sourceNoteLinkObj, Q, sis_session);
-        String[] output = {"id", ConstantParameters.source_note_kwd};
+        String[] output = {ConstantParameters.id_kwd, ConstantParameters.source_note_kwd};
 
         StringObject prevThes = new StringObject();
         TA.GetThesaurusNameWithoutPrefix(prevThes);
@@ -1006,7 +1185,7 @@ public class DBexportData {
             //else{
             //    sourcesInfo.put(targetSourceUIFormat, new String(""));
             //}
-            newContainer.descriptorInfo.get("id").add(new SortItem("" + sourceItemIdL, sourceItemIdL));
+            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + sourceItemIdL, sourceItemIdL));
             sourcesInfo.put(targetSourceUIFormat, newContainer);
 
             allSources.add(targetSourceUIFormat);

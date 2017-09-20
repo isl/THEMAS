@@ -65,7 +65,7 @@ public class NodeInfoSortItemContainer {
             descriptorInfo = new Hashtable<String,Vector<SortItem>>();
             Vector<SortItem> idsvalues = new Vector<SortItem>();
             Vector<SortItem> usevalues = new Vector<SortItem>();
-            descriptorInfo.put("id", idsvalues);       
+            descriptorInfo.put(ConstantParameters.id_kwd, idsvalues);       
             descriptorInfo.put("use", usevalues);       
             
         }

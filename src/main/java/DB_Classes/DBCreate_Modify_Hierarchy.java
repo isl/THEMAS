@@ -39,6 +39,7 @@ import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 
 import Utils.Parameters;
+import Utils.SortItem;
 import Utils.StaticClass;
 import Utils.Utilities;
 
@@ -115,6 +116,11 @@ public class DBCreate_Modify_Hierarchy {
             String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
 
 
+        //targetHierarchy shold come without prefix
+        SortItem hierarchySortItem = new SortItem(targetHierarchy,-1,Utilities.getTransliterationString(targetHierarchy, false),-1);        
+        return Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchySortItem, targetHierarchyFacets, createORmodify, deletionOperator, userName, targetLocale, errorMsg, updateHistoricalData);
+        
+        /*
         int SISApiSession = sis_session.getValue();
         Utilities u = new Utilities();
 
@@ -157,24 +163,6 @@ public class DBCreate_Modify_Hierarchy {
         }
 
 
-        /*
-        try {
-            byte[] byteArray = targetHierarchy.getBytes("UTF-8");
-
-            int maxHierarchyChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
-            if (byteArray.length > maxHierarchyChars) {
-                
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add("" + maxHierarchyChars);
-                errorArgs.add("" + byteArray.length);
-                dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/LongName", errorArgs, pathToMessagesXML);
-
-                return false;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            Utils.StaticClass.webAppSystemOut(ex.getMessage());
-            Utils.StaticClass.handleException(ex);
-        }*/
 
 
         Q.reset_name_scope();
@@ -248,25 +236,7 @@ public class DBCreate_Modify_Hierarchy {
                         StringObject taxonomicCodeLink = new StringObject();
                         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.tc_kwd, taxonomicCodeFromClass, taxonomicCodeLink, Q, sis_session);
 
-                        /*Code should be enabled if we want hiers to be deleted even though top terms may hava scope notes historical notes or comments
-                         *Code should also be enabled in function checkTopTermDependencies 
-                         */
-                        /*
-                        StringObject scopenoteFromClassObj = new StringObject();
-                        StringObject scopenoteLinkObj = new StringObject();
-                        dbGen.getKeywordPair(ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj);
-                        StringObject commentFromClassObj = new StringObject();
-                        StringObject commentLinkObj = new StringObject();
-                        dbGen.getKeywordPair(ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj);
-                        StringObject historicalnoteFromClassObj = new StringObject();
-                        StringObject historicalnoteLinkObj = new StringObject();
-                        dbGen.getKeywordPair(ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj);
-
-                        //THEMASAPIClass WTA = new THEMASAPIClass(sis_session,tms_session);
-                        WTA.DeleteDescriptorComment(targetTopTermObj, scopenoteFromClassObj, scopenoteLinkObj);
-                        WTA.DeleteDescriptorComment(targetTopTermObj, commentFromClassObj, commentLinkObj);
-                        WTA.DeleteDescriptorComment(targetTopTermObj, historicalnoteFromClassObj, historicalnoteLinkObj);
-                         */
+                        
                         dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchy, ConstantParameters.FROM_Direction, taxonomicCodeFromClass.getValue(), taxonomicCodeLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
 
                         dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchy, ConstantParameters.FROM_Direction, modifiedByClass.getValue(), modifiedByLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
@@ -351,8 +321,259 @@ public class DBCreate_Modify_Hierarchy {
             }
         }
 
+        */
     }
 
+     public boolean Create_Or_ModifyHierarchySortItem(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
+            DBGeneral dbGen, SortItem targetHierarchySortItem, Vector<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
+            String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
+
+        int SISApiSession = sis_session.getValue();
+        Utilities u = new Utilities();
+
+        
+        DBConnect_Hierarchy dbConH = new DBConnect_Hierarchy();
+        DBRemove_Hierarchy dbRemH = new DBRemove_Hierarchy();
+        DBConnect_Term dbCon = new DBConnect_Term();
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+
+        StringObject modifiedOnClass = new StringObject();
+        StringObject modifiedOnLink = new StringObject();
+        StringObject modifiedByClass = new StringObject();
+        StringObject modifiedByLink = new StringObject();
+
+        StringObject createdOnClass = new StringObject();
+        StringObject createdOnLink = new StringObject();
+        StringObject createdByClass = new StringObject();
+        StringObject createdByLink = new StringObject();
+
+        Q.reset_name_scope();
+
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.modified_by_kwd, modifiedByClass, modifiedByLink, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.modified_on_kwd, modifiedOnClass, modifiedOnLink, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_by_kwd, createdByClass, createdByLink, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_on_kwd, createdOnClass, createdOnLink, Q, sis_session);
+
+        //Get Prefixes that will be needed
+        String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        String topTermPrefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        String editor_Prefix = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue());
+
+        String targetHierarchyWithoutPrefix  = targetHierarchySortItem.getLogName();
+        if(targetHierarchyWithoutPrefix.startsWith(prefix)|| targetHierarchyWithoutPrefix.startsWith(topTermPrefix)){
+            targetHierarchyWithoutPrefix = dbGen.removePrefix(targetHierarchyWithoutPrefix);
+        }
+        // convert target Hierarchy to DB encoding with prefix
+        StringObject targetHierarchyObj = new StringObject(prefix.concat(targetHierarchyWithoutPrefix));
+        StringObject targetTopTermObj = new StringObject(topTermPrefix.concat(targetHierarchyWithoutPrefix));
+
+        StringObject errorMsgPrefix = new StringObject("");
+        if (createORmodify.equals("create")) {
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Creation/ErrorPrefix", null));
+        } else {
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null));
+        }
+
+
+        /*
+        try {
+            byte[] byteArray = targetHierarchy.getBytes("UTF-8");
+
+            int maxHierarchyChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
+            if (byteArray.length > maxHierarchyChars) {
+                
+                Vector<String> errorArgs = new Vector<String>();
+                errorArgs.add("" + maxHierarchyChars);
+                errorArgs.add("" + byteArray.length);
+                dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/LongName", errorArgs, pathToMessagesXML);
+
+                return false;
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Utils.StaticClass.webAppSystemOut(ex.getMessage());
+            Utils.StaticClass.handleException(ex);
+        }*/
+
+
+        Q.reset_name_scope();
+
+        if (createORmodify.equals("create") == false && Q.set_current_node(targetHierarchyObj) == QClass.APIFail) {
+            
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/HierarchyNotFound", new String[]{targetHierarchyWithoutPrefix}));
+
+            //errorMsg.setValue(errorMsg.getValue().concat(errorMsgPrefix.getValue() + "Hierarchy %s was not found in the database."));
+            return false;
+        }
+
+        int KindOfHierarchy = dbGen.GetKindOfHierarchy(SessionUserInfo.selectedThesaurus, targetHierarchyObj, Q, sis_session);
+
+        if (createORmodify.equals("create")) { // create	 
+
+            //During creation of new hierarchy one and only one parent facet may be declared
+            if (targetHierarchyWithoutPrefix == null || targetHierarchyWithoutPrefix.length() == 0) {
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null));
+                //errorMsg.setValue("A name must be specified for the new hierarchy");
+                return false;
+            }
+            if (targetHierarchyFacets == null || targetHierarchyFacets.isEmpty()) {
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacet", null));
+                //errorMsg.setValue("At least one parent facet must be specified for the new hierarchy creation.");
+                return false;
+            }
+            Q.reset_name_scope();
+            if (Q.set_current_node(targetHierarchyObj) != QClass.APIFail) {
+
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/AlreadyinDB", new String[]{targetHierarchyWithoutPrefix}));
+                //errorMsg.setValue("Name %s is already used in the database as a hierarchy name or facet name.");
+                return false;
+            }
+
+            Q.reset_name_scope();
+            if (Q.set_current_node(targetTopTermObj) != QClass.APIFail) {
+
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/TermAlreadyinDB", new String[]{targetHierarchyWithoutPrefix}));
+                //errorMsg.setValue("Name %s is already used in the database as a term name and it can not be used in order to create the relavant TT.");
+                return false;
+            }
+
+            Q.reset_name_scope();
+
+            StringObject targetHierarchyFacetObj = new StringObject(prefix.concat(targetHierarchyFacets.get(0).toString()));
+            CMValue targetHierarchyCmv =targetHierarchySortItem.getCMValue(targetHierarchyObj.getValue());
+            
+            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchyCMValue(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyCmv, targetHierarchyFacetObj, Utilities.getMessagesXml())));
+
+
+            if (updateHistoricalData) {
+
+                // FILTER default status for term creation depending on user group
+                DBFilters dbf = new DBFilters();
+                
+                dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, targetTopTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, errorMsg);
+
+
+                //Also update creation info of top terms
+                errorMsg.setValue(errorMsg.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTopTermObj, editor_Prefix.concat(userName), createdByClass.getValue(), createdByLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
+                errorMsg.setValue(errorMsg.getValue().concat(dbCon.connectTime(SessionUserInfo.selectedThesaurus, targetTopTermObj, createdOnClass.getValue(), createdOnLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
+            }
+
+        } else { // modify	
+
+            if (deletionOperator != null) { // delete / (undo) abandon descriptor
+
+                if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_NEW) { // new descriptor => delete 
+
+                    if (checkTopTermDependencies(SessionUserInfo.selectedThesaurus, Q, sis_session, errorMsg, targetHierarchyWithoutPrefix) == true) {
+
+                        StringObject taxonomicCodeFromClass = new StringObject();
+                        StringObject taxonomicCodeLink = new StringObject();
+                        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.tc_kwd, taxonomicCodeFromClass, taxonomicCodeLink, Q, sis_session);
+
+                        /*Code should be enabled if we want hiers to be deleted even though top terms may hava scope notes historical notes or comments
+                         *Code should also be enabled in function checkTopTermDependencies 
+                         */
+                        /*
+                        StringObject scopenoteFromClassObj = new StringObject();
+                        StringObject scopenoteLinkObj = new StringObject();
+                        dbGen.getKeywordPair(ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj);
+                        StringObject commentFromClassObj = new StringObject();
+                        StringObject commentLinkObj = new StringObject();
+                        dbGen.getKeywordPair(ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj);
+                        StringObject historicalnoteFromClassObj = new StringObject();
+                        StringObject historicalnoteLinkObj = new StringObject();
+                        dbGen.getKeywordPair(ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj);
+
+                        //THEMASAPIClass WTA = new THEMASAPIClass(sis_session,tms_session);
+                        WTA.DeleteDescriptorComment(targetTopTermObj, scopenoteFromClassObj, scopenoteLinkObj);
+                        WTA.DeleteDescriptorComment(targetTopTermObj, commentFromClassObj, commentLinkObj);
+                        WTA.DeleteDescriptorComment(targetTopTermObj, historicalnoteFromClassObj, historicalnoteLinkObj);
+                         */
+                        dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, taxonomicCodeFromClass.getValue(), taxonomicCodeLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+
+                        dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, modifiedByClass.getValue(), modifiedByLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+                        dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, modifiedOnClass.getValue(), modifiedOnLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+
+                        dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, createdByClass.getValue(), createdByLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+                        dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, createdOnClass.getValue(), createdOnLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemH.DeleteHierarchy(Q, TA, sis_session, tms_session, dbGen, targetHierarchyObj)));
+
+                    }
+
+                } else { // released / obsolete descriptor => (undo) abandon
+                    //CreationOrModificationSucceded = true;
+                    if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_OBSOLETE) { // obsolete descriptor => undo abandon
+                        // convert BT_for_undo_abandon to DB encoding with prefix
+                        errorMsg.setValue(dbRemH.UndoAbandonHierarchy(TA, tms_session, dbGen, targetHierarchyObj));
+                    }
+                    if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_RELEASED) { // released descriptor => abandon
+                        errorMsg.setValue(dbRemH.AbandonHierarchy(TA, tms_session, dbGen, targetHierarchyObj));
+                    }
+
+                }
+
+            } else { // NO deletion - detect modifications
+
+                if (targetHierarchyFacets.isEmpty()) {
+                    //errorMsg = " Every hierarchy should have at least one parent Facet. Modification Aborted";
+                    errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", null));
+                    //errorMsg.setValue("Every Hierarchy must be classified under at least one facet. Modification aborted.");
+                    return false;
+                } else {
+
+                    //letter code modification and parent facets modifications should be handled 
+                    // modifyLetterCodes(targetHierarchy, targetHierarchyLetterCodes);
+
+                    modifyFacets(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetHierarchyWithoutPrefix, targetHierarchyFacets, targetLocale, errorMsg);
+                }
+
+            }
+
+        }
+
+        if (errorMsg.getValue().equals("") == false) { // case of error
+
+            errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
+            return false;
+
+        } else { // case of NO error
+            //CreationOrModificationSucceded = true;
+            // end transaction
+            //Q.end_transaction();
+            
+            if (createORmodify.equals("create")) {
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", new String[]{targetHierarchyWithoutPrefix}));
+                //errorMsg.setValue("Hierarchy: %s was sucessfully created.");
+                return true;
+            } else { // modify
+                if (deletionOperator != null) { // delete / (undo) abandon descriptor
+
+                    String message = "";
+
+                    if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_NEW) {
+                        //message = "Hierarchy %s was successfully deleted.";                        
+                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
+                    }
+                    if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_OBSOLETE) {
+                        //message = "Undo abandonment action of hierarchy: '%s' was successfully performed.";
+                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessUndoObsoleteMsg", new String[]{targetHierarchyWithoutPrefix}));
+                    }
+                    if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_RELEASED) {
+                        //message = "Hierarchy %s was successfully deleted.";
+                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
+                    }
+                    errorMsg.setValue(message);
+                    return true;
+                } else {
+                    //errorMsg.setValue("Hierarchy: '%s' was successfully modified.");
+                    errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyEdited", new String[]{targetHierarchyWithoutPrefix}));
+                    return true;
+                }
+            }
+        }
+
+    }
+     
     /*---------------------------------------------------------------------
     DeleteHierarchy()
     -----------------------------------------------------------------------

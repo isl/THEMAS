@@ -60,6 +60,7 @@ import XMLHandling.AAT_TermLanguage.AAT_TermLanguage_Term_Type_Enum;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import neo4j_sisapi.CMValue;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -147,7 +148,10 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals("data")) {
-                            returnVal = this.parseSpecificAttibuteValue("ofThes", xpp);
+                            returnVal = this.parseSpecificAttibuteValue("thesaurus", xpp);
+                            if(returnVal==null || returnVal.length()==0){
+                                returnVal = this.parseSpecificAttibuteValue("ofThes", xpp);                                                                
+                            }
                             break;
                         }
                     }
@@ -274,6 +278,241 @@ public class ParseFileData {
         Utils.StaticClass.webAppSystemOutPrintln("\r\n</results>");
     }
 
+    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<SortItem> xmlFacetSortItems) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets in sort Items from file: " + xmlFilePath + ".");
+
+        try {
+
+            XmlPullParserFactory factory;
+            factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+
+
+            //<editor-fold defaultstate="collapsed" desc="AAT reading not supported yet ...">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
+
+                throw new UnsupportedOperationException("Reading of aat schema Facets in SortItem structures has not been implenmented yet.");
+                /*
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                boolean insideSubject = false;
+
+                boolean insidefacet = false;
+                boolean insidePrefferred = false;
+
+                String targetSubjectId = "";
+                String targetFacetName = "";
+                int eventType = xpp.getEventType();
+
+                //<editor-fold defaultstate="collapsed" desc="Show XML ...">
+
+                boolean showall = false;
+                boolean textPrinted = false;
+                int currentDepth = 0;
+
+                //</editor-fold>
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    //<editor-fold defaultstate="collapsed" desc="Show XML">
+                    
+//                   if(showall){
+//                    if (eventType == xpp.START_TAG) {
+//
+//                    currentDepth = xpp.getDepth();
+//                    Utils.StaticClass.webAppSystemOutPrint("\r\n");
+//                    for(int i=0; i<currentDepth;i++){
+//                    Utils.StaticClass.webAppSystemOutPrint("  ");
+//                    }
+//                    Utils.StaticClass.webAppSystemOutPrint("<"+xpp.getName()+">");
+//                    }
+//                    else if(eventType ==xpp.END_TAG){
+//
+//                    if(textPrinted){
+//                    Utils.StaticClass.webAppSystemOutPrintln("</"+xpp.getName()+">");
+//                    textPrinted= false;
+//                    }
+//                    else{
+//                    for(int i=0; i<currentDepth;i++){
+//                    Utils.StaticClass.webAppSystemOutPrint("  ");
+//                    }
+//                    Utils.StaticClass.webAppSystemOutPrint("</"+xpp.getName()+">");
+//                    }
+//                    currentDepth--;
+//                    }
+//                    else if(eventType == xpp.TEXT){
+//                    Utils.StaticClass.webAppSystemOutPrint(Utilities.escapeXML(xpp.getText()));
+//                    textPrinted = true;
+//                    }
+//                    }
+//
+//                     
+                    //</editor-fold>
+                    if (eventType == xpp.START_TAG) {
+                        int depth = xpp.getDepth();
+
+                        if (depth == 2) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_subject_tag)) {
+                                targetSubjectId = this.parseSpecificAttibuteValue(ConstantParameters.aat_subject_id_attr, xpp);
+                                insideSubject = true;
+                                //<editor-fold defaultstate="collapsed" desc="Show XML">
+
+//                                if(targetSubjectId.equals("300000000")
+//                                || targetSubjectId.equals("300000201")
+//                                || targetSubjectId.equals("300004789")
+//                                || targetSubjectId.equals("300008346")
+//                                || targetSubjectId.equals("300010357")
+//                                || targetSubjectId.equals("300015646")
+//                                || targetSubjectId.equals("300022238")
+//                                || targetSubjectId.equals("300024978")
+//                                || targetSubjectId.equals("300026029")
+//                                || targetSubjectId.equals("300036743")
+//                                || targetSubjectId.equals("300037221")
+//                                || targetSubjectId.equals("300037335")
+//                                || targetSubjectId.equals("300041619")
+//                                || targetSubjectId.equals("300042929")
+//                                || targetSubjectId.equals("300045611")
+//                                || targetSubjectId.equals("300053001")
+//                                || targetSubjectId.equals("300054134")
+//                                || targetSubjectId.equals("300054593")
+//                                || targetSubjectId.equals("300054722")
+//                                || targetSubjectId.equals("300055126")
+//                                || targetSubjectId.equals("300123558")
+//                                || targetSubjectId.equals("300123559")
+//                                || targetSubjectId.equals("300131647")
+//                                || targetSubjectId.equals("300136012")
+//                                || targetSubjectId.equals("300139081")
+//                                || targetSubjectId.equals("300179869")
+//                                || targetSubjectId.equals("300185711")
+//                                || targetSubjectId.equals("300186269")
+//                                || targetSubjectId.equals("300207851")
+//                                || targetSubjectId.equals("300209261")
+//                                || targetSubjectId.equals("300222468")
+//                                || targetSubjectId.equals("300234770")
+//                                || targetSubjectId.equals("300241489")
+//                                || targetSubjectId.equals("300241490")
+//                                || targetSubjectId.equals("300264550")
+//                                || targetSubjectId.equals("300264551")
+//                                || targetSubjectId.equals("300264552")
+//                                || targetSubjectId.equals("300265673"))
+//                                {
+//                                showall=true;
+//                                Utils.StaticClass.webAppSystemOutPrintln("<Subject Subject_ID=\""+targetSubjectId+"\">");
+//                                }
+//                                 
+
+                                //</editor-fold>
+                            }
+                        } else if (insideSubject && depth == 3) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_record_type_tag)) {
+                                String recType = this.parseSimpleContentElement(xpp);
+                                if (recType.equals(ConstantParameters.aat_record_type_Facet_val)) {
+
+                                    insidefacet = true;
+                                }
+                            }
+                        } else if (insidefacet && depth > 3) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_Preferred_Term_tag)) {
+                                insidePrefferred = true;
+                            } else if (insidePrefferred && openingTagName.equals(ConstantParameters.aat_Term_Text_tag)) {
+                                targetFacetName = this.parseSimpleContentElement(xpp);
+                            }
+                        }
+
+
+                    } else if (eventType == xpp.END_TAG) {
+                        int depth = xpp.getDepth();
+                        if (depth == 2) {
+                            String closingTagName = this.closingTagEncoutered(xpp, null);
+                            if (closingTagName.equals(ConstantParameters.aat_subject_tag)) {
+                                if (insidefacet) {
+                                    if (targetFacetName != null && targetFacetName.length() > 0 && xmlFacets.contains(targetFacetName) == false) {
+                                        xmlFacets.add(targetFacetName);
+                                    }
+                                }
+                                insidefacet = false;
+                                insidePrefferred = false;
+                                insideSubject = false;
+                                targetSubjectId = "";
+                                targetFacetName = "";
+
+
+                                //<editor-fold defaultstate="collapsed" desc="Show XML">
+                                //showall = false;
+                                //</editor-fold>
+                            }
+                        } else if (insidePrefferred && depth > 2) {
+                            String closingTagName = this.closingTagEncoutered(xpp, null);
+                            if (closingTagName.equals(ConstantParameters.aat_Preferred_Term_tag)) {
+                                insidePrefferred = false;
+                            }
+                        }
+
+                    }
+
+                    eventType = xpp.next();
+                }
+                */
+            }
+            //</editor-fold>
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="collapsed" desc="SKOS reading not supported yet ...">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                throw new UnsupportedOperationException("Reading of SKOS schema Facets in SortItem structures has not been implenmented yet.");
+                /*
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                this.parseFacetNodes(xpp, xmlSchemaType, xmlFacets);
+                */
+
+            } 
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Facet reading...">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory.setNamespaceAware(true);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+
+
+                int eventType = xpp.getEventType();
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals("facets")) {
+                            this.parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetSortItems);
+                            break;
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            }
+            //</editor-fold>
+
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacetSortItems.size() + " Facets.");
+        return true;
+    }
+
+    
+    
     public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<String> xmlFacets) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets from file: " + xmlFilePath + ".");
 
@@ -490,7 +729,7 @@ public class ParseFileData {
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacets.size() + " Dacets.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacets.size() + " Facets.");
         return true;
     }
 
@@ -796,12 +1035,12 @@ public class ParseFileData {
     public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, Hashtable<String, NodeInfoStringContainer> termsInfo,
             Hashtable<String, String> languageSelections) {
 
-        DBGeneral dbGen = new DBGeneral();
         String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
             ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
             ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
             ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
+            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd,
+            ConstantParameters.system_referenceUri_kwd, ConstantParameters.system_transliteration_kwd
         };
 
         Utilities u = new Utilities();
@@ -899,6 +1138,7 @@ public class ParseFileData {
 
                 // </editor-fold>
             } // </editor-fold>
+            //</editor-fold>
             // <editor-fold defaultstate="collapsed" desc="themas case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
                 String translationSeparator = "";
@@ -2623,6 +2863,197 @@ public class ParseFileData {
         }
     }
 
+    
+    private void parseHierarchyNodesWithFacetsInSortItems(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, Vector<String>> hierarchyFacets, Vector<SortItem> xmlFacets) {
+        try {
+            
+            //creating a vector for String only comparison of logical name
+            Vector<String> xmlFacetStrings = new Vector<String>();
+            for(SortItem item: xmlFacets){
+                xmlFacetStrings.add(item.getLogName());
+            }
+
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                String facetId = "";
+                String hierarchyId = "";
+                boolean insideCollection = false;
+                boolean insideConcept = false;
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        //case 1 collection-meber--> Facet-Heirarchy, case 2 concept with topConceptOf
+
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        int depth = xpp.getDepth();
+                        //check that we are in correct Depth
+
+                        if (depth == 2) {
+
+                            String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
+                            if (openingTagName.equals(ConstantParameters.XML_skos_collection)) {
+                                insideCollection = true;
+                                insideConcept = false;
+                                facetId = targetId;
+                            } else if (openingTagName.equals(ConstantParameters.XML_skos_concept)) {
+                                insideCollection = false;
+                                insideConcept = true;
+                                hierarchyId = targetId;
+                            }
+                        } else if (depth == 3) {
+
+                            if (insideCollection && openingTagName.equals(ConstantParameters.XML_skos_member)) {
+                                String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
+                                if (facetId != null && facetId.length() > 0 && targetId != null && targetId.length() > 0) {
+                                    if (hierarchyFacets.containsKey(targetId)) {
+                                        Vector<String> facetIds = hierarchyFacets.get(targetId);
+                                        if (facetIds.contains(facetId) == false) {
+                                            facetIds.add(facetId);
+                                        }
+                                        hierarchyFacets.put(targetId, facetIds);
+                                    } else {
+                                        Vector<String> facetIds = new Vector<String>();
+                                        facetIds.add(facetId);
+                                        hierarchyFacets.put(targetId, facetIds);
+                                    }
+                                }
+                            } else if (insideConcept && openingTagName.equals(ConstantParameters.XML_skos_topConceptOf)) {
+                                if (hierarchyId != null && hierarchyId.length() > 0) {
+                                    if (hierarchyFacets.containsKey(hierarchyId) == false) {
+                                        hierarchyFacets.put(hierarchyId, new Vector<String>());
+                                    }
+                                }
+
+                            }
+
+                        }
+
+
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        int depth = xpp.getDepth();
+                        if (depth == 2) {
+                            facetId = "";
+                            hierarchyId = "";
+                            insideCollection = false;
+                            insideConcept = false;
+                        }
+                    }
+                    //</editor-fold>
+                }
+
+
+
+
+            } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals("hierarchies") == false) {
+                    return;
+                }
+                //</editor-fold>
+
+
+                String targetHierarchyName = "";
+                Vector<String> targetHierarcyFacets = null;
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals("hierarchy")) {
+                            targetHierarchyName = "";
+                            targetHierarcyFacets = new Vector<String>();
+
+                        } else if (currentTagName.equals("name")) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                targetHierarchyName = this.readXMLTag(targetValue);
+                            }
+                        } else if (currentTagName.equals("facet")) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                if (targetHierarcyFacets.contains(targetValue) == false) {
+                                    targetHierarcyFacets.add(targetValue);
+                                }
+                                
+                                if (xmlFacetStrings.contains(targetValue) == false) {
+                                    SortItem newFacet = new SortItem(targetValue,-1,Utilities.getTransliterationString(targetValue, false),-1);
+                                    xmlFacets.add(newFacet);
+                                }
+                            }
+                        }
+                    } //</editor-fold>
+                    
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if hierarchies parsing is completed
+                        if (currentTagName.equals("hierarchies")) {
+                            break;
+                        }
+
+                        //Check if currentFacet parsing is completed
+                        if (currentTagName.equals("hierarchy")) {
+                            if (targetHierarchyName == null || targetHierarchyName.trim().length() == 0) {
+                                continue;
+                            } else {
+
+                                //if hierarchy info does not exist then add it
+
+                                if (hierarchyFacets.containsKey(targetHierarchyName) == false) {
+                                    if (targetHierarcyFacets == null) {
+                                        targetHierarcyFacets = new Vector<String>();
+                                    }
+                                    hierarchyFacets.put(targetHierarchyName, targetHierarcyFacets);
+                                } else {
+                                    if (targetHierarcyFacets != null && targetHierarcyFacets.size() > 0) {
+                                        Vector<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
+                                        for (int k = 0; k < targetHierarcyFacets.size(); k++) {
+                                            String checkFacet = targetHierarcyFacets.get(k);
+                                            if (existingFacets.contains(checkFacet) == false) {
+                                                existingFacets.add(checkFacet);
+                                            }
+                                        }
+
+                                        hierarchyFacets.put(targetHierarchyName, existingFacets);
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                    }
+                    //</editor-fold>
+                }
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+
     private void parseSourceNodes(XmlPullParser xpp, Hashtable<String, String> XMLsources) {
         try {
 
@@ -2911,9 +3342,13 @@ public class ParseFileData {
 
     }
 
-    private void parseTermNodes(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, NodeInfoStringContainer> termsInfo, String translationSeparator, String[] output, Hashtable<String, String> idsToNames, Hashtable<String, String> languageSelections) {
+    private void parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
+            Hashtable<String, NodeInfoStringContainer> termsInfo, 
+            String translationSeparator, 
+            String[] output, 
+            Hashtable<String, String> idsToNames,
+            Hashtable<String, String> languageSelections) {
 
-        DBGeneral dbGen = new DBGeneral();
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Skos Case">
@@ -3342,6 +3777,8 @@ public class ParseFileData {
 
 
                 String targetTermName = "";
+                String translit = "";
+                long targetTermRefId =-1;
                 NodeInfoStringContainer targetTermInfo = null;//new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
@@ -3354,14 +3791,50 @@ public class ParseFileData {
                         if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
 
                             targetTermName = "";
+                            translit = "";
+                            targetTermRefId =-1;
                             targetTermInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+                            
                         } else if (currentTagName.equals(ConstantParameters.XMLDescriptorElementName)) {
+                            
+                            String longStr = this.parseSpecificAttibuteValue(ConstantParameters.system_referenceIdAttribute_kwd, xpp);
+                            if(longStr!=null && longStr.length()>0){
+                                
+                                if(longStr!=null && longStr.trim().length()>0){
+                                    try{
+                                        targetTermRefId = Long.parseLong(longStr);
+                                    }
+                                    catch(Exception ex){
+                                        Utils.StaticClass.handleException(ex);
+                                    }
+                                }
+                            }
+                            if(targetTermRefId>0){
+                                if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
+                                    targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(""+targetTermRefId);
+                                }
+                            }
+                            
+                            if(Parameters.TransliterationAsAttribute){
+                                String targetValue = this.parseSpecificAttibuteValue(ConstantParameters.system_transliteration_kwd, xpp);
+                                if (targetValue != null && targetValue.trim().length() > 0) {
+                                    translit = this.readXMLTag(targetValue);                                    
+                                }
+                            }
+                            
                             String targetValue = this.parseSimpleContentElement(xpp);
 
                             if (targetValue != null && targetValue.trim().length() > 0) {
                                 targetTermName = this.readXMLTag(targetValue);
                             }
-                        } else {
+                        } else if(!Parameters.TransliterationAsAttribute && currentTagName.equals(ConstantParameters.system_transliteration_kwd)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                translit = this.readXMLTag(targetValue);
+                            }
+                        }
+                        else {
                             String languagePrefix = "";
                             if (currentTagName.equals(ConstantParameters.translation_kwd)
                                     || currentTagName.equals(ConstantParameters.uf_translations_kwd)
@@ -3439,6 +3912,12 @@ public class ParseFileData {
                                 continue;
                             } else {
 
+                                if(translit==null || translit.length()==0){
+                                    translit = Utilities.getTransliterationString(targetTermName, false);
+                                }
+                                if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd)){
+                                    targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(translit);
+                                }
                                 //if term info does not exist then add it
                                 if (termsInfo.containsKey(targetTermName) == false) {
                                     termsInfo.put(targetTermName, targetTermInfo);
@@ -3643,8 +4122,9 @@ public class ParseFileData {
             Utils.StaticClass.handleException(ex);
         }
     }
+    
     private void parseFacetNodes(XmlPullParser xpp, String xmlSchemaType, Vector<String> xmlFacets) {
-
+        
         try {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
@@ -3708,6 +4188,97 @@ public class ParseFileData {
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
 
+                Vector<SortItem> xmlFacetsInSortItems = new Vector<SortItem>();
+                parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetsInSortItems);
+                for(SortItem item : xmlFacetsInSortItems){
+                    xmlFacets.add(item.getLogName());
+                }
+                
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+
+    private void parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, Vector<SortItem> xmlFacets) {
+
+        try {
+            
+            String targetFacetName = "";
+            String translit = "";
+            long refId = -1;
+            
+            // <editor-fold defaultstate="collapsed" desc="Skos case not supported yet..">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                
+                /*
+                targetFacetName = "";
+                boolean insideCollection = false;
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    
+                    if (eventType == xpp.START_TAG) {
+
+
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+
+                        if (currentTagName.equals(ConstantParameters.XML_skos_collection)) {
+                            if (xpp.getDepth() == 2) {
+                                targetFacetName = "";
+                                insideCollection = true;
+                            }
+                        } else if (insideCollection && currentTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
+                            int depth = xpp.getDepth();
+
+                            if (depth == 3) {
+                                String langCode = this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp);
+                                String targetValue = this.parseSimpleContentElement(xpp);
+
+                                //Utils.StaticClass.webAppSystemOutPrintln(targetValue + " " + langCode + " " + depth);
+
+                                if (langCode != null) {
+                                    if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
+                                        if (targetValue != null && targetValue.trim().length() > 0) {
+                                            targetFacetName = this.readXMLTag(targetValue);
+                                            if (xmlFacets.contains(targetFacetName) == false) {
+                                                xmlFacets.add(targetFacetName);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } 
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+                        if (currentTagName.equals(ConstantParameters.XML_skos_collection)) {
+                            if (xpp.getDepth() == 2) {
+                                insideCollection = false;
+                            }
+                        }
+                    }
+                    
+
+
+                }
+                //skos:Collection
+                //skos:prefLabel xml:lang="en"
+                */
+                throw new UnsupportedOperationException("parseFacetNodesSortItems SKOS schema is not yet supported.");
+            } 
+            //</editor-fold>
+            
+            // <editor-fold defaultstate="collapsed" desc="THEMAS schema..">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+
                 // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
                 if (xpp == null) {
                     return;
@@ -3719,7 +4290,7 @@ public class ParseFileData {
                 //</editor-fold>
 
 
-                String targetFacetName = "";
+                
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -3730,12 +4301,43 @@ public class ParseFileData {
                         String currentTagName = this.openingTagEncoutered(xpp, null);
                         if (currentTagName.equals("facet")) {
                             targetFacetName = "";
+                            translit = "";
+                            refId = -1;
                         } else if (currentTagName.equals("name")) {
+                            
+                            String longStr = this.parseSpecificAttibuteValue(ConstantParameters.system_referenceIdAttribute_kwd, xpp);
+                            if(longStr!=null && longStr.length()>0){
+                                
+                                if(longStr!=null && longStr.trim().length()>0){
+                                    try{
+                                        refId = Long.parseLong(longStr);
+                                    }
+                                    catch(Exception ex){
+                                        Utils.StaticClass.handleException(ex);
+                                    }
+                                }
+                            }
+                            
+                            if(Parameters.TransliterationAsAttribute){
+                                String targetValue = this.parseSpecificAttibuteValue(ConstantParameters.system_transliteration_kwd, xpp);
+                                    if (targetValue != null && targetValue.trim().length() > 0) {
+                                    translit = this.readXMLTag(targetValue);
+                                }
+                            }
+                            
                             String targetValue = this.parseSimpleContentElement(xpp);
 
                             if (targetValue != null && targetValue.trim().length() > 0) {
                                 targetFacetName = this.readXMLTag(targetValue);
                             }
+                        }
+                        else if (!Parameters.TransliterationAsAttribute && currentTagName.equals(ConstantParameters.system_transliteration_kwd)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                translit = this.readXMLTag(targetValue);
+                            }
+                            
                         }
                     } //</editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
@@ -3756,9 +4358,14 @@ public class ParseFileData {
                             } else {
 
                                 //if term info does not exist then add it
-
-                                if (xmlFacets.contains(targetFacetName) == false) {
-                                    xmlFacets.add(targetFacetName);
+                                if(translit==null || translit.trim().length()==0){
+                                    translit = Utilities.getTransliterationString(targetFacetName, false);
+                                }
+                                SortItem newFacetObj = new SortItem(targetFacetName,-1,translit,refId);
+                                
+                                
+                                if (xmlFacets.contains(newFacetObj) == false) {
+                                    xmlFacets.add(newFacetObj);
                                 }
                             }
 
@@ -3768,6 +4375,8 @@ public class ParseFileData {
                     //</editor-fold>
                 }
             }
+            //</editor-fold>
+            
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
         } catch (IOException ex) {

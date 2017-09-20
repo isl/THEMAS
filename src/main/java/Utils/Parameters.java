@@ -55,6 +55,11 @@ class responsible for the collection of the application's context
 Parameters defined in web.xml
 ----------------------------------------------------------------------*/
 public class Parameters {
+    
+    public static final boolean OnlyTopTermsHoldReferenceId = true;
+    public static boolean TransliterationAsAttribute = false;
+    public static boolean ShowTransliterationInAllXMLStream = false;
+    public static boolean ShowReferenceURIalso = false;
     public static String UnclassifiedTermsLogicalname = "" ; 
     // SVG graphs configuration
     public static boolean DEBUG = false;
@@ -216,7 +221,7 @@ public class Parameters {
                         String replaceWhat = xpath.evaluate("./Source", TransltiterationGroups.item(i));
                         String replaceWith =xpath.evaluate("./Replacement", TransltiterationGroups.item(i));
                         
-                        Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith);
+                        Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith==null?"":replaceWith);
                     }
                 }
                 

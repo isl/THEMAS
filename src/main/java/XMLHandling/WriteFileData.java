@@ -45,6 +45,8 @@ import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
 import Utils.SortItem;
+import Utils.SortItemComparator;
+import Utils.SortItemLocaleComparator;
 import Utils.Utilities;
 
 import java.io.BufferedOutputStream;
@@ -111,9 +113,9 @@ public class WriteFileData {
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-            //logFileWriter.append("<data ofThes=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
+            //logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
             //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
-            logFileWriter.append("<data ofThes=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\">\r\n");
+            logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\">\r\n");
         }
 
         logFileWriter.flush();
@@ -206,7 +208,25 @@ public class WriteFileData {
             Hashtable<String, NodeInfoStringContainer> termsInfo,
             Vector<String> FacetsFilter,
             Vector<String> HierarchiesFilter) throws IOException {
+        
+        Vector<SortItem> xmlFacetssortItems = Utilities.getSortItemVectorFromStringVector(xmlFacets,false);
+        WriteFacetsFromSortItems(logFileWriter,exportScheme,importThesaurusName,
+            xmlFacetssortItems, hierarchyFacets,
+            termsInfo,
+            FacetsFilter,
+            HierarchiesFilter);
+                
+                
+    }
+        
+    
+    public void WriteFacetsFromSortItems(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
+            Vector<SortItem> xmlFacets, Hashtable<String, Vector<String>> hierarchyFacets,
+            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            Vector<String> FacetsFilter,
+            Vector<String> HierarchiesFilter) throws IOException {
 
+        Utilities u = new Utilities();
         Vector<String> facetFilter = new Vector<String>();
         Vector<String> hierarchiesFilter = new Vector<String>();
 
@@ -225,9 +245,12 @@ public class WriteFileData {
             Hashtable<String, Vector<String>> facetHierarchyIds = new Hashtable<String, Vector<String>>();
 
             //getall facets and put a record in the above structure
-            Vector<String> facetsToExport = new Vector<String>();
-            if (facetFilter.size() == 0) {
-                facetsToExport.addAll(xmlFacets);
+            Vector<SortItem> facetsToExportInSortItemFormat = new Vector<SortItem>();
+            Vector<String> facetsToExportInStringFormat = new Vector<String>();
+            
+            if (facetFilter.isEmpty()) {
+                facetsToExportInSortItemFormat.addAll(xmlFacets);
+                facetsToExportInStringFormat.addAll(Utilities.getStringVectorFromSortItemVector(xmlFacets));
 
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
                 while (hierEnum.hasMoreElements()) {
@@ -236,20 +259,23 @@ public class WriteFileData {
                     if (facets != null) {
                         for (int k = 0; k < facets.size(); k++) {
                             String facetName = facets.get(k);
-                            if (facetName != null && facetName.length() > 0 && facetsToExport.contains(facetName) == false) {
-                                facetsToExport.add(facetName);
+                            if (facetName != null && facetName.length() > 0 && facetsToExportInStringFormat.contains(facetName) == false) {
+                                facetsToExportInSortItemFormat.add(new SortItem(facetName,-1,Utilities.getTransliterationString(facetName, false),-1));
+                                facetsToExportInStringFormat.add(facetName);
                             }
                         }
                     }
                 }
             } else {
-                facetsToExport.addAll(facetFilter);
+                
+                facetsToExportInStringFormat.addAll(facetFilter);
+                facetsToExportInSortItemFormat.addAll(Utilities.getSortItemVectorFromStringVector(facetFilter, false));
             }
 
-            Collections.sort(facetsToExport);
+            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.LOG_NAME));
 
-            for (int i = 0; i < facetsToExport.size(); i++) {
-                String facetName = facetsToExport.get(i);
+            for (int i = 0; i < facetsToExportInSortItemFormat.size(); i++) {
+                String facetName = facetsToExportInSortItemFormat.get(i).getLogName();
                 if (facetName != null && facetName.length() > 0 && facetHierarchyIds.containsKey(facetName) == false) {
                     facetHierarchyIds.put(facetName, new Vector<String>());
                 }
@@ -308,16 +334,16 @@ public class WriteFileData {
             }
 
             //now write to file
-            for (int p = 0; p < facetsToExport.size(); p++) {
+            for (int p = 0; p < facetsToExportInSortItemFormat.size(); p++) {
                 //Enumeration<String> facetHierIds = facetHierarchyIds.keys();
                 //while(facetHierIds.hasMoreElements()){
-                String facetName = facetsToExport.get(p);
-                Vector<String> values = facetHierarchyIds.get(facetName);
+                SortItem facetNameSortItem = facetsToExportInSortItemFormat.get(p);
+                Vector<String> values = facetHierarchyIds.get(facetNameSortItem.getLogName());
 
                 logFileWriter.append("\r\n\t<!-- Facet -->\r\n");
                 logFileWriter.append("\t<skos:Collection>\r\n");
                 logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
-                logFileWriter.append(Utilities.escapeXML(facetName));
+                logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogName()));
                 logFileWriter.append("</skos:prefLabel>\r\n");
 
                 for (int i = 0; i < values.size(); i++) {
@@ -333,9 +359,12 @@ public class WriteFileData {
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-            Vector<String> facetsToExport = new Vector<String>();
-            if (facetFilter.size() == 0) {
-                facetsToExport.addAll(xmlFacets);
+            Vector<SortItem> facetsToExportInSortItemFormat = new Vector<SortItem>();
+            Vector<String> facetsToExportInStringFormat = new Vector<String>();
+            if (facetFilter.isEmpty()) {
+                facetsToExportInSortItemFormat.addAll(xmlFacets);
+                facetsToExportInStringFormat.addAll(Utilities.getStringVectorFromSortItemVector(xmlFacets));
+                
                 Enumeration<String> hierEnum = hierarchyFacets.keys();
                 while (hierEnum.hasMoreElements()) {
                     String hierarchyName = hierEnum.nextElement();
@@ -343,27 +372,46 @@ public class WriteFileData {
                     if (facets != null) {
                         for (int k = 0; k < facets.size(); k++) {
                             String facetName = facets.get(k);
-                            if (facetName != null && facetName.length() > 0 && facetsToExport.contains(facetName) == false) {
-                                facetsToExport.add(facetName);
+                            if (facetName != null && facetName.length() > 0 && facetsToExportInStringFormat.contains(facetName) == false) {
+                                facetsToExportInSortItemFormat.add(new SortItem(facetName,-1,Utilities.getTransliterationString(facetName, false),-1));
                             }
                         }
                     }
                 }
             } else {
-                facetsToExport.addAll(facetFilter);
+                facetsToExportInStringFormat.addAll(facetFilter);
+                facetsToExportInSortItemFormat.addAll(Utilities.getSortItemVectorFromStringVector(facetFilter, false));
             }
 
-            Collections.sort(facetsToExport);
+            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.LOG_NAME));
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Facets");
-            logFileWriter.append("\r\n\t<facets count=\"" + facetsToExport.size() + "\">\r\n");
+            logFileWriter.append("\r\n\t<facets count=\"" + facetsToExportInSortItemFormat.size() + "\">\r\n");
 
-            for (int i = 0; i < facetsToExport.size(); i++) {
+            for (SortItem item : facetsToExportInSortItemFormat) {
                 //logFileWriter.append("\t\t<facet index=\"" + (i + 1) + "\">\r\n");
                 logFileWriter.append("\t\t<facet>\r\n");
-                logFileWriter.append("\t\t\t<name>");
-                logFileWriter.append(Utilities.escapeXML(facetsToExport.get(i)));
+                String appendValue = "\t\t\t<name";
+                
+                if(item.getThesaurusReferenceId()>0){
+                    appendValue+= " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+item.getThesaurusReferenceId()+"\"";
+                    if(Parameters.ShowReferenceURIalso){
+                        appendValue+= " " +ConstantParameters.system_referenceUri_kwd+"=\""+u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.FACET, item.getThesaurusReferenceId())+"\"";                        
+                    }
+                }
+                appendValue+=">";
+                logFileWriter.append(appendValue);
+                
+                logFileWriter.append(Utilities.escapeXML(item.getLogName()));
                 logFileWriter.append("</name>\r\n");
+                
+                if(item.getLogNameTransliteration()!=null && item.getLogNameTransliteration().length()>0){
+                    logFileWriter.append("\t\t\t<"+ConstantParameters.system_transliteration_kwd+">");
+                    logFileWriter.append(Utilities.escapeXML(item.getLogNameTransliteration()));
+                    logFileWriter.append("</"+ConstantParameters.system_transliteration_kwd+">\r\n");
+                }
+                
+                
                 logFileWriter.append("\t\t</facet>\r\n");
             }
 
@@ -980,7 +1028,7 @@ public class WriteFileData {
             DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
 
-            String[] output = {ConstantParameters.system_transliteration_kwd,ConstantParameters.system_referenceId_kwd,ConstantParameters.facet_kwd, ConstantParameters.topterm_kwd, ConstantParameters.status_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd,
+            String[] output = {ConstantParameters.system_transliteration_kwd,ConstantParameters.system_referenceUri_kwd,ConstantParameters.facet_kwd, ConstantParameters.topterm_kwd, ConstantParameters.status_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd,
                 ConstantParameters.tc_kwd, ConstantParameters.translation_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.uf_translations_kwd,
                 ConstantParameters.primary_found_in_kwd, ConstantParameters.translations_found_in_kwd, ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
                 ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd};
@@ -1022,7 +1070,17 @@ public class WriteFileData {
 
                     //logFileWriter.append("\t\t<term index=\"" + (i + 1) + "\">\r\n");
                     logFileWriter.append("\t\t<term>\r\n");
-                    logFileWriter.append("\t\t\t<descriptor>" + Utilities.escapeXML(termName) + "</descriptor>\r\n");
+                    logFileWriter.append("\t\t\t<descriptor");
+                    
+                    Long number = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetTermInfo);
+                     if(number>0){
+                        logFileWriter.append(" " +ConstantParameters.system_referenceIdAttribute_kwd+"=\""+number+"\"");
+                        if(Parameters.ShowReferenceURIalso){
+                            logFileWriter.append(" " +ConstantParameters.system_referenceUri_kwd+"=\""+u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, number)+"\"");
+                        }
+                    }
+                            
+                    logFileWriter.append(">"+Utilities.escapeXML(termName) + "</descriptor>\r\n");
 
                     for (int m = 0; m < output.length; m++) {
                         String category = output[m];
@@ -1031,13 +1089,14 @@ public class WriteFileData {
                             values.addAll(targetTermInfo.descriptorInfo.get(category));
                         }
 
-                        if(category.equals(ConstantParameters.system_referenceId_kwd)){
-                            Long number = Long.parseLong(values.get(0));
+                        if(category.equals(ConstantParameters.system_referenceUri_kwd)){
+                            //moved in descriptor XML element
+                            /*Long number = Long.parseLong(values.get(0));
                             if(number>0){
-                                logFileWriter.append("\t\t\t<" + category + " referenceId=\""+number+"\">");
+                                logFileWriter.append("\t\t\t<" + category + " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+number+"\">");
                                 logFileWriter.append(Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, number)));
                                 logFileWriter.append("</" + category + ">\r\n");
-                            }
+                            }*/
                             continue;
                         }
                         

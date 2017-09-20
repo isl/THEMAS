@@ -76,8 +76,10 @@ public class CardOf_Term extends ApplicationBasicServlet {
         request.setCharacterEncoding("UTF-8");
         // popup display card / edit mode / XML Stream Mode
         String outputMode = request.getParameter("mode");
+        boolean skipClose = false;
         if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
-            response.setContentType("text/xml;charset=UTF-8");            
+            response.setContentType("text/xml;charset=UTF-8");       
+            skipClose = true;
         }
         else{
             response.setContentType("text/html;charset=UTF-8");
@@ -100,7 +102,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
             UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
              
-            if (SessionUserInfo == null|| !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
+            if (SessionUserInfo == null || !SessionUserInfo.servletAccessControl(this.getClass().getName())) {
                 if(outputMode==null){
                     out.println("Session Invalidate");                
                 }
@@ -122,10 +124,41 @@ public class CardOf_Term extends ApplicationBasicServlet {
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             String targetTerm = u.getDecodedParameterValue(request.getParameter("term"));
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
+            
+            String targetTermReferenceId = u.getDecodedParameterValue(request.getParameter("referenceId"));
+            
             //StringObject resultMessageObj = new StringObject();
             
+            
             if(targetTerm==null || targetTerm.length()==0){
+                if(targetTermReferenceId!=null && targetTermReferenceId.length()>0 && SessionUserInfo.selectedThesaurus!=null && SessionUserInfo.selectedThesaurus.length()>0){
+                    
+                    long refId = -1;
+                    try{
+                        refId = Long.parseLong(targetTermReferenceId);
+                    }
+                    catch(Exception ex){
+                        Utils.StaticClass.handleException(ex);
+                    }
+                    if(refId>0){
+                        //open connection
+                        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, SessionUserInfo.selectedThesaurus, true)==QClass.APIFail)
+                        {
+                            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ servlet " + this.getServletName());
+                            return;
+                        }
+
+                        targetTerm = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus.toUpperCase(),refId));
+
+                        Q.free_all_sets();
+                        Q.TEST_end_query();
+                        dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+                    }
+                }
+            }
+            
+            if(targetTerm==null || targetTerm.length()==0){
+                
                 //dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
                 String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/NoTermSelected", null)+"</errorMsg>";                
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
@@ -144,10 +177,13 @@ public class CardOf_Term extends ApplicationBasicServlet {
             StringBuffer xmlResults = new StringBuffer();
             float elapsedTimeSec;             
             
-            output.add("id");
-            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+            output.add(ConstantParameters.id_kwd);
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
+                output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.facet_kwd);
             }
+            //should be visible
+            output.add(ConstantParameters.system_referenceUri_kwd);
             output.add(ConstantParameters.tc_kwd);
             output.add(ConstantParameters.translation_kwd);
             output.add(ConstantParameters.scope_note_kwd);
@@ -203,7 +239,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Vector<String> allTerms = new Vector<String>();
             dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
             
-            u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
+            boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
+            u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo.selectedThesaurus,skipOutput,skipOutput);
             
             
             // in case of LIBRARY user group, mark term as (un)editable
@@ -220,15 +257,16 @@ public class CardOf_Term extends ApplicationBasicServlet {
                 DBFilters dbf = new DBFilters();            
                 termIsEditable = dbf.TermIsEditable(SessionUserInfo, targetTermObj, userLogicalName, Q, sis_session);
             }
-            xmlResults.append("<termName editable=\"" + termIsEditable + "\">" + Utilities.escapeXML(targetTerm) + "</termName>");
-            xmlResults.append("<current>" + "<term>" + "<isTopTerm>");
-            if (targetTerm != null && targetTerm.length() > 0 && dbGen.NodeBelongsToClass(new StringObject(prefix_term.concat(targetTerm)),TopTermClassObj, false, Q, sis_session)) {
-                xmlResults.append("true");
-            } else {
-                xmlResults.append("false");
+            if(outputMode==null || !outputMode.equals(Utils.ConstantParameters.XMLSTREAM)){
+                xmlResults.append("<termName editable=\"" + termIsEditable + "\">" + Utilities.escapeXML(targetTerm) + "</termName>");
+                xmlResults.append("<current>" + "<term>" + "<isTopTerm>");
+                if (targetTerm != null && targetTerm.length() > 0 && dbGen.NodeBelongsToClass(new StringObject(prefix_term.concat(targetTerm)),TopTermClassObj, false, Q, sis_session)) {
+                    xmlResults.append("true");
+                } else {
+                    xmlResults.append("false");
+                }
+                xmlResults.append("</isTopTerm>" + "</term>" + "</current>");
             }
-            xmlResults.append("</isTopTerm>" + "</term>" + "</current>");
-            
             Q.free_set(set_Target);
 
             //close connection and query
@@ -243,11 +281,18 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
            
             if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
-                xml.append(xmlResults);
-                xml.append(u.getXMLMiddle("", "Details"));
-                xml.append(u.getXMLUserInfo(SessionUserInfo));
-                xml.append(u.getXMLEnd());
+                if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS,true));
+                    xml.append(xmlResults);
+                    xml.append(u.getXMLEnd());
+                }
+                else{
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+                    xml.append(xmlResults);
+                    xml.append(u.getXMLMiddle("", "Details"));
+                    xml.append(u.getXMLUserInfo(SessionUserInfo));
+                    xml.append(u.getXMLEnd());
+                }
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"HEREEE");
                 if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
                     out.append(xml.toString());
@@ -268,7 +313,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         }finally { 
             out.flush();
-            out.close();
+            if(!skipClose){
+                out.close();
+            }
             sessionInstance.writeBackToSession(session);
         }
     } 

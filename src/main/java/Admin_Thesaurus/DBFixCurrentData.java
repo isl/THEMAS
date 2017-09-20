@@ -772,9 +772,8 @@ public class DBFixCurrentData {
                 checkTerms.addAll(dbGen.get_Node_Names_Of_Set(set_all_terms, true, Q, sis_session));
                 Collections.sort(checkTerms, new StringLocaleComparator(targetLocale));
                 //for each term collect all its bts 
-                for (int i = 0; i < checkTerms.size(); i++) {
+                for (String targetTerm : checkTerms) {
 
-                    String targetTerm = checkTerms.get(i);
                     StringObject targetTermObj = new StringObject(prefixTerm + targetTerm);
 
                     //get tergetTerm's bt links

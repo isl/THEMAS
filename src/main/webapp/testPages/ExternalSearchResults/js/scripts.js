@@ -152,7 +152,8 @@ function searchTHEMAS(){
     var params = '?updateTermCriteria=parseCriteria' +'&answerType=XMLSTREAM'+'&pageFirstResult=SaveAll'+
                                                   //term name contains predicate
                                                   '&input_term=name'+
-                                                  '&op_term=~'+
+                                                  //'&op_term=~'+
+                                                  '&op_term=transliteration~'+
                                                   '&inputvalue_term='+targetTerm+
                                                   //or used for term (non-preferred term) contains predicate
                                                   '&input_term=uf'+
@@ -170,6 +171,7 @@ function searchTHEMAS(){
                                                   '&output_term1=name'+
                                                   '&output_term1=uf'+        
                                                   '&output_term1=rnt'+     
+                                                  '&output_term1=rbt'+   
                                                   //'&=deSelectAllOutputs'
                                                   '';
 
@@ -196,9 +198,13 @@ function searchTHEMAS(){
                 
                 $(xml).find("term").each(function(){
                     var descriptorName = '';
+                    var transliteration = '';
+                    var referenceUrlText='';
                     var ufs ='';
                     
                     descriptorName = $(this).find("descriptor").text();
+                    transliteration = $(this).find("descriptor").attr('transliteration');
+                    referenceUrlText = $(this).find("descriptor").attr('referenceId');
                     $(this).find("uf").each(function(){
                     	if(ufs!=''){
                             ufs+=', ';
@@ -207,11 +213,13 @@ function searchTHEMAS(){
                     });
                     
                     if(descriptorName!=''){
+                        
+                        //var optionValue = '<option value="'+idText+'" id="'+idText+'"';
                         if(ufs!=''){
-                            $('#resultsSelect').append('<option value="'+descriptorName+'">'+descriptorName+ ' (UFs: '+ufs+')</option>');                    
+                            $('#resultsSelect').append('<option value="'+referenceUrlText+'">'+descriptorName+ ' (UFs: '+ufs+')</option>');                    
                         }
                         else{
-                            $('#resultsSelect').append('<option value="'+descriptorName+'">'+descriptorName+'</option>');                    
+                            $('#resultsSelect').append('<option value="'+referenceUrlText+'">'+descriptorName+'</option>');                    
                         }
                     }
                     
@@ -278,26 +286,26 @@ function ShowHideHierXML(){
 
 
 function starView(){
-    var selText = $("#resultsSelect option:selected").val();
-    if(selText!=null && selText!==null && selText.trim().length>0){
+    var selIdText = $("#resultsSelect option:selected").val();
+    if(selIdText!=null && selIdText!==null && selIdText.trim().length>0){
         //alert('startView');
         
-        
-        var targetTerm = escape(encodeURIComponent(selText.trim()));
-        var params = '?mode=XMLSTREAM'+'&term='+targetTerm;
-
+        var targetTermReferenceUrl = 'CardOf_Term?referenceId='+escape(encodeURIComponent(selIdText.trim()));
+        //var params = '?mode=XMLSTREAM'+'&term='+targetTermId;
+        var params = '&mode=XMLSTREAM&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus;
     
         //window.open(thesaurusBaseUrl + 'CardOf_Term' + params +'&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus);
 
         $("#starDivXSLT").html('');
         
-        $.ajax({url: thesaurusBaseUrl + 'CardOf_Term' + params +'&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus,
+        $.ajax({url: thesaurusBaseUrl + targetTermReferenceUrl +params,
                 type: "GET",
                 dataType: "xml", success: function(xml){
                     
                     var s = new XMLSerializer();
-                    if($(xml).find("terms").length>0){
-                        var d = $(xml).find("terms")[0];
+                    
+                    if($(xml).find("data").length>0){
+                        var d = $(xml).find("data")[0];
                         
                         var str = s.serializeToString(d);
                         
@@ -346,19 +354,25 @@ function starView(){
 }
 
 function hierarchicalView(){
-    var selText = $("#resultsSelect option:selected").val();
     
-    if(selText!=null && selText!==null && selText.trim().length>0){
+    var selIdText = $("#resultsSelect option:selected").val();
+    
+    if(selIdText!=null && selIdText!==null && selIdText.trim().length>0){
+        //alert('startView');
+        
+        
+       var targetTermReferenceUrl = 'SearchResults_Terms_Hierarchical?referenceId='+ escape(encodeURIComponent(selIdText.trim()));
        //alert('hierarchicalView');
        ////alert('startView');
-       var targetTerm = escape(encodeURIComponent(selText.trim()));
-       var params = '?answerType=XMLSTREAM'+'&hierarchy='+targetTerm;
+       //var targetTerm = escape(encodeURIComponent(selText.trim()));
+       //var params = '?answerType=XMLSTREAM'+'&hierarchy='+targetTerm;
+       var params = '&answerType=XMLSTREAM'+'&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus;
        //window.open(thesaurusBaseUrl + 'SearchResults_Terms_Hierarchical' + params +'&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus);       
        
        
        $("#hierDivXSLT").html('');
         
-        $.ajax({url: thesaurusBaseUrl + 'SearchResults_Terms_Hierarchical' + params +'&external_user=' +targetUserName+ '&external_thesaurus='+ targetThesaurus,
+        $.ajax({url: thesaurusBaseUrl + targetTermReferenceUrl + params,
                 type: "GET",
                 dataType: "xml", success: function(xml){
                     

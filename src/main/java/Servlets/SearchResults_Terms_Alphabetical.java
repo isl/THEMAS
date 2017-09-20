@@ -160,7 +160,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             
             //Output required for alphabetical
             Vector<String> output = new Vector<String>();
-            output.add("id");
+            output.add(ConstantParameters.id_kwd);
             output.add(ConstantParameters.tc_kwd);
             output.add(ConstantParameters.translation_kwd);
             output.add(ConstantParameters.scope_note_kwd);
@@ -231,7 +231,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 //Collections.sort(resultUFNodes, new SortItemLocaleComparator(targetLocale)); 
                 
                 //Write XML file
-                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale);
+                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo.selectedThesaurus,false);
                 
                 //end query and close connection
                 Q.free_all_sets();
@@ -306,7 +306,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIdsL);
             dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_paging_results, termsInfo, resultsTerms , resultNodesIdsL);
             Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));        
-            u.getResultsInXmlGuideTermSorting(resultsTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
+            u.getResultsInXmlGuideTermSorting(resultsTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo.selectedThesaurus,false,false);
             
             //end query and close connection
             Q.free_all_sets();
