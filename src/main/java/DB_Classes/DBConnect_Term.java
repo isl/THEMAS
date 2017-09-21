@@ -164,7 +164,7 @@ public class DBConnect_Term {
 
         // create targetDescriptor if it doesn't exist
         if (dbGen.checkCMV_exist(targetDescriptorCmv, Q,sis_session) == false) {
-            int ret = TA.CHECK_CreateDescriptor(targetDescriptorCmv, (StringObject) vec_bt.get(0));
+            int ret = TA.CHECK_CreateDescriptorCMValue(targetDescriptorCmv, (StringObject) vec_bt.get(0));
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMsg = errorMsg.concat("" + dbGen.check_success(ret, TA,null,tms_session) + "");
                 return errorMsg;

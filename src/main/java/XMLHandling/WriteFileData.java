@@ -272,7 +272,7 @@ public class WriteFileData {
                 facetsToExportInSortItemFormat.addAll(Utilities.getSortItemVectorFromStringVector(facetFilter, false));
             }
 
-            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.LOG_NAME));
+            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
 
             for (int i = 0; i < facetsToExportInSortItemFormat.size(); i++) {
                 String facetName = facetsToExportInSortItemFormat.get(i).getLogName();
@@ -383,7 +383,7 @@ public class WriteFileData {
                 facetsToExportInSortItemFormat.addAll(Utilities.getSortItemVectorFromStringVector(facetFilter, false));
             }
 
-            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.LOG_NAME));
+            Collections.sort(facetsToExportInSortItemFormat, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Facets");
             logFileWriter.append("\r\n\t<facets count=\"" + facetsToExportInSortItemFormat.size() + "\">\r\n");
@@ -993,7 +993,7 @@ public class WriteFileData {
             Vector<String> TermsFilter) throws IOException {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Terms");
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        
         Vector<String> termsFilter = new Vector<String>();
 
         if (TermsFilter != null && TermsFilter.size() > 0) {
@@ -1005,16 +1005,16 @@ public class WriteFileData {
             Vector<String> allHierarchies = new Vector<String>();
             allHierarchies.addAll(hierarchyFacets.keySet());
 
-            Vector<String> allTerms = new Vector<String>();
-            allTerms.addAll(termsInfo.keySet());
+            Vector<SortItem> allTerms = new Vector<SortItem>();
+            allTerms.addAll(Utilities.getSortItemVectorFromTermsInfo(termsInfo, false));
 
             allTerms.removeAll(allHierarchies);
 
-            Collections.sort(allTerms);
+            Collections.sort(allTerms, new SortItemComparator((SortItemComparator.SortItemComparatorField.TRANSLITERATION)));
 
             if (allTerms.size() > 0) {
-                for (int i = 0; i < allTerms.size(); i++) {
-                    String termName = allTerms.get(i);
+                for (SortItem termItem : allTerms) {
+                    String termName = termItem.getLogName();
 
                     if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                         continue;
@@ -1033,20 +1033,28 @@ public class WriteFileData {
                 ConstantParameters.primary_found_in_kwd, ConstantParameters.translations_found_in_kwd, ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
                 ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd};
 
-            Vector<String> allTerms = new Vector<String>();
-            if (termsFilter.size() == 0) {
-                allTerms.addAll(termsInfo.keySet());
+            Vector<SortItem> allTerms = new Vector<SortItem>();
+            
+
+            
+            if (termsFilter.size() == 0) {                
+                allTerms.addAll(Utilities.getSortItemVectorFromTermsInfo(termsInfo, false));
             } else {
                 Enumeration<String> termsEnum = termsInfo.keys();
                 while (termsEnum.hasMoreElements()) {
                     String termName = termsEnum.nextElement();
                     if (termsFilter.contains(termName)) {
-                        allTerms.add(termName);
+                        long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(termsInfo.get(termName));
+                        String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(termsInfo.get(termName),termName,false);
+                        long id = -1; //Utilities.retrieveDatabaseIdFromNodeInfoStringContainer(termsInfo.get(termName));
+                        allTerms.add(new SortItem(termName,id,transliteration,refId));
                     }
                 }
             }
 
-            Collections.sort(allTerms);
+            SortItemComparator transliterationComparator =  new SortItemComparator((SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            SortItemComparator linkClassTransliterationComparator =  new SortItemComparator((SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            Collections.sort(allTerms,transliterationComparator);
 
             Vector<String> specialCategories = new Vector<String>();
 
@@ -1063,8 +1071,8 @@ public class WriteFileData {
             if (allTerms.size() > 0) {
                 //logFileWriter.append("\r\n\t<terms>\r\n");
                 logFileWriter.append("\r\n\t<terms count=\"" + allTerms.size() + "\">\r\n");
-                for (int i = 0; i < allTerms.size(); i++) {
-                    String termName = allTerms.get(i);
+                for (SortItem termItem : allTerms) {
+                    String termName = termItem.getLogName();
 
                     NodeInfoStringContainer targetTermInfo = termsInfo.get(termName);
 
@@ -1114,9 +1122,11 @@ public class WriteFileData {
                             }
                         } else {
                             if (category.equals(ConstantParameters.bt_kwd) || category.equals(ConstantParameters.rt_kwd)) {
-                                Collections.sort(values);
-                                for (int k = 0; k < values.size(); k++) {
-                                    String val = values.get(k);
+                                //Collections.sort(values);
+                                Vector<SortItem> valueSortItems = Utilities.getSortItemVectorFromStringVectorAndTermsInfo(values, termsInfo, false);
+                                Collections.sort(valueSortItems, transliterationComparator);
+                                for (SortItem linkItem : valueSortItems) {
+                                    String val = linkItem.getLogName();
                                     if (ConstantParameters.filterBts_Nts_Rts) {
                                         if (termsInfo.containsKey(val) == false) {
                                             continue;
@@ -1125,7 +1135,15 @@ public class WriteFileData {
                                     if (termsFilter.size() > 0 && termsFilter.contains(val) == false) {
                                         continue;
                                     }
-                                    logFileWriter.append("\t\t\t<" + category + ">");
+                                    String appendVal = "\t\t\t<" + category;
+                                    if(linkItem.getThesaurusReferenceId()>0){
+                                        appendVal+= " "+ConstantParameters.system_referenceIdAttribute_kwd +"=\""+linkItem.getThesaurusReferenceId()+"\"";
+                                        if(Parameters.ShowReferenceURIalso){
+                                            appendVal+= " "+ConstantParameters.system_referenceUri_kwd +"=\""+Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, linkItem.getThesaurusReferenceId()))+"\"";
+                                        }
+                                    }
+                                    appendVal+=">";
+                                    logFileWriter.append(appendVal);                                    
                                     logFileWriter.append(Utilities.escapeXML(val));
                                     logFileWriter.append("</" + category + ">\r\n");
                                 }
@@ -1195,8 +1213,10 @@ public class WriteFileData {
                                     }
                                 }
                             } else if (category.equals(ConstantParameters.nt_kwd)) {
-
-                                Vector<String> nts = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                Vector<String> ntVals = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                Vector<SortItem> ntSortItems = Utilities.getSortItemVectorFromStringVectorAndTermsInfo(ntVals, termsInfo, false);
+                                Collections.sort(ntSortItems, transliterationComparator);
+                                
                                 Vector<SortItem> guidTermNts = new Vector<SortItem>();
                                 if (XMLguideTermsRelations.containsKey(termName)) {
 
@@ -1209,99 +1229,113 @@ public class WriteFileData {
                                 //Narrower
                                 Vector<SortItem> finalGuideTerms = new Vector<SortItem>();
 
-                                if (nts != null && nts.size() > 0) {
-                                    for (int j = 0; j < nts.size(); j++) {
-                                        String ntVal = nts.get(j);
-
-                                        if (ntVal == null || ntVal.length() == 0) {
+                                if (ntSortItems != null && ntSortItems.size() > 0) {
+                                    for (SortItem ntSIVal : ntSortItems) {
+                                        
+                                        if (ntSIVal == null || ntSIVal.getLogName()==null || ntSIVal.getLogName().length() == 0) {
                                             continue;
                                         }
 
                                         boolean ntValFound = false;
                                         SortItem finalSortItem = new SortItem("", -1, "");
-                                        for (int w = 0; w < guidTermNts.size(); w++) {
-                                            SortItem ntSortItem = guidTermNts.get(w);
-                                            if (ntSortItem.log_name.equals(ntVal)) {
+                                        for (SortItem ntSortItem : guidTermNts) {
+                                            if (ntSortItem.log_name.equals(ntSIVal.getLogName())) {
                                                 ntValFound = true;
                                                 finalSortItem.log_name = ntSortItem.log_name;
                                                 finalSortItem.linkClass = ntSortItem.linkClass;
+                                                finalSortItem.thesarurusReferenceId = ntSIVal.getThesaurusReferenceId();
+                                                finalSortItem.log_name_transliteration = ntSIVal.getLogNameTransliteration();
                                                 break;
                                             }
                                         }
 
                                         if (ntValFound == false) {
-                                            finalSortItem.log_name = ntVal;
+                                            finalSortItem.log_name = ntSIVal.getLogName();
+                                            finalSortItem.thesarurusReferenceId = ntSIVal.getThesaurusReferenceId();
+                                            finalSortItem.log_name_transliteration = ntSIVal.getLogNameTransliteration();
                                         }
                                         finalGuideTerms.add(finalSortItem);
                                     }
-
                                 }
 
-                                Vector<String> distinctGuideTerms = new Vector<String>();
-                                for (int j = 0; j < finalGuideTerms.size(); j++) {
-                                    SortItem sitem = finalGuideTerms.get(j);
+                                Vector<String> distinctGuideTermsStrings = new Vector<String>();
+                                Vector<SortItem> distinctGuideTermsSortItems = new Vector<SortItem>();
+                                for (SortItem sitem : finalGuideTerms) {
                                     String guildeTerm = sitem.linkClass;
-                                    if (distinctGuideTerms.contains(guildeTerm) == false) {
-                                        distinctGuideTerms.add(guildeTerm);
+                                    if (distinctGuideTermsStrings.contains(guildeTerm) == false) {
+                                        distinctGuideTermsSortItems.add(new SortItem(guildeTerm, -1, Utilities.getTransliterationString(sitem.linkClass,false),sitem.getThesaurusReferenceId()));
+                                        distinctGuideTermsStrings.add(guildeTerm);
                                     }
                                 }
 
-                                Collections.sort(distinctGuideTerms);
+                                Collections.sort(distinctGuideTermsSortItems, transliterationComparator);
 
-                                for (int j = 0; j < distinctGuideTerms.size(); j++) {
-                                    String targetGuideTerm = distinctGuideTerms.get(j);
-                                    Vector<String> ntsWithThisGuideTerm = new Vector<String>();
+                                for (SortItem targetGuideTermItem: distinctGuideTermsSortItems) {
+                                     String targetGuideTerm = targetGuideTermItem.getLogName();
+                                     Vector<SortItem> ntsWithThisGuideTerm = new Vector<SortItem>();
+                                     
+                                     for (SortItem sitem : finalGuideTerms) {
+                                         String guildeTerm = sitem.linkClass;
+                                         String targetNt = sitem.log_name;
+                                         
+                                         if (targetGuideTerm.equals(guildeTerm)) {
+                                             ntsWithThisGuideTerm.add(new SortItem(targetNt,-1,guildeTerm,sitem.log_name_transliteration,sitem.getThesaurusReferenceId()));
+                                         }
+                                     }
 
-                                    for (int k = 0; k < finalGuideTerms.size(); k++) {
-                                        SortItem sitem = finalGuideTerms.get(k);
-                                        String guildeTerm = sitem.linkClass;
-                                        String targetNt = sitem.log_name;
-
-                                        if (targetGuideTerm.equals(guildeTerm)) {
-                                            ntsWithThisGuideTerm.add(targetNt);
-                                        }
-                                    }
-
-                                    Collections.sort(ntsWithThisGuideTerm);
+                                    Collections.sort(ntsWithThisGuideTerm,linkClassTransliterationComparator);
 
                                     if (targetGuideTerm.length() == 0) {
-                                        for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
-                                            String ntStr = ntsWithThisGuideTerm.get(k);
+                                        for (SortItem ntStr : ntsWithThisGuideTerm) {
 
                                             if (ConstantParameters.filterBts_Nts_Rts) {
-                                                if (termsInfo.containsKey(ntStr) == false) {
+                                                if (termsInfo.containsKey(ntStr.getLogName()) == false) {
                                                     continue;
                                                 }
                                             }
-                                            if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
+                                            if (termsFilter.size() > 0 && termsFilter.contains(ntStr.getLogName()) == false) {
                                                 continue;
                                             }
-                                            logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"\">");
-                                            logFileWriter.append(Utilities.escapeXML(ntStr));
+                                            //logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"\">");
+                                            
+                                            String appendVal = "\t\t\t<" + category;
+                                            if(ntStr.getThesaurusReferenceId()>0){
+                                                appendVal+= " "+ConstantParameters.system_referenceIdAttribute_kwd +"=\""+ntStr.getThesaurusReferenceId()+"\"";
+                                                if(Parameters.ShowReferenceURIalso){
+                                                    appendVal+= " "+ConstantParameters.system_referenceUri_kwd +"=\""+Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, ntStr.getThesaurusReferenceId()))+"\"";
+                                                }
+                                            }
+                                            appendVal+=">";
+                                            logFileWriter.append(appendVal); 
+                                            logFileWriter.append(Utilities.escapeXML(ntStr.getLogName()));
                                             logFileWriter.append("</" + category + ">\r\n");
                                         }
 
                                     } else {
 
-                                        if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-
-                                            for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
-                                                String ntStr = ntsWithThisGuideTerm.get(k);
+                                            for (SortItem ntStr : ntsWithThisGuideTerm) {
 
                                                 if (ConstantParameters.filterBts_Nts_Rts) {
-                                                    if (termsInfo.containsKey(ntStr) == false) {
+                                                    if (termsInfo.containsKey(ntStr.getLogName()) == false) {
                                                         continue;
                                                     }
                                                 }
-                                                if (termsFilter.size() > 0 && termsFilter.contains(ntStr) == false) {
+                                                if (termsFilter.size() > 0 && termsFilter.contains(ntStr.getLogName()) == false) {
                                                     continue;
                                                 }
-                                                logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + targetGuideTerm + "\">");
-                                                logFileWriter.append(Utilities.escapeXML(ntStr));
+                                                String appendVal = "\t\t\t<" + category;
+                                                if(ntStr.getThesaurusReferenceId()>0){
+                                                    appendVal+= " "+ConstantParameters.system_referenceIdAttribute_kwd +"=\""+ntStr.getThesaurusReferenceId()+"\"";
+                                                    if(Parameters.ShowReferenceURIalso){
+                                                        appendVal+= " "+ConstantParameters.system_referenceUri_kwd +"=\""+Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, ntStr.getThesaurusReferenceId()))+"\"";
+                                                    }
+                                                }
+                                                appendVal+=" " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + targetGuideTerm + "\">";
+                                                logFileWriter.append(appendVal); 
+                                                logFileWriter.append(Utilities.escapeXML(ntStr.getLogName()));
                                                 logFileWriter.append("</" + category + ">\r\n");
 
                                             }
-                                        }
 
                                     }
                                 }

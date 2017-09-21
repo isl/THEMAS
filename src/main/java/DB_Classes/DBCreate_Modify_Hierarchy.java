@@ -537,12 +537,10 @@ public class DBCreate_Modify_Hierarchy {
             return false;
 
         } else { // case of NO error
-            //CreationOrModificationSucceded = true;
-            // end transaction
-            //Q.end_transaction();
+            //In case of success there is no need any more to set error Message
             
             if (createORmodify.equals("create")) {
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", new String[]{targetHierarchyWithoutPrefix}));
+                //errorMsg.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", new String[]{targetHierarchyWithoutPrefix}));
                 //errorMsg.setValue("Hierarchy: %s was sucessfully created.");
                 return true;
             } else { // modify
@@ -552,21 +550,21 @@ public class DBCreate_Modify_Hierarchy {
 
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_NEW) {
                         //message = "Hierarchy %s was successfully deleted.";                        
-                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
                     }
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_OBSOLETE) {
                         //message = "Undo abandonment action of hierarchy: '%s' was successfully performed.";
-                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessUndoObsoleteMsg", new String[]{targetHierarchyWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessUndoObsoleteMsg", new String[]{targetHierarchyWithoutPrefix}));
                     }
                     if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_RELEASED) {
                         //message = "Hierarchy %s was successfully deleted.";
-                        errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyDeleted", new String[]{targetHierarchyWithoutPrefix}));
                     }
                     errorMsg.setValue(message);
                     return true;
                 } else {
                     //errorMsg.setValue("Hierarchy: '%s' was successfully modified.");
-                    errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyEdited", new String[]{targetHierarchyWithoutPrefix}));
+                    //errorMsg.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/SuccessfullyEdited", new String[]{targetHierarchyWithoutPrefix}));
                     return true;
                 }
             }

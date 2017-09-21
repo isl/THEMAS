@@ -98,7 +98,6 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
-            String pathToMessagesXML = getServletContext().getRealPath("/translations/Messages.xml");
             String targetHierarchy  = u.getDecodedParameterValue(request.getParameter("targetHierarchy"));           
             String targetField = u .getDecodedParameterValue(request.getParameter("targetEditField"));
             String NewtargetField = targetField;

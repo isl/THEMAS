@@ -3011,6 +3011,27 @@ public class Utilities {
         return transliterationString;
     }
     
+    public static long retrieveDatabaseIdFromNodeInfoStringContainer(NodeInfoStringContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
+                    try{
+                        retVal = Long.parseLong(valStr);
+                    }
+                    catch(Exception ex){
+                        Utils.StaticClass.handleException(ex);
+                    }
+                }
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
     public static long retrieveThesaurusReferenceFromNodeInfoStringContainer(NodeInfoStringContainer container){
         long retVal = -1;
         
@@ -3072,6 +3093,48 @@ public class Utilities {
         }
         return returnResults;
     }
+    
+    
+    public static Vector<SortItem> getSortItemVectorFromTermsInfo(Hashtable<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        if(termsInfo!=null){
+            Enumeration<String> termEnum = termsInfo.keys();
+            while(termEnum.hasMoreElements()){
+                String termName = termEnum.nextElement();
+                NodeInfoStringContainer targetInfo = termsInfo.get(termName);
+                long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
+                String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
+                long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                returnResults.add(new SortItem(termName,id,transliteration,refId));
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    
+    public static Vector<SortItem> getSortItemVectorFromStringVectorAndTermsInfo(Vector<String> filterVector, Hashtable<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        if(termsInfo!=null && filterVector!=null){
+            Enumeration<String> termEnum = termsInfo.keys();
+            while(termEnum.hasMoreElements()){
+                String termName = termEnum.nextElement();
+                if(filterVector.contains(termName)){
+                    NodeInfoStringContainer targetInfo = termsInfo.get(termName);
+                    long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
+                    String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
+                    long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                    returnResults.add(new SortItem(termName,id,transliteration,refId));
+                }
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    
 }
 
 

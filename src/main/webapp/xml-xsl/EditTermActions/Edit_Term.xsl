@@ -2132,7 +2132,8 @@
                                 </td>
                                 <td style="width:200px;">
                                     <label>
-                                    <input type="checkbox" name="saveasuf" value="yes" checked="checked" style="vertical-align: middle;"/>
+                                        <!-- removing the checked="checked"  it should only be done when intended -->
+                                    <input type="checkbox" name="saveasuf" value="yes" style="vertical-align: middle;"/>
                                         
                                     </label>
                                     <xsl:text> <xsl:value-of select="$specificlocale/rename/saveasufCheckboxLabel/option[@lang=$lang]"/> </xsl:text>                                    

@@ -87,7 +87,7 @@ public class DBConnect_Facet {
 
         if (dbGen.checkCMV_exist(targetFacetCmv,Q,sis_session) == false) {
             
-            int ret = TA.CHECK_CreateFacet(targetFacetCmv);
+            int ret = TA.CHECK_CreateFacetCMValue(targetFacetCmv);
             
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMSG = errorMSG.concat(dbGen.check_success(ret, TA, null,tms_session));

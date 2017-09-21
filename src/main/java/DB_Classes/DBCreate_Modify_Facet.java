@@ -176,29 +176,29 @@ public class DBCreate_Modify_Facet {
             //Q.end_transaction();
             if (createORmodify.equals("create")) {
 
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacet}));
+                //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacet}));
                 //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully created.");
 
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
                     //String message = "";
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacet}));
                         //message = "Undo abandonment action of facet '%s' was successfully performed.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                      
                     //errorMsg.setValue(message);
                     //return message;
                 } else {
-                    errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacet}));
+                    //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacet}));
                     //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
                 }
             }
@@ -284,32 +284,33 @@ public class DBCreate_Modify_Facet {
             return false;
 
         } else { // case of NO error
+            //In case of success there is no need any more to set error Message
             
             if (createORmodify.equals("create")) {
 
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
             
 
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
                     //String message = "";
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacetWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacetWithoutPrefix}));
                         //message = "Undo abandonment action of facet '%s' was successfully performed.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                      
                     //errorMsg.setValue(message);
                     //return message;
                 } else {
-                    errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                    //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
                     //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
                 }
             }

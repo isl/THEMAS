@@ -95,7 +95,7 @@ public class DBConnect_Hierarchy {
             return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null) ;
         }
         
-        int ret = TA.CHECK_CreateHierarchy(targetHierarchyCmv, targetHierarchyFacetObj);
+        int ret = TA.CHECK_CreateHierarchyCMValue(targetHierarchyCmv, targetHierarchyFacetObj);
 
         if (ret == TMSAPIClass.TMS_APIFail) {
 

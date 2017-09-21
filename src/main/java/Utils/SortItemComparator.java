@@ -42,9 +42,9 @@ import java.text.Collator;
  */
 public class SortItemComparator implements Comparator{
     
-    public enum SortItemComparatorField {LOG_NAME,TRANSLITERATION,THESARUS_REFERENCE_ID};
+    public enum SortItemComparatorField {LOG_NAME,TRANSLITERATION,THESARUS_REFERENCE_ID, LINKCLASS_TRANSLITERATION_LOGNAME};
     
-    private SortItemComparatorField compareMode = SortItemComparatorField.LOG_NAME;
+    private SortItemComparatorField compareMode = SortItemComparatorField.TRANSLITERATION;
     
     public SortItemComparator(SortItemComparatorField targetMode) {
 
@@ -82,6 +82,40 @@ public class SortItemComparator implements Comparator{
                 }
                 else{
                     return o1str.compareTo(n1str);
+                }
+            }
+            case LINKCLASS_TRANSLITERATION_LOGNAME:{
+                String o1_link_str =o1.getLinkClass();
+                String o2_link_str =n1.getLinkClass();
+                if(o1_link_str!=null){
+                    o1_link_str = o1_link_str.replaceAll(" ", "_");
+                }
+                if(o2_link_str !=null){
+                    o2_link_str  = o2_link_str .replaceAll(" ", "_");
+                }
+                if(o1_link_str.compareTo(o2_link_str)==0){
+                    
+                    String o1str =o1.getLogNameTransliteration();
+                    String n1str =n1.getLogNameTransliteration();
+                    if(o1str!=null){
+                        o1str = o1str.replaceAll(" ", "_");
+                    }
+                    if(n1str !=null){
+                        n1str  = n1str .replaceAll(" ", "_");
+                    }
+                    if(o1str.compareTo(n1str)==0){
+                        String o1LNstr =o1.getLogName();
+                        String n1LNstr =n1.getLogName();
+                        o1LNstr = o1LNstr.replaceAll(" ", "_");
+                        n1LNstr = n1LNstr.replaceAll(" ", "_");   
+                        return o1LNstr.compareTo(n1LNstr);       
+                    }
+                    else{
+                        return o1str.compareTo(n1str);
+                    }     
+                }
+                else{
+                    return o1_link_str.compareTo(o2_link_str);
                 }
             }
             case THESARUS_REFERENCE_ID:{

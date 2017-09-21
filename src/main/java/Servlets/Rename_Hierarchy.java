@@ -84,18 +84,16 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                 return;
             }
 
+            //tools
             DBGeneral dbGen = new DBGeneral();
+            Utilities u = new Utilities();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
+            DBConnect_Term dbCon = new DBConnect_Term();
             
-            // open SIS and TMS connection
+            // open SIS and TMS connection structs
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
             IntegerObject tms_session = new IntegerObject();
-
-            Utilities u = new Utilities();
-
-            DBConnect_Term dbCon = new DBConnect_Term();
-
-            DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
             String oldName = u.getDecodedParameterValue(request.getParameter("oldhierarchyname"));
             String newName = u.getDecodedParameterValue(request.getParameter("newhierarchyname"));
@@ -115,60 +113,12 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                 return;
             }
 
-            /*
-            try {
-                Vector<String> errorArgs = new Vector<String>();
-                //String pathToMessagesXML = Utilities.getMessagesXml();
-                byte[] byteArray = newName.getBytes("UTF-8");
-                int maxTermChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    //errorMsgObj.setValue("No hierarchy selected for Rename. rename aborted.");
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(errorMsgObj, "root/EditHierarchy/Edit/LongName", errorArgs, pathToMessagesXML);
-                        //abort transaction and close connection
-                        Q.free_all_sets();
-                        Q.abort_transaction();
-                        dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
-
-                        out.println(errorMsgObj.getValue());
-                        out.flush();
-                        return;
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
-
             Q.reset_name_scope();
 
             String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
             StringObject OldHierarchy = new StringObject(prefix.concat(oldName));
             String hierarchy = prefix.concat(newName);
             //CODE IMPORTED FROM RenameCheck_Hierarchy
-
-            if (newName != null && newName.length() > 0) {
-                /*
-                try {
-                    byte[] byteArray = newName.getBytes("UTF-8");
-
-                    int maxHierarchyChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxHierarchyChars) {
-                        Vector<String> errorArgs = new Vector<String>();
-                        errorArgs.add("" + maxHierarchyChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(errorMsgObj, "root/EditHierarchy/Rename/LongName", errorArgs, pathToMessagesXML);                        
-                        ret1 = TMSAPIClass.TMS_APIFail;
-                        
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                */
-            }
 
             if(ret1==TMSAPIClass.TMS_APIFail){
 
@@ -224,12 +174,26 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
 
             } else {
 
+                //StringObject newHierarchy = new StringObject(prefix.concat(newName));
+                //StringObject oldHierarchy = new StringObject(prefix.concat(oldName));
 
+                CMValue newHierarchy = new CMValue();
+                newHierarchy.assign_node(prefix.concat(newName), -1, Utilities.getTransliterationString(newName, false), -1);
+                
+                Q.reset_name_scope();
+                CMValue oldHierarchy = new CMValue();
+                long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldHierarchy);
+                if(ret<=0){
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/OldNameDoesNotExist", null));
+                    //errorMsgObj.setValue("Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.");
 
-
-                StringObject newHierarchy = new StringObject(prefix.concat(newName));
-                StringObject oldHierarchy = new StringObject(prefix.concat(oldName));
-
+                    ret1 = TMSAPIClass.TMS_APIFail;
+                    //abort transaction and close connection
+                    Q.free_all_sets();
+                    Q.TEST_abort_transaction();
+                    dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+                }
+                
                 String prefix_term = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
 
@@ -266,29 +230,26 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                     nts_vec.trimToSize();
                     rts_vec.trimToSize();
 
-                    for (int m = 0; m < bts_vec.size(); m++) {
-                        if(modifiedNodes.contains(bts_vec.get(m))==false){
-                            modifiedNodes.add(bts_vec.get(m));
+                    for (String btTerm : bts_vec) {
+                        if(modifiedNodes.contains(btTerm)==false){
+                            modifiedNodes.add(btTerm);
                         }
-                        //modifiedNodes += bts_vec.get(m) + ",";
                     }
-                    for (int m = 0; m < nts_vec.size(); m++) {
-                        if(modifiedNodes.contains(nts_vec.get(m))==false){
-                            modifiedNodes.add(nts_vec.get(m));
+                    for (String ntTerm : nts_vec) {
+                        if(modifiedNodes.contains(ntTerm)==false){
+                            modifiedNodes.add(ntTerm);
                         }
-                        //modifiedNodes += nts_vec.get(m) + ",";
                     }
-                    for (int m = 0; m < rts_vec.size(); m++) {
-                        if(modifiedNodes.contains(rts_vec.get(m))==false){
-                            modifiedNodes.add(rts_vec.get(m));
+                    for (String rtTerm : rts_vec) {
+                        if(modifiedNodes.contains(rtTerm)==false){
+                            modifiedNodes.add(rtTerm);
                         }
-                        //modifiedNodes += rts_vec.get(m) + ",";
                     }
 
                     //if (modifiedNodes.length() > 0) {
                       //  modifiedNodes = modifiedNodes.substring(0, modifiedNodes.lastIndexOf(','));
                     //}
-                    ret1 = TA.CHECK_RenameHierarchy(oldHierarchy, newHierarchy);
+                    ret1 = TA.CHECK_RenameHierarchyCMvalue(oldHierarchy, newHierarchy);
 
                     if (ret1 != TMSAPIClass.TMS_APIFail) {
                         ret1 = dbGen.renameCommentNodes(SessionUserInfo.selectedThesaurus, new StringObject(prefix_term.concat(oldName)), new StringObject(prefix_term.concat(newName)), Q, sis_session);
