@@ -129,6 +129,9 @@ public class DBConnect_Term {
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
     public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+        
+        
+        
         // initialize output
         String errorMsg = new String("");
         Utilities u = new Utilities();
@@ -166,7 +169,18 @@ public class DBConnect_Term {
         if (dbGen.checkCMV_exist(targetDescriptorCmv, Q,sis_session) == false) {
             int ret = TA.CHECK_CreateDescriptorCMValue(targetDescriptorCmv, (StringObject) vec_bt.get(0));
             if (ret == TMSAPIClass.TMS_APIFail) {
-                errorMsg = errorMsg.concat("" + dbGen.check_success(ret, TA,null,tms_session) + "");
+                if(Q.get_error_code().equals(Messages.ErrorCode_For_ThesaurusReferenceIdAlreadyAssigned)){
+                    if(targetDescriptorCmv.getRefid()>0){
+                        errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Creation/AlreadyAssignedSpecificTermReferenceId", new String[] { ""+targetDescriptorCmv.getRefid(), dbGen.removePrefix(targetDescriptorCmv.getString()),selectedThesaurus}));
+                    }
+                    else{
+                        errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Creation/ErrorDuringTermReferenceIdAssignement", new String[] { dbGen.removePrefix(targetDescriptorCmv.getString()),selectedThesaurus}));
+                    }                 
+                }
+                else{
+                    String reasonMessage =dbGen.check_success(ret, TA,null,tms_session);                
+                    errorMsg = errorMsg.concat(reasonMessage);
+                }
                 return errorMsg;
             }
         } else {

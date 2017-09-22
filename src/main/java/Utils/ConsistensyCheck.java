@@ -60,8 +60,8 @@ import java.io.OutputStreamWriter;
 public class ConsistensyCheck {
     
   
-    final String Create_Modify_XML_STR = "CREATE_MODIFY";
-    final String MoveToHier_XML_STR = "MOVE_TO_HIERARCHY";
+    public final String Create_Modify_XML_STR = "CREATE_MODIFY";
+    public final String MoveToHier_XML_STR = "MOVE_TO_HIERARCHY";
     
     //final static int FixData_POLICY = 0;
     public final static int IMPORT_COPY_MERGE_THESAURUS_POLICY = 1;
@@ -1786,6 +1786,84 @@ public class ConsistensyCheck {
 //EXIT POINT FREE SETS        
         return true;        
     }
+    
+    /**
+     * Checking if new Thesaurus Reference Id is already assigned to another term.
+     * 
+     * @param SessionUserInfo
+     * @param Q
+     * @param sis_session
+     * @param targetTerm
+     * @param bts_Vector
+     * @param errorMsg
+     * @param pathToErrorsXML
+     * @param resolveError
+     * @param logFileWriter
+     * @param policy
+     * @return 
+     */
+    public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,SortItem targetTermSortItem, Vector<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
+        
+        boolean suchATermExists = Q.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetTermSortItem.getThesaurusReferenceId());
+        
+        if(suchATermExists){
+            
+            DBGeneral dbGen = new DBGeneral();
+            
+            String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, targetTermSortItem.getThesaurusReferenceId()));
+            
+            if(termUsingThisReferenceId.equals(targetTermSortItem.getLogName())==false){
+                Vector<String> errorArgs = new Vector<String>();
+
+                switch(policy){
+
+                    case IMPORT_COPY_MERGE_THESAURUS_POLICY:{
+
+                        errorArgs.add(""+targetTermSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetTermSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+                        errorArgs.add(targetTermSortItem.getLogName());
+                        errorArgs.add(SessionUserInfo.selectedThesaurus);
+
+                        if(resolveError){
+                            long refIdCausingProblem = targetTermSortItem.getThesaurusReferenceId();
+                            targetTermSortItem.setThesaurusReferenceId(-1);
+                            try {
+                                logFileWriter.append("\r\n<targetTerm>");
+                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTermSortItem.getLogName()) + "</name>");
+                                logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
+                                logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
+                                logFileWriter.append("<reason>" + translate(28, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                                logFileWriter.append("</targetTerm>\r\n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
+                                Utils.StaticClass.handleException(ex);
+                            }                        
+                            return true; 
+                        }
+
+                    }
+                    case EDIT_TERM_POLICY:{
+                        errorArgs.add(""+targetTermSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetTermSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+
+                        errorMsg.setValue(translate(28, 2, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+
+                        return false; 
+
+                    }
+                    default:
+
+                        return false;
+                }
+            }
+            
+        }
+        
+        return true;        
+    }
+    
     
     public boolean move_To_Hierarchy_Consistency_Test_1(String selectedThesaurus, QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor,String prefix){
         //Applies to moveActions: MOVE_NODE_ONLY   MOVE_NODE_AND_SUBTREE     CONNECT_NODE_AND_SUBTREE

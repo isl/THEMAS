@@ -366,7 +366,7 @@ public class DBMergeThesauri {
 
         UsersClass wtmsUsers = new UsersClass();
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        String pathToMessagesXML = Utilities.getXml_For_Messages();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
@@ -477,7 +477,7 @@ public class DBMergeThesauri {
 
     public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, Vector<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
 
         DBCreate_Modify_Facet creationModificationOfFacet = new DBCreate_Modify_Facet();
@@ -504,7 +504,10 @@ public class DBMergeThesauri {
                                                    IntegerObject sis_session, 
                                                    IntegerObject tms_session, 
                                                    Vector<SortItem> merged_thesaurus_NEW_facets, 
-                                                   StringObject resultObj) {
+                                                   StringObject resultObj,
+                                                   boolean resolveError,
+                                                   OutputStreamWriter logFileWriter,
+                                                   int ConsistencyPolicy) {
         
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
         DBGeneral dbGen = new DBGeneral();
@@ -513,9 +516,9 @@ public class DBMergeThesauri {
 
         boolean FacetAdditionSucceded = true;
 
-        for (int i = 0; i < merged_thesaurus_NEW_facets.size(); i++) {
+        for (SortItem newFacet: merged_thesaurus_NEW_facets) {
             Q.reset_name_scope();
-            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacetSortItem(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false);
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacetSortItem(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, newFacet, "create", null, resultObj, false, resolveError,logFileWriter, ConsistencyPolicy);
 
             if (FacetAdditionSucceded == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
@@ -605,7 +608,7 @@ public class DBMergeThesauri {
         boolean HierarchiesSucceeded = true;
         try {
 
-            //String pathToMessagesXML = Utilities.getMessagesXml();
+            //String pathToMessagesXML = Utilities.getXml_For_Messages();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             UsersClass wtmsUsers = new UsersClass();
@@ -683,15 +686,18 @@ public class DBMergeThesauri {
                                                  SortItem defaultFacet, 
                                                  Locale targetLocale, 
                                                  StringObject resultObj, 
-                                                 OutputStreamWriter logFileWriter,
-                                                 Hashtable<SortItem, Vector<String>> pairsOfMergedThesaurus) {
+                                                 Hashtable<SortItem, Vector<String>> pairsOfMergedThesaurus,
+                                                 
+                                                 boolean resolveError,
+                                                 OutputStreamWriter logFileWriter, 
+                                                 int ConsistencyChecksPolicy) {
         
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of Hierarchies creation. Time: " + Utilities.GetNow());
         boolean HierarchiesSucceeded = true;
         try {
 
             
-            //String pathToMessagesXML = Utilities.getMessagesXml();
+            //String pathToMessagesXML = Utilities.getXml_For_Messages();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             UsersClass wtmsUsers = new UsersClass();
@@ -741,18 +747,18 @@ public class DBMergeThesauri {
                 if (Q.set_current_node(hierarchyObj) == QClass.APIFail) {
                     //create hierarchy
                     Q.reset_name_scope();
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "create", null, SessionUserInfo.name, targetLocale, resultObj, false,resolveError,logFileWriter,ConsistencyChecksPolicy);
                     //logFileWriter.append(resultObj.getValue()+"\r\n");
                     if (HierarchiesSucceeded == true && underFacets.size() > 1) {
 
                         resultObj.setValue("");
-                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
+                        HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false,resolveError,logFileWriter,ConsistencyChecksPolicy);
 
                         //logFileWriter.append(resultObj.getValue()+"\r\n");
                     }
                 } else {
                     //modify hierarchy
-                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false);
+                    HierarchiesSucceeded = creationModificationOfHierarchy.Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchy, underFacets, "modify", null, SessionUserInfo.name, targetLocale, resultObj, false,resolveError,logFileWriter,ConsistencyChecksPolicy);
                 }
 
                 if (HierarchiesSucceeded == false) {
@@ -3041,6 +3047,8 @@ public class DBMergeThesauri {
                             exists = true;
                         }
                     }
+                    
+                    
 
                     Q.reset_name_scope();
                     Vector<String> allBts = new Vector<String>();

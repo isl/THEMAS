@@ -550,6 +550,14 @@
                 <option lang="en">Bts declared should already exist in the database.</option>
                 <option lang="el">Πρέπει να εισάγεται στο πεδίο ΠΟ όρους που υπάρχουν στη βάση.</option>
             </BTMustExist>
+            <AlreadyAssignedSpecificTermReferenceId>
+                <option lang="en">Thesaurus Reference Id %s cannot be added to term %s because it is already used in thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να προστεθεί στον όρο %s γιατί έχει ήδη χρησιμοποιηθεί στον θησαυρό %s.</option>
+            </AlreadyAssignedSpecificTermReferenceId>
+            <ErrorDuringTermReferenceIdAssignement>
+                <option lang="en">Failure during creation of new Thesaurus Reference Id to term %s for thesaurus %s.</option>
+                <option lang="el">Αποτυχία κατά την δημιουργία νέου θησαυρικού αναγνωριστικού στον όρο %s για τον θησαυρό %s.</option>
+            </ErrorDuringTermReferenceIdAssignement>
         </Creation>
         <Rename>
             <Success>

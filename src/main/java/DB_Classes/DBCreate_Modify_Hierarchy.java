@@ -36,12 +36,16 @@ package DB_Classes;
 import Users.DBFilters;
 import Users.UserInfoClass;
 import Utils.ConsistensyCheck;
+import static Utils.ConsistensyCheck.EDIT_TERM_POLICY;
+import static Utils.ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
 import Utils.ConstantParameters;
 
 import Utils.Parameters;
 import Utils.SortItem;
 import Utils.StaticClass;
 import Utils.Utilities;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.*;
@@ -118,7 +122,7 @@ public class DBCreate_Modify_Hierarchy {
 
         //targetHierarchy shold come without prefix
         SortItem hierarchySortItem = new SortItem(targetHierarchy,-1,Utilities.getTransliterationString(targetHierarchy, false),-1);        
-        return Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchySortItem, targetHierarchyFacets, createORmodify, deletionOperator, userName, targetLocale, errorMsg, updateHistoricalData);
+        return Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchySortItem, targetHierarchyFacets, createORmodify, deletionOperator, userName, targetLocale, errorMsg, updateHistoricalData,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
         
         /*
         int SISApiSession = sis_session.getValue();
@@ -209,7 +213,7 @@ public class DBCreate_Modify_Hierarchy {
             Q.reset_name_scope();
 
             StringObject targetHierarchyFacetObj = new StringObject(prefix.concat(targetHierarchyFacets.get(0).toString()));
-            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchy(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyObj, targetHierarchyFacetObj, Utilities.getMessagesXml())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchy(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyObj, targetHierarchyFacetObj, Utilities.getXml_For_Messages())));
 
 
             if (updateHistoricalData) {
@@ -326,7 +330,10 @@ public class DBCreate_Modify_Hierarchy {
 
      public boolean Create_Or_ModifyHierarchySortItem(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             DBGeneral dbGen, SortItem targetHierarchySortItem, Vector<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
-            String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
+            String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData,
+                                                 boolean resolveError,
+                                                 OutputStreamWriter logFileWriter, 
+                                                 int ConsistencyChecksPolicy) {
 
         int SISApiSession = sis_session.getValue();
         Utilities u = new Utilities();
@@ -375,26 +382,6 @@ public class DBCreate_Modify_Hierarchy {
         }
 
 
-        /*
-        try {
-            byte[] byteArray = targetHierarchy.getBytes("UTF-8");
-
-            int maxHierarchyChars = dbtr.getMaxBytesForHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session);
-            if (byteArray.length > maxHierarchyChars) {
-                
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add("" + maxHierarchyChars);
-                errorArgs.add("" + byteArray.length);
-                dbGen.Translate(errorMsg, "root/EditHierarchy/Edit/LongName", errorArgs, pathToMessagesXML);
-
-                return false;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            Utils.StaticClass.webAppSystemOut(ex.getMessage());
-            Utils.StaticClass.handleException(ex);
-        }*/
-
-
         Q.reset_name_scope();
 
         if (createORmodify.equals("create") == false && Q.set_current_node(targetHierarchyObj) == QClass.APIFail) {
@@ -438,10 +425,67 @@ public class DBCreate_Modify_Hierarchy {
 
             Q.reset_name_scope();
 
+            
+            // Check if reference uri exists
+            if(targetHierarchySortItem.getThesaurusReferenceId()>0 && Q.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetHierarchySortItem.getThesaurusReferenceId())){
+
+                String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, targetHierarchySortItem.getThesaurusReferenceId()));
+                if(termUsingThisReferenceId.equals(targetHierarchySortItem.getLogName())==false)
+                {
+                    ConsistensyCheck con = new ConsistensyCheck();
+                    Vector<String> errorArgs = new Vector<String>();
+
+                    switch(ConsistencyChecksPolicy){
+
+
+                        case IMPORT_COPY_MERGE_THESAURUS_POLICY:{
+
+                            errorArgs.add(""+targetHierarchySortItem.getThesaurusReferenceId());
+                            errorArgs.add(targetHierarchySortItem.getLogName());                    
+                            errorArgs.add(termUsingThisReferenceId);
+                            errorArgs.add(targetHierarchySortItem.getLogName());
+                            errorArgs.add(SessionUserInfo.selectedThesaurus);
+
+
+                            if(resolveError){
+                                long refIdCausingProblem = targetHierarchySortItem.getThesaurusReferenceId();
+                                targetHierarchySortItem.setThesaurusReferenceId(-1);
+                                try {
+                                    logFileWriter.append("\r\n<targetHierarchy>");
+                                    logFileWriter.append("<name>" + Utilities.escapeXML(targetHierarchySortItem.getLogName()) + "</name>");
+                                    logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
+                                    logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
+                                    logFileWriter.append("<reason>" + con.translate(28, 5, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()) + "</reason>");
+                                    logFileWriter.append("</targetHierarchy>\r\n");
+                                } catch (IOException ex) {
+                                    Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
+                                    Utils.StaticClass.handleException(ex);
+                                }                                                
+                            }
+                            break;
+                        }
+                        case EDIT_TERM_POLICY:{
+                            errorArgs.add(""+targetHierarchySortItem.getThesaurusReferenceId());
+                            errorArgs.add(targetHierarchySortItem.getLogName());                    
+                            errorArgs.add(termUsingThisReferenceId);
+
+                            errorMsg.setValue(con.translate(28, 6, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()));
+
+                            return false; 
+
+                        }
+                        default:
+
+                            return false;
+                    }
+                }
+
+            }
+            
             StringObject targetHierarchyFacetObj = new StringObject(prefix.concat(targetHierarchyFacets.get(0).toString()));
             CMValue targetHierarchyCmv =targetHierarchySortItem.getCMValue(targetHierarchyObj.getValue());
             
-            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchyCMValue(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyCmv, targetHierarchyFacetObj, Utilities.getMessagesXml())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchyCMValue(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyCmv, targetHierarchyFacetObj, Utilities.getXml_For_Messages())));
 
 
             if (updateHistoricalData) {
@@ -588,7 +632,7 @@ public class DBCreate_Modify_Hierarchy {
             String targetHierarchy, StringObject errorMsg) {
 
         Utilities u = new Utilities();
-        String pathToConsistencyErrorsXML = Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
+        String pathToConsistencyErrorsXML = Utilities.getXml_For_ConsistencyChecks();
         StringObject errorMsgPrefixObj = new StringObject();
 
         errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null));

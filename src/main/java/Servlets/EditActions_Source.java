@@ -100,7 +100,7 @@ public class EditActions_Source extends ApplicationBasicServlet {
             String source_note  = u.getDecodedParameterValue(request.getParameter("source_note")); 
             String newValue     = u.getDecodedParameterValue(request.getParameter(targetField)); 
             String deleteCurrentThesaurusReferences = request.getParameter("deleteRefs"); 
-            String pathToMessagesXML = Utilities.getMessagesXml();
+            String pathToMessagesXML = Utilities.getXml_For_Messages();
                        
             
             if(targetField.compareTo(DBCreate_Modify_Source.source_create_kwd)==0){

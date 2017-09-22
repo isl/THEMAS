@@ -91,7 +91,7 @@ public class Rename_Term extends ApplicationBasicServlet {
 
             
             String pathToErrorsXML = getServletContext().getRealPath("/translations/Consistencies_Error_Codes.xml");            
-            //String pathToMessagesXml = Utilities.getMessagesXml();
+            //String pathToMessagesXml = Utilities.getXml_For_Messages();
             
             
             //"Renamed succesfully!!" ;

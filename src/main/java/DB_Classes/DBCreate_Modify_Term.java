@@ -83,50 +83,6 @@ public class DBCreate_Modify_Term {
         String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject newNameObj = new StringObject(prefix.concat(newName.getLogName()));
 
-        if (newName != null && newName.getLogName()!=null && newName.getLogName().length() > 0) {
-            /*
-            try {
-                byte[] byteArray = newName.getBytes("UTF-8");
-
-                int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    if (resolveError) {
-                        StringObject warningMsg = new StringObject();
-                        errorArgs.clear();
-                        errorArgs.add(newName);
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                        try {
-                            logFileWriter.append("\r\n<targetTerm>");
-                            logFileWriter.append("<name>" + Utilities.escapeXML(newName) + "</name>");
-                            logFileWriter.append("<errorType>" + "name" + "</errorType>");
-                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
-                            logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                            logFileWriter.append("</targetTerm>\r\n");
-                        } catch (IOException ex) {
-                            Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                            Utils.StaticClass.handleException(ex);
-                        }
-                        return;
-
-                    } else {
-
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(errorMsg, "root/EditTerm/Creation/LongName", errorArgs, pathToMessagesXML);
-                        return;
-                    }
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
-        }
-
-
         if (consistencyChecks.create_modify_check_01(errorMsg, pathToErrorsXML, newName.getLogName()) == false) {
             return;
         }
@@ -152,9 +108,16 @@ public class DBCreate_Modify_Term {
         if (consistencyChecks.create_modify_check_27(SessionUserInfo, Q, sis_session, newName.getLogName(), decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false) {
             return;
         }
+        
+        // Check if reference uri exists
+        if(consistencyChecks.create_modify_check_28_alwaysOn(SessionUserInfo, Q, sis_session, newName, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false){
+            return;            
+        }
 
-        //TODO: Check if reference uri exists
         CMValue termCmv = newName.getCMValue(newNameObj.getValue());
+        
+        
+        
         errorMsg.setValue(dbCon.connectDescriptorCMValue(SessionUserInfo.selectedThesaurus, termCmv, decodedValues, Q, sis_session, dbGen, TA, tms_session));
 
 
@@ -224,7 +187,7 @@ public class DBCreate_Modify_Term {
             Vector<Long> guideTermBugFixLinkCategIdsL, Vector<SortItem> guideTermBugFixBtsWithGuideTerms,
             Vector<String> old_bts, StringObject errorMsg) {
 
-        //String pathToMessagesXML = Utilities.getMessagesXml();
+        //String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
 
@@ -1878,7 +1841,7 @@ public class DBCreate_Modify_Term {
 
     int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg) {
 
-        //String pathToMessagesXML = Utilities.getMessagesXml();
+        //String pathToMessagesXML = Utilities.getXml_For_Messages();
         //Vector<String> errorArgs = new Vector<String>();
         Utilities u = new Utilities();
 

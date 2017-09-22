@@ -1470,7 +1470,7 @@ public class DBFixCurrentData {
 
             Q.reset_name_scope();
 
-            String pathToMessages = Utilities.getMessagesXml();
+            String pathToMessages = Utilities.getXml_For_Messages();
             
             
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_1Names, prefix1_2, "",

@@ -34,9 +34,14 @@
 package DB_Classes;
 
 
+import Utils.ConsistensyCheck;
+import static Utils.ConsistensyCheck.EDIT_TERM_POLICY;
+import static Utils.ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
 import Utils.ConstantParameters;
 import Utils.SortItem;
 import Utils.Utilities;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -100,7 +105,7 @@ public class DBCreate_Modify_Facet {
 
         //targetFacet shold come without prefix
         SortItem facetSortItem = new SortItem(targetFacet,-1,Utilities.getTransliterationString(targetFacet, false),-1);        
-        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists);
+        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
         
         /*
         DBConnect_Facet dbCon = new DBConnect_Facet();
@@ -133,7 +138,7 @@ public class DBCreate_Modify_Facet {
         
         int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,Utilities.getMessagesXml())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,Utilities.getXml_For_Messages())));
 
         } else // modify
         {
@@ -218,7 +223,10 @@ public class DBCreate_Modify_Facet {
                                                  String createORmodify, 
                                                  String deletionOperator, 
                                                  StringObject errorMsg, 
-                                                 boolean errorIfExists) {
+                                                 boolean errorIfExists, 
+                                                 boolean resolveError,
+                                                 OutputStreamWriter logFileWriter, 
+                                                 int ConsistencyChecksPolicy) {
 
         
         DBConnect_Facet dbCon = new DBConnect_Facet();
@@ -253,10 +261,69 @@ public class DBCreate_Modify_Facet {
         //Facet of kind New / released or obsolete
         int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         
+        // Check if reference uri exists
+        if(targetFacetSortItem.getThesaurusReferenceId()>0 && Q.IsThesaurusReferenceIdAssigned(selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
+            
+            String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(selectedThesaurus, targetFacetSortItem.getThesaurusReferenceId()));
+            if(termUsingThisReferenceId.equals(targetFacetSortItem.getLogName())==false)
+            {
+                ConsistensyCheck con = new ConsistensyCheck();
+                Vector<String> errorArgs = new Vector<String>();
+
+                switch(ConsistencyChecksPolicy){
+
+
+                    case IMPORT_COPY_MERGE_THESAURUS_POLICY:{
+
+                        errorArgs.add(""+targetFacetSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetFacetSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+                        errorArgs.add(targetFacetSortItem.getLogName());
+                        errorArgs.add(selectedThesaurus);
+
+
+                        if(resolveError){
+                            long refIdCausingProblem = targetFacetSortItem.getThesaurusReferenceId();
+                            targetFacetSortItem.setThesaurusReferenceId(-1);
+                            try {
+                                logFileWriter.append("\r\n<targetFacet>");
+                                logFileWriter.append("<name>" + Utilities.escapeXML(targetFacetSortItem.getLogName()) + "</name>");
+                                logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
+                                logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
+                                logFileWriter.append("<reason>" + con.translate(28, 3, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()) + "</reason>");
+                                logFileWriter.append("</targetFacet>\r\n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
+                                Utils.StaticClass.handleException(ex);
+                            }                                                
+                        }
+                        break;
+                    }
+                    case EDIT_TERM_POLICY:{
+                        errorArgs.add(""+targetFacetSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetFacetSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+
+                        errorMsg.setValue(con.translate(28, 4, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()));
+
+                        return false; 
+
+                    }
+                    default:
+
+                        return false;
+                }
+            }
+            
+        }
+
+        
         CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
         
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getMessagesXml())));
+            
+            
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages())));
 
         } else // modify
         {

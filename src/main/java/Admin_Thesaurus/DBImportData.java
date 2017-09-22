@@ -278,8 +278,8 @@ public class DBImportData {
                                                     Vector<String> userSelectedTranslationIdentifiers,
                                                     Hashtable<String, String> userSelections,
                                                     Vector<SortItem> topTerms,
-                                                    Hashtable<SortItem, Vector<SortItem>> descriptorRts,
-                                                    Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+                                                    Hashtable<String, Vector<String>> descriptorRts,
+                                                    Hashtable<String, Vector<SortItem>> descriptorUfs,
                                                     Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
                                                     String importThesaurusName,
                                                     String pathToErrorsXML, 
@@ -332,7 +332,7 @@ public class DBImportData {
         }
         
         // Step9 Create Facets specified by XML
-        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj) == false) {
+        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 
@@ -355,12 +355,12 @@ public class DBImportData {
         
         // Step10 Create Hierarchies specified by XML
         if (dbMerge.CreateHierarchiesFromSortItems(SessionUserInfo, Q, TA, sis_session, tms_session,
-                importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, logFileWriter, hierarchyFacetSortItems) == false) {
+                importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, hierarchyFacetSortItems,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 
         // Step11 Create Hierarchies specified by topterms of Step2
-        if (importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTerms, targetLocale, logFileWriter, resultObj) == false) {
+        if (importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTerms, targetLocale, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 
@@ -406,7 +406,7 @@ public class DBImportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass webappusers = new UsersClass();
         DBGeneral dbGen = new DBGeneral();
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -1567,8 +1567,8 @@ public class DBImportData {
         //this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
         
         Vector<SortItem> topTerms = new Vector<SortItem>();
-        Hashtable<SortItem, Vector<SortItem>> descriptorRts = new Hashtable<SortItem, Vector<SortItem>>();
-        Hashtable<SortItem, Vector<SortItem>> descriptorUfs = new Hashtable<SortItem, Vector<SortItem>>();
+        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
+        Hashtable<String, Vector<SortItem>> descriptorUfs = new Hashtable<String, Vector<SortItem>>();
         
         Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes = new Vector<Hashtable<SortItem, Vector<SortItem>>>();
 
@@ -1598,82 +1598,7 @@ public class DBImportData {
             }
             return returnVal;
         }
-
-        /*
-        // Step7 Start connection and transaction since server was restarted
-        dbMerge.openConnection(Q, TA, sis_session, tms_session, false);
-        //wtmsusers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, importThesaurusName, SessionUserInfo.userGroup);
-        TA.SetThesaurusName(tms_session.getValue(), new StringObject(importThesaurusName));
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of creation of new thesaurus: " + importThesaurusName + ".");
-        Q.begin_transaction();
-
-        if (readAndSyncronizeTranslationCategories(importThesaurusName, resultObj, Q, TA, sis_session, tms_session,
-        userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections) == false) {
-        return false;
-        }
-
-
-        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
-        // Step8 Get and put default Status per user for Unclassified terms
-        if(termsInfo.containsKey(Parameters.UnclassifiedTermsLogicalname) ==false ){
-        specifyOrphansStatus(SessionUserInfo, Q, sis_session, tms_session, resultObj);
-        }
-        else{
-        if(termsInfo.get(Parameters.UnclassifiedTermsLogicalname).descriptorInfo.get(ConstantParameters.status_kwd).isEmpty()){
-        specifyOrphansStatus(SessionUserInfo, Q, sis_session, tms_session, resultObj);
-        }
-        }
-
-        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-
-        if (CreateSources(SessionUserInfo.selectedThesaurus, common_utils, importThesaurusName,
-        Q, TA, sis_session, tms_session, XMLsources, resultObj, logFileWriter) == false) {
-        return false;
-        }
-
-        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-
-        // Step9 Create Facets specified by XML
-        if (dbMerge.CreateFacets(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj) == false) {
-        return false;
-        }
-
-        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-
-        String defaultFacet = dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, importThesaurusName);
-
-        // Step10 Create Hierarchies specified by XML
-        if (dbMerge.CreateHierarchies(SessionUserInfo, Q, TA, sis_session, tms_session,
-        importThesaurusName, defaultFacet, targetLocale, resultObj, logFileWriter, hierarchyFacets) == false) {
-        return false;
-        }
-
-        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-
-        // Step11 Create Hierarchies specified by topterms of Step2
-        if (importMoreHierarchiesFromTopTerms(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, topTerms, targetLocale, logFileWriter, resultObj) == false) {
-        return false;
-        }
-
-        common_utils.restartTransactionAndDatabase(Q,TA,sis_session,tms_session,importThesaurusName);
-
-        // Step12 Create Terms
-        if (importTerms(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
-        pathToErrorsXML, importThesaurusName, termsInfo, resultObj, allLevelsOfImportThes,
-        descriptorRts, descriptorUfs, logFileWriter) == false) {
-        return false;
-        }
-
-        //Step 13 Guide Terms Addition Patch
-        if (dbMerge.CreateGuideTerms(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session, guideTerms, XMLguideTermsRelations, importThesaurusName, resultObj) == false) {
-        return false;
-        }
-
-        common_utils.restartTransactionAndDatabase(Q,TA,sis_session,tms_session,importThesaurusName);
-
-        return true;
-         *
-         */
+        
     }
     
     
@@ -2108,8 +2033,8 @@ public class DBImportData {
     }
 
     public void processXMLTermsInSortItems(Hashtable<String, NodeInfoStringContainer> termsInfo, 
-                                           Hashtable<SortItem, Vector<SortItem>> descriptorRts,
-                                           Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+                                           Hashtable<String, Vector<String>> descriptorRts,
+                                           Hashtable<String, Vector<SortItem>> descriptorUfs,
                                            Hashtable<String, Vector<String>> hierarchyFacets, 
                                            Vector<SortItem> topTerms, 
                                            Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes) {
@@ -2121,6 +2046,8 @@ public class DBImportData {
         Vector<SortItem> allTermsWithoutBTsorNTs = new Vector<SortItem>();
         Hashtable<SortItem, Vector<SortItem>> descriptorNts = new Hashtable<SortItem, Vector<SortItem>>();
 
+        
+        Hashtable<SortItem, Vector<SortItem>> tempDescriptorRts  = new Hashtable<SortItem, Vector<SortItem>>();
 
         Vector<String> nodesOfInterest = new Vector<String>();
         nodesOfInterest.add("descriptor");
@@ -2170,8 +2097,9 @@ public class DBImportData {
             if (descriptorNts.containsKey(targetSortItem) == false) {
                 descriptorNts.put(targetSortItem, new Vector<SortItem>());
             }
-            if (descriptorRts.containsKey(targetSortItem) == false) {
-                descriptorRts.put(targetSortItem, new Vector<SortItem>());
+            if (tempDescriptorRts.containsKey(targetSortItem) == false) {
+                tempDescriptorRts.put(targetSortItem, new Vector<SortItem>());
+                descriptorRts.put(targetSortItem.getLogName(), new Vector<String>());
             }
 
 
@@ -2201,8 +2129,9 @@ public class DBImportData {
                 if (descriptorNts.containsKey(parsedBtSortItem) == false) {
                     descriptorNts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
                 }
-                if (descriptorRts.containsKey(parsedBtSortItem) == false) {
-                    descriptorRts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                if (tempDescriptorRts.containsKey(parsedBtSortItem) == false) {
+                    tempDescriptorRts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedBtSortItem.getLogName(), new Vector<String>());
                 }
 
                 if (targetNode.compareTo(parsedBt) == 0) {
@@ -2250,8 +2179,9 @@ public class DBImportData {
                 if (descriptorNts.containsKey(parsedNtSortItem) == false) {
                     descriptorNts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
                 }
-                if (descriptorRts.containsKey(parsedNtSortItem) == false) {
-                    descriptorRts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                if (tempDescriptorRts.containsKey(parsedNtSortItem) == false) {
+                    tempDescriptorRts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedNtSortItem.getLogName(), new Vector<String>());
                 }
 
                 if (targetNode.compareTo(parsedNt) == 0) {
@@ -2296,15 +2226,17 @@ public class DBImportData {
                 if (descriptorNts.containsKey(parsedRtSortItem) == false) {
                     descriptorNts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
                 }
-                if (descriptorRts.containsKey(parsedRtSortItem) == false) {
-                    descriptorRts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                if (tempDescriptorRts.containsKey(parsedRtSortItem) == false) {
+                    tempDescriptorRts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedRtSortItem.getLogName(), new Vector<String>());
                 }
 
                 if (targetNode.compareTo(parsedRt) == 0) {
                     //LinkingToSelf.add(targetNode);
                 } else {
-                    if (descriptorRts.get(targetSortItem).contains(parsedRtSortItem) == false) {
-                        descriptorRts.get(targetSortItem).add(parsedRtSortItem);
+                    if (tempDescriptorRts.get(targetSortItem).contains(parsedRtSortItem) == false) {
+                        tempDescriptorRts.get(targetSortItem).add(parsedRtSortItem);
+                        descriptorRts.get(targetSortItem.getLogName()).add(parsedRtSortItem.getLogName());
                     }
                 }
             }
@@ -2326,15 +2258,15 @@ public class DBImportData {
                 
                 SortItem ufSortItem = new SortItem(parsedUF,-1,parsedUFTranslit,-1);
                 
-                if (descriptorUfs.containsKey(targetSortItem) == false) {
-                    descriptorUfs.put(targetSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                if (descriptorUfs.containsKey(targetSortItem.getLogName()) == false) {
+                    descriptorUfs.put(targetSortItem.getLogName(), new Vector<SortItem>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedUF) == 0) {
                     //LinkingToSelf.add(targetNode);
                 } else {
-                    if (descriptorUfs.get(targetSortItem).contains(targetSortItem) == false) {
-                        descriptorUfs.get(targetSortItem).add(targetSortItem);
+                    if (descriptorUfs.get(targetSortItem.getLogName()).contains(ufSortItem) == false) {
+                        descriptorUfs.get(targetSortItem.getLogName()).add(ufSortItem);
                     }
                 }
             }
@@ -2741,7 +2673,7 @@ public class DBImportData {
     }
     
     private boolean importMoreHierarchiesFromTopTermsInsortItems(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
-            String importThesaurusName, Vector<SortItem> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
+            String importThesaurusName, Vector<SortItem> topTerms, Locale targetLocale, StringObject resultObj,boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyPolicy) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "String creation of additional hierarchies - specified by terms without bt but not declared as hierarchies. Time: " + Utilities.GetNow());
         DBMergeThesauri dbMerge = new DBMergeThesauri();
@@ -2758,7 +2690,7 @@ public class DBImportData {
             hierFacetsPairsOfNewThesaurus.put(topTerms.get(i), facets);
         }
         //try {
-            if (dbMerge.CreateHierarchiesFromSortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, logFileWriter, hierFacetsPairsOfNewThesaurus) == false) {
+            if (dbMerge.CreateHierarchiesFromSortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, defaultFacetSortItem, targetLocale, resultObj, hierFacetsPairsOfNewThesaurus, resolveError,logFileWriter,ConsistencyPolicy) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "The creation of additional hierarchies failed.");
                 return false;
             }
@@ -2784,7 +2716,7 @@ public class DBImportData {
             }
         }
 
-        boolean returnVal = importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTermSortItems, targetLocale,logFileWriter, resultObj);
+        boolean returnVal = importMoreHierarchiesFromTopTermsInsortItems(SessionUserInfo, Q, TA, sis_session, tms_session, importThesaurusName, topTermSortItems, targetLocale, resultObj,false,logFileWriter, ConsistensyCheck.EDIT_TERM_POLICY);
         
         if(returnVal){
             topTerms.clear();
@@ -2801,8 +2733,8 @@ public class DBImportData {
             Hashtable<String, NodeInfoStringContainer> termsInfo,
             StringObject resultObj,
             Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
-            Hashtable<SortItem, Vector<SortItem>> descriptorRts,
-            Hashtable<SortItem, Vector<SortItem>> descriptorUfs,
+            Hashtable<String, Vector<String>> descriptorRts,
+            Hashtable<String, Vector<SortItem>> descriptorUfs,
             OutputStreamWriter logFileWriter) {
 
 
@@ -2835,22 +2767,7 @@ public class DBImportData {
         //<editor-fold defaultstate="collapsed" desc="rt ...">
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of RTs. Time: " + Utilities.GetNow());
         startTime = System.currentTimeMillis();
-        Hashtable<String,Vector<String>> descRts = new Hashtable<String,Vector<String>> ();
-        if(descriptorRts!=null){
-            Enumeration<SortItem> rtsenum = descriptorRts.keys();
-            while(rtsenum.hasMoreElements()){
-                SortItem item = rtsenum.nextElement();
-                Vector<SortItem> rtsSortItems =    descriptorRts.get(item);
-                Vector<String> newRtValues = new Vector<String>();
-                if(rtsSortItems!=null){
-                    for(SortItem rtSi : rtsSortItems){
-                        newRtValues.add(rtSi.getLogName());
-                    }
-                }
-                descRts.put(item.getLogName(), newRtValues);
-            }
-        }
-        if (dbMerge.CreateRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, resultObj, descRts, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+        if (dbMerge.CreateRTs(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, resultObj, descriptorRts, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation of RTS failed.");
             return false;
         }
@@ -2866,9 +2783,9 @@ public class DBImportData {
         
         Hashtable<String,Vector<String>> descUFs = new Hashtable<String,Vector<String>> ();
         if(descriptorUfs!=null){
-            Enumeration<SortItem> ufsEnum = descriptorUfs.keys();
+            Enumeration<String> ufsEnum = descriptorUfs.keys();
             while(ufsEnum.hasMoreElements()){
-                SortItem item = ufsEnum.nextElement();
+                String item = ufsEnum.nextElement();
                 Vector<SortItem> ufsSortItems =    descriptorUfs.get(item);
                 Vector<String> newUFValues = new Vector<String>();
                 if(ufsSortItems!=null){
@@ -2876,7 +2793,7 @@ public class DBImportData {
                         newUFValues.add(rtSi.getLogName());
                     }
                 }
-                descUFs.put(item.getLogName(), newUFValues);
+                descUFs.put(item, newUFValues);
             }
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of UFs. Time: " + Utilities.GetNow());
@@ -3527,7 +3444,7 @@ public class DBImportData {
             Hashtable<String, String> userSelections) {
 
         DBGeneral dbGen = new DBGeneral();
-        String pathToMessagesXML = Utilities.getMessagesXml();
+        String pathToMessagesXML = Utilities.getXml_For_Messages();
 
 
         Hashtable<String, String> currentTranslationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false, true);

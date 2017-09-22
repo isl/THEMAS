@@ -112,6 +112,10 @@ public class SortItem extends Object {
     public void setLogName(String newValue) {
         log_name = newValue==null?"":newValue;
     }
+    
+    public void setThesaurusReferenceId(long newValue) {
+        thesarurusReferenceId = newValue<0?-1:newValue;
+    }
 
     public String getLogNameTransliteration() {
         return log_name_transliteration;

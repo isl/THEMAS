@@ -651,8 +651,8 @@
             <option lang="el">A./A.</option>
         </number>
         <termhier>
-            <option lang="en">Term/Hierarchy</option>
-            <option lang="el">Όρος/Ιεραρχία</option>
+            <option lang="en">Facet / Hierarchy / Term</option>
+            <option lang="el">Μικροθησαυρός / Ιεραρχία / Όρος</option>
         </termhier>
         <relation>
             <option lang="en">Relation</option>
@@ -690,6 +690,10 @@
             <option lang="en">BT</option>
             <option lang="el">ΠΟ</option>
         </bt>
+        <referenceId>
+            <option lang="en">Thesaurus Reference Id</option>
+            <option lang="el">Θησαυρικό αναγνωριστικό</option>
+        </referenceId>
         <tc>
             <option lang="en">Tax. Code</option>
             <option lang="el">Ταξ. Κωδικός</option>

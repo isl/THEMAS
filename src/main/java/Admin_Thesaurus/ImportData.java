@@ -135,7 +135,7 @@ public class ImportData extends ApplicationBasicServlet {
             String importThesaurusName = request.getParameter("Import_Thesaurus_NewName_NAME");
             String importMethodChoice = request.getParameter("ImportThesaurusMode");//thesaurusImport or bulkImport
             String importHierarchyName = u.getDecodedParameterValue(request.getParameter("Import_Thesaurus_HierarchyName"));
-            String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
+            String pathToErrorsXML = Utilities.getXml_For_ConsistencyChecks();
             String language = context.getInitParameter("LocaleLanguage");
             String country = context.getInitParameter("LocaleCountry");
             String WebAppUsersFileName = request.getSession().getServletContext().getRealPath("/" + UsersClass.WebAppUsersXMLFilePath);
@@ -143,7 +143,7 @@ public class ImportData extends ApplicationBasicServlet {
             String logPath = context.getRealPath("/" + ConstantParameters.LogFilesFolderName);
             String logFileNamePath = logPath;
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
-            String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
+            String pathToSaveScriptingAndLocale = Utilities.getXml_For_SaveAll_Locale_And_Scripting();
             Locale targetLocale = new Locale(language, country);
 
             if ((importMethodChoice.equals("thesaurusImport") && (importThesaurusName != null))

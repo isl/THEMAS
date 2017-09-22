@@ -283,6 +283,33 @@
             </errorcase>
         </TEST>
         
+        
+        <TEST id="28">
+            <errorcase id="1">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to term %s because it is already assigned to Facet/Hierarchy/Term: %s. Term %s will be reassined to the next available Thesaurus Reference Id of thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον όρο %s επειδή έχει ήδη ανατεθεί στον Μικροθησαυρό/Ιεραρχία/Όρο %s. Στον όρο: %s θα ανατεθεί το επόμενο διαθέσιμο θησαυρικό αναγνωριστικό του θησαυρού %s.</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to term %s because it is already assigned to Facet/Hierarchy/Term %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον όρο %s επειδή έχει ήδη ανατεθεί Μικροθησαυρό/Ιεραρχία/Όρο όρο %s.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to facet %s because it is already assigned to Facet/Hierarchy/Term: %s. Facet %s will be reassined to the next available Thesaurus Reference Id of thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον μικροθησαυρό %s επειδή έχει ήδη ανατεθεί στον Μικροθησαυρό/Ιεραρχία/Όρο %s. Στον μικροθησαυρό: %s θα ανατεθεί το επόμενο διαθέσιμο θησαυρικό αναγνωριστικό του θησαυρού %s.</option>
+            </errorcase>
+            <errorcase id="4">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to facet %s because it is already assigned to Facet/Hierarchy/Term %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον μικροθησαυρό %s επειδή έχει ήδη ανατεθεί στον Μικροθησαυρό/Ιεραρχία/Όρο %s.</option>
+            </errorcase>
+            <errorcase id="5">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to hierarchy %s because it is already assigned to Facet/Hierarchy/Term: %s. Hierarchy %s will be reassined to the next available Thesaurus Reference Id of thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στην ιεραρχία %s επειδή έχει ήδη ανατεθεί στον Μικροθησαυρό/Ιεραρχία/Όρο %s. Στην ιεραρχία: %s θα ανατεθεί το επόμενο διαθέσιμο θησαυρικό αναγνωριστικό του θησαυρού %s.</option>
+            </errorcase>
+            <errorcase id="6">
+                <option lang="en">Thesaurus reference Id %s cannot be assigned to hierarchy %s because it is already assigned to Facet/Hierarchy/Term %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στην ιεραρχία %s επειδή έχει ήδη ανατεθεί στον Μικροθησαυρό/Ιεραρχία/Όρο %s.</option>
+            </errorcase>
+        </TEST>
     </CREATE_MODIFY>
     
     <MOVE_TO_HIERARCHY>

@@ -366,9 +366,9 @@ public class OfflineToolsClass {
                 
 
                 Locale targetLocale = new Locale("el", "GR");
-                String pathToErrorsXML = baseApplicationFilePath.concat("/translations/Consistencies_Error_Codes.xml");
+                String pathToErrorsXML = Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
                 //String pathToSaveScriptingAndLocale = baseApplicationFilePath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
-                String pathToSaveScriptingAndLocale = Parameters.BaseRealPath.concat("/translations/SaveAll_Locale_And_Scripting.xml");
+                String pathToSaveScriptingAndLocale = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
 
                 
                 

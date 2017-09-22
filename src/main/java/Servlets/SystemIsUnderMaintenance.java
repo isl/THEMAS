@@ -170,8 +170,8 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
         StringObject trMessage1 = new StringObject("");
         StringObject trMessage2 = new StringObject("");
         
-        dbGen.Translate(trMessage1, "root/GeneralMessages/XMLStartTitleAttribute", Utilities.getMessagesXml(),null);
-        dbGen.Translate(trMessage2, "root/GeneralMessages/XMLStartHeaderName", Utilities.getMessagesXml(),null);
+        dbGen.Translate(trMessage1, "root/GeneralMessages/XMLStartTitleAttribute", Utilities.getXml_For_Messages(),null);
+        dbGen.Translate(trMessage2, "root/GeneralMessages/XMLStartHeaderName", Utilities.getXml_For_Messages(),null);
         */
         String XMLLoginStart =ConstantParameters.xmlHeader  +
                 "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +

@@ -2799,7 +2799,7 @@ public class Utilities {
             
         }       
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getMessagesXml());
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
     }
     
     public String translateFromTranslationsXML(String messageXPath, String[] args){
@@ -2976,10 +2976,18 @@ public class Utilities {
         return escapeXML(retVal);
     }
     
-    public static String getMessagesXml() {
+    public static String getXml_For_Messages() {
         return Utilities.getTranslationsXml("Messages.xml");
     }
 
+    public static String getXml_For_ConsistencyChecks() {
+        return Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
+    }
+    
+    public static String getXml_For_SaveAll_Locale_And_Scripting() {
+        return Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
+    }
+    
     public static String getTranslationsXml(String fileName) {
         return Parameters.BaseRealPath + File.separator + "translations" + File.separator + fileName;
     }
