@@ -370,7 +370,7 @@
                                                 </span>
                                             </td>
                                             <td class="valueColThes">
-                                                <xsl:if test="(./@linkClass!='') and ((position()=1) or (preceding-sibling::*/../nt[$prevPos]/@linkClass!=./@linkClass))">
+                                                <xsl:if test="(./@linkClass!='') and ((position()=1) or not(preceding-sibling::*/../nt[$prevPos]/@linkClass = ./@linkClass))">
                                                     <span class="valueThes">
                                                         <b>
                                                             <i>

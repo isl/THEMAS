@@ -44,8 +44,7 @@ import Utils.NodeInfoSortItemContainer;
 import Utils.Parameters;
 import Utils.Utilities;
 import Utils.SortItem;
-import Utils.StringLocaleComparator;
-import Utils.SortItemLocaleComparator;
+import Utils.SortItemComparator;
 import XMLHandling.WriteFileData;
 import java.io.*;
 import java.nio.file.Path;
@@ -120,6 +119,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
             //Data Storage
             Hashtable<String, NodeInfoSortItemContainer> termsInfo = new Hashtable<String, NodeInfoSortItemContainer>();
+            SortItemComparator transliterationComparator = new SortItemComparator(Utils.SortItemComparator.SortItemComparatorField.TRANSLITERATION);
             Vector<Long> resultNodesIds = new Vector<Long>();
 
 
@@ -316,7 +316,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             if (output.contains("name")) { //name is also always requested but no special handling is needed
                 output.remove("name");
             }
-            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
+            //if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
+            if (output.contains(ConstantParameters.system_transliteration_kwd) == false) {//transliteration should always be added for sorting 
                 output.add(ConstantParameters.system_transliteration_kwd);
             }
 
@@ -349,12 +350,19 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 //String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
                 String pathToSaveScriptingAndLocale = Parameters.BaseRealPath+File.separator+"translations"+File.separator+"SaveAll_Locale_And_Scripting.xml";
                 //Read Term Ids
+                
                 Vector<String> allTerms = new Vector<String>();
-
+                
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
                 dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIds);
-                Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
+                
 
+                Vector<SortItem> allTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
+                Collections.sort(allTermsInSortItems,transliterationComparator);
+                allTerms.clear();
+                allTerms.addAll(Utilities.getStringVectorFromSortItemVector(allTermsInSortItems));
+                //Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
+                
                 //Write XML file
                 String startXML = "<page language=\"" + Parameters.UILang + "\""+
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
@@ -367,10 +375,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 }
 
                 if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
-                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,true);
+                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,true,false);
                 }
                 else{
-                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,false);
+                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,false,false);
                 }
                 // timer end
                 elapsedTimeSec = Utilities.stopTimer(startTime);
@@ -421,23 +429,16 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 for(Return_Full_Nodes_Row row: retVals){
                     
                     String termName = dbGen.removePrefix(row.get_v2_node_logicalname());
-                    SortItem termSortItem = new SortItem(termName, row.get_v1_sysid());
+                    String transliteration = row.get_v5_node_transliteration();
+                    if(transliteration==null|| transliteration.length()==0){
+                        transliteration = Utilities.getTransliterationString(termName, false);
+                    }
+                    SortItem termSortItem = new SortItem(termName, row.get_v1_sysid(),transliteration,row.get_v4_long_referenceId());
                     allTerms.add(termSortItem);  
                 }
             }
-            /*
-            IntegerObject resultIdObj = new IntegerObject();
-            StringObject resultNodeObj = new StringObject();
-            StringObject resultClassObj = new StringObject();
-            while (Q.retur_full_nodes(set_global_descriptor_results, resultIdObj, resultNodeObj, resultClassObj) != QClass.APIFail) {
-                int sysId = resultIdObj.getValue();
-                String termName = dbGen.removePrefix(resultNodeObj.getValue());
-                SortItem termSortItem = new SortItem(termName, sysId);
-                allTerms.add(termSortItem);
-
-            }
-            */
-            Collections.sort(allTerms, new SortItemLocaleComparator(targetLocale));
+            
+            Collections.sort(allTerms, transliterationComparator);
 
             //Get only those terms that will appear in next page
             termsPagingQueryResultsCount = allTerms.size();
@@ -459,12 +460,16 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             }
             Q.reset_set(set_paging_results);
 
+            
             Vector<String> resultsTerms = new Vector<String>();
-
             dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIds);
-            Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));
-            u.getResultsInXml(resultsTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
+            //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));
+            Vector<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
+            Collections.sort(resultsTermsInSortItems,transliterationComparator);
+            
+            u.getResultsInXml_ForTableLayout(resultsTermsInSortItems, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
 
+            
             Q.free_set(set_paging_results);
             Q.free_set(set_global_descriptor_results);
 

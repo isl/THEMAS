@@ -109,7 +109,7 @@ public class OfflineToolsClassTest {
             //String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
             //String inputXML = "C:\\Users\\Elias\\BackupFiles\\Desktop\\Ancient Theatres\\Export_Thesaurus_ANCIENT_2017-08-11_12-56-53-962.xml";
             //String inputXML = "C:\\\\Users\\\\Elias\\\\BackupFiles\\\\Desktop\\Export_Thesaurus_ANCIENT_2017-09-22_13-33-54-493.xml";
-            String inputXML =  "C:\\\\Users\\\\Elias\\\\BackupFiles\\\\Desktop\\Export_Thesaurus_ANCIENT_2017-09-22_17-20-17-628.xml";
+            String inputXML =  "C:\\\\Users\\\\Elias\\\\BackupFiles\\\\Desktop\\ANCIENT_1.xml";
             String exportPath = "C:\\Users\\Elias\\BackupFiles\\Desktop\\temp\\testImport.xml"; //linux testing "/home/elias/Projects/Neo4jDbs/Tools/input-output";
 
             String[] args = {mode,basePath, thesaurusName, inputXML, exportPath};

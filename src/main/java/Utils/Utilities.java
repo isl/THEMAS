@@ -39,9 +39,6 @@ import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
 import Users.UsersClass;
-import Utils.StringLocaleComparator;
-import Utils.GuideTermSortItemComparator;
-import Utils.SortItemLocaleComparator;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
@@ -51,10 +48,8 @@ import javax.servlet.http.*;
 import java.text.SimpleDateFormat;
 import java.net.URLDecoder;
 
-import javax.xml.transform.*;
 
 import javax.xml.transform.Result;
-import javax.servlet.ServletContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Templates;
@@ -67,15 +62,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.xpath.*;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import java.util.regex.Matcher;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
-import org.w3c.dom.Element;
 
 /*---------------------------------------------------------------------
 Utilities
@@ -286,10 +278,11 @@ public class Utilities {
         return elapsedTimeSec;
     }
 
-    //ALMOST IDENTICAL TO getResultsInXml
+    //ALMOST IDENTICAL TO getResultsInXml_ForTableLayout
     public void getResultsInXmlGuideTermSorting(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale, String selectedThesaurus, boolean skipOutput, boolean skipIds) {
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
 
         
@@ -457,23 +450,29 @@ public class Utilities {
 
     //ALMOST IDENTICAL TO getResultsInXmlGuideTermSorting
     /*---------------------------------------------------------------------
-    getResultsInXml()
+    getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
     INPUT: - Vector allTerms: the Vector with the terms to be parsed
     - String[] output: the properties of each term to be collected
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public void getResultsInXml(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+    public void getResultsInXml_ForTableLayout(Vector<SortItem> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        
+        //SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
         xmlResults.append("<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
         xmlResults.append("<output>");
         for (int m = 0; m < output.size(); m++) {
 
             String category = output.get(m);
-            if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 
+                    || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0
+                    || category.compareTo(ConstantParameters.system_referenceIdAttribute_kwd) == 0
+                    || category.compareTo(ConstantParameters.system_referenceUri_kwd) == 0) {
                 continue;
             } else {
                 xmlResults.append("<" + category + "/>");
@@ -483,8 +482,8 @@ public class Utilities {
 
         xmlResults.append("<terms>");
         for (int i = 0; i < allTerms.size(); i++) {
-
-            String targetTerm = allTerms.get(i);
+            SortItem targetSortItem = allTerms.get(i);                    
+            String targetTerm = targetSortItem.getLogName();
             NodeInfoSortItemContainer targetTermInfo = termsInfo.get(targetTerm);
             String type = targetTermInfo.containerType;
 
@@ -523,7 +522,8 @@ public class Utilities {
                 }
                 Vector<SortItem> values = new Vector<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
-                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if ( //category.compareTo(ConstantParameters.nt_kwd) == 0 || no need to sort nts with sortitem comparator
+                        category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                     Collections.sort(values, guideTermComparator);
                 } else {
                     Collections.sort(values, sortComparator);
@@ -531,7 +531,7 @@ public class Utilities {
 
                 if (category.compareTo(ConstantParameters.uf_kwd) == 0
                         || category.compareTo(ConstantParameters.bt_kwd) == 0
-                        || category.compareTo(ConstantParameters.nt_kwd) == 0
+                        || category.compareTo(ConstantParameters.nt_kwd) == 0 
                         || category.compareTo(ConstantParameters.translation_kwd) == 0
                         || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) { // add id info in order to add anchors in paging
                     for (int k = 0; k < values.size(); k++) {
@@ -576,6 +576,9 @@ public class Utilities {
     }
 
     public void getResultsInXml(UserInfoClass SessionUserInfo, Vector allTerms, String[] output, StringBuffer XMLresults, QClass Q,TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+        
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        
         XMLresults.append("<results>");
 
         int resultsLIMIT = allTerms.size();
@@ -606,7 +609,8 @@ public class Utilities {
                      */
                 } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
                     Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), currentTerm, Q, sis_session);
-                    Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                    //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                    Collections.sort(vtranslations, guideTermComparator);
                     XMLresults.append("<" + output[j] + ">");
                     for (int k = 0; k < vtranslations.size(); k++) {
                         XMLresults.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
@@ -641,7 +645,7 @@ public class Utilities {
     }
 
     /*---------------------------------------------------------------------
-    getResultsInXml()
+    getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
     INPUT:  Vector availableFacets: contains all available facets (either new or released)
     OUTPUT: a String with the XML representation of the available facets
@@ -1869,6 +1873,8 @@ public class Utilities {
 
     public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, Vector<SortItem> btsORnts, Vector<String> existingGuideTermsVec, Locale targetLocale) {
 
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+        
         StringBuffer sb = new StringBuffer();
         sb.append("<current>");
         sb.append("<term>");
@@ -1876,11 +1882,11 @@ public class Utilities {
 
 
         if (!btsORnts.isEmpty()) {
-            Collections.sort(btsORnts, new SortItemLocaleComparator(targetLocale));
+            Collections.sort(btsORnts, sortComparator);
             sb.append("<" + attribute + ">");
-            for (int k = 0; k < btsORnts.size(); k++) {
-                sb.append("<name linkClass=\"" + btsORnts.get(k).getLinkClass().replaceFirst(GuideTermPrefix, "") + "\">");
-                sb.append(escapeXML(btsORnts.get(k).getLogName()));
+            for (SortItem btOrNtSortItem : btsORnts) {
+                sb.append("<name linkClass=\"" + btOrNtSortItem.getLinkClass().replaceFirst(GuideTermPrefix, "") + "\">");
+                sb.append(escapeXML(btOrNtSortItem.getLogName()));
                 sb.append("</name>");
             }
             sb.append("</" + attribute + ">");
@@ -1912,6 +1918,7 @@ public class Utilities {
         DBGeneral dbGen = new DBGeneral();
 
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
         Vector<String> v = new Vector<String>();
         StringBuffer sb = new StringBuffer();
@@ -1965,7 +1972,8 @@ public class Utilities {
             } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
 
                 Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), term, Q, sis_session);
-                Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                Collections.sort(vtranslations, guideTermComparator);
                 sb.append("<" + output[j] + ">");
                 for (int k = 0; k < vtranslations.size(); k++) {
                     sb.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
@@ -2364,14 +2372,15 @@ public class Utilities {
     public void writeResultsInXMLFile(PrintWriter outStream, Vector<String> allTerms, String startXML, Vector<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
             QClass Q, IntegerObject sis_session, Hashtable<String, NodeInfoSortItemContainer> termsInfo, 
-            Vector<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds) {
+            Vector<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
 
 
 
         String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
 
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
         boolean streamOutput = false;
         if(outStream!=null){
@@ -2406,7 +2415,11 @@ public class Utilities {
                 for (int m = 0; m < output.size(); m++) {
 
                     String category = output.get(m);
-                    if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_referenceUri_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_referenceIdAttribute_kwd) == 0
+                            ) {
                         continue;
                     } else {
                         appendVal+="<" + category + "/>";
@@ -2545,7 +2558,8 @@ public class Utilities {
                     
                     Vector<SortItem> values = new Vector<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get(category));
-                    if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                    if (    (category.compareTo(ConstantParameters.nt_kwd) == 0  && sortNtsViaLinkClassFirst) || //no need to sort nts by link class as this xml will only be shown in table - simple list format
+                            category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                         Collections.sort(values, guideTermComparator);
                     } else {
                         Collections.sort(values, sortComparator);
@@ -2631,11 +2645,11 @@ public class Utilities {
                         }
                     } else if (category.equals(ConstantParameters.translations_scope_note_kwd)) {
                         String checkStr = "";
-                        for (int k = 0; k < values.size(); k++) {
-                            if (k > 0) {
+                        for (SortItem valueSortItem :values) {
+                            if (checkStr.length()>0) {
                                 checkStr += "\n";
                             }
-                            checkStr += values.get(k).log_name;
+                            checkStr += valueSortItem.getLogName();
                         }
                         Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
                         Vector<String> langcodes = new Vector<String>(trSns.keySet());
@@ -2655,12 +2669,12 @@ public class Utilities {
 
                     } else {
 
-                        for (int k = 0; k < values.size(); k++) {
+                        for (SortItem valueSortItem : values) {
                             if(streamOutput){
-                                outStream.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                                outStream.append("<" + category + ">"+escapeXML(valueSortItem.getLogName())+"</" + category + ">");                            
                             }
                             else{
-                                out.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                                out.append("<" + category + ">"+escapeXML(valueSortItem.getLogName())+"</" + category + ">");                            
                             }                            
                         }
 
@@ -3061,6 +3075,20 @@ public class Utilities {
         return retVal>0 ? retVal:-1;
     }
     
+    public static long retrieveThesaurusReferenceFromNodeInfoSortItemContainer(NodeInfoSortItemContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            Vector<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0 && vals.get(0)!=null){
+                SortItem valSortItem = vals.get(0);
+                retVal = valSortItem.getThesaurusReferenceId();                
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
     public static String retrieveTransliterationStringFromNodeInfoStringContainer(NodeInfoStringContainer container, String originalName, boolean removePrefix){
         String retVal = "";
         
@@ -3068,6 +3096,27 @@ public class Utilities {
             Vector<String> vals = container.descriptorInfo.get(ConstantParameters.system_transliteration_kwd);
             if(vals!=null && vals.size()>0){
                 String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 ){
+                    retVal = valStr.trim();
+                }
+                else{
+                    retVal = Utilities.getTransliterationString(originalName, removePrefix);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    public static String retrieveTransliterationStringFromNodeInfoSortItemContainer(NodeInfoSortItemContainer container, String originalName, boolean removePrefix){
+        String retVal = "";
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            Vector<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0 && vals.get(0)!=null){
+                
+                SortItem valSortItem = vals.get(0);
+                String valStr = valSortItem.getLogNameTransliteration();
                 if(valStr!=null && valStr.trim().length()>0 ){
                     retVal = valStr.trim();
                 }
@@ -3113,6 +3162,24 @@ public class Utilities {
                 NodeInfoStringContainer targetInfo = termsInfo.get(termName);
                 long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
                 String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
+                long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                returnResults.add(new SortItem(termName,id,transliteration,refId));
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    public static Vector<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(Hashtable<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        if(termsInfo!=null){
+            Enumeration<String> termEnum = termsInfo.keys();
+            while(termEnum.hasMoreElements()){
+                String termName = termEnum.nextElement();
+                NodeInfoSortItemContainer targetInfo = termsInfo.get(termName);
+                long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoSortItemContainer(targetInfo);
+                String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoSortItemContainer(targetInfo, termName, removeTransliterationPrefix);
                 long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
                 returnResults.add(new SortItem(termName,id,transliteration,refId));
             }

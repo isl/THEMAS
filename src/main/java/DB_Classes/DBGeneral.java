@@ -5274,7 +5274,11 @@ public class DBGeneral {
         if (Q.bulk_return_nodes(noDeweySet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 String tempName = row.get_v1_cls_logicalname();
-                descriptors.add(new TaxonomicCodeItem(tempName));
+                String transliteration = row.get_v3_cls_transliteration();
+                if(transliteration==null || transliteration.length()==0){
+                    transliteration = Utilities.getTransliterationString(tempName, true);
+                }
+                descriptors.add(new TaxonomicCodeItem(tempName,transliteration));
             }
         }
         /*while (Q.retur_full_nodes(noDeweySet, sysid, label, sclass) != QClass.APIFail) {
@@ -5301,7 +5305,8 @@ public class DBGeneral {
             for (Return_Link_Row row : retLVals) {
                 String tempName = row.get_v1_cls();
                 String tempCode = removePrefix(row.get_v3_cmv().getString());
-                descriptors.add(new TaxonomicCodeItem(tempCode, tempName));
+                String tempTranslit =  row.get_v4_clsTransliteration();
+                descriptors.add(new TaxonomicCodeItem(tempCode, tempName,tempTranslit));
             }
         }
 
@@ -5996,6 +6001,7 @@ public class DBGeneral {
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
                     newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
+                    //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
                     termsInfo.put(targetTerm, newContainer);
                     allTerms.add(targetTerm);
                 }

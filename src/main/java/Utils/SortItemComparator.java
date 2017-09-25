@@ -73,7 +73,7 @@ public class SortItemComparator implements Comparator{
                 if(n1str !=null){
                     n1str  = n1str .replaceAll(" ", "_");
                 }
-                if(o1str.compareTo(n1str)==0){
+                if(o1str==null || n1str ==null || o1str.compareTo(n1str)==0){
                     String o1LNstr =o1.getLogName();
                     String n1LNstr =n1.getLogName();
                     o1LNstr = o1LNstr.replaceAll(" ", "_");

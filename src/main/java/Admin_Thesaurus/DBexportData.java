@@ -44,13 +44,11 @@ import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.Utilities;
 import Utils.Parameters;
-import Utils.SessionWrapperClass;
 
 import Utils.SortItem;
-import Utils.StringLocaleComparator;
-import Utils.GuideTermSortItemComparator;
+
 import Utils.NodeInfoStringContainer;
-import Utils.SortItemLocaleComparator;
+
 
 import XMLHandling.WriteFileData;
 import java.io.IOException;

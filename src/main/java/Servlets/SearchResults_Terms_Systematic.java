@@ -291,9 +291,9 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
 
     
     /*---------------------------------------------------------------------
-    getResultsInXml()
+    getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
-    this function is somewhat different from getResultsInXml() in Utilities.java since it must 
+    this function is somewhat different from getResultsInXml_ForTableLayout() in Utilities.java since it must 
     display only the relevant dewey code --> Not all dewey codes declared for each 
     term. That's why it handles a Vector<TaxonomicCodeItem> parameter instead of a Vector
     filled with Strings which is used in Utilities.java file.

@@ -42,7 +42,7 @@ import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
 import Utils.SortItem;
-import Utils.SortItemLocaleComparator;
+import Utils.SortItemComparator;
 import Utils.Utilities;
 import Utils.StringLocaleComparator;
 import java.io.*;
@@ -101,6 +101,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
+            SortItemComparator transliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
             //parameters
             String targetTerm = u.getDecodedParameterValue(request.getParameter("hierarchy"));
@@ -383,7 +384,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             }
 
             topTerms.addAll(dbGen.returnResultsInSortItems(SessionUserInfo, targetTerm, ConstantParameters.topterm_kwd, Q, TA, sis_session));
-            Collections.sort(topTerms, new SortItemLocaleComparator(targetLocale));
+            Collections.sort(topTerms, transliterationComparator);
 
             //thesaurus data
             String prefixClass = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
@@ -541,7 +542,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 Q.free_set(set_bt_labels_from);
                 Q.free_set(set_all_hier_terms);
 
-                Collections.sort(allHierTermsVec, new SortItemLocaleComparator(targetLocale));
+                Collections.sort(allHierTermsVec, transliterationComparator);
                 if (targetTerm.compareTo(topTerms.get(i).getLogName()) == 0) {
                     refCounter = 1;
                 } else {
@@ -826,6 +827,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             String pathToSaveScriptingAndLocale,
             Locale targetLocale) {
 
+            SortItemComparator transliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
         String Full_Save_Results_file_name = fileName;
 
         boolean streamOutput = false;
@@ -904,7 +906,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 //out.write(Utilities.escapeXML(hierarchy));
                 //out.write("</name>");
                 Vector<SortItem> toptermNts = ntsOfDesciptorsTopTerms.get(m).get(hierarchy.getLogName());
-                Collections.sort(toptermNts, new SortItemLocaleComparator(targetLocale));
+                Collections.sort(toptermNts, transliterationComparator);
                 if (streamOutput) {
                     outStream.append(appendVal);
                 } else {
@@ -949,7 +951,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                     termNts.addAll(ntsOfDesciptorsTopTerms.get(m).get(term.getLogName()));
 
                     if (termNts.size() > 0) {
-                        Collections.sort(termNts, new SortItemLocaleComparator(targetLocale));
+                        //if link class is to be shown the perhaps another comparator might be needed
+                        // new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME)
+                        Collections.sort(termNts,transliterationComparator);
                     }
 
                     appendVal = "<term><name";

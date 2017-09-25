@@ -49,8 +49,8 @@ import Utils.SortItem;
 import Utils.TaxonomicCodeItem;
 import Utils.TaxonomicCodeComparator;
 import Utils.StringLocaleComparator;
-import Utils.GuideTermSortItemComparator;
 import Utils.NodeInfoSortItemContainer;
+import Utils.SortItemComparator;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -377,7 +377,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));         
                 
                 //Write XML file
-                u.writeResultsInXMLFile(null,allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo.selectedThesaurus,false);
+                u.writeResultsInXMLFile(null,allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo.selectedThesaurus,false,false);
                 
                 //end query and close connection
                 Q.free_all_sets();
@@ -925,8 +925,9 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             String temporaryfolderFullPath,
             String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
+        SortItemComparator linkClassTransliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        
         String Save_Results_file_nameWithoutExtension = fileNameWithoutExtension; //webAppSaveResults_temporary_filesAbsolutePath +"/"+ Save_Results_file_name + ".xml";
-        DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         
         // \\ stands for regex escape not for windows path separator
@@ -970,7 +971,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                     String term = all_hier_terms_vec.get(i);
                     Vector<SortItem> termTranslations = new Vector<SortItem>();
                     termTranslations.addAll(term_translationsOfHierDesciptor.get(term));
-                    Collections.sort(termTranslations, new GuideTermSortItemComparator(targetLocale));
+                    //Collections.sort(termTranslations, new GuideTermSortItemComparator(targetLocale));
+                    Collections.sort(termTranslations,linkClassTransliterationComparator);
                     
                     out.write("<term>");
 
@@ -1012,7 +1014,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                     
                 
                 int all_translations_vecSize = all_translations_vec.size();
-                Collections.sort(all_translations_vec,new GuideTermSortItemComparator(targetLocale));
+                //Collections.sort(all_translations_vec,new GuideTermSortItemComparator(targetLocale));
+                Collections.sort(all_translations_vec,linkClassTransliterationComparator);
 
                 for (int i=0; i<all_translations_vecSize; i++) {
 

@@ -984,7 +984,8 @@ public class DBImportData {
 
         Utils.StaticClass.closeDb();
         
-        QClass Q = new neo4j_sisapi.QClass(); TMSAPIClass TA = new TMSAPIClass();
+        QClass Q = new neo4j_sisapi.QClass(); 
+        TMSAPIClass TA = new TMSAPIClass();
         IntegerObject sis_session = new IntegerObject();
         IntegerObject tms_session = new IntegerObject();
 
@@ -1009,7 +1010,7 @@ public class DBImportData {
              * Step8 Guide Terms Addition Patch
              */
             //Structures to fill
-            Vector<String> xmlFacets = new Vector<String>();
+            Vector<SortItem> xmlFacetSortItems = new Vector<SortItem>();
             Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
 
             Vector<String> guideTerms = new Vector<String>();
@@ -1029,7 +1030,7 @@ public class DBImportData {
             Vector<String> thesaurusVector = new Vector<String>();
             StringObject CreateThesaurusResultMessage = new StringObject("");
 
-            String defaultFacet = dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, targetThesaurusName);
+            SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, targetThesaurusName);
 
             //read Translation Categories
             translationCategories = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, sourceThesaurusName, null, false, true);
@@ -1043,17 +1044,20 @@ public class DBImportData {
             }
 
             //read facets
-            xmlFacets.addAll(dbMerge.ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null));
+            xmlFacetSortItems.addAll(dbMerge.ReadThesaurusFacetsInSortItems(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null));
 
-            if (xmlFacets.contains(defaultFacet) == false) {
-                xmlFacets.add(defaultFacet);
+            Vector<String> xmlFacets = Utilities.getStringVectorFromSortItemVector(xmlFacetSortItems);
+            
+            if (xmlFacets.contains(defaultFacetSortItem.getLogName()) == false) {
+                xmlFacets.add(defaultFacetSortItem.getLogName());
+                xmlFacetSortItems.add(defaultFacetSortItem);
             }
 
             //read hierarchies
             hierarchyFacets = dbMerge.ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null);
             if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
                 Vector<String> unclassifiedFacets = new Vector<String>();
-                unclassifiedFacets.add(defaultFacet);
+                unclassifiedFacets.add(defaultFacetSortItem.getLogName());
                 hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
             }
 
@@ -1421,7 +1425,7 @@ public class DBImportData {
         ParseFileData parser = new ParseFileData();
 
         //Structures to fill
-        Vector<SortItem> xmlFacetSortItems = new Vector<SortItem>();
+        Hashtable<String, SortItem> xmlFacetSortItems = new Hashtable<String, SortItem>();
         Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
         
         Vector<String> guideTerms = new Vector<String>();
@@ -1469,9 +1473,7 @@ public class DBImportData {
         
         Vector<String> xmlFacetsInStrs = new Vector<String>();
         if(xmlFacetSortItems!=null){
-            for(SortItem item : xmlFacetSortItems){
-                xmlFacetsInStrs.add(item.getLogName());
-            }
+            xmlFacetsInStrs.addAll(xmlFacetSortItems.keySet());
         }
             
         /* Step2 Read Hierarchies specified by XML************************************************/
@@ -1480,7 +1482,7 @@ public class DBImportData {
             processSucceded = false;
         }
         
-        
+        //might not be defined any
         if (processSucceded) {
             parser.readTranslationCategories(xmlFilePath, inputScheme, userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections);
         }
@@ -1578,10 +1580,13 @@ public class DBImportData {
 
         processXMLTermsInSortItems(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
 
+        Vector<SortItem> facetSortItems = new Vector<SortItem>();
+        facetSortItems.addAll(xmlFacetSortItems.values());
+        
 
         returnVal= writeThesaurusDataFromSortItems(refSessionUserInfo, common_utils,
                 Q, TA, sis_session, tms_session,
-                xmlFacetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
+                facetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
                 hierarchyFacets, termsInfo, userSelectedTranslationWords,
                 userSelectedTranslationIdentifiers, userSelections,
                 topTerms, descriptorRts, descriptorUfs,

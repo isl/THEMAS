@@ -34,7 +34,8 @@
  -->
 
 <!--<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format">-->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
+<xsl:stylesheet version="2.0" 
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
     <xsl:include href="PagingInfo_Term_ Alphabetical.xsl"/>
     <xsl:variable name="localeThes" select="document('../translations/labels.xml')/locale/messages"/>
     <xsl:variable name="labels" select="document('../translations/labels.xml')/locale/vars"/>
@@ -401,7 +402,7 @@
                             </td>
                             <td class="valueColThes">
                                 <!--<xsl:value-of select="preceding-sibling::*/../nt[$prevPos]/@linkClass"/>-->
-                                <xsl:if test="(./@linkClass!='') and ((position()=1) or (preceding-sibling::*/../nt[$prevPos]/@linkClass!=./@linkClass))">
+                                <xsl:if test="(./@linkClass!='') and ((position()=1) or not(preceding-sibling::*/../nt[$prevPos]/@linkClass = ./@linkClass))">
                                     <span class="valueThes"><b><i><xsl:text>&lt;</xsl:text><xsl:value-of select="./@linkClass"/><xsl:text>&gt;</xsl:text></i></b></span>
                                     <br/>
                                 </xsl:if>

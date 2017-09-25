@@ -278,9 +278,10 @@ public class ParseFileData {
         Utils.StaticClass.webAppSystemOutPrintln("\r\n</results>");
     }
 
-    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<SortItem> xmlFacetSortItems) {
+    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Hashtable<String,SortItem> xmlFacetSortItems) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets in sort Items from file: " + xmlFilePath + ".");
 
+         
         try {
 
             XmlPullParserFactory factory;
@@ -290,7 +291,8 @@ public class ParseFileData {
             //<editor-fold defaultstate="collapsed" desc="AAT reading not supported yet ...">
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
 
-                throw new UnsupportedOperationException("Reading of aat schema Facets in SortItem structures has not been implenmented yet.");
+                Utils.StaticClass.webAppSystemOutPrintln("Reading of aat schema Facets in SortItem structures has not been implenmented yet.");
+                return false;
                 /*
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
@@ -463,7 +465,8 @@ public class ParseFileData {
             //<editor-fold defaultstate="collapsed" desc="SKOS reading not supported yet ...">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
-                throw new UnsupportedOperationException("Reading of SKOS schema Facets in SortItem structures has not been implenmented yet.");
+                Utils.StaticClass.webAppSystemOutPrintln("Reading of SKOS schema Facets in SortItem structures has not been implenmented yet.");
+                return false;
                 /*
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
@@ -491,8 +494,7 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals("facets")) {
-                            this.parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetSortItems);
-                            break;
+                            return this.parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetSortItems);                            
                         }
                     }
                     eventType = xpp.next();
@@ -502,10 +504,13 @@ public class ParseFileData {
 
         } catch (FileNotFoundException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacetSortItems.size() + " Facets.");
         return true;
@@ -1187,8 +1192,7 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
-                            this.parseTermNodes(xpp, xmlSchemaType, termsInfo, translationSeparator, output, null, languageSelections);
-                            break;
+                            return this.parseTermNodes(xpp, xmlSchemaType, termsInfo, translationSeparator, output, null, languageSelections);                            
                         }
                     }
                     eventType = xpp.next();
@@ -1201,11 +1205,13 @@ public class ParseFileData {
 
         } catch (FileNotFoundException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (XmlPullParserException ex) {
-
             Utils.StaticClass.handleException(ex);
+            return false;
         }
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "readXMLTerms Successfully Ended at " + Utilities.GetNow() + " found " + termsInfo.size() + " terms.");
@@ -1524,10 +1530,13 @@ public class ParseFileData {
 
         } catch (FileNotFoundException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading Hierarchies. Found: " + hierarchyFacets.size() + " hierarchies.");
@@ -3342,7 +3351,7 @@ public class ParseFileData {
 
     }
 
-    private void parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
+    private boolean parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
             Hashtable<String, NodeInfoStringContainer> termsInfo, 
             String translationSeparator, 
             String[] output, 
@@ -3767,11 +3776,13 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
                 if (xpp == null) {
-                    return;
+                    
+                    return false;
                 }
                 String elementName = xpp.getName();
                 if (elementName.equals(ConstantParameters.XMLTermsWrapperElementName) == false) {
-                    return;
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Failed to find XML container element for terms: " + ConstantParameters.XMLTermsWrapperElementName);
+                    return false;
                 }
                 //</editor-fold>
 
@@ -3889,8 +3900,6 @@ public class ParseFileData {
                                     targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
                                 }
                             }
-
-
                         }
                     } //</editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Term Completed. also Check if all terms are completed">
@@ -3925,7 +3934,9 @@ public class ParseFileData {
                                 else {
 
                                     NodeInfoStringContainer existingInfo = termsInfo.get(targetTermName);
-
+                                    //Vector<String> refIdInfo = targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+                                    
+                                    
                                     for (Enumeration<String> e = targetTermInfo.descriptorInfo.keys(); e.hasMoreElements();) {
                                         String code = e.nextElement();
                                         Vector<String> values = targetTermInfo.descriptorInfo.get(code);
@@ -3939,6 +3950,12 @@ public class ParseFileData {
                                             for (int i = 0; i < values.size(); i++) {
                                                 String val = values.elementAt(i);
                                                 if (existingValues.contains(val) == false) {
+                                                    if(existingValues.size()>0){
+                                                        if(code.equals(ConstantParameters.system_referenceUri_kwd)){
+                                                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Term: " + targetTermName +" was found with 2 different Thesaurus referenceIds: " + val +" and "+existingValues.get(0));
+                                                            return false;
+                                                        }                           
+                                                    }
                                                     existingValues.add(val);
                                                 }
                                             }
@@ -3991,9 +4008,12 @@ public class ParseFileData {
 
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
+        return true;
     }
 
     private void parseTranslationCategories(XmlPullParser xpp, Vector<String> userSelectedTranslationWords, Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
@@ -4187,12 +4207,10 @@ public class ParseFileData {
 
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-
-                Vector<SortItem> xmlFacetsInSortItems = new Vector<SortItem>();
+                Hashtable<String,SortItem> xmlFacetsInSortItems = new Hashtable<String,SortItem>();
+                
                 parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetsInSortItems);
-                for(SortItem item : xmlFacetsInSortItems){
-                    xmlFacets.add(item.getLogName());
-                }
+                xmlFacets.addAll(xmlFacetsInSortItems.keySet());
                 
             }
         } catch (XmlPullParserException ex) {
@@ -4202,7 +4220,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, Vector<SortItem> xmlFacets) {
+    private boolean parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, SortItem> xmlFacets) {
 
         try {
             
@@ -4271,7 +4289,8 @@ public class ParseFileData {
                 //skos:Collection
                 //skos:prefLabel xml:lang="en"
                 */
-                throw new UnsupportedOperationException("parseFacetNodesSortItems SKOS schema is not yet supported.");
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "parseFacetNodesSortItems SKOS schema is not yet supported.");
+                return false;
             } 
             //</editor-fold>
             
@@ -4281,16 +4300,14 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
                 if (xpp == null) {
-                    return;
+                    return false;
                 }
                 String elementName = xpp.getName();
                 if (elementName.equals("facets") == false) {
-                    return;
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Failed to retrieve XML element facets.");
+                    return false;
                 }
                 //</editor-fold>
-
-
-                
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -4336,8 +4353,7 @@ public class ParseFileData {
 
                             if (targetValue != null && targetValue.trim().length() > 0) {
                                 translit = this.readXMLTag(targetValue);
-                            }
-                            
+                            }                            
                         }
                     } //</editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
@@ -4364,8 +4380,14 @@ public class ParseFileData {
                                 SortItem newFacetObj = new SortItem(targetFacetName,-1,translit,refId);
                                 
                                 
-                                if (xmlFacets.contains(newFacetObj) == false) {
-                                    xmlFacets.add(newFacetObj);
+                                if (xmlFacets.containsKey(targetFacetName) == false) {
+                                    xmlFacets.put(targetFacetName,newFacetObj);
+                                }
+                                else{
+                                    if(!newFacetObj.equals(xmlFacets.get(targetFacetName))){
+                                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Facet: "+targetFacetName + " is defined more than once.");
+                                        return false;
+                                    }
                                 }
                             }
 
@@ -4379,9 +4401,12 @@ public class ParseFileData {
             
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
+        return true;
     }
 
     public String readXMLTag(String test) {

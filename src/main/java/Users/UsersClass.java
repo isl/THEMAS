@@ -123,7 +123,7 @@ public class UsersClass {
     }    
     
     /*---------------------------------------------------------------------
-                            getResultsInXml()
+                            getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
     INPUT: - Vector allUsers: the Vector with the users to be parsed
            - String[] output: the properties of each user to be collected

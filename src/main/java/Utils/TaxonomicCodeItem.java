@@ -46,13 +46,15 @@ public class TaxonomicCodeItem {
     
     public Vector<String> codeParts;
     public String nodeName;
+    public String nodeNameTransliteration;
     
     
-    public TaxonomicCodeItem(String name) {
+    public TaxonomicCodeItem(String name, String nodeNameTranslit) {
                 
         codeParts =new Vector<String>();
         codeParts.add("");
         nodeName = name;
+        nodeNameTransliteration = nodeNameTranslit;
         
         String name_split[] = name.split("`");
         
@@ -62,7 +64,7 @@ public class TaxonomicCodeItem {
         
     }
 
-    public TaxonomicCodeItem(String constrCode,String name) throws NumberFormatException {
+    public TaxonomicCodeItem(String constrCode,String name, String nodeNameTranslit) throws NumberFormatException {
         
         
         String term_split[] = name.split("`");
@@ -115,6 +117,7 @@ public class TaxonomicCodeItem {
             
             
         nodeName = name;
+        nodeNameTransliteration = nodeNameTranslit;
         String name_split[] = name.split("`");
         
         if(name_split.length >1 ){
