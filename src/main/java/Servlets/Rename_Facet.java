@@ -42,7 +42,7 @@ import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;

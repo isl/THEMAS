@@ -201,10 +201,23 @@
                             </xsl:variable>
                             
                             <a href="#">
+                                <img width="16" height="16" border="0"  style="margin-left:4px;">
+                                    <xsl:attribute name="src">
+                                        <xsl:value-of select="$facetslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="title">
+                                        <xsl:value-of select="$facetslocale/tableresults/columns/actions/hierarchical/title/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="onClick">
+                                        <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','facethierarchical','true');</xsl:text>
+                                    </xsl:attribute>
+                                </img>
+                            </a>
+                            <a href="#">
                                 <xsl:attribute name="onclick">
                                     <xsl:text>GraphicalViewIconPressed('GraphicalView','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>', "FACET","false")</xsl:text>
                                 </xsl:attribute>
-                                <img width="16" height="16" border="0">
+                                <img width="16" height="16" border="0" style="margin-left:4px; margin-right:4px;">
                                         <xsl:attribute name="src">
                                             <xsl:value-of select="$facetslocale/tableresults/columns/actions/graphical/src/option[@lang=$lang]"/>
                                         </xsl:attribute>
@@ -218,7 +231,7 @@
                             <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER' and $THEMASUserInfo_userGroup != 'LIBRARY' ">
                                 <a href="#">
                                     <xsl:attribute name="onClick">showEditCard_Facet('<xsl:value-of select="$currentJS"/>')</xsl:attribute>
-                                    <img width="16" height="16" border="0" >
+                                    <img width="16" height="16" border="0"  style="margin-right:4px;">
                                         <xsl:attribute name="src">
                                             <xsl:value-of select="$facetslocale/tableresults/columns/actions/edit/src/option[@lang=$lang]"/>
                                         </xsl:attribute>

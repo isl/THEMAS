@@ -36,16 +36,12 @@ package Admin_Thesaurus;
 import DB_Admin.CommonUtilsDBadmin;
 import DB_Admin.ConfigDBadmin;
 import DB_Admin.DBAdminUtilities;
-import DB_Admin.FixDB;
 import DB_Admin.TSVExportsImports;
 import DB_Classes.DBGeneral;
 import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConstantParameters;
-import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
-import Utils.SessionListener;
-import Utils.SortItem;
 import Utils.Utilities;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,15 +49,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.Locale;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.StringObject;
@@ -241,7 +231,7 @@ public class OfflineToolsClass {
 
         Utils.StaticClass.setJustSimpleSystemOut(true);
         Utils.StaticClass.webAppSystemOutPrintln("OfflineToolsClass called at: " + Utilities.GetNow());
-        Vector<String> arguements = new Vector<String>();
+        ArrayList<String> arguements = new ArrayList<String>();
         
         boolean unlockSystem = true;
         boolean oldFilterVal = ConstantParameters.filterBts_Nts_Rts;
@@ -463,7 +453,7 @@ public class OfflineToolsClass {
                     return;
                 }
 
-                Vector<String> allthesauriNames = new Vector<String>();
+                ArrayList<String> allthesauriNames = new ArrayList<String>();
                 dbGen.GetExistingThesaurus(false, allthesauriNames, Q, sis_session);
                 
                 Q.free_all_sets();
@@ -505,9 +495,9 @@ public class OfflineToolsClass {
                         Utils.StaticClass.handleException(ex);
                     }
 
-                    Vector<String> thesauriNames = new Vector<String>();
-                    Vector<String> allHierarchies = new Vector<String>();
-                    Vector<String> allGuideTerms = new Vector<String>();
+                    ArrayList<String> thesauriNames = new ArrayList<String>();
+                    ArrayList<String> allHierarchies = new ArrayList<String>();
+                    ArrayList<String> allGuideTerms = new ArrayList<String>();
 
                     exp.exportThesaurusActions(refSessionUserInfo, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
@@ -748,9 +738,9 @@ public class OfflineToolsClass {
 
         
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
 
         String importMethodChoice  = "thesaurusImport";
@@ -825,9 +815,9 @@ public class OfflineToolsClass {
 
         
         StringBuffer xml = new StringBuffer();
-        //Vector<String> thesauriNames = new Vector<String>();
-        //Vector<String> allHierarchies = new Vector<String>();
-        //Vector<String> allGuideTerms = new Vector<String>();
+        //ArrayList<String> thesauriNames = new ArrayList<String>();
+        //ArrayList<String> allHierarchies = new ArrayList<String>();
+        //ArrayList<String> allGuideTerms = new ArrayList<String>();
         String importMethodChoice  = "thesaurusImport";
         StringObject result = new StringObject("");
 

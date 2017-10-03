@@ -170,7 +170,7 @@
                        
                         <td align="center">
                             <a href="#">
-                                <img width="16" height="16" border="0" style="margin-left:2px; margin-right:4px;" >
+                                <img width="16" height="16" border="0"  style="margin-left:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/alphabetical/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -183,7 +183,7 @@
                                 </img>
                             </a>
                             <a href="#">
-                                <img width="16" height="16" border="0" style="margin-right:4px;" >
+                                <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;" >
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -196,7 +196,7 @@
                                 </img>
                             </a>
                             <a href="#">
-                                <img width="16" height="16" border="0" style="margin-right:4px;" >
+                                <img width="16" height="16" border="0" >
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/systematic/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -209,7 +209,7 @@
                                 </img>
                             </a>
                             <a href="#">
-                                <img width="16" height="16" border="0" style="margin-right:4px;">
+                                <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/index/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -235,7 +235,7 @@
                                 </img>
                             </a>
                             <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER' and $THEMASUserInfo_userGroup != 'LIBRARY'">
-                                <a href="#">
+                                <a href="#"  style="margin-left:4px; margin-right:4px;">
                                     <xsl:attribute name="onClick">showEditCard_Hierarchy('<xsl:value-of select="$currentJS"/>')</xsl:attribute>
                                     <img width="16" height="16" border="0">
                                         <xsl:attribute name="src">

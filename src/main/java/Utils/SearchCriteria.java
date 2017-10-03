@@ -49,14 +49,14 @@ public class SearchCriteria {
     
     public String CombineOperator;
     
-    public Vector<String> input;
-    public Vector<String> operator;
-    public Vector<String> value;
+    public ArrayList<String> input;
+    public ArrayList<String> operator;
+    public ArrayList<String> value;
     
-    public Vector<String> output;
+    public ArrayList<String> output;
     
-    public Vector<String> pagingNames; // eg for terms 4 displays are supported termsAlphabetical, termsSystematic termsHierarchical and termsResults
-    public Vector<Integer> pagingValues;
+    public ArrayList<String> pagingNames; // eg for terms 4 displays are supported termsAlphabetical, termsSystematic termsHierarchical and termsResults
+    public ArrayList<Integer> pagingValues;
 
     //following fields are initialized with Parameters
     public static String[][] inputStrs = null; 
@@ -71,10 +71,10 @@ public class SearchCriteria {
     public static String showAllString = "";
     public static String andDisplayOperator = "";
     public static String orDisplayOperator = "";
-    public static Hashtable<String,String> termSpecialInputs = null;
-    public static Hashtable<String,String> hierarchySpecialInputs = null;
-    public static Hashtable<String,String> facetSpecialInputs = null;
-    public static Hashtable<String,String> sourceSpecialInputs = null;
+    public static HashMap<String,String> termSpecialInputs = null;
+    public static HashMap<String,String> hierarchySpecialInputs = null;
+    public static HashMap<String,String> facetSpecialInputs = null;
+    public static HashMap<String,String> sourceSpecialInputs = null;
 
     String QueryString;
     
@@ -82,14 +82,14 @@ public class SearchCriteria {
         CombineOperator ="";   
         QueryString ="";
         
-        input    = new Vector<String>();
-        operator = new Vector<String>();
-        value    = new Vector<String>();
+        input    = new ArrayList<String>();
+        operator = new ArrayList<String>();
+        value    = new ArrayList<String>();
         
-        output   = new Vector<String>();
+        output   = new ArrayList<String>();
         
-        pagingNames  =  new Vector<String>();
-        pagingValues =  new Vector<Integer>();
+        pagingNames  =  new ArrayList<String>();
+        pagingValues =  new ArrayList<Integer>();
 
     }
     
@@ -111,19 +111,19 @@ public class SearchCriteria {
                     //In this case View All icon was pressed from the left menu
                     sc.CombineOperator = "*";
 
-                    sc.input.addElement("*");
-                    sc.operator.addElement("*");
-                    sc.value.addElement("*");
+                    sc.input.add("*");
+                    sc.operator.add("*");
+                    sc.value.add("*");
 
                     for(int i=0; i< termsDefaultOutput.length; i++){
-                        sc.output.addElement(termsDefaultOutput[i]);
+                        sc.output.add(termsDefaultOutput[i]);
                     }
                     /*
-                        sc.output.addElement("name");
-                        sc.output.addElement("translations");
-                        sc.output.addElement(ConstantParameters.bt_kwd);
-                        sc.output.addElement(ConstantParameters.nt_kwd);
-                        sc.output.addElement("topterm");
+                        sc.output.add("name");
+                        sc.output.add("translations");
+                        sc.output.add(ConstantParameters.bt_kwd);
+                        sc.output.add(ConstantParameters.nt_kwd);
+                        sc.output.add("topterm");
                     */
 
                 } 
@@ -146,13 +146,13 @@ public class SearchCriteria {
                     //String[] inputsArray = {"name", "translations", ConstantParameters.rt_kwd, "uf"};
                     String operator = "~";
                     for (int i=0; i < quickSearchInputStrs.length; i++) {
-                        sc.input.addElement(quickSearchInputStrs[i]);
-                        sc.operator.addElement(operator);
-                        sc.value.addElement(QuickSearchInputValue);                        
+                        sc.input.add(quickSearchInputStrs[i]);
+                        sc.operator.add(operator);
+                        sc.value.add(QuickSearchInputValue);                        
                     }
                     // OUTPUTs: name - TR - BT - TT - RT - UF
                     //String[] outputsArray = {"name", "translations", ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, "topterm", ConstantParameters.rt_kwd, "uf"};
-                    sc.output = new Vector(Arrays.asList(quickSearchOutput));
+                    sc.output = new ArrayList(Arrays.asList(quickSearchOutput));
                 }                 
                 else 
                 if(showAll!= null && showAll.compareTo("all")==0){ // user selected Proboli olwn apo to interface twn kritiriwn kai meta epelekse output
@@ -166,22 +166,22 @@ public class SearchCriteria {
                     //String[] temp5 = request.getParameterValues("outputSel_term");
                     if(temp4!=null){
                         for(int i =0; i<temp4.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp4[i]));    
                         }
                     }
                     if(temp5!=null){
                         for(int i =0; i<temp5.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp5[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp5[i]));    
                         }
                     }
                     if(temp6!=null){
                         for(int i =0; i<temp6.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp6[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp6[i]));    
                         }
                     }
                     if(temp7!=null){
                         for(int i =0; i<temp7.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp7[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp7[i]));    
                         }
                     }
                     
@@ -190,7 +190,7 @@ public class SearchCriteria {
                         String tempVal = u.getDecodedParameterValue(temp5[i]);
                         if(!sc.output.contains(tempVal))
                             if(tempVal.trim().length() != 0)
-                                sc.output.addElement(tempVal);    
+                                sc.output.add(tempVal);    
 
                     }*/
                 }
@@ -211,29 +211,29 @@ public class SearchCriteria {
 
                     
                     for(int i =0; i< temp1.length;i++){
-                        sc.input.addElement(u.getDecodedParameterValue(temp1[i]));
-                        sc.operator.addElement(u.getDecodedParameterValue(temp2[i]));
-                        sc.value.addElement(u.getDecodedParameterValue(temp3[i]));                                        
+                        sc.input.add(u.getDecodedParameterValue(temp1[i]));
+                        sc.operator.add(u.getDecodedParameterValue(temp2[i]));
+                        sc.value.add(u.getDecodedParameterValue(temp3[i]));                                        
                     }
 
                     if(temp4!=null){
                         for(int i =0; i<temp4.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp4[i]));    
                         }
                     }
                     if(temp5!=null){
                         for(int i =0; i<temp5.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp5[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp5[i]));    
                         }
                     }
                     if(temp6!=null){
                         for(int i =0; i<temp6.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp6[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp6[i]));    
                         }
                     }
                     if(temp7!=null){
                         for(int i =0; i<temp7.length ;i++){
-                            sc.output.addElement(u.getDecodedParameterValue(temp7[i]));    
+                            sc.output.add(u.getDecodedParameterValue(temp7[i]));    
                         }
                     }
                                        /*
@@ -241,20 +241,20 @@ public class SearchCriteria {
                         String tempVal = u.getDecodedParameterValue(temp5[i]);
                         if(!sc.output.contains(tempVal))
                             if(tempVal.trim().length() != 0)
-                                sc.output.addElement(tempVal);    
+                                sc.output.add(tempVal);    
 
                     }
                     */
                 }
 
-                sc.pagingNames.addElement("termsAlphabetical");
-                sc.pagingValues.addElement(1);
-                sc.pagingNames.addElement("termsSystematic");
-                sc.pagingValues.addElement(1);
-                sc.pagingNames.addElement("termsHierarchical");
-                sc.pagingValues.addElement(1);
-                sc.pagingNames.addElement("termsResults");
-                sc.pagingValues.addElement(1);
+                sc.pagingNames.add("termsAlphabetical");
+                sc.pagingValues.add(1);
+                sc.pagingNames.add("termsSystematic");
+                sc.pagingValues.add(1);
+                sc.pagingNames.add("termsHierarchical");
+                sc.pagingValues.add(1);
+                sc.pagingNames.add("termsResults");
+                sc.pagingValues.add(1);
                 
                 sc.setQueryString("term");
 
@@ -264,14 +264,14 @@ public class SearchCriteria {
 
                 if (targetSearchCriteriaValue.equals("*")) {
                     sc.CombineOperator = "*";
-                    sc.input.addElement("*");
-                    sc.operator.addElement("*");
-                    sc.value.addElement("*");
+                    sc.input.add("*");
+                    sc.operator.add("*");
+                    sc.value.add("*");
 
                     for(int i=0; i<hierarchyDefaultOutput.length; i ++){
-                        sc.output.addElement(hierarchyDefaultOutput[i]);
+                        sc.output.add(hierarchyDefaultOutput[i]);
                     }
-                    //sc.output.addElement("letter_code");
+                    //sc.output.add("letter_code");
 
 
                 } 
@@ -283,7 +283,7 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_hierarchy");
                     
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
                 }
@@ -298,20 +298,20 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_hierarchy");
 
                     for(int i =0; i< temp1.length;i++){
-                        sc.input.addElement(u.getDecodedParameterValue(temp1[i]));
-                        sc.operator.addElement(u.getDecodedParameterValue(temp2[i]));
-                        sc.value.addElement(u.getDecodedParameterValue(temp3[i]));                                        
+                        sc.input.add(u.getDecodedParameterValue(temp1[i]));
+                        sc.operator.add(u.getDecodedParameterValue(temp2[i]));
+                        sc.value.add(u.getDecodedParameterValue(temp3[i]));                                        
                     }
 
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
 
                 }
 
-                sc.pagingNames.addElement("hierarchiesResults");
-                sc.pagingValues.addElement(1);
+                sc.pagingNames.add("hierarchiesResults");
+                sc.pagingValues.add(1);
                 sc.setQueryString("hierarchy");
             } 
             else 
@@ -321,12 +321,12 @@ public class SearchCriteria {
 
                     sc.CombineOperator = "*";
 
-                    sc.input.addElement("name");
-                    sc.operator.addElement("*"); //NOT USED
-                    sc.value.addElement("*"); //NOT USED
+                    sc.input.add("name");
+                    sc.operator.add("*"); //NOT USED
+                    sc.value.add("*"); //NOT USED
 
                     for(int i=0; i<facetDefaultOutput.length; i ++ ){
-                        sc.output.addElement(facetDefaultOutput[i]);
+                        sc.output.add(facetDefaultOutput[i]);
                     }
                     
                 }                 
@@ -338,7 +338,7 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_facet");
                     
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
                 }
@@ -353,20 +353,20 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_facet");
 
                     for(int i =0; i< temp1.length;i++){
-                        sc.input.addElement(u.getDecodedParameterValue(temp1[i]));
-                        sc.operator.addElement(u.getDecodedParameterValue(temp2[i]));
-                        sc.value.addElement(u.getDecodedParameterValue(temp3[i]));
+                        sc.input.add(u.getDecodedParameterValue(temp1[i]));
+                        sc.operator.add(u.getDecodedParameterValue(temp2[i]));
+                        sc.value.add(u.getDecodedParameterValue(temp3[i]));
                     }
 
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
 
                 }
 
-                sc.pagingNames.addElement("facetsResults");
-                sc.pagingValues.addElement(1);
+                sc.pagingNames.add("facetsResults");
+                sc.pagingValues.add(1);
 
                 sc.setQueryString("facet");
             }
@@ -379,12 +379,12 @@ public class SearchCriteria {
                     //In this case View All icon was pressed from the left menu
                     sc.CombineOperator = "*";
 
-                    sc.input.addElement("*");
-                    sc.operator.addElement("*");
-                    sc.value.addElement("*");
+                    sc.input.add("*");
+                    sc.operator.add("*");
+                    sc.value.add("*");
 
                     for(int i=0; i<sourcesDefaultOutput.length; i ++ ){
-                        sc.output.addElement(sourcesDefaultOutput[i]);
+                        sc.output.add(sourcesDefaultOutput[i]);
                     }
                 }                                
                 else 
@@ -396,14 +396,14 @@ public class SearchCriteria {
                     //String[] temp5 = request.getParameterValues("outputSel_source");
                     
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
                     /*for(int i =0; i<temp5.length ;i++){
                         String tempVal = u.getDecodedParameterValue(temp5[i]);
                         if(!sc.output.contains(tempVal))
                             if(tempVal.trim().length() != 0)
-                                sc.output.addElement(tempVal);    
+                                sc.output.add(tempVal);    
 
                     }*/
                 }
@@ -420,26 +420,26 @@ public class SearchCriteria {
                     //String[] temp5 = request.getParameterValues("outputSel_source");
 
                     for(int i =0; i< temp1.length;i++){
-                        sc.input.addElement(u.getDecodedParameterValue(temp1[i]));
-                        sc.operator.addElement(u.getDecodedParameterValue(temp2[i]));
-                        sc.value.addElement(u.getDecodedParameterValue(temp3[i]));                                        
+                        sc.input.add(u.getDecodedParameterValue(temp1[i]));
+                        sc.operator.add(u.getDecodedParameterValue(temp2[i]));
+                        sc.value.add(u.getDecodedParameterValue(temp3[i]));                                        
                     }
 
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
                     /*for(int i =0; i<temp5.length ;i++){
                         String tempVal = u.getDecodedParameterValue(temp5[i]);
                         if(!sc.output.contains(tempVal))
                             if(tempVal.trim().length() != 0)
-                                sc.output.addElement(tempVal);    
+                                sc.output.add(tempVal);    
 
                     }*/
                 }
 
-                sc.pagingNames.addElement("sourcesResults");
-                sc.pagingValues.addElement(1);
+                sc.pagingNames.add("sourcesResults");
+                sc.pagingValues.add(1);
                 
                 sc.setQueryString("source");
 
@@ -452,18 +452,18 @@ public class SearchCriteria {
 
                     sc.CombineOperator = "*";
 
-                    sc.input.addElement("name");
-                    sc.operator.addElement("*"); //NOT USED
-                    sc.value.addElement("*"); //NOT USED
+                    sc.input.add("name");
+                    sc.operator.add("*"); //NOT USED
+                    sc.value.add("*"); //NOT USED
 
 
                     for(int i=0; i<userssDefaultOutput.length; i ++ ){
-                        sc.output.addElement(userssDefaultOutput[i]);
+                        sc.output.add(userssDefaultOutput[i]);
                     }
-                    //sc.output.addElement("name");
-                    //sc.output.addElement("DBname");
-                    //sc.output.addElement("thesaurusName");
-                    //sc.output.addElement("description");
+                    //sc.output.add("name");
+                    //sc.output.add("DBname");
+                    //sc.output.add("thesaurusName");
+                    //sc.output.add("description");
                 }                 
                 else
                 if(showAll!= null && showAll.compareTo("all")==0){ // user selected Proboli olwn apo to interface twn kritiriwn kai meta epelekse output
@@ -473,7 +473,7 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_user");
                     
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
                 }
@@ -488,20 +488,20 @@ public class SearchCriteria {
                     String[] temp4 = request.getParameterValues("output_user");
 
                     for(int i =0; i< temp1.length;i++){
-                        sc.input.addElement(u.getDecodedParameterValue(temp1[i]));
-                        sc.operator.addElement(u.getDecodedParameterValue(temp2[i]));
-                        sc.value.addElement(u.getDecodedParameterValue(temp3[i]));                                        
+                        sc.input.add(u.getDecodedParameterValue(temp1[i]));
+                        sc.operator.add(u.getDecodedParameterValue(temp2[i]));
+                        sc.value.add(u.getDecodedParameterValue(temp3[i]));                                        
                     }
 
                     for(int i =0; i<temp4.length ;i++){
-                        sc.output.addElement(u.getDecodedParameterValue(temp4[i]));    
+                        sc.output.add(u.getDecodedParameterValue(temp4[i]));    
 
                     }
 
                 }
 
-                sc.pagingNames.addElement("usersResults");
-                sc.pagingValues.addElement(1);
+                sc.pagingNames.add("usersResults");
+                sc.pagingValues.add(1);
 
                 sc.setQueryString("user");
             }            

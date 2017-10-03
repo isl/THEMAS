@@ -149,10 +149,10 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             //StringObject cls = new StringObject();
             //StringObject label = new StringObject();       
 			/*  
-            Vector<String> topTerms = new Vector<String>(); //hoiw much topterms -- in howmany hierarchies targetTerm participates
-            Vector<Integer> referencesPerHier = new Vector<Integer>();
-            Vector<Vector<String>> allTermsOfDescriptorsTopTerms = new Vector<Vector<String>>();//for each element of topTerms hold a vector with all terms of hierarchies for sorting purpose
-            Vector<Hashtable<String, Vector<String>>> ntsOfDesciptorsTopTerms = new Vector<Hashtable<String, Vector<String>>>();//for each topterm hold internal nt relations of each hierarchy 
+            ArrayList<String> topTerms = new ArrayList<String>(); //hoiw much topterms -- in howmany hierarchies targetTerm participates
+            ArrayList<Integer> referencesPerHier = new ArrayList<Integer>();
+            ArrayList<ArrayList<String>> allTermsOfDescriptorsTopTerms = new ArrayList<ArrayList<String>>();//for each element of topTerms hold a vector with all terms of hierarchies for sorting purpose
+            ArrayList<HashMap<String, ArrayList<String>>> ntsOfDesciptorsTopTerms = new ArrayList<HashMap<String, ArrayList<String>>>();//for each topterm hold internal nt relations of each hierarchy 
 
             //open connection and start Query
             if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, SessionUserInfo.selectedThesaurus, true) == QClass.APIFail) {
@@ -174,7 +174,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             for (int i = 0; i < topTerms.size(); i++) {
 
                 int refCounter = 0;
-                Vector<String> newTopTermNtsVec = new Vector<String>();
+                ArrayList<String> newTopTermNtsVec = new ArrayList<String>();
                 StringObject hierarchyObj = new StringObject(prefixClass.concat(topTerms.get(i)));
                 Q.reset_name_scope();
                 Q.set_current_node(hierarchyObj);
@@ -196,14 +196,14 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 DBFilters dbf = new DBFilters();
                 set_bt_labels_from = dbf.FilterBTLinksSet(SessionUserInfo, set_bt_labels_from, Q, sis_session);
 
-                Vector<String> allHierTermsVec = new Vector<String>();
-                Hashtable<String, Vector<String>> ntsOfHierDesciptor = new Hashtable<String, Vector<String>>();
-                Hashtable<String, Vector<String>> btsOfHierDesciptor = new Hashtable<String, Vector<String>>();
+                ArrayList<String> allHierTermsVec = new ArrayList<String>();
+                HashMap<String, ArrayList<String>> ntsOfHierDesciptor = new HashMap<String, ArrayList<String>>();
+                HashMap<String, ArrayList<String>> btsOfHierDesciptor = new HashMap<String, ArrayList<String>>();
 
                 String topterm = dbGen.removePrefix(hierarchyObj.getValue());
                 ntsOfHierDesciptor.put(topterm, newTopTermNtsVec);
 
-                Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
                 if (Q.bulk_return_link(set_bt_labels_from, retVals) != QClass.APIFail) {
                     for (Return_Link_Row row : retVals) {
                         String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
@@ -215,9 +215,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         if (allHierTermsVec.contains(nt) == false) {
                             allHierTermsVec.add(nt);
                         }
-                        Vector<String> btNts = ntsOfHierDesciptor.get(bt);
+                        ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
                         if (btNts == null) {
-                            Vector<String> newNtsVec = new Vector<String>();
+                            ArrayList<String> newNtsVec = new ArrayList<String>();
                             newNtsVec.add(nt);
                             ntsOfHierDesciptor.put(bt, newNtsVec);
                         } else {
@@ -229,14 +229,14 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         }
 
                         if (ntsOfHierDesciptor.containsKey(nt) == false) {
-                            Vector<String> newNtsVec = new Vector<String>();
+                            ArrayList<String> newNtsVec = new ArrayList<String>();
                             ntsOfHierDesciptor.put(nt, newNtsVec);
                         }
 
-                        Vector<String> ntBts = btsOfHierDesciptor.get(nt);
+                        ArrayList<String> ntBts = btsOfHierDesciptor.get(nt);
 
                         if (ntBts == null) {
-                            Vector<String> newBtsVec = new Vector<String>();
+                            ArrayList<String> newBtsVec = new ArrayList<String>();
                             newBtsVec.add(bt);
                             btsOfHierDesciptor.put(nt, newBtsVec);
                         } else {
@@ -248,7 +248,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         }
 
                         if (btsOfHierDesciptor.containsKey(bt) == false) {
-                            Vector<String> newBtsVec = new Vector<String>();
+                            ArrayList<String> newBtsVec = new ArrayList<String>();
                             btsOfHierDesciptor.put(bt, newBtsVec);
                         }
                     }
@@ -265,9 +265,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
 //                 if (allHierTermsVec.contains(nt) == false) {
 //                 allHierTermsVec.add(nt);
 //                 }                    
-//                 Vector<String> btNts = ntsOfHierDesciptor.get(bt);
+//                 ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
 //                 if (btNts == null) {
-//                 Vector<String> newNtsVec = new Vector<String>();
+//                 ArrayList<String> newNtsVec = new ArrayList<String>();
 //                 newNtsVec.add(nt);
 //                 ntsOfHierDesciptor.put(bt, newNtsVec);
 //                 } else {
@@ -279,15 +279,15 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
 //                 }
 //
 //                 if (ntsOfHierDesciptor.containsKey(nt) == false) {
-//                 Vector<String> newNtsVec = new Vector<String>();
+//                 ArrayList<String> newNtsVec = new ArrayList<String>();
 //                 ntsOfHierDesciptor.put(nt, newNtsVec);
 //                 }
 //                    
 //                    
-//                 Vector<String> ntBts = btsOfHierDesciptor.get(nt);
+//                 ArrayList<String> ntBts = btsOfHierDesciptor.get(nt);
 //                    
 //                 if (ntBts == null) {
-//                 Vector<String> newBtsVec = new Vector<String>();
+//                 ArrayList<String> newBtsVec = new ArrayList<String>();
 //                 newBtsVec.add(bt);
 //                 btsOfHierDesciptor.put(nt, newBtsVec);
 //                 } else {
@@ -299,7 +299,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
 //                 }
 //
 //                 if (btsOfHierDesciptor.containsKey(bt) == false) {
-//                 Vector<String> newBtsVec = new Vector<String>();
+//                 ArrayList<String> newBtsVec = new ArrayList<String>();
 //                 btsOfHierDesciptor.put(bt, newBtsVec);
 //                 }
 //
@@ -316,19 +316,19 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 } else {
                     refCounter = 0;
 
-                    Vector<String> visitedTerms = new Vector<String>();
-                    Vector<String> searchBTsPaths = new Vector<String>();
+                    ArrayList<String> visitedTerms = new ArrayList<String>();
+                    ArrayList<String> searchBTsPaths = new ArrayList<String>();
                     searchBTsPaths.addAll(btsOfHierDesciptor.get(targetTerm));
-                    refCounter = searchBTsPaths.size(); //all of its bts define one path to target // no dublicates in Hashtable             
+                    refCounter = searchBTsPaths.size(); //all of its bts define one path to target // no dublicates in HashMap             
                     while (true) {
-                        Vector<String> prepareNextSearchBtsPath = new Vector<String>();
+                        ArrayList<String> prepareNextSearchBtsPath = new ArrayList<String>();
 
                         for (int m = 0; m < searchBTsPaths.size(); m++) {
                             //each one of its bts might also have one more path
                             int partialRefs = 0;
                             String newTargetTerm = searchBTsPaths.get(m);
 
-                            Vector<String> checkBts = new Vector<String>();
+                            ArrayList<String> checkBts = new ArrayList<String>();
                             checkBts.addAll(btsOfHierDesciptor.get(newTargetTerm));
 
                             if (checkBts.size() > 0) {
@@ -372,10 +372,10 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
 
             }
 			*/
-            Vector<SortItem> topTerms = new Vector<SortItem>(); //how many topterms -- in howmany hierarchies targetTerm participates
-            Vector<Integer> referencesPerHier = new Vector<Integer>();
-            Vector<Vector<SortItem>> allTermsOfDescriptorsTopTerms = new Vector<Vector<SortItem>>();//for each element of topTerms hold a vector with all terms of hierarchies for sorting purpose
-            Vector<Hashtable<String, Vector<SortItem>>> ntsOfDesciptorsTopTerms = new Vector<Hashtable<String, Vector<SortItem>>>();//for each topterm hold internal nt relations of each hierarchy 
+            ArrayList<SortItem> topTerms = new ArrayList<SortItem>(); //how many topterms -- in howmany hierarchies targetTerm participates
+            ArrayList<Integer> referencesPerHier = new ArrayList<Integer>();
+            ArrayList<ArrayList<SortItem>> allTermsOfDescriptorsTopTerms = new ArrayList<ArrayList<SortItem>>();//for each element of topTerms hold a vector with all terms of hierarchies for sorting purpose
+            ArrayList<HashMap<String, ArrayList<SortItem>>> ntsOfDesciptorsTopTerms = new ArrayList<HashMap<String, ArrayList<SortItem>>>();//for each topterm hold internal nt relations of each hierarchy 
 
             //open connection and start Query
             if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, SessionUserInfo.selectedThesaurus, true) == QClass.APIFail) {
@@ -397,7 +397,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             for (int i = 0; i < topTerms.size(); i++) {
 
                 int refCounter = 0;
-                Vector<SortItem> newTopTermNtsVec = new Vector<SortItem>();
+                ArrayList<SortItem> newTopTermNtsVec = new ArrayList<SortItem>();
                 StringObject hierarchyObj = new StringObject(prefixClass.concat(topTerms.get(i).getLogName()));
                 Q.reset_name_scope();
                 Q.set_current_node(hierarchyObj);
@@ -419,14 +419,14 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 DBFilters dbf = new DBFilters();
                 set_bt_labels_from = dbf.FilterBTLinksSet(SessionUserInfo, set_bt_labels_from, Q, sis_session);
 
-                Vector<SortItem> allHierTermsVec = new Vector<SortItem>();
-                Hashtable<String, Vector<SortItem>> ntsOfHierDesciptor = new Hashtable<String, Vector<SortItem>>();
-                Hashtable<String, Vector<SortItem>> btsOfHierDesciptor = new Hashtable<String, Vector<SortItem>>();
+                ArrayList<SortItem> allHierTermsVec = new ArrayList<SortItem>();
+                HashMap<String, ArrayList<SortItem>> ntsOfHierDesciptor = new HashMap<String, ArrayList<SortItem>>();
+                HashMap<String, ArrayList<SortItem>> btsOfHierDesciptor = new HashMap<String, ArrayList<SortItem>>();
 
                 String topterm = dbGen.removePrefix(hierarchyObj.getValue());
                 ntsOfHierDesciptor.put(topterm, newTopTermNtsVec);
 
-                Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
                 if (Q.bulk_return_link(set_bt_labels_from, retVals) != QClass.APIFail) {
                     for (Return_Link_Row row : retVals) {
                         String btLogName = dbGen.removePrefix(row.get_v3_cmv().getString());
@@ -448,9 +448,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         if (allHierTermsVec.contains(nt) == false) {
                             allHierTermsVec.add(nt.getACopy());                            
                         }
-                        Vector<SortItem> btNts = ntsOfHierDesciptor.get(bt.getLogName());
+                        ArrayList<SortItem> btNts = ntsOfHierDesciptor.get(bt.getLogName());
                         if (btNts == null) {
-                            Vector<SortItem> newNtsVec = new Vector<SortItem>();
+                            ArrayList<SortItem> newNtsVec = new ArrayList<SortItem>();
                             newNtsVec.add(nt.getACopy());
                             ntsOfHierDesciptor.put(bt.getLogName(), newNtsVec);
                         } else {
@@ -461,14 +461,14 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         }
 
                         if (ntsOfHierDesciptor.containsKey(nt.getLogName()) == false) {
-                            Vector<SortItem> newNtsVec = new Vector<SortItem>();
+                            ArrayList<SortItem> newNtsVec = new ArrayList<SortItem>();
                             ntsOfHierDesciptor.put(nt.getLogName(), newNtsVec);
                         }
 
-                        Vector<SortItem> ntBts = btsOfHierDesciptor.get(nt.getLogName());
+                        ArrayList<SortItem> ntBts = btsOfHierDesciptor.get(nt.getLogName());
 
                         if (ntBts == null) {
-                            Vector<SortItem> newBtsVec = new Vector<SortItem>();
+                            ArrayList<SortItem> newBtsVec = new ArrayList<SortItem>();
                             newBtsVec.add(bt);
                             btsOfHierDesciptor.put(nt.getLogName(), newBtsVec);
                         } else {
@@ -480,7 +480,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         }
 
                         if (btsOfHierDesciptor.containsKey(bt.getLogName()) == false) {
-                            Vector<SortItem> newBtsVec = new Vector<SortItem>();
+                            ArrayList<SortItem> newBtsVec = new ArrayList<SortItem>();
                             btsOfHierDesciptor.put(bt.getLogName(), newBtsVec);
                         }
                     }
@@ -497,9 +497,9 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                  if (allHierTermsVec.contains(nt) == false) {
                  allHierTermsVec.add(nt);
                  }                    
-                 Vector<String> btNts = ntsOfHierDesciptor.get(bt);
+                 ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
                  if (btNts == null) {
-                 Vector<String> newNtsVec = new Vector<String>();
+                 ArrayList<String> newNtsVec = new ArrayList<String>();
                  newNtsVec.add(nt);
                  ntsOfHierDesciptor.put(bt, newNtsVec);
                  } else {
@@ -511,15 +511,15 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                  }
 
                  if (ntsOfHierDesciptor.containsKey(nt) == false) {
-                 Vector<String> newNtsVec = new Vector<String>();
+                 ArrayList<String> newNtsVec = new ArrayList<String>();
                  ntsOfHierDesciptor.put(nt, newNtsVec);
                  }
                     
                     
-                 Vector<String> ntBts = btsOfHierDesciptor.get(nt);
+                 ArrayList<String> ntBts = btsOfHierDesciptor.get(nt);
                     
                  if (ntBts == null) {
-                 Vector<String> newBtsVec = new Vector<String>();
+                 ArrayList<String> newBtsVec = new ArrayList<String>();
                  newBtsVec.add(bt);
                  btsOfHierDesciptor.put(nt, newBtsVec);
                  } else {
@@ -531,7 +531,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                  }
 
                  if (btsOfHierDesciptor.containsKey(bt) == false) {
-                 Vector<String> newBtsVec = new Vector<String>();
+                 ArrayList<String> newBtsVec = new ArrayList<String>();
                  btsOfHierDesciptor.put(bt, newBtsVec);
                  }
 
@@ -548,22 +548,22 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 } else {
                     refCounter = 0;
 
-                    Vector<String> visitedTerms = new Vector<String>();
-                    Vector<String> searchBTsPaths = new Vector<String>();
+                    ArrayList<String> visitedTerms = new ArrayList<String>();
+                    ArrayList<String> searchBTsPaths = new ArrayList<String>();
                     for(SortItem item : btsOfHierDesciptor.get(targetTerm)){
                         searchBTsPaths.add(item.getLogName());
                     }
                     //searchBTsPaths.addAll(btsOfHierDesciptor.get(targetTerm));
-                    refCounter = searchBTsPaths.size(); //all of its bts define one path to target // no dublicates in Hashtable             
+                    refCounter = searchBTsPaths.size(); //all of its bts define one path to target // no dublicates in HashMap             
                     while (true) {
-                        Vector<String> prepareNextSearchBtsPath = new Vector<String>();
+                        ArrayList<String> prepareNextSearchBtsPath = new ArrayList<String>();
 
                         for (int m = 0; m < searchBTsPaths.size(); m++) {
                             //each one of its bts might also have one more path
                             int partialRefs = 0;
                             String newTargetTerm = searchBTsPaths.get(m);
 
-                            Vector<String> checkBts = new Vector<String>();
+                            ArrayList<String> checkBts = new ArrayList<String>();
                             for(SortItem item : btsOfHierDesciptor.get(newTargetTerm)){
                                 checkBts.add(item.getLogName());
                             }
@@ -634,16 +634,18 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         } finally {
             out.close();
-            sessionInstance.writeBackToSession(session);
+            if (answerType == null || answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+                sessionInstance.writeBackToSession(session);
+            }
         }
     }
 	
 	//Not Used - Abandoned kept only for backwards tracing
     public void writeHierarchicalResultsInXMLFile(PrintWriter outStream, String targetTerm,
-            Vector<Vector<String>> allTermsOfDescriptorsTopTerms,
-            Vector<Hashtable<String, Vector<String>>> ntsOfDesciptorsTopTerms,
-            Vector<String> topTerms,
-            Vector<Integer> referencesPerHier,
+            ArrayList<ArrayList<String>> allTermsOfDescriptorsTopTerms,
+            ArrayList<HashMap<String, ArrayList<String>>> ntsOfDesciptorsTopTerms,
+            ArrayList<String> topTerms,
+            ArrayList<Integer> referencesPerHier,
             Utilities u,
             String title,
             String query,
@@ -713,7 +715,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         //out.write("<name>");
                 //out.write(Utilities.escapeXML(hierarchy));
                 //out.write("</name>");
-                Vector<String> toptermNts = ntsOfDesciptorsTopTerms.get(m).get(hierarchy);
+                ArrayList<String> toptermNts = ntsOfDesciptorsTopTerms.get(m).get(hierarchy);
                 Collections.sort(toptermNts, new StringLocaleComparator(targetLocale));
                 if (streamOutput) {
                     outStream.append(appendVal);
@@ -745,7 +747,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 for (int i = 0; i < all_hier_terms_vecSize; i++) {
 
                     String term = allTermsOfDescriptorsTopTerms.get(m).get(i);
-                    Vector<String> termNts = new Vector<String>();
+                    ArrayList<String> termNts = new ArrayList<String>();
                     termNts.addAll(ntsOfDesciptorsTopTerms.get(m).get(term));
 
                     if (termNts.size() > 0) {
@@ -816,10 +818,10 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
 	public void writeHierarchicalResultsInXMLFile(PrintWriter outStream, 
             String targetThesaurus,
             String targetTerm,
-            Vector<Vector<SortItem>> allTermsOfDescriptorsTopTerms,
-            Vector<Hashtable<String, Vector<SortItem>>> ntsOfDesciptorsTopTerms,
-            Vector<SortItem> topTerms,
-            Vector<Integer> referencesPerHier,
+            ArrayList<ArrayList<SortItem>> allTermsOfDescriptorsTopTerms,
+            ArrayList<HashMap<String, ArrayList<SortItem>>> ntsOfDesciptorsTopTerms,
+            ArrayList<SortItem> topTerms,
+            ArrayList<Integer> referencesPerHier,
             Utilities u,
             String title,
             String query,
@@ -905,7 +907,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                         //out.write("<name>");
                 //out.write(Utilities.escapeXML(hierarchy));
                 //out.write("</name>");
-                Vector<SortItem> toptermNts = ntsOfDesciptorsTopTerms.get(m).get(hierarchy.getLogName());
+                ArrayList<SortItem> toptermNts = ntsOfDesciptorsTopTerms.get(m).get(hierarchy.getLogName());
                 Collections.sort(toptermNts, transliterationComparator);
                 if (streamOutput) {
                     outStream.append(appendVal);
@@ -946,7 +948,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
                 for (int i = 0; i < all_hier_terms_vecSize; i++) {
 
                     SortItem term = allTermsOfDescriptorsTopTerms.get(m).get(i);
-                    Vector<SortItem> termNts = new Vector<SortItem>();
+                    ArrayList<SortItem> termNts = new ArrayList<SortItem>();
                    
                     termNts.addAll(ntsOfDesciptorsTopTerms.get(m).get(term.getLogName()));
 

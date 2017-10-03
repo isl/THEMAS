@@ -219,7 +219,8 @@ public class Utilities {
 
         String XMLTHEMASUserInfo = "<THEMASUserInfo>";
         XMLTHEMASUserInfo += "<name>" + SessionUserInfo.name + "</name>";
-        XMLTHEMASUserInfo += "<userGroup tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\">" + SessionUserInfo.userGroup + "</userGroup>";
+        // tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\"
+        XMLTHEMASUserInfo += "<userGroup>" + SessionUserInfo.userGroup + "</userGroup>";
         XMLTHEMASUserInfo += "<selectedThesaurus>" + SessionUserInfo.selectedThesaurus + "</selectedThesaurus>";
         XMLTHEMASUserInfo += "<selectedThesaurusLowerCase>" + SessionUserInfo.selectedThesaurus.toLowerCase() + "</selectedThesaurusLowerCase>";
         XMLTHEMASUserInfo += "</THEMASUserInfo>";
@@ -279,7 +280,7 @@ public class Utilities {
     }
 
     //ALMOST IDENTICAL TO getResultsInXml_ForTableLayout
-    public void getResultsInXmlGuideTermSorting(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale, String selectedThesaurus, boolean skipOutput, boolean skipIds) {
+    public void getResultsInXmlGuideTermSorting(ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale, String selectedThesaurus, boolean skipOutput, boolean skipIds) {
         //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
         SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
         SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
@@ -313,7 +314,7 @@ public class Utilities {
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get("use"));
                 Collections.sort(values, sortComparator);
 
@@ -361,7 +362,7 @@ public class Utilities {
                     xmlResults.append("</" + category + ">");
                     continue;
                 }
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
                 if (category.compareTo(ConstantParameters.nt_kwd) == 0 || 
                         category.compareTo(ConstantParameters.translation_kwd) == 0 || 
@@ -419,8 +420,8 @@ public class Utilities {
                         checkStr += valueSortItem.getLogName();
                     }
                     if(checkStr.length()>0){
-                        Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                        Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                        HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                        ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
                         Collections.sort(langcodes);
 
                         for (String linkClass : langcodes) {
@@ -457,7 +458,7 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public void getResultsInXml_ForTableLayout(Vector<SortItem> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public void getResultsInXml_ForTableLayout(ArrayList<SortItem> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         
         //SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
         SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
@@ -493,7 +494,7 @@ public class Utilities {
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get("use"));
 
 
@@ -520,7 +521,7 @@ public class Utilities {
                 if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                     continue;
                 }
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
                 if ( //category.compareTo(ConstantParameters.nt_kwd) == 0 || no need to sort nts with sortitem comparator
                         category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
@@ -548,8 +549,8 @@ public class Utilities {
                         }
                         checkStr += values.get(k).log_name;
                     }
-                    Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                    Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                    HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                    ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
                     Collections.sort(langcodes);
                     for (int k = 0; k < langcodes.size(); k++) {
                         String linkClass = langcodes.get(k);
@@ -608,7 +609,7 @@ public class Utilities {
                     XMLresults += "</kind>";
                      */
                 } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
-                    Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), currentTerm, Q, sis_session);
+                    ArrayList<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), currentTerm, Q, sis_session);
                     //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
                     Collections.sort(vtranslations, guideTermComparator);
                     XMLresults.append("<" + output[j] + ">");
@@ -620,7 +621,7 @@ public class Utilities {
                     XMLresults.append("</" + output[j] + ">");
                 } else {
 
-                    Vector v = dbGen.returnResults(SessionUserInfo, currentTerm, output[j], Q,TA, sis_session);
+                    ArrayList v = dbGen.returnResults(SessionUserInfo, currentTerm, output[j], Q,TA, sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
                     XMLresults.append("<" + output[j] + ">");
                     for (int k = 0; k < v.size(); k++) {
@@ -651,7 +652,7 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the available facets
     CALLED BY: Create_Modify_Hierarchy servlet
     ----------------------------------------------------------------------
-    public String getResultsInXml_Hierarchy(Vector<String> availableFacets) {
+    public String getResultsInXml_Hierarchy(ArrayList<String> availableFacets) {
 
     String XMLresults = "";
     XMLresults += "<currentcreatehierarchy>";
@@ -669,7 +670,7 @@ public class Utilities {
     }
      */
     /*getResultsinXml_Hierarchy()*/
-    public String getResultsinXml_Hierarchy(UserInfoClass SessionUserInfo, Vector displayHierarchies, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public String getResultsinXml_Hierarchy(UserInfoClass SessionUserInfo, ArrayList displayHierarchies, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -699,7 +700,7 @@ public class Utilities {
                     XMLresults.append("</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, displayHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
+                    ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, displayHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
                     }
@@ -718,7 +719,7 @@ public class Utilities {
         return XMLresults.toString();
     }
 
-    public void getResultsInXml_Source(UserInfoClass SessionUserInfo, Vector<String> displaySources, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, StringBuffer xmlResults) {
+    public void getResultsInXml_Source(UserInfoClass SessionUserInfo, ArrayList<String> displaySources, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, StringBuffer xmlResults) {
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -748,7 +749,7 @@ public class Utilities {
                     xmlResults.append("<name>" + escapeXML(currentSource) + "</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Source(SessionUserInfo, displaySources.get(i), output[j], Q,TA, sis_session);
+                    ArrayList<String> v = dbGen.returnResults_Source(SessionUserInfo, displaySources.get(i), output[j], Q,TA, sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
 
                     for (int k = 0; k < v.size(); k++) {
@@ -774,7 +775,7 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, Vector<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, ArrayList<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
 
         StringBuffer XMLresults = new StringBuffer();
         ;
@@ -802,7 +803,7 @@ public class Utilities {
 
                 } else {
             
-                    Vector<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
+                    ArrayList<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
                     }
@@ -823,7 +824,7 @@ public class Utilities {
         return XMLresults.toString();
     }
         
-    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, Vector<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
+    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, ArrayList<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
 
         StringBuffer XMLresults = new StringBuffer();
         
@@ -867,7 +868,7 @@ public class Utilities {
                 }
                 else {
 
-                    Vector<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
+                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
                     }
@@ -1091,8 +1092,8 @@ public class Utilities {
     }
 
     /**Returns the terms which criterion has as value, String value*/
-    public Vector<String> getEquals(UserInfoClass SessionUserInfo, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getEquals(UserInfoClass SessionUserInfo, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.add(value);
@@ -1121,8 +1122,8 @@ public class Utilities {
     }
 
     /**Returns the terms which criterion contains String value (*value*)
-    public Vector<String> getContains(THEMASUserInfo SessionUserInfo, String criterion, String value, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getContains(THEMASUserInfo SessionUserInfo, String criterion, String value, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.addAll(dbGen.getMatchedByName(SessionUserInfo.selectedThesaurus, value, Q, sis_session));
@@ -1152,9 +1153,9 @@ public class Utilities {
     */
 
     /**Returns the terms which criterion isn't equal with value*/
-    public Vector<String> getNotEquals(String selectedThesaurus, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
+    public ArrayList<String> getNotEquals(String selectedThesaurus, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
         /*HINT: Prwta 8a elegxoume an autes oi times uparxoun sto sunolo ws exei ws twra k 8a ta bgazoume apo kei.. *-) */
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.addAll(dbGen.getNotEqualsByName(selectedThesaurus, value, Q, sis_session));
@@ -1186,7 +1187,7 @@ public class Utilities {
     /*
     public boolean checkTerm(UserInfoClass SessionUserInfo, String[] criteria, String[] operators, String[] values, String term, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
 
         for (int i = 0; i < criteria.length; i++) {
             if (operators[i].equals("=")) {
@@ -1234,7 +1235,7 @@ public class Utilities {
     public Vector getAllTerms(UserInfoClass SessionUserInfo, String[] criteria, String[] operators, String[] values, String op, String[] links,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
 
-        Vector<String> terms = new Vector<String>();
+        ArrayList<String> terms = new ArrayList<String>();
 
         //retainAll -> AND periptwsh -> lambanoume up'opsh mono ta koina
 
@@ -1412,20 +1413,20 @@ public class Utilities {
     getFormParams()
     -----------------------------------------------------------------------
     INPUT: - HttpServletRequest request: the request of the current servlet
-    OUTPUT: - Hashtable paramsHashtable: a Hashtable with the parameters of the current servlet
-    FUNCTION: gets to a Hashtable the parameters of the current servlet
+    OUTPUT: - HashMap paramsHashMap: a HashMap with the parameters of the current servlet
+    FUNCTION: gets to a HashMap the parameters of the current servlet
     CALLED BY: all servlets in order to get their parameters
     ----------------------------------------------------------------------*/
-    public Hashtable<String, Object> getFormParams(HttpServletRequest request) {
+    public HashMap<String, Object> getFormParams(HttpServletRequest request) {
 
-        Hashtable<String, Object> paramsHashtable = new Hashtable<String, Object>();
+        HashMap<String, Object> paramsHashMap = new HashMap<String, Object>();
         Enumeration paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
             String paramName = (String) paramNames.nextElement();
             String[] paramValues = request.getParameterValues(paramName);
             if (paramValues.length == 1) {
                 String paramValue = paramValues[0];
-                paramsHashtable.put(paramName, paramValue);
+                paramsHashMap.put(paramName, paramValue);
 
             } else {
                 //params.put(paramName, paramValues);
@@ -1436,10 +1437,10 @@ public class Utilities {
                         sb.append(",");
                     }
                 }
-                paramsHashtable.put(paramName, sb.toString());
+                paramsHashMap.put(paramName, sb.toString());
             }
         }
-        return paramsHashtable;
+        return paramsHashMap;
     }
 
     /*---------------------------------------------------------------------
@@ -1523,9 +1524,9 @@ public class Utilities {
         return param_decoded;
     }
 
-    public Vector<String> getDecodedParameterValues(String[] encodedParams) throws java.io.UnsupportedEncodingException {
+    public ArrayList<String> getDecodedParameterValues(String[] encodedParams) throws java.io.UnsupportedEncodingException {
 
-        Vector<String> returnParams_decoded = new Vector<String>();
+        ArrayList<String> returnParams_decoded = new ArrayList<String>();
         if (encodedParams != null) {
             for (int i = 0; i < encodedParams.length; i++) {
                 String param_decoded = URLDecoder.decode(encodedParams[i], "UTF-8").trim();
@@ -1629,9 +1630,9 @@ public class Utilities {
     }
 
     //Turn a comma seperated String to Vector --> No dublicates
-    public Vector<String> get_Vector_from_String(String str, String delimeter) {
+    public ArrayList<String> get_Vector_from_String(String str, String delimeter) {
 
-        Vector<String> result = new Vector<String>();
+        ArrayList<String> result = new ArrayList<String>();
 
         if (str == null) {
             return result;
@@ -1871,7 +1872,7 @@ public class Utilities {
         }
     }
 
-    public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, Vector<SortItem> btsORnts, Vector<String> existingGuideTermsVec, Locale targetLocale) {
+    public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, ArrayList<SortItem> btsORnts, ArrayList<String> existingGuideTermsVec, Locale targetLocale) {
 
         SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
         
@@ -1920,7 +1921,7 @@ public class Utilities {
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
         SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         sb.append("<current translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
         sb.append("<term>");
@@ -1971,7 +1972,7 @@ public class Utilities {
                 sb.append("<name>" + escapeXML(term) + "</name>");
             } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
 
-                Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), term, Q, sis_session);
+                ArrayList<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), term, Q, sis_session);
                 //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
                 Collections.sort(vtranslations, guideTermComparator);
                 sb.append("<" + output[j] + ">");
@@ -1990,8 +1991,8 @@ public class Utilities {
                     String translationsScopeNoteStr = v.get(0).toString();
 
                     if (translationsScopeNoteStr != null && translationsScopeNoteStr.length() > 0) {
-                        Hashtable<String, String> trs = getTranslationScopeNotes(translationsScopeNoteStr);
-                        Vector<String> trSns = new Vector<String>(trs.keySet());
+                        HashMap<String, String> trs = getTranslationScopeNotes(translationsScopeNoteStr);
+                        ArrayList<String> trSns = new ArrayList<String>(trs.keySet());
                         Collections.sort(trSns);
                         for (int k = 0; k < trSns.size(); k++) {
                             String writeVal = trSns.get(k);
@@ -2039,9 +2040,9 @@ public class Utilities {
         return sb.toString();
     }
 
-    public Hashtable<String, String> getTranslationScopeNotes(String scopeNoteValStr) {
+    public HashMap<String, String> getTranslationScopeNotes(String scopeNoteValStr) {
         String scopeNoteVal = scopeNoteValStr;
-        Hashtable<String, String> returnVals = new Hashtable<String, String>();
+        HashMap<String, String> returnVals = new HashMap<String, String>();
 
         scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
         scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
@@ -2117,7 +2118,7 @@ public class Utilities {
 
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         sb.append("<current>");
         sb.append("<hierarchy>");
@@ -2140,7 +2141,7 @@ public class Utilities {
                     if (!v.isEmpty()) {
                         Collections.sort(v, strCompar);
                         for (int k = 0; k < v.size(); k++) {
-                            Vector<String> temp = new Vector<String>();
+                            ArrayList<String> temp = new ArrayList<String>();
                             //temp.addAll((Vector) v.get(k)); //BUG??
                             temp.add(v.get(k));
 
@@ -2197,7 +2198,7 @@ public class Utilities {
             Q.reset_name_scope();
             int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
             Q.reset_set(set_terms);
-            Vector<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
+            ArrayList<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
             Q.free_set(set_terms);
 
             Collections.sort(termNames, new StringLocaleComparator(targetLocale));
@@ -2217,7 +2218,7 @@ public class Utilities {
             Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
             int set_sources = Q.get_all_instances(0);
             Q.reset_set(set_sources);
-            Vector<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
+            ArrayList<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
             Q.free_set(set_sources);
             Collections.sort(sourceNames, new StringLocaleComparator(targetLocale));
             xml.append("<availableSources>");
@@ -2249,7 +2250,7 @@ public class Utilities {
             Q.reset_set(set_translation_term_links);
 
 
-            Vector<SortItem> translationNames = dbGen.get_To_SortItems_Of_LinkSet(set_translation_term_links, true, true, true, Q, sis_session);
+            ArrayList<SortItem> translationNames = dbGen.get_To_SortItems_Of_LinkSet(set_translation_term_links, true, true, true, Q, sis_session);
 
             Q.free_set(set_terms);
             Q.free_set(set_translation_term_links);
@@ -2288,9 +2289,9 @@ public class Utilities {
             //int set_uftranslations = Q.get_to_value(set_uftranslations_labels);
             //Q.reset_set(set_uftranslations);
             //
-            //Vector<String> uftranslationsNames = dbGen.get_Node_Names_Of_Set(set_uftranslations, true, Q, sis_session);
+            //ArrayList<String> uftranslationsNames = dbGen.get_Node_Names_Of_Set(set_uftranslations, true, Q, sis_session);
 
-            Vector<SortItem> uftranslationsNames = dbGen.get_To_SortItems_Of_LinkSet(set_uftranslations_labels, true, true, false, Q, sis_session);
+            ArrayList<SortItem> uftranslationsNames = dbGen.get_To_SortItems_Of_LinkSet(set_uftranslations_labels, true, true, false, Q, sis_session);
 
 
             Q.free_set(set_terms);
@@ -2321,7 +2322,7 @@ public class Utilities {
             Q.set_current_node(UsedForTermClass);
             int set_ufs = Q.get_all_instances(0);
             Q.reset_set(set_ufs);
-            Vector<String> ufNames = dbGen.get_Node_Names_Of_Set(set_ufs, true, Q, sis_session);
+            ArrayList<String> ufNames = dbGen.get_Node_Names_Of_Set(set_ufs, true, Q, sis_session);
             Q.free_set(set_ufs);
             Collections.sort(ufNames, new StringLocaleComparator(targetLocale));
             xml.append("<availableUfs>");
@@ -2337,7 +2338,7 @@ public class Utilities {
 
     }
 
-    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(Vector<String> allHierarcies, Vector<String> allGuideTerms, Locale targetLocale) {
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
 
         StringBuffer dataNeeded = new StringBuffer();
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
@@ -2369,10 +2370,10 @@ public class Utilities {
         
     }
     
-    public void writeResultsInXMLFile(PrintWriter outStream, Vector<String> allTerms, String startXML, Vector<String> output, 
+    public void writeResultsInXMLFile(PrintWriter outStream, ArrayList<String> allTerms, String startXML, ArrayList<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
-            QClass Q, IntegerObject sis_session, Hashtable<String, NodeInfoSortItemContainer> termsInfo, 
-            Vector<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
+            QClass Q, IntegerObject sis_session, HashMap<String, NodeInfoSortItemContainer> termsInfo, 
+            ArrayList<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
 
 
 
@@ -2412,9 +2413,8 @@ public class Utilities {
             if(!streamOutput){
                 //not of interest in xmlstream
                 appendVal+="<output>";
-                for (int m = 0; m < output.size(); m++) {
+                for (String category : output) {
 
-                    String category = output.get(m);
                     if (category.compareTo(ConstantParameters.id_kwd) == 0
                             || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0
                             || category.compareTo(ConstantParameters.system_referenceUri_kwd) == 0
@@ -2427,7 +2427,7 @@ public class Utilities {
                 }
                 appendVal+="</output>";
             }
-            appendVal+="<terms>";
+            appendVal+="<terms count=\""+allTerms.size()+"\">";
             
             if(streamOutput){
                 outStream.append(appendVal);
@@ -2463,7 +2463,7 @@ public class Utilities {
                         out.append(appendVal);
                     }
                     
-                    Vector<SortItem> values = new Vector<SortItem>();
+                    ArrayList<SortItem> values = new ArrayList<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get("use"));
                     Collections.sort(values, sortComparator);
 
@@ -2528,7 +2528,12 @@ public class Utilities {
                   */              
                                 
 
-                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>";
+                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>\r\n";
+                if(transliteration!=null && transliteration.length()>0){
+                    appendVal+="\t\t\t<" + ConstantParameters.system_transliteration_kwd+">";
+                    appendVal+=Utilities.escapeXML(transliteration);
+                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">\r\n";
+                }
 
                 //out.append("<descriptor id=\"" + targetSysIdL + "\" >");
                 //out.append(escapeXML(targetTerm));
@@ -2543,9 +2548,10 @@ public class Utilities {
                 for (int m = 0; m < output.size(); m++) {
 
                     String category = output.get(m);
-                    if (category.compareTo(ConstantParameters.id_kwd) == 0) {
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
                         continue;
                     }
+                    /*
                     else if (category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
                         if(streamOutput){
                             outStream.append("<" + category + ">"+escapeXML(transliteration)+"</" + category + ">");                            
@@ -2555,8 +2561,8 @@ public class Utilities {
                         }    
                         continue;
                     }
-                    
-                    Vector<SortItem> values = new Vector<SortItem>();
+                    */
+                    ArrayList<SortItem> values = new ArrayList<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get(category));
                     if (    (category.compareTo(ConstantParameters.nt_kwd) == 0  && sortNtsViaLinkClassFirst) || //no need to sort nts by link class as this xml will only be shown in table - simple list format
                             category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
@@ -2651,8 +2657,8 @@ public class Utilities {
                             }
                             checkStr += valueSortItem.getLogName();
                         }
-                        Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                        Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                        HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                        ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
                         Collections.sort(langcodes);
                         for (int k = 0; k < langcodes.size(); k++) {
                             String linkClass = langcodes.get(k);
@@ -2718,20 +2724,20 @@ public class Utilities {
 
         String returnXML = "";
         DBGeneral dbGen = new DBGeneral();
-        Hashtable<String, String> translationHash = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, targetThesaurus, null, startQueryAndConnection, true);
+        HashMap<String, String> translationHash = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, targetThesaurus, null, startQueryAndConnection, true);
         returnXML = writeXMLTranslations(targetThesaurus, translationHash, extraTranslationXML);
         return returnXML;
     }
 
-    public String writeXMLTranslations(String targetThesaurus, Hashtable<String, String> translationHash, String extraTranslationXML) {
+    public String writeXMLTranslations(String targetThesaurus, HashMap<String, String> translationHash, String extraTranslationXML) {
         String returnXML = "";
         returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
 
         if (translationHash != null) {
-            Enumeration<String> languagesEnumeration = translationHash.keys();
+            Iterator<String> languagesEnumeration = translationHash.keySet().iterator();
 
-            while (languagesEnumeration.hasMoreElements()) {
-                String languageWord = languagesEnumeration.nextElement();
+            while (languagesEnumeration.hasNext()) {
+                String languageWord = languagesEnumeration.next();
                 String languageId = translationHash.get(languageWord);
 
                 returnXML += "<TranslationPair>";
@@ -2803,9 +2809,9 @@ public class Utilities {
 
     public String translateFromMessagesXML( String messageXPath, String[] args){
         
-        Vector<String> argsVector = null;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
@@ -2818,9 +2824,9 @@ public class Utilities {
     
     public String translateFromTranslationsXML(String messageXPath, String[] args){
         
-        Vector<String> argsVector = null;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
@@ -2833,9 +2839,9 @@ public class Utilities {
     
     public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args){
         
-        Vector<String> argsVector = null;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
@@ -2846,7 +2852,7 @@ public class Utilities {
     }
     
     
-    public String translate(String messageXPath, Vector<String> args, String pathToErrorsXML) {
+    public String translate(String messageXPath, ArrayList<String> args, String pathToErrorsXML) {
 
         String widgetNodeStr = "";
 
@@ -2893,13 +2899,13 @@ public class Utilities {
     public static String[] getSortedTermAllOutputArray(String[] selectedOutput){
 
 
-        Vector<String> initiallySelected = new Vector<String>();
+        ArrayList<String> initiallySelected = new ArrayList<String>();
         for(int k=0;k<selectedOutput.length;k++){
             initiallySelected.add(selectedOutput[k]);
         }
 
         String[] output = getSortedTermAllOutputArray();
-        Vector<String> filteredOutput = new Vector<String>();
+        ArrayList<String> filteredOutput = new ArrayList<String>();
         for(int k=0;k<output.length;k++){
             String targetOutput = output[k];
             if(targetOutput!=null && targetOutput.length()>0 &&
@@ -2924,19 +2930,19 @@ public class Utilities {
         String retVal ="";
         switch(kind){
             case FACET:{
-                retVal = "/CardOf_Facet?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                retVal = "/"+Servlets.CardOf_Facet.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
                 break;
             }
             case HIERARCHY:{
-                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
                 break;
             }
             case TOPTERM:{
-                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
                 break;
             }
             case TERM:{
-                retVal = "/CardOf_Term?referenceId="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
                 break;
             }
             default:{
@@ -3037,7 +3043,7 @@ public class Utilities {
         long retVal = -1;
         
         if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
-            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
             if(vals!=null && vals.size()>0){
                 String valStr = vals.get(0);
                 if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
@@ -3058,7 +3064,7 @@ public class Utilities {
         long retVal = -1;
         
         if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
-            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
             if(vals!=null && vals.size()>0){
                 String valStr = vals.get(0);
                 if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
@@ -3079,7 +3085,7 @@ public class Utilities {
         long retVal = -1;
         
         if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
-            Vector<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            ArrayList<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
             if(vals!=null && vals.size()>0 && vals.get(0)!=null){
                 SortItem valSortItem = vals.get(0);
                 retVal = valSortItem.getThesaurusReferenceId();                
@@ -3093,7 +3099,7 @@ public class Utilities {
         String retVal = "";
         
         if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd)){
-            Vector<String> vals = container.descriptorInfo.get(ConstantParameters.system_transliteration_kwd);
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.system_transliteration_kwd);
             if(vals!=null && vals.size()>0){
                 String valStr = vals.get(0);
                 if(valStr!=null && valStr.trim().length()>0 ){
@@ -3112,7 +3118,7 @@ public class Utilities {
         String retVal = "";
         
         if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
-            Vector<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            ArrayList<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
             if(vals!=null && vals.size()>0 && vals.get(0)!=null){
                 
                 SortItem valSortItem = vals.get(0);
@@ -3129,9 +3135,9 @@ public class Utilities {
         return retVal;
     }
     
-    public static Vector<String> getStringVectorFromSortItemVector(Vector<SortItem> v){
+    public static ArrayList<String> getStringVectorFromSortItemVector(ArrayList<SortItem> v){
         
-        Vector<String>  returnResults = new Vector<String>();
+        ArrayList<String>  returnResults = new ArrayList<String>();
         if(v!=null){
             for(SortItem item : v){
                 returnResults.add(item.getLogName());
@@ -3140,9 +3146,9 @@ public class Utilities {
         return returnResults;
     }
     
-    public static Vector<SortItem> getSortItemVectorFromStringVector(Vector<String> v, boolean removeTransliterationPrefix){
+    public static ArrayList<SortItem> getSortItemVectorFromStringVector(ArrayList<String> v, boolean removeTransliterationPrefix){
         
-        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
         if(v!=null){
             for(String item : v){
                 returnResults.add(new SortItem( item,-1,Utilities.getTransliterationString(item, removeTransliterationPrefix),-1));
@@ -3152,13 +3158,13 @@ public class Utilities {
     }
     
     
-    public static Vector<SortItem> getSortItemVectorFromTermsInfo(Hashtable<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    public static ArrayList<SortItem> getSortItemVectorFromTermsInfo(HashMap<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
     
-        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
         if(termsInfo!=null){
-            Enumeration<String> termEnum = termsInfo.keys();
-            while(termEnum.hasMoreElements()){
-                String termName = termEnum.nextElement();
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
                 NodeInfoStringContainer targetInfo = termsInfo.get(termName);
                 long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
                 String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
@@ -3170,13 +3176,13 @@ public class Utilities {
         return returnResults;
     }
     
-    public static Vector<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(Hashtable<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
+    public static ArrayList<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(HashMap<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
     
-        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
         if(termsInfo!=null){
-            Enumeration<String> termEnum = termsInfo.keys();
-            while(termEnum.hasMoreElements()){
-                String termName = termEnum.nextElement();
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
                 NodeInfoSortItemContainer targetInfo = termsInfo.get(termName);
                 long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoSortItemContainer(targetInfo);
                 String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoSortItemContainer(targetInfo, termName, removeTransliterationPrefix);
@@ -3189,13 +3195,13 @@ public class Utilities {
     }
     
     
-    public static Vector<SortItem> getSortItemVectorFromStringVectorAndTermsInfo(Vector<String> filterVector, Hashtable<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    public static ArrayList<SortItem> getSortItemVectorFromStringVectorAndTermsInfo(ArrayList<String> filterVector, HashMap<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
     
-        Vector<SortItem>  returnResults = new Vector<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
         if(termsInfo!=null && filterVector!=null){
-            Enumeration<String> termEnum = termsInfo.keys();
-            while(termEnum.hasMoreElements()){
-                String termName = termEnum.nextElement();
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
                 if(filterVector.contains(termName)){
                     NodeInfoStringContainer targetInfo = termsInfo.get(termName);
                     long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);

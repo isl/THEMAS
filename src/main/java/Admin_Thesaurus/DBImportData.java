@@ -51,7 +51,6 @@ import Utils.SessionWrapperClass;
 import Utils.SortItem;
 import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
-import Utils.NodeInfoSortItemContainer;
 
 import XMLHandling.ParseFileData;
 import java.io.BufferedOutputStream;
@@ -63,7 +62,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.io.OutputStreamWriter;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -75,17 +73,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  *
@@ -117,7 +114,7 @@ public class DBImportData {
 
     public boolean importTermsUnderHierarchy(SessionWrapperClass sessionInstance, String targetHierarchy, String xmlFilePath, String pathToErrorsXML, OutputStreamWriter logFileWriter, StringObject resultObj) throws IOException {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading terms from file: " + xmlFilePath + ".");
-        Vector<String> parsedTermNames = new Vector<String>();
+        ArrayList<String> parsedTermNames = new ArrayList<String>();
 
         try {
 
@@ -170,7 +167,7 @@ public class DBImportData {
         try{
 
             String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-            Vector<String> btOfTerms = new Vector<String>();
+            ArrayList<String> btOfTerms = new ArrayList<String>();
             btOfTerms.add(targetHierarchy);
             
             StringObject resultMessageObj = new StringObject();
@@ -238,7 +235,7 @@ public class DBImportData {
     }
 
     //this function will find out all the thesaurusReferenceIds that have been used by searching in facets and terms
-    private long findThesaurusMaxRefernceId(Vector<SortItem> xmlFacets, Hashtable<String, NodeInfoStringContainer> termsInfo){
+    private long findThesaurusMaxRefernceId(ArrayList<SortItem> xmlFacets, HashMap<String, NodeInfoStringContainer> termsInfo){
         long retVal = -1;
         
         for(SortItem facetSortItem : xmlFacets){
@@ -246,16 +243,16 @@ public class DBImportData {
                 retVal = facetSortItem.getThesaurusReferenceId();
             }
         }
-        Enumeration<String> termEnum = termsInfo.keys();
-
+        Iterator<String> termEnum = termsInfo.keySet().iterator();
         
-        while (termEnum.hasMoreElements()) {
             
-            String targetTerm = termEnum.nextElement();
+        while (termEnum.hasNext()) {
+            
+            String targetTerm = termEnum.next();
             long compareVal = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(termsInfo.get(targetTerm));
             if(compareVal>retVal){
                 retVal = compareVal;
-            }            
+            } 
         }
 
         
@@ -268,19 +265,19 @@ public class DBImportData {
                                                     TMSAPIClass TA, 
                                                     IntegerObject sis_session, 
                                                     IntegerObject tms_session,
-                                                    Vector<SortItem> xmlFacets, 
-                                                    Vector<String> guideTerms, 
-                                                    Hashtable<String, String> XMLsources,
-                                                    Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
-                                                    Hashtable<String, Vector<String>> hierarchyFacets,
-                                                    Hashtable<String, NodeInfoStringContainer> termsInfo,
-                                                    Vector<String> userSelectedTranslationWords,
-                                                    Vector<String> userSelectedTranslationIdentifiers,
-                                                    Hashtable<String, String> userSelections,
-                                                    Vector<SortItem> topTerms,
-                                                    Hashtable<String, Vector<String>> descriptorRts,
-                                                    Hashtable<String, Vector<SortItem>> descriptorUfs,
-                                                    Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
+                                                    ArrayList<SortItem> xmlFacets, 
+                                                    ArrayList<String> guideTerms, 
+                                                    HashMap<String, String> XMLsources,
+                                                    HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+                                                    HashMap<String, ArrayList<String>> hierarchyFacets,
+                                                    HashMap<String, NodeInfoStringContainer> termsInfo,
+                                                    ArrayList<String> userSelectedTranslationWords,
+                                                    ArrayList<String> userSelectedTranslationIdentifiers,
+                                                    HashMap<String, String> userSelections,
+                                                    ArrayList<SortItem> topTerms,
+                                                    HashMap<String, ArrayList<String>> descriptorRts,
+                                                    HashMap<String, ArrayList<SortItem>> descriptorUfs,
+                                                    ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfImportThes,
                                                     String importThesaurusName,
                                                     String pathToErrorsXML, 
                                                     Locale targetLocale,
@@ -339,7 +336,7 @@ public class DBImportData {
         SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, importThesaurusName);
         
         //retrieve from termInfo the TopTerm Reference id and the transliteration values used
-        Hashtable<SortItem,Vector<String>> hierarchyFacetSortItems = new Hashtable<SortItem,Vector<String>>();
+        HashMap<SortItem,ArrayList<String>> hierarchyFacetSortItems = new HashMap<SortItem,ArrayList<String>>();
         for(String hierarchy : hierarchyFacets.keySet()){
             String transliteration = "";
             long refId = -1;
@@ -388,16 +385,16 @@ public class DBImportData {
     
     public boolean writeThesaurusData(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            Vector<String> xmlFacets, Vector<String> guideTerms, Hashtable<String, String> XMLsources,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
-            Hashtable<String, Vector<String>> hierarchyFacets,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> userSelectedTranslationWords,
-            Vector<String> userSelectedTranslationIdentifiers,
-            Hashtable<String, String> userSelections,
-            Vector<String> topTerms, Hashtable<String, Vector<String>> descriptorRts,
-            Hashtable<String, Vector<String>> descriptorUfs,
-            Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes,
+            ArrayList<String> xmlFacets, ArrayList<String> guideTerms, HashMap<String, String> XMLsources,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, ArrayList<String>> hierarchyFacets,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> userSelectedTranslationWords,
+            ArrayList<String> userSelectedTranslationIdentifiers,
+            HashMap<String, String> userSelections,
+            ArrayList<String> topTerms, HashMap<String, ArrayList<String>> descriptorRts,
+            HashMap<String, ArrayList<String>> descriptorUfs,
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes,
             String importThesaurusName,
             String pathToErrorsXML, Locale targetLocale,
             StringObject resultObj, OutputStreamWriter logFileWriter) {
@@ -503,7 +500,7 @@ public class DBImportData {
         String initiallySelectedThesaurus = refSessionUserInfo.selectedThesaurus;
 
 
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         OutputStreamWriter logFileWriter = null;
 
@@ -625,23 +622,23 @@ public class DBImportData {
 
 
         //Structures to fill
-        Vector<String> xmlFacets = new Vector<String>();
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        ArrayList<String> xmlFacets = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        Vector<String> topTerms = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+        ArrayList<String> topTerms = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
 
 
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> translationCategories = new Hashtable<String, String>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> translationCategories = new HashMap<String, String>();
 
 
 
@@ -649,11 +646,11 @@ public class DBImportData {
 
         //read Translation Categories
         translationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, thesaurusName1, thesaurusName2, false, true);
-        Enumeration<String> trEnum = translationCategories.keys();
-        while (trEnum.hasMoreElements()) {
-            String word = trEnum.nextElement();
+        Iterator<String> trEnum = translationCategories.keySet().iterator();
+        while (trEnum.hasNext()) {
+            String word = trEnum.next();
             String identifier = translationCategories.get(word);
-
+        
             userSelectedTranslationWords.add(word);
             userSelectedTranslationIdentifiers.add(identifier);
         }
@@ -668,7 +665,7 @@ public class DBImportData {
         //read hierarchies
         hierarchyFacets = dbMerge.ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, thesaurusName1, thesaurusName2);
         if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
-            Vector<String> unclassifiedFacets = new Vector<String>();
+            ArrayList<String> unclassifiedFacets = new ArrayList<String>();
             unclassifiedFacets.add(defaultFacet);
             hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
         }
@@ -683,7 +680,7 @@ public class DBImportData {
         //readGuideTerms
 
         guideTerms.addAll(dbGen.collectGuideLinks(thesaurusName1,Q, sis_session));
-        Vector<String> guideTermsThes2 = dbGen.collectGuideLinks(thesaurusName2,Q, sis_session);
+        ArrayList<String> guideTermsThes2 = dbGen.collectGuideLinks(thesaurusName2,Q, sis_session);
         if(guideTermsThes2!=null && guideTermsThes2.size()>0){
             for(int i=0; i < guideTermsThes2.size(); i++){
                 if(guideTerms.contains(guideTermsThes2.get(i))==false){
@@ -784,7 +781,7 @@ public class DBImportData {
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         webappusers.UpdateSessionUserSessionAttribute(refSessionUserInfo, sourceThesaurusName);
 
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         OutputStreamWriter logFileWriter = null;
 
@@ -825,25 +822,25 @@ public class DBImportData {
 
 
         //Structures to fill
-        Vector<String> xmlFacets = new Vector<String>();
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        ArrayList<String> xmlFacets = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        Vector<String> topTerms = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+        ArrayList<String> topTerms = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
 
 
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> translationCategories = new Hashtable<String, String>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> translationCategories = new HashMap<String, String>();
 
-        Vector<String> thesaurusVector = new Vector<String>();
+        ArrayList<String> thesaurusVector = new ArrayList<String>();
         StringObject CreateThesaurusResultMessage = new StringObject("");
 
         String defaultFacet = dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, targetThesaurusName);
@@ -869,7 +866,7 @@ public class DBImportData {
         //read hierarchies
         hierarchyFacets = dbMerge.ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null);
         if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
-            Vector<String> unclassifiedFacets = new Vector<String>();
+            ArrayList<String> unclassifiedFacets = new ArrayList<String>();
             unclassifiedFacets.add(defaultFacet);
             hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
         }
@@ -902,7 +899,7 @@ public class DBImportData {
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         webappusers.UpdateSessionUserSessionAttribute(refSessionUserInfo, sourceThesaurusName);
 
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         OutputStreamWriter logFileWriter = null;
 
@@ -1010,43 +1007,43 @@ public class DBImportData {
              * Step8 Guide Terms Addition Patch
              */
             //Structures to fill
-            Vector<SortItem> xmlFacetSortItems = new Vector<SortItem>();
-            Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+            ArrayList<SortItem> xmlFacetSortItems = new ArrayList<SortItem>();
+            HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
-            Vector<String> guideTerms = new Vector<String>();
-            Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+            ArrayList<String> guideTerms = new ArrayList<String>();
+            HashMap<String, String> XMLsources = new HashMap<String, String>();
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-            Vector<String> topTerms = new Vector<String>();
-            Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-            Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-            Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+            ArrayList<String> topTerms = new ArrayList<String>();
+            HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
+            HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
 
-            Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
-            Vector<String> userSelectedTranslationWords = new Vector<String>();
-            Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-            Hashtable<String, String> translationCategories = new Hashtable<String, String>();
+            HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+            ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+            ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+            HashMap<String, String> translationCategories = new HashMap<String, String>();
 
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             StringObject CreateThesaurusResultMessage = new StringObject("");
 
             SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, targetThesaurusName);
 
             //read Translation Categories
             translationCategories = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, sourceThesaurusName, null, false, true);
-            Enumeration<String> trEnum = translationCategories.keys();
-            while (trEnum.hasMoreElements()) {
-                String word = trEnum.nextElement();
+            Iterator<String> trEnum = translationCategories.keySet().iterator();
+            while (trEnum.hasNext()) {
+                String word = trEnum.next();
                 String identifier = translationCategories.get(word);
-
+            
                 userSelectedTranslationWords.add(word);
                 userSelectedTranslationIdentifiers.add(identifier);
-            }
+            }            
 
             //read facets
             xmlFacetSortItems.addAll(dbMerge.ReadThesaurusFacetsInSortItems(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null));
 
-            Vector<String> xmlFacets = Utilities.getStringVectorFromSortItemVector(xmlFacetSortItems);
+            ArrayList<String> xmlFacets = Utilities.getStringVectorFromSortItemVector(xmlFacetSortItems);
             
             if (xmlFacets.contains(defaultFacetSortItem.getLogName()) == false) {
                 xmlFacets.add(defaultFacetSortItem.getLogName());
@@ -1056,7 +1053,7 @@ public class DBImportData {
             //read hierarchies
             hierarchyFacets = dbMerge.ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null);
             if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
-                Vector<String> unclassifiedFacets = new Vector<String>();
+                ArrayList<String> unclassifiedFacets = new ArrayList<String>();
                 unclassifiedFacets.add(defaultFacetSortItem.getLogName());
                 hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
             }
@@ -1130,7 +1127,7 @@ public class DBImportData {
 
     }
 
-    public String getXMLMiddleForCopyThesaurus(CommonUtilsDBadmin common_utils, Vector thesaurusVector,
+    public String getXMLMiddleForCopyThesaurus(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector,
             StringObject CopyThesaurusResultMessage, Boolean CopyThesaurusSucceded) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
@@ -1156,7 +1153,7 @@ public class DBImportData {
         return XMLMiddleStr;
     }
 
-    public String getXMLMiddleForMergeThesaurus(CommonUtilsDBadmin common_utils, Vector thesaurusVector,
+    public String getXMLMiddleForMergeThesaurus(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector,
             String MergeThesaurusMessage) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
 
@@ -1191,9 +1188,9 @@ public class DBImportData {
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
 
 
 
@@ -1241,9 +1238,9 @@ public class DBImportData {
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
 
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
 
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
@@ -1287,9 +1284,9 @@ public class DBImportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         //abort transaction and close connection
         Q.free_all_sets();
@@ -1362,9 +1359,9 @@ public class DBImportData {
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
 
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
 
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
@@ -1425,22 +1422,22 @@ public class DBImportData {
         ParseFileData parser = new ParseFileData();
 
         //Structures to fill
-        Hashtable<String, SortItem> xmlFacetSortItems = new Hashtable<String, SortItem>();
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        HashMap<String, SortItem> xmlFacetSortItems = new HashMap<String, SortItem>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
         
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();        
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();        
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
         
         //key should only be string (instead of SortItem) in case we do not have all information about uri and transliteration in every reference in the XML       
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
         
         
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> userSelections = new Hashtable<String, String>();
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> userSelections = new HashMap<String, String>();
 
-        Vector<String> thesaurusVector = new Vector<String>();
+        ArrayList<String> thesaurusVector = new ArrayList<String>();
         StringObject CreateThesaurusResultMessage = new StringObject("");
 
         //
@@ -1471,7 +1468,7 @@ public class DBImportData {
 
 
         
-        Vector<String> xmlFacetsInStrs = new Vector<String>();
+        ArrayList<String> xmlFacetsInStrs = new ArrayList<String>();
         if(xmlFacetSortItems!=null){
             xmlFacetsInStrs.addAll(xmlFacetSortItems.keySet());
         }
@@ -1513,10 +1510,10 @@ public class DBImportData {
          * UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
         QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
         String importThesaurusName,
-        Vector<String> guideTerms, Hashtable<String, String> XMLsources,
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
-        Hashtable<String, Vector<String>> hierarchyFacets,
-        Hashtable<String, NodeInfoStringContainer> termsInfo,
+        ArrayList<String> guideTerms, HashMap<String, String> XMLsources,
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+        HashMap<String, ArrayList<String>> hierarchyFacets,
+        HashMap<String, NodeInfoStringContainer> termsInfo,
         OutputStreamWriter logFileWriter
          */
 
@@ -1568,11 +1565,11 @@ public class DBImportData {
         //No need to check lengths any more
         //this.checkLengths(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, importThesaurusName, guideTerms, XMLsources, XMLguideTermsRelations, hierarchyFacets, termsInfo, logFileWriter);
         
-        Vector<SortItem> topTerms = new Vector<SortItem>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<SortItem>> descriptorUfs = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<SortItem> topTerms = new ArrayList<SortItem>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<SortItem>> descriptorUfs = new HashMap<String, ArrayList<SortItem>>();
         
-        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes = new Vector<Hashtable<SortItem, Vector<SortItem>>>();
+        ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfImportThes = new ArrayList<HashMap<SortItem, ArrayList<SortItem>>>();
 
         // Step3 Read XML file in order to fill basic datastructures concerning terms
         // Step4 Process these data structures in order to define topterms and orphans
@@ -1580,7 +1577,7 @@ public class DBImportData {
 
         processXMLTermsInSortItems(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
 
-        Vector<SortItem> facetSortItems = new Vector<SortItem>();
+        ArrayList<SortItem> facetSortItems = new ArrayList<SortItem>();
         facetSortItems.addAll(xmlFacetSortItems.values());
         
 
@@ -1610,7 +1607,7 @@ public class DBImportData {
 
     public boolean CreateSources(String selectedThesaurus, CommonUtilsDBadmin common_utils, String importThesaurusName,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
-            Hashtable<String, String> XMLsources, StringObject resultObj, OutputStreamWriter logFileWriter){
+            HashMap<String, String> XMLsources, StringObject resultObj, OutputStreamWriter logFileWriter){
         
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Startin creation of SOURCES. Time: " + Utilities.GetNow());
 
@@ -1630,10 +1627,8 @@ public class DBImportData {
 
             //step1 create sources
             int total = XMLsources.size();
-            Enumeration<String> sourcesIterator = XMLsources.keys();
-            while (sourcesIterator.hasMoreElements()) {
+            for(String nameStr : XMLsources.keySet()) {
                 Q.free_all_sets();
-                String nameStr = sourcesIterator.nextElement();
                 //String sourceNoteStr = XMLsources.get(nameStr);
 
                 /*
@@ -1695,10 +1690,10 @@ public class DBImportData {
             //step2 create source notes
             counter = 0;
             Q.free_all_sets();
-            Enumeration<String> sourcesIterator2 = XMLsources.keys();
-            while (sourcesIterator2.hasMoreElements()) {
+            Iterator<String> sourcesIterator2 = XMLsources.keySet().iterator();
+            while (sourcesIterator2.hasNext()) {
                 Q.free_all_sets();
-                String nameStr = sourcesIterator2.nextElement();
+                String nameStr = sourcesIterator2.next();
                 String sourceNoteStr = XMLsources.get(nameStr);
                 if(sourceNoteStr==null || sourceNoteStr.trim().length()==0){
                     counter++;
@@ -1809,7 +1804,7 @@ public class DBImportData {
         return true;
     }
 
-    public void readCurrentNodesAttributes(Node currentNode, String currentNodeValue, Vector<String> validAttrKeywords, Hashtable<String, NodeInfoStringContainer> termsInfo, String[] output) {
+    public void readCurrentNodesAttributes(Node currentNode, String currentNodeValue, ArrayList<String> validAttrKeywords, HashMap<String, NodeInfoStringContainer> termsInfo, String[] output) {
 
         int numOfCurrentNodeAttributes = currentNode.getAttributes().getLength();
 
@@ -1842,8 +1837,8 @@ public class DBImportData {
             } else {
                 for (int p = 0; p < output.length; p++) {
                     String mergeAttribute = output[p];
-                    Vector<String> part1 = olderTermRestInfo.descriptorInfo.get(mergeAttribute);
-                    Vector<String> part2 = targetTermRestInfo.descriptorInfo.get(mergeAttribute);
+                    ArrayList<String> part1 = olderTermRestInfo.descriptorInfo.get(mergeAttribute);
+                    ArrayList<String> part2 = targetTermRestInfo.descriptorInfo.get(mergeAttribute);
                     int initialSize = part1.size();
 
                     for (int r = 0; r < part2.size(); r++) {
@@ -1861,18 +1856,18 @@ public class DBImportData {
         }
     }
 
-    public void processXMLTerms(Hashtable<String, NodeInfoStringContainer> termsInfo, Hashtable<String, Vector<String>> descriptorRts, Hashtable<String, Vector<String>> descriptorUfs,/* Vector<String> LinkingToSelf,*/ Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> topTerms, Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes) {
+    public void processXMLTerms(HashMap<String, NodeInfoStringContainer> termsInfo, HashMap<String, ArrayList<String>> descriptorRts, HashMap<String, ArrayList<String>> descriptorUfs,/* ArrayList<String> LinkingToSelf,*/ HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> topTerms, ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Xml TERMS processing.");
         DBGeneral dbGen = new DBGeneral();
 
-        Vector<String> allTermsHavingBTs = new Vector<String>();
-        Vector<String> allTermsHavingNTs = new Vector<String>();
-        Vector<String> allTermsWithoutBTsorNTs = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorNts = new Hashtable<String, Vector<String>>();
+        ArrayList<String> allTermsHavingBTs = new ArrayList<String>();
+        ArrayList<String> allTermsHavingNTs = new ArrayList<String>();
+        ArrayList<String> allTermsWithoutBTsorNTs = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> descriptorNts = new HashMap<String, ArrayList<String>>();
 
 
-        Vector<String> nodesOfInterest = new Vector<String>();
+        ArrayList<String> nodesOfInterest = new ArrayList<String>();
         nodesOfInterest.add("descriptor");
         nodesOfInterest.add(ConstantParameters.bt_kwd);
         nodesOfInterest.add(ConstantParameters.nt_kwd);
@@ -1880,20 +1875,20 @@ public class DBImportData {
         nodesOfInterest.add(ConstantParameters.uf_kwd);
 
         //DEBUG int counter=1;
-        Enumeration<String> termInfoIterator = termsInfo.keys();
+        Iterator<String> termInfoIterator = termsInfo.keySet().iterator();
 
-        while (termInfoIterator.hasMoreElements()) {
+        while (termInfoIterator.hasNext()) {
 
 
-            String targetNode = termInfoIterator.nextElement();
+            String targetNode = termInfoIterator.next();
 
 
             NodeInfoStringContainer targetNodeInfo = termsInfo.get(targetNode);
 
-            Vector<String> BTnodes = new Vector<String>();
-            Vector<String> NTnodes = new Vector<String>();
-            Vector<String> RTnodes = new Vector<String>();
-            Vector<String> UFnodes = new Vector<String>();
+            ArrayList<String> BTnodes = new ArrayList<>();
+            ArrayList<String> NTnodes = new ArrayList<>();
+            ArrayList<String> RTnodes = new ArrayList<>();
+            ArrayList<String> UFnodes = new ArrayList<>();
 
             BTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.bt_kwd));
             NTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.nt_kwd));
@@ -1907,15 +1902,15 @@ public class DBImportData {
 
 
             if (descriptorNts.containsKey(targetNode) == false) {
-                descriptorNts.put(targetNode, new Vector<String>());
+                descriptorNts.put(targetNode, new ArrayList<String>());
             }
             if (descriptorRts.containsKey(targetNode) == false) {
-                descriptorRts.put(targetNode, new Vector<String>());
+                descriptorRts.put(targetNode, new ArrayList<String>());
             }
 
 
             boolean validValueDetected = false;
-            //Bts relations may define a new Descriptor. in this case hashTables
+            //Bts relations may define a new Descriptor. in this case HashMaps
             //should be updated with parsedBt as new key and no values.
             //target node should be added to nts of each bt child Node
             for (int k = 0; k < howmanyBTs; k++) {
@@ -1926,10 +1921,10 @@ public class DBImportData {
                 }
 
                 if (descriptorNts.containsKey(parsedBt) == false) {
-                    descriptorNts.put(parsedBt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedBt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
                 if (descriptorRts.containsKey(parsedBt) == false) {
-                    descriptorRts.put(parsedBt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedBt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedBt) == 0) {
@@ -1951,7 +1946,7 @@ public class DBImportData {
             }
 
             validValueDetected = false;
-            //Nts relations may also define a new Descriptor. in this case hashTables
+            //Nts relations may also define a new Descriptor. in this case HashMaps
             //should be updated with parsedNt as new key and no values.
             //each child nt element should be added to targetNode's nts
             for (int k = 0; k < howmanyNTs; k++) {
@@ -1961,10 +1956,10 @@ public class DBImportData {
                     continue;
                 }
                 if (descriptorNts.containsKey(parsedNt) == false) {
-                    descriptorNts.put(parsedNt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedNt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
                 if (descriptorRts.containsKey(parsedNt) == false) {
-                    descriptorRts.put(parsedNt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedNt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedNt) == 0) {
@@ -1985,7 +1980,7 @@ public class DBImportData {
                 allTermsHavingNTs.add(targetNode);
             }
 
-            //Rts relations may also define a new Descriptor. in this case hashTables
+            //Rts relations may also define a new Descriptor. in this case HashMaps
             //should be updated with parsedRt as new key and no values.
             //each rt content should be added to targetNode's rts
             for (int k = 0; k < howmanyRTs; k++) {
@@ -1995,10 +1990,10 @@ public class DBImportData {
                     continue;
                 }
                 if (descriptorNts.containsKey(parsedRt) == false) {
-                    descriptorNts.put(parsedRt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedRt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
                 if (descriptorRts.containsKey(parsedRt) == false) {
-                    descriptorRts.put(parsedRt, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedRt, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedRt) == 0) {
@@ -2019,7 +2014,7 @@ public class DBImportData {
                 }
 
                 if (descriptorUfs.containsKey(targetNode) == false) {
-                    descriptorUfs.put(targetNode, new Vector<String>());//add it as a key because it may be later encountered
+                    descriptorUfs.put(targetNode, new ArrayList<String>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedUF) == 0) {
@@ -2037,24 +2032,24 @@ public class DBImportData {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Xml TERMS processing.");
     }
 
-    public void processXMLTermsInSortItems(Hashtable<String, NodeInfoStringContainer> termsInfo, 
-                                           Hashtable<String, Vector<String>> descriptorRts,
-                                           Hashtable<String, Vector<SortItem>> descriptorUfs,
-                                           Hashtable<String, Vector<String>> hierarchyFacets, 
-                                           Vector<SortItem> topTerms, 
-                                           Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes) {
+    public void processXMLTermsInSortItems(HashMap<String, NodeInfoStringContainer> termsInfo, 
+                                           HashMap<String, ArrayList<String>> descriptorRts,
+                                           HashMap<String, ArrayList<SortItem>> descriptorUfs,
+                                           HashMap<String, ArrayList<String>> hierarchyFacets, 
+                                           ArrayList<SortItem> topTerms, 
+                                           ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfImportThes) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Xml TERMS processing.");
         
-        Vector<SortItem> allTermsHavingBTs = new Vector<SortItem>();
-        Vector<SortItem> allTermsHavingNTs = new Vector<SortItem>();
-        Vector<SortItem> allTermsWithoutBTsorNTs = new Vector<SortItem>();
-        Hashtable<SortItem, Vector<SortItem>> descriptorNts = new Hashtable<SortItem, Vector<SortItem>>();
+        ArrayList<SortItem> allTermsHavingBTs = new ArrayList<SortItem>();
+        ArrayList<SortItem> allTermsHavingNTs = new ArrayList<SortItem>();
+        ArrayList<SortItem> allTermsWithoutBTsorNTs = new ArrayList<SortItem>();
+        HashMap<SortItem, ArrayList<SortItem>> descriptorNts = new HashMap<SortItem, ArrayList<SortItem>>();
 
         
-        Hashtable<SortItem, Vector<SortItem>> tempDescriptorRts  = new Hashtable<SortItem, Vector<SortItem>>();
+        HashMap<SortItem, ArrayList<SortItem>> tempDescriptorRts  = new HashMap<SortItem, ArrayList<SortItem>>();
 
-        Vector<String> nodesOfInterest = new Vector<String>();
+        ArrayList<String> nodesOfInterest = new ArrayList<String>();
         nodesOfInterest.add("descriptor");
         nodesOfInterest.add(ConstantParameters.bt_kwd);
         nodesOfInterest.add(ConstantParameters.nt_kwd);
@@ -2067,12 +2062,12 @@ public class DBImportData {
         long targetNodeRef = -1;
         //DEBUG int counter=1;
         
-        Enumeration<String> termInfoIterator = termsInfo.keys();
+        Iterator<String> termInfoIterator = termsInfo.keySet().iterator();
 
-        while (termInfoIterator.hasMoreElements()) {
+        while (termInfoIterator.hasNext()) {
 
 
-            targetNode = termInfoIterator.nextElement();
+            targetNode = termInfoIterator.next();
             targetNodeTranslit = "";
             targetNodeRef = -1;
 
@@ -2083,10 +2078,10 @@ public class DBImportData {
             
             SortItem targetSortItem = new SortItem(targetNode, -1, targetNodeTranslit, targetNodeRef);
 
-            Vector<String> BTnodes = new Vector<String>();
-            Vector<String> NTnodes = new Vector<String>();
-            Vector<String> RTnodes = new Vector<String>();
-            Vector<String> UFnodes = new Vector<String>();
+            ArrayList<String> BTnodes = new ArrayList<String>();
+            ArrayList<String> NTnodes = new ArrayList<String>();
+            ArrayList<String> RTnodes = new ArrayList<String>();
+            ArrayList<String> UFnodes = new ArrayList<String>();
 
             BTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.bt_kwd));
             NTnodes.addAll(targetNodeInfo.descriptorInfo.get(ConstantParameters.nt_kwd));
@@ -2100,16 +2095,16 @@ public class DBImportData {
 
 
             if (descriptorNts.containsKey(targetSortItem) == false) {
-                descriptorNts.put(targetSortItem, new Vector<SortItem>());
+                descriptorNts.put(targetSortItem, new ArrayList<SortItem>());
             }
             if (tempDescriptorRts.containsKey(targetSortItem) == false) {
-                tempDescriptorRts.put(targetSortItem, new Vector<SortItem>());
-                descriptorRts.put(targetSortItem.getLogName(), new Vector<String>());
+                tempDescriptorRts.put(targetSortItem, new ArrayList<SortItem>());
+                descriptorRts.put(targetSortItem.getLogName(), new ArrayList<String>());
             }
 
 
             boolean validValueDetected = false;
-            //Bts relations may define a new Descriptor. in this case hashTables
+            //Bts relations may define a new Descriptor. in this case HashMaps
             //should be updated with parsedBt as new key and no values.
             //target node should be added to nts of each bt child Node
             String parsedBt = "";
@@ -2132,11 +2127,11 @@ public class DBImportData {
                 SortItem parsedBtSortItem = new SortItem(parsedBt,-1,parsedBtTranslit,parsedBtRef);
                 
                 if (descriptorNts.containsKey(parsedBtSortItem) == false) {
-                    descriptorNts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedBtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
                 }
                 if (tempDescriptorRts.containsKey(parsedBtSortItem) == false) {
-                    tempDescriptorRts.put(parsedBtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
-                    descriptorRts.put(parsedBtSortItem.getLogName(), new Vector<String>());
+                    tempDescriptorRts.put(parsedBtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedBtSortItem.getLogName(), new ArrayList<String>());
                 }
 
                 if (targetNode.compareTo(parsedBt) == 0) {
@@ -2158,7 +2153,7 @@ public class DBImportData {
             }
 
             validValueDetected = false;
-            //Nts relations may also define a new Descriptor. in this case hashTables
+            //Nts relations may also define a new Descriptor. in this case HashMaps
             //should be updated with parsedNt as new key and no values.
             //each child nt element should be added to targetNode's nts
             
@@ -2182,11 +2177,11 @@ public class DBImportData {
                 SortItem parsedNtSortItem = new SortItem(parsedNt,-1,parsedNtTranslit,parsedNtRef);
                 
                 if (descriptorNts.containsKey(parsedNtSortItem) == false) {
-                    descriptorNts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedNtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
                 }
                 if (tempDescriptorRts.containsKey(parsedNtSortItem) == false) {
-                    tempDescriptorRts.put(parsedNtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
-                    descriptorRts.put(parsedNtSortItem.getLogName(), new Vector<String>());
+                    tempDescriptorRts.put(parsedNtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedNtSortItem.getLogName(), new ArrayList<String>());
                 }
 
                 if (targetNode.compareTo(parsedNt) == 0) {
@@ -2207,7 +2202,7 @@ public class DBImportData {
                 allTermsHavingNTs.add(targetSortItem);
             }
 
-            //Rts relations may also define a new Descriptor. in this case hashTables
+            //Rts relations may also define a new Descriptor. in this case HashMaps
             //should be updated with parsedRt as new key and no values.
             //each rt content should be added to targetNode's rts
             String parsedRt = "";
@@ -2229,11 +2224,11 @@ public class DBImportData {
                 SortItem parsedRtSortItem = new SortItem(parsedRt,-1,parsedRtTranslit,parsedRtRef);
                 
                 if (descriptorNts.containsKey(parsedRtSortItem) == false) {
-                    descriptorNts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorNts.put(parsedRtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
                 }
                 if (tempDescriptorRts.containsKey(parsedRtSortItem) == false) {
-                    tempDescriptorRts.put(parsedRtSortItem, new Vector<SortItem>());//add it as a key because it may be later encountered
-                    descriptorRts.put(parsedRtSortItem.getLogName(), new Vector<String>());
+                    tempDescriptorRts.put(parsedRtSortItem, new ArrayList<SortItem>());//add it as a key because it may be later encountered
+                    descriptorRts.put(parsedRtSortItem.getLogName(), new ArrayList<String>());
                 }
 
                 if (targetNode.compareTo(parsedRt) == 0) {
@@ -2264,7 +2259,7 @@ public class DBImportData {
                 SortItem ufSortItem = new SortItem(parsedUF,-1,parsedUFTranslit,-1);
                 
                 if (descriptorUfs.containsKey(targetSortItem.getLogName()) == false) {
-                    descriptorUfs.put(targetSortItem.getLogName(), new Vector<SortItem>());//add it as a key because it may be later encountered
+                    descriptorUfs.put(targetSortItem.getLogName(), new ArrayList<SortItem>());//add it as a key because it may be later encountered
                 }
 
                 if (targetNode.compareTo(parsedUF) == 0) {
@@ -2282,13 +2277,13 @@ public class DBImportData {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Xml TERMS processing.");
     }
 
-    public void findOutTermLevelsInSortItems(Hashtable<SortItem, Vector<SortItem>> descriptorNts, 
-                                             Vector<SortItem> allTermsHavingBTs, 
-                                             Vector<SortItem> allTermsHavingNTs, 
-                                             Vector<SortItem> allTermsWithoutBTsorNTs, 
-                                             Vector<SortItem> topTerms, 
-                                             Hashtable<String, Vector<String>> hierarchyFacets, 
-                                             Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes) {
+    public void findOutTermLevelsInSortItems(HashMap<SortItem, ArrayList<SortItem>> descriptorNts, 
+                                             ArrayList<SortItem> allTermsHavingBTs, 
+                                             ArrayList<SortItem> allTermsHavingNTs, 
+                                             ArrayList<SortItem> allTermsWithoutBTsorNTs, 
+                                             ArrayList<SortItem> topTerms, 
+                                             HashMap<String, ArrayList<String>> hierarchyFacets, 
+                                             ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfImportThes) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of classification of terms in hierarchical levels.");
 
         
@@ -2301,7 +2296,7 @@ public class DBImportData {
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with bt " + allTermsHavingBTs.size() + ".");
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with nt " + allTermsHavingNTs.size() + ".");
 
-        Vector<String> currentLevel = new Vector<String>();
+        ArrayList<String> currentLevel = new ArrayList<String>();
         for(SortItem item :topTerms){
             currentLevel.add(item.getLogName());
         }
@@ -2316,15 +2311,13 @@ public class DBImportData {
         }
          */
         //Now add all hierarchies created in current level
-        Enumeration<String> parsedHierarchies = hierarchyFacets.keys();
-        while (parsedHierarchies.hasMoreElements()) {
-            String targetHierarchy = parsedHierarchies.nextElement();
+        for(String targetHierarchy : hierarchyFacets.keySet()){
             if (currentLevel.contains(targetHierarchy) == false) {
                 currentLevel.add(targetHierarchy);
             }
         }
 
-        Vector<String> parsedTerms = new Vector<String>();
+        ArrayList<String> parsedTerms = new ArrayList<String>();
         int levelIndex = 0;
         while (currentLevel.size() > 0) {
 
@@ -2332,11 +2325,14 @@ public class DBImportData {
             //logFileWriter.append("\r\nTerm Level No: " + (levelIndex+2) +"\r\n");
 
             allLevelsOfImportThes.add(readNextLevelSetTermsAndBtsInSortItems(currentLevel, descriptorNts, parsedTerms));
-            Vector<String> nextLevel = new Vector<String>();
-            Enumeration<SortItem> parseLevel = allLevelsOfImportThes.get(levelIndex).keys();
-            while (parseLevel.hasMoreElements()) {
+            ArrayList<String> nextLevel = new ArrayList<String>();
+            
+            
+            Iterator<SortItem> parseLevel = allLevelsOfImportThes.get(levelIndex).keySet().iterator();
+            
+            while (parseLevel.hasNext()) {
                 termsperlevel++;
-                SortItem term = parseLevel.nextElement();
+                SortItem term = parseLevel.next();
 
                 if (nextLevel.contains(term.getLogName()) == false) {
                     nextLevel.add(term.getLogName());
@@ -2347,7 +2343,7 @@ public class DBImportData {
             if (nextLevel.isEmpty()) {
                 break;
             } else {
-                currentLevel.removeAllElements();
+                currentLevel.clear();
                 currentLevel.addAll(nextLevel);
             }
         }
@@ -2356,18 +2352,18 @@ public class DBImportData {
     }
 
     
-    public void findOutTopTermsAndOrphansUsingSortItems(Hashtable<SortItem, Vector<SortItem>> descriptorNts, 
-                                                        Vector<SortItem> allTermsHavingBTs, 
-                                                        Vector<SortItem> allTermsHavingNTs, 
-                                                        Vector<SortItem> allTermsWithoutBTsorNTs, 
-                                                        Vector<SortItem> topTerms, 
-                                                        Hashtable<String, Vector<String>> hierarchyFacets) {
+    public void findOutTopTermsAndOrphansUsingSortItems(HashMap<SortItem, ArrayList<SortItem>> descriptorNts, 
+                                                        ArrayList<SortItem> allTermsHavingBTs, 
+                                                        ArrayList<SortItem> allTermsHavingNTs, 
+                                                        ArrayList<SortItem> allTermsWithoutBTsorNTs, 
+                                                        ArrayList<SortItem> topTerms, 
+                                                        HashMap<String, ArrayList<String>> hierarchyFacets) {
 
         //find out topTerms and unclassifed terms
-        Enumeration<SortItem> parseAllTerms = descriptorNts.keys();
-        while (parseAllTerms.hasMoreElements()) {
+        Iterator<SortItem> parseAllTerms = descriptorNts.keySet().iterator();
+        while (parseAllTerms.hasNext()) {
 
-            SortItem term = parseAllTerms.nextElement();
+            SortItem term = parseAllTerms.next();
 
             if (allTermsHavingBTs.contains(term) == false) {
 
@@ -2433,7 +2429,7 @@ public class DBImportData {
     }
 
     
-    public void findOutTermLevels(Hashtable<String, Vector<String>> descriptorNts, Vector<String> allTermsHavingBTs, Vector<String> allTermsHavingNTs, Vector<String> allTermsWithoutBTsorNTs, Vector<String> topTerms, Hashtable<String, Vector<String>> hierarchyFacets, Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes) {
+    public void findOutTermLevels(HashMap<String, ArrayList<String>> descriptorNts, ArrayList<String> allTermsHavingBTs, ArrayList<String> allTermsHavingNTs, ArrayList<String> allTermsWithoutBTsorNTs, ArrayList<String> topTerms, HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of classification of terms in hierarchical levels.");
 
         //filling structures allTermsWithoutBTsorNTs, topTerms and find out hierarchies and top terms
@@ -2445,7 +2441,7 @@ public class DBImportData {
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with bt " + allTermsHavingBTs.size() + ".");
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Num of terms with nt " + allTermsHavingNTs.size() + ".");
 
-        Vector<String> currentLevel = new Vector<String>();
+        ArrayList<String> currentLevel = new ArrayList<String>();
         currentLevel.addAll(topTerms);
 
 
@@ -2458,15 +2454,15 @@ public class DBImportData {
         }
          */
         //Now add all hierarchies created in current level
-        Enumeration<String> parsedHierarchies = hierarchyFacets.keys();
-        while (parsedHierarchies.hasMoreElements()) {
-            String targetHierarchy = parsedHierarchies.nextElement();
+        Iterator<String> parsedHierarchies = hierarchyFacets.keySet().iterator();
+        while (parsedHierarchies.hasNext()) {
+            String targetHierarchy = parsedHierarchies.next();
             if (currentLevel.contains(targetHierarchy) == false) {
                 currentLevel.add(targetHierarchy);
             }
         }
 
-        Vector<String> parsedTerms = new Vector<String>();
+        ArrayList<String> parsedTerms = new ArrayList<String>();
         int levelIndex = 0;
         while (currentLevel.size() > 0) {
 
@@ -2475,11 +2471,11 @@ public class DBImportData {
 
 
             allLevelsOfImportThes.add(readNextLevelSetTermsAndBts(currentLevel, descriptorNts, parsedTerms));
-            Vector<String> nextLevel = new Vector<String>();
-            Enumeration<String> parseLevel = allLevelsOfImportThes.get(levelIndex).keys();
-            while (parseLevel.hasMoreElements()) {
+            ArrayList<String> nextLevel = new ArrayList<String>();
+            Iterator<String> parseLevel = allLevelsOfImportThes.get(levelIndex).keySet().iterator();
+            while (parseLevel.hasNext()) {
                 termsperlevel++;
-                String term = parseLevel.nextElement();
+                String term = parseLevel.next();
 
                 if (nextLevel.contains(term) == false) {
                     nextLevel.add(term);
@@ -2490,7 +2486,7 @@ public class DBImportData {
             if (nextLevel.size() == 0) {
                 break;
             } else {
-                currentLevel.removeAllElements();
+                currentLevel.clear();
                 currentLevel.addAll(nextLevel);
             }
         }
@@ -2498,13 +2494,13 @@ public class DBImportData {
 
     }
 
-    public void findOutTopTermsAndOrphans(Hashtable<String, Vector<String>> descriptorNts, Vector<String> allTermsHavingBTs, Vector<String> allTermsHavingNTs, Vector<String> allTermsWithoutBTsorNTs, Vector<String> topTerms, Hashtable<String, Vector<String>> hierarchyFacets) {
+    public void findOutTopTermsAndOrphans(HashMap<String, ArrayList<String>> descriptorNts, ArrayList<String> allTermsHavingBTs, ArrayList<String> allTermsHavingNTs, ArrayList<String> allTermsWithoutBTsorNTs, ArrayList<String> topTerms, HashMap<String, ArrayList<String>> hierarchyFacets) {
 
         //find out topTerms and unclassifed terms
-        Enumeration<String> parseAllTerms = descriptorNts.keys();
-        while (parseAllTerms.hasMoreElements()) {
+        Iterator<String> parseAllTerms = descriptorNts.keySet().iterator();
+        while (parseAllTerms.hasNext()) {
 
-            String term = parseAllTerms.nextElement();
+            String term = parseAllTerms.next();
 
             if (allTermsHavingBTs.contains(term) == false) {
 
@@ -2540,9 +2536,9 @@ public class DBImportData {
         allTermsHavingBTs.addAll(allTermsWithoutBTsorNTs);
     }
 
-    public Hashtable<String, Vector<String>> readNextLevelSetTermsAndBts(Vector<String> currentLevel, Hashtable<String, Vector<String>> allNts, Vector<String> parsedTerms) {
+    public HashMap<String, ArrayList<String>> readNextLevelSetTermsAndBts(ArrayList<String> currentLevel, HashMap<String, ArrayList<String>> allNts, ArrayList<String> parsedTerms) {
 
-        Hashtable<String, Vector<String>> nextLevelSet_Terms_and_Bts = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> nextLevelSet_Terms_and_Bts = new HashMap<String, ArrayList<String>>();
 
         for (int i = 0; i < currentLevel.size(); i++) {
 
@@ -2553,7 +2549,7 @@ public class DBImportData {
             } else {
                 parsedTerms.add(currentTerm);
             }
-            Vector<String> nts = allNts.get(currentTerm);
+            ArrayList<String> nts = allNts.get(currentTerm);
             //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"i= " + i + " currentTerm = " + currentTerm );
             if (nts == null) {
                 continue;
@@ -2577,7 +2573,7 @@ public class DBImportData {
                 }*/
 
                 if (nextLevelSet_Terms_and_Bts.containsKey(currentNt) == false) {
-                    Vector<String> bts = new Vector<String>();
+                    ArrayList<String> bts = new ArrayList<String>();
                     bts.add(currentTerm);
                     nextLevelSet_Terms_and_Bts.put(currentNt, bts);
 
@@ -2596,18 +2592,18 @@ public class DBImportData {
 
     }
 
-    public Hashtable<SortItem, Vector<SortItem>> readNextLevelSetTermsAndBtsInSortItems(Vector<String> currentLevel, Hashtable<SortItem, Vector<SortItem>> allNts, Vector<String> parsedTerms) {
+    public HashMap<SortItem, ArrayList<SortItem>> readNextLevelSetTermsAndBtsInSortItems(ArrayList<String> currentLevel, HashMap<SortItem, ArrayList<SortItem>> allNts, ArrayList<String> parsedTerms) {
 
-        Hashtable<String, SortItem> allNtsKeysDictionary = new Hashtable<String,SortItem>();
-        //Hashtable<String, Vector<SortItem>> allNtsWithLogicalnameAsKey = new Hashtable<String,Vector<SortItem>>();
+        HashMap<String, SortItem> allNtsKeysDictionary = new HashMap<String,SortItem>();
+        //HashMap<String, ArrayList<SortItem>> allNtsWithLogicalnameAsKey = new HashMap<String,ArrayList<SortItem>>();
         
-        Enumeration<SortItem> allNtsEnum = allNts.keys();
-        while(allNtsEnum.hasMoreElements()){
-            SortItem targetItem = allNtsEnum.nextElement();
+        Iterator<SortItem> allNtsEnum = allNts.keySet().iterator();
+        while(allNtsEnum.hasNext()){
+            SortItem targetItem = allNtsEnum.next();
             allNtsKeysDictionary.put(targetItem.getLogName(), targetItem);
             //allNtsWithLogicalnameAsKey.put(targetItem.getLogName(),allNts.get(targetItem));
         }
-        Hashtable<SortItem, Vector<SortItem>> nextLevelSet_Terms_and_Bts = new Hashtable<SortItem, Vector<SortItem>>();
+        HashMap<SortItem, ArrayList<SortItem>> nextLevelSet_Terms_and_Bts = new HashMap<SortItem, ArrayList<SortItem>>();
 
         for (int i = 0; i < currentLevel.size(); i++) {
 
@@ -2619,7 +2615,7 @@ public class DBImportData {
                 parsedTerms.add(currentTerm);
             }
             SortItem currentTermSortItem = allNtsKeysDictionary.get(currentTerm);
-            Vector<SortItem> nts = allNts.get(currentTermSortItem);
+            ArrayList<SortItem> nts = allNts.get(currentTermSortItem);
             //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"i= " + i + " currentTerm = " + currentTerm );
             if (nts == null) {
                 continue;
@@ -2643,7 +2639,7 @@ public class DBImportData {
                 }*/
 
                 if (nextLevelSet_Terms_and_Bts.containsKey(currentNt) == false) {
-                    Vector<SortItem> bts = new Vector<SortItem>();
+                    ArrayList<SortItem> bts = new ArrayList<SortItem>();
                     bts.add(currentTermSortItem);
                     nextLevelSet_Terms_and_Bts.put(currentNt, bts);
 
@@ -2678,7 +2674,7 @@ public class DBImportData {
     }
     
     private boolean importMoreHierarchiesFromTopTermsInsortItems(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
-            String importThesaurusName, Vector<SortItem> topTerms, Locale targetLocale, StringObject resultObj,boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyPolicy) {
+            String importThesaurusName, ArrayList<SortItem> topTerms, Locale targetLocale, StringObject resultObj,boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyPolicy) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "String creation of additional hierarchies - specified by terms without bt but not declared as hierarchies. Time: " + Utilities.GetNow());
         DBMergeThesauri dbMerge = new DBMergeThesauri();
@@ -2687,9 +2683,9 @@ public class DBImportData {
         String defaultFacet = new String(dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, importThesaurusName));
         SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, importThesaurusName);
         
-        Hashtable<SortItem, Vector<String>> hierFacetsPairsOfNewThesaurus = new Hashtable<SortItem, Vector<String>>();
+        HashMap<SortItem, ArrayList<String>> hierFacetsPairsOfNewThesaurus = new HashMap<SortItem, ArrayList<String>>();
         
-        Vector<String> facets = new Vector<String>();
+        ArrayList<String> facets = new ArrayList<String>();
         facets.add(defaultFacet);
         for (int i = 0; i < topTerms.size(); i++) {
             hierFacetsPairsOfNewThesaurus.put(topTerms.get(i), facets);
@@ -2712,9 +2708,9 @@ public class DBImportData {
 
     private boolean importMoreHierarchiesFromTopTerms(UserInfoClass SessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, 
             TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String importThesaurusName,
-            Vector<String> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
+            ArrayList<String> topTerms, Locale targetLocale, OutputStreamWriter logFileWriter, StringObject resultObj) {
         
-        Vector<SortItem> topTermSortItems = new Vector<SortItem>();
+        ArrayList<SortItem> topTermSortItems = new ArrayList<SortItem>();
         if(topTerms!=null){
             for(String toptermStr :topTerms){
                 topTermSortItems.add(new SortItem(toptermStr,-1,Utilities.getTransliterationString(toptermStr, false),-1));
@@ -2735,11 +2731,11 @@ public class DBImportData {
     private boolean importTermsInSortItems(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String pathToErrorsXML, String importThesaurusName,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
             StringObject resultObj,
-            Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfImportThes,
-            Hashtable<String, Vector<String>> descriptorRts,
-            Hashtable<String, Vector<SortItem>> descriptorUfs,
+            ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfImportThes,
+            HashMap<String, ArrayList<String>> descriptorRts,
+            HashMap<String, ArrayList<SortItem>> descriptorUfs,
             OutputStreamWriter logFileWriter) {
 
 
@@ -2786,13 +2782,13 @@ public class DBImportData {
         common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
         //<editor-fold defaultstate="collapsed" desc="uf ...">
         
-        Hashtable<String,Vector<String>> descUFs = new Hashtable<String,Vector<String>> ();
+        HashMap<String,ArrayList<String>> descUFs = new HashMap<String,ArrayList<String>> ();
         if(descriptorUfs!=null){
-            Enumeration<String> ufsEnum = descriptorUfs.keys();
-            while(ufsEnum.hasMoreElements()){
-                String item = ufsEnum.nextElement();
-                Vector<SortItem> ufsSortItems =    descriptorUfs.get(item);
-                Vector<String> newUFValues = new Vector<String>();
+            Iterator<String> ufsEnum = descriptorUfs.keySet().iterator();
+            while(ufsEnum.hasNext()){
+                String item = ufsEnum.next();
+                ArrayList<SortItem> ufsSortItems =    descriptorUfs.get(item);
+                ArrayList<String> newUFValues = new ArrayList<String>();
                 if(ufsSortItems!=null){
                     for(SortItem rtSi : ufsSortItems){
                         newUFValues.add(rtSi.getLogName());
@@ -2803,7 +2799,7 @@ public class DBImportData {
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of UFs. Time: " + Utilities.GetNow());
         startTime = System.currentTimeMillis();
-        if (dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, ConstantParameters.uf_kwd, new Vector<String>(), resultObj, descUFs, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+        if (dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, ConstantParameters.uf_kwd, new ArrayList<String>(), resultObj, descUFs, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation of UFs FAILED.");
             return false;
         }
@@ -2830,9 +2826,9 @@ public class DBImportData {
 
         //clear some memory
 
-        Enumeration<String> termsEnum = termsInfo.keys();
-        while (termsEnum.hasMoreElements()) {
-            String targetTerm = termsEnum.nextElement();
+        Iterator<String> termsEnum = termsInfo.keySet().iterator();
+        while (termsEnum.hasNext()) {
+            String targetTerm = termsEnum.next();
             NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
             if (targetInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)) {
                 targetInfo.descriptorInfo.remove(ConstantParameters.bt_kwd);
@@ -2932,11 +2928,11 @@ public class DBImportData {
     private boolean importTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String pathToErrorsXML, String importThesaurusName,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
             StringObject resultObj,
-            Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes,
-            Hashtable<String, Vector<String>> descriptorRts,
-            Hashtable<String, Vector<String>> descriptorUfs,
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes,
+            HashMap<String, ArrayList<String>> descriptorRts,
+            HashMap<String, ArrayList<String>> descriptorUfs,
             OutputStreamWriter logFileWriter) {
 
 
@@ -2984,7 +2980,7 @@ public class DBImportData {
         //<editor-fold defaultstate="collapsed" desc="uf ...">
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of UFs. Time: " + Utilities.GetNow());
         startTime = System.currentTimeMillis();
-        if (dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, ConstantParameters.uf_kwd, new Vector<String>(), resultObj, descriptorUfs, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+        if (dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, ConstantParameters.uf_kwd, new ArrayList<String>(), resultObj, descriptorUfs, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation of UFs FAILED.");
             return false;
         }
@@ -3011,9 +3007,9 @@ public class DBImportData {
 
         //clear some memory
 
-        Enumeration<String> termsEnum = termsInfo.keys();
-        while (termsEnum.hasMoreElements()) {
-            String targetTerm = termsEnum.nextElement();
+        Iterator<String> termsEnum = termsInfo.keySet().iterator();
+        while (termsEnum.hasNext()) {
+            String targetTerm = termsEnum.next();
             NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
             if (targetInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)) {
                 targetInfo.descriptorInfo.remove(ConstantParameters.bt_kwd);
@@ -3112,7 +3108,7 @@ public class DBImportData {
 
     private boolean importStatuses(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String importThesaurusName, Hashtable<String, NodeInfoStringContainer> termsInfo,
+            String importThesaurusName, HashMap<String, NodeInfoStringContainer> termsInfo,
             StringObject resultObj, OutputStreamWriter logFileWriter, boolean resolveError) throws IOException {
 
         DBFilters dbF = new DBFilters();
@@ -3121,8 +3117,8 @@ public class DBImportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-        Hashtable<String, String> thesaurus1_statuses = new Hashtable<String, String>();
-        Hashtable<String, Long> merged_thesaurus_status_classIds = new Hashtable<String, Long>();
+        HashMap<String, String> thesaurus1_statuses = new HashMap<String, String>();
+        HashMap<String, Long> merged_thesaurus_status_classIds = new HashMap<String, Long>();
 
         UsersClass wtmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -3130,9 +3126,9 @@ public class DBImportData {
 
 
         //Read Statuses defined in XML
-        Enumeration<String> termEnum = termsInfo.keys();
-        while (termEnum.hasMoreElements()) {
-            String targetTerm = termEnum.nextElement();
+        Iterator<String> termEnum = termsInfo.keySet().iterator();
+        while (termEnum.hasNext()) {
+            String targetTerm = termEnum.next();
             /*
             try {
                 byte[] byteArray = targetTerm.getBytes("UTF-8");
@@ -3173,7 +3169,7 @@ public class DBImportData {
                 Utils.StaticClass.handleException(ex);
             }
 */
-            Vector<String> targetStatuses = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.status_kwd);
+            ArrayList<String> targetStatuses = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.status_kwd);
             if (targetStatuses.size() > 0) {
                 String targetStatus = statusGRtoDBmapping(SessionUserInfo, targetStatuses.get(0));
                 thesaurus1_statuses.put(targetTerm, targetStatus);
@@ -3193,7 +3189,7 @@ public class DBImportData {
         Q.set_current_node(parentThesaurusStatusObj);
         int set_allstatuses = Q.get_subclasses(0);
         Q.reset_set(set_allstatuses);
-        Vector<String> readStatuses = new Vector<String>();
+        ArrayList<String> readStatuses = new ArrayList<String>();
         readStatuses.addAll(dbGen.get_Node_Names_Of_Set(set_allstatuses, false, Q, sis_session));
         Q.free_set(set_allstatuses);
 
@@ -3216,7 +3212,7 @@ public class DBImportData {
         int set_allTerms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
         Q.reset_set(set_allTerms);
 
-        Vector<String> allDBTerms = dbGen.get_Node_Names_Of_Set(set_allTerms, true, Q, sis_session);
+        ArrayList<String> allDBTerms = dbGen.get_Node_Names_Of_Set(set_allTerms, true, Q, sis_session);
         Q.free_all_sets();
 
         for (int i = 0; i < allDBTerms.size(); i++) {
@@ -3229,56 +3225,56 @@ public class DBImportData {
 
         return dbMerge.CreateStatuses(SessionUserInfo, common_utils, Q, TA, sis_session, tms_session,
                 importThesaurusName, logFileWriter, resultObj, thesaurus1_statuses,
-                new Hashtable<String, String>(), merged_thesaurus_status_classIds);
+                new HashMap<String, String>(), merged_thesaurus_status_classIds);
 
     }
 
     private boolean importSimpleLinks(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String importThesaurusName, String pathToErrorsXML, Hashtable<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter, String keyWord) throws IOException {
+            String importThesaurusName, String pathToErrorsXML, HashMap<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter, String keyWord) throws IOException {
 
         UsersClass wtmsUsers = new UsersClass();
         DBMergeThesauri dbMerge = new DBMergeThesauri();
-        Hashtable<String, Vector<String>> term_Links_HASH = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> term_Links_HASH = new HashMap<String, ArrayList<String>>();
 
         //Read Statuses defined in XML
-        Enumeration<String> termEnum = termsInfo.keys();
-        while (termEnum.hasMoreElements()) {
-            String targetTerm = termEnum.nextElement();
-            Vector<String> targettermLinks = termsInfo.get(targetTerm).descriptorInfo.get(keyWord);
+        Iterator<String> termEnum = termsInfo.keySet().iterator();
+        while (termEnum.hasNext()) {
+            String targetTerm = termEnum.next();
+            ArrayList<String> targettermLinks = termsInfo.get(targetTerm).descriptorInfo.get(keyWord);
             term_Links_HASH.put(targetTerm, targettermLinks);
         }
 
-        return dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, keyWord, new Vector<String>(), resultObj, term_Links_HASH, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY);
+        return dbMerge.CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, importThesaurusName, logFileWriter, keyWord, new ArrayList<String>(), resultObj, term_Links_HASH, true, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY);
 
     }
 
     private boolean importCommentCategories(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String importThesaurusName, String pathToErrorsXML, Hashtable<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter) throws IOException {
+            String importThesaurusName, String pathToErrorsXML, HashMap<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter) throws IOException {
 
         UsersClass wtmsUsers = new UsersClass();
         DBMergeThesauri dbMerge = new DBMergeThesauri();
-        Hashtable<String, String> scope_notes_HASH = new Hashtable<String, String>();
-        Hashtable<String, String> scope_notes_EN_HASH = new Hashtable<String, String>();
-        Hashtable<String, String> historical_notes_HASH = new Hashtable<String, String>();
+        HashMap<String, String> scope_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> scope_notes_EN_HASH = new HashMap<String, String>();
+        HashMap<String, String> historical_notes_HASH = new HashMap<String, String>();
 
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
 
-        Enumeration<String> termsIterator = termsInfo.keys();
-        while (termsIterator.hasMoreElements()) {
+        Iterator<String> termsIterator = termsInfo.keySet().iterator();
+        while (termsIterator.hasNext()) {
 
-            String targetDescriptor = termsIterator.nextElement();
+            String targetDescriptor = termsIterator.next();
             NodeInfoStringContainer targetDescriptorInfo = termsInfo.get(targetDescriptor);
 
             String targetScopeNote = new String("");
             String targetScopeNoteEn = new String("");
             String targetHistoricalNote = new String("");
-            Vector<String> snNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
-            Vector<String> snEnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
-            Vector<String> hnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.historical_note_kwd);
+            ArrayList<String> snNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
+            ArrayList<String> snEnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+            ArrayList<String> hnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.historical_note_kwd);
 
             if (snNodes.size() > 0) {
                 targetScopeNote = snNodes.get(0);
@@ -3314,12 +3310,12 @@ public class DBImportData {
 
     private boolean importDatesAndEditors(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String editorKeyWordStr, String importThesaurusName,
-            Hashtable<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter) throws IOException {
+            HashMap<String, NodeInfoStringContainer> termsInfo, StringObject resultObj, OutputStreamWriter logFileWriter) throws IOException {
 
         UsersClass wtmsUsers = new UsersClass();
         DBMergeThesauri dbMerge = new DBMergeThesauri();
-        Hashtable<String, Vector<String>> term_Editor_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> term_Date_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> term_Editor_Links_THES1_HASH = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> term_Date_Links_THES1_HASH = new HashMap<String, ArrayList<String>>();
 
 
         String dateKeyWordStr = new String("");
@@ -3332,14 +3328,14 @@ public class DBImportData {
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
 
-        Enumeration<String> parseAllTerms = termsInfo.keys();
-        while (parseAllTerms.hasMoreElements()) {
-            String targetDescriptor = parseAllTerms.nextElement();
+        Iterator<String> parseAllTerms = termsInfo.keySet().iterator();
+        while (parseAllTerms.hasNext()) {
+            String targetDescriptor = parseAllTerms.next();
             NodeInfoStringContainer targetDescriptorInfo = termsInfo.get(targetDescriptor);
 
-            Vector<String> EditorVec = new Vector<String>();
+            ArrayList<String> EditorVec = new ArrayList<String>();
             EditorVec.addAll(targetDescriptorInfo.descriptorInfo.get(editorKeyWordStr));
-            Vector<String> DatesVec = new Vector<String>();
+            ArrayList<String> DatesVec = new ArrayList<String>();
             DatesVec.addAll(targetDescriptorInfo.descriptorInfo.get(dateKeyWordStr));
 
             int howmanyDirectEditorLinks = EditorVec.size();
@@ -3356,10 +3352,10 @@ public class DBImportData {
                 if (targetLink == null || targetLink.length() == 0) {
                     continue;
                 }
-                Vector<String> currentLinks = term_Editor_Links_THES1_HASH.get(targetDescriptor);
+                ArrayList<String> currentLinks = term_Editor_Links_THES1_HASH.get(targetDescriptor);
 
                 if (currentLinks == null) {
-                    Vector<String> newLinksVec = new Vector<String>();
+                    ArrayList<String> newLinksVec = new ArrayList<String>();
                     newLinksVec.add(targetLink);
                     term_Editor_Links_THES1_HASH.put(targetDescriptor, newLinksVec);
                 } else {
@@ -3380,10 +3376,10 @@ public class DBImportData {
                 if (targetLink == null || targetLink.length() == 0) {
                     continue;
                 }
-                Vector<String> currentLinks = term_Date_Links_THES1_HASH.get(targetDescriptor);
+                ArrayList<String> currentLinks = term_Date_Links_THES1_HASH.get(targetDescriptor);
 
                 if (currentLinks == null) {
-                    Vector<String> newLinksVec = new Vector<String>();
+                    ArrayList<String> newLinksVec = new ArrayList<String>();
                     newLinksVec.add(targetLink);
                     term_Date_Links_THES1_HASH.put(targetDescriptor, newLinksVec);
                 } else {
@@ -3402,7 +3398,7 @@ public class DBImportData {
         //Utils.StaticClass.webAppSystemOutPrintln("term_Date_Links_THES1_HASH size: " + term_Date_Links_THES1_HASH.size());
 
         return dbMerge.CreateDatesAndEditors(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, " ", null, importThesaurusName, logFileWriter,
-                term_Editor_Links_THES1_HASH, term_Date_Links_THES1_HASH, new Hashtable<String, Vector<String>>(), new Hashtable<String, Vector<String>>(), editorKeyWordStr, resultObj);
+                term_Editor_Links_THES1_HASH, term_Date_Links_THES1_HASH, new HashMap<String, ArrayList<String>>(), new HashMap<String, ArrayList<String>>(), editorKeyWordStr, resultObj);
     }
 
     public String statusGRtoDBmapping(UserInfoClass SessionUserInfo, String greekStatus) {
@@ -3444,15 +3440,15 @@ public class DBImportData {
     }
 
     private boolean readAndSyncronizeTranslationCategories(String selectedThesaurus, StringObject resultMessageStrObj, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            Vector<String> userSelectedTranslationWords,
-            Vector<String> userSelectedTranslationIdentifiers,
-            Hashtable<String, String> userSelections) {
+            ArrayList<String> userSelectedTranslationWords,
+            ArrayList<String> userSelectedTranslationIdentifiers,
+            HashMap<String, String> userSelections) {
 
         DBGeneral dbGen = new DBGeneral();
         String pathToMessagesXML = Utilities.getXml_For_Messages();
 
 
-        Hashtable<String, String> currentTranslationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false, true);
+        HashMap<String, String> currentTranslationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false, true);
 
         return dbGen.synchronizeTranslationCategories(currentTranslationCategories,
                 userSelections, userSelectedTranslationWords, userSelectedTranslationIdentifiers, selectedThesaurus,
@@ -3469,10 +3465,10 @@ public class DBImportData {
     public void checkLengths(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String importThesaurusName,
-            Vector<String> guideTerms, Hashtable<String, String> XMLsources,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations,
-            Hashtable<String, Vector<String>> hierarchyFacets,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> guideTerms, HashMap<String, String> XMLsources,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, ArrayList<String>> hierarchyFacets,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
             OutputStreamWriter logFileWriter) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
@@ -3490,11 +3486,11 @@ public class DBImportData {
         //}
 
         
-        Vector<String> errorArgs = new Vector<String>();
-        Vector<String> removeTerms = new Vector<String>();
-        Hashtable<String, String> AllLengthRenames = new Hashtable<String, String>();
+        ArrayList<String> errorArgs = new ArrayList<String>();
+        ArrayList<String> removeTerms = new ArrayList<String>();
+        HashMap<String, String> AllLengthRenames = new HashMap<String, String>();
         int unlabeledCounter = 1;
-        Vector<String> allTermsVec = new Vector<String>();
+        ArrayList<String> allTermsVec = new ArrayList<String>();
         allTermsVec.addAll(termsInfo.keySet());
         
 //        for (int k = 0; k < allTermsVec.size(); k++) {
@@ -3593,9 +3589,9 @@ public class DBImportData {
                 while (termEnum.hasMoreElements()) {
                     String checkTerm = termEnum.nextElement();
 
-                    Vector<String> bts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd);
-                    Vector<String> nts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd);
-                    Vector<String> rts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd);
+                    ArrayList<String> bts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd);
+                    ArrayList<String> nts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd);
+                    ArrayList<String> rts = termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.rt_kwd);
 
                     if (bts.contains(termToRemove)) {
                         termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.bt_kwd).remove(termToRemove);
@@ -3627,7 +3623,7 @@ public class DBImportData {
 //                Enumeration<String> rtsEnum = descriptorRts.keys();
 //                while (rtsEnum.hasMoreElements()) {
 //                String targetTerm = rtsEnum.nextElement();
-//                Vector<String> rts = descriptorRts.get(targetTerm);
+//                ArrayList<String> rts = descriptorRts.get(targetTerm);
 //                if (rts.contains(termToRemove)) {
 //                descriptorRts.get(targetTerm).remove(termToRemove);
 //                }
@@ -3642,7 +3638,7 @@ public class DBImportData {
 //                Enumeration<String> levelTermsEnum = allLevelsOfImportThes.get(m).keys();
 //                while (levelTermsEnum.hasMoreElements()) {
 //                String targetTerm = levelTermsEnum.nextElement();
-//                Vector<String> bts = allLevelsOfImportThes.get(m).get(targetTerm);
+//                ArrayList<String> bts = allLevelsOfImportThes.get(m).get(targetTerm);
 //                if (bts.contains(termToRemove)) {
 //                allLevelsOfImportThes.get(m).get(targetTerm).remove(termToRemove);
 //                }
@@ -3660,7 +3656,7 @@ public class DBImportData {
                 }
 
                 if (XMLguideTermsRelations.containsKey(termToRemove)) {
-                    Vector<SortItem> existingRelations = XMLguideTermsRelations.get(termToRemove);
+                    ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(termToRemove);
                     XMLguideTermsRelations.remove(termToRemove);
                     XMLguideTermsRelations.put(newName, existingRelations);
                 }
@@ -3669,7 +3665,7 @@ public class DBImportData {
                 Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
                 while (guideTermsEnum.hasMoreElements()) {
                     String targetTerm = guideTermsEnum.nextElement();
-                    Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
+                    ArrayList<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
                     for (int m = 0; m < gts.size(); m++) {
                         SortItem item = gts.get(m);
                         if (item.log_name.equals(termToRemove)) {
@@ -3677,7 +3673,7 @@ public class DBImportData {
                         }
                     }
 //
-//                    Vector<SortItem> gtsToRemove = new Vector<SortItem>();
+//                    ArrayList<SortItem> gtsToRemove = new ArrayList<SortItem>();
 //                    for (int m = 0; m < gts.size(); m++) {
 //                    SortItem item = gts.get(m);
 //                    if (item.log_name.equals(termToRemove)) {
@@ -3698,8 +3694,8 @@ public class DBImportData {
         Enumeration<String> termsInfoEnumForSources = termsInfo.keys();
         while (termsInfoEnumForSources.hasMoreElements()) {
             String targetTerm = termsInfoEnumForSources.nextElement();
-            Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
-            Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
+            ArrayList<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
+            ArrayList<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
             if (primarySources != null) {
                 for (int k = 0; k < primarySources.size(); k++) {
                     String checkSource = primarySources.get(k);
@@ -3722,9 +3718,9 @@ public class DBImportData {
 
         }
 
-        Vector<String> sourcesToRemove = new Vector<String>();
-        Hashtable<String, String> sourcesToRename = new Hashtable<String, String>();
-        Vector<String> allSources = new Vector<String>(XMLsources.keySet());
+        ArrayList<String> sourcesToRemove = new ArrayList<String>();
+        HashMap<String, String> sourcesToRename = new HashMap<String, String>();
+        ArrayList<String> allSources = new ArrayList<String>(XMLsources.keySet());
 
 //        for (int k = 0; k < allSources.size(); k++) {
 //            String targetSource = allSources.get(k);
@@ -3828,8 +3824,8 @@ public class DBImportData {
                 Enumeration<String> termsInfoEnum = termsInfo.keys();
                 while (termsInfoEnum.hasMoreElements()) {
                     String targetTerm = termsInfoEnum.nextElement();
-                    Vector<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
-                    Vector<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
+                    ArrayList<String> primarySources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
+                    ArrayList<String> translationSources = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
                     if (primarySources != null && primarySources.contains(sourceForRemoval)) {
                         termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).remove(sourceForRemoval);
                         termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.primary_found_in_kwd).add(newName);
@@ -3843,12 +3839,12 @@ public class DBImportData {
         }
 
 
-//        Vector<String> gtsToRemove = new Vector<String>();
+//        ArrayList<String> gtsToRemove = new ArrayList<String>();
 //
 //        Enumeration<String> guideTermsEnum = XMLguideTermsRelations.keys();
 //        while (guideTermsEnum.hasMoreElements()) {
 //            String targetTerm = guideTermsEnum.nextElement();
-//            Vector<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
+//            ArrayList<SortItem> gts = XMLguideTermsRelations.get(targetTerm);
 //
 //            
 //            for (int m = 0; m < gts.size(); m++) {

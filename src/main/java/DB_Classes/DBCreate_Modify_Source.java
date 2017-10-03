@@ -41,7 +41,7 @@ import Utils.Utilities;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 
@@ -76,7 +76,7 @@ public class DBCreate_Modify_Source {
 
                 int maxsourceNameChars = dbtr.getMaxBytesForSource(selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxsourceNameChars) {
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(""+maxsourceNameChars);
                     errorArgs.add(""+byteArray.length);
                     dbGen.Translate(errorMsg, "root/EditSource/Creation/LongName", errorArgs, pathToMessagesXML);
@@ -97,7 +97,7 @@ public class DBCreate_Modify_Source {
 
                 int maxSourceNoteChars = dbtr.getMaxBytesForCommentCategory(selectedThesaurus, Q, sis_session);
                 if (byteArray.length > maxSourceNoteChars) {
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(""+maxSourceNoteChars);
                     errorArgs.add(""+byteArray.length);
                     dbGen.Translate(errorMsg, "root/EditSource/Creation/LongSourceNote", errorArgs, pathToMessagesXML);
@@ -215,8 +215,8 @@ public class DBCreate_Modify_Source {
                 Q.reset_set(set_source_links);
                 int howmanyfromCurrent = Q.set_get_card(set_source_links);
 
-                Vector<String> targetTerms = new Vector<String>();
-                Vector<Long> targetTermsLinkIdL = new Vector<Long>();
+                ArrayList<String> targetTerms = new ArrayList<String>();
+                ArrayList<Long> targetTermsLinkIdL = new ArrayList<Long>();
                 //StringObject fromcls = new StringObject();
                 //StringObject label = new StringObject();
                 //StringObject categ = new StringObject();
@@ -228,7 +228,7 @@ public class DBCreate_Modify_Source {
                 //IntegerObject categID = new IntegerObject();
                 //CMValue cmv = new CMValue();
                 Q.reset_name_scope();
-                Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
                 if(Q.bulk_return_link(set_source_links, retVals)!=QClass.APIFail){
                     for(Return_Link_Row row:retVals){
                         targetTerms.add(row.get_v1_cls());
@@ -275,7 +275,7 @@ public class DBCreate_Modify_Source {
                 }
             }
 
-            Vector<String> old_source_note = dbGen.returnResults_Source(SessionUserInfo, targetSource, targetField, Q, TA, sis_session);
+            ArrayList<String> old_source_note = dbGen.returnResults_Source(SessionUserInfo, targetSource, targetField, Q, TA, sis_session);
             if (old_source_note.size() == 1 && old_source_note.get(0).compareTo(newValue) == 0) {
                 return true;
             }
@@ -402,7 +402,7 @@ public class DBCreate_Modify_Source {
                 newValue = newValue.trim();
             }
 
-            Vector<String> old_source_note = dbGen.returnResults_Source(SessionUserInfo, targetSource, targetField, Q,TA, sis_session);
+            ArrayList<String> old_source_note = dbGen.returnResults_Source(SessionUserInfo, targetSource, targetField, Q,TA, sis_session);
             if (old_source_note.size() == 1 && old_source_note.get(0).compareTo(newValue) == 0) {
                 return true;
             }
@@ -495,7 +495,7 @@ public class DBCreate_Modify_Source {
             //merge source note 
             String oldTargetSourceNote = null;
             String newTargetSourceNote = null;
-            Vector<String> sourceNotes = new Vector<String>();
+            ArrayList<String> sourceNotes = new ArrayList<String>();
             StringObject sourceClassObj = new StringObject(ConstantParameters.SourceClass);
             StringObject sourceNoteLinkObj = new StringObject(source_note_kwd);
             StringObject newTargetSourceObj = new StringObject(prefixSource.concat(newValue));
@@ -574,8 +574,8 @@ public class DBCreate_Modify_Source {
             }
 
 
-            Vector<Long> deleteIDsL = new Vector<Long>();
-            Vector<String> targetTerms = new Vector<String>();
+            ArrayList<Long> deleteIDsL = new ArrayList<Long>();
+            ArrayList<String> targetTerms = new ArrayList<String>();
             //StringObject label = new StringObject();
             //StringObject sclass = new StringObject();
             //IntegerObject sysid = new IntegerObject();
@@ -606,7 +606,7 @@ public class DBCreate_Modify_Source {
             //collect link ids for deletion
             if (etLinks > 0) {
                 Q.reset_name_scope();
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(deleteEtLinks, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -652,7 +652,7 @@ public class DBCreate_Modify_Source {
                     Q.reset_name_scope();
                     Q.set_current_node(targetTermObj);
 
-                    Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                    ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                     int selected_new_target_category_nodes = Q.get_link_from_by_category(0, translations_found_in_Class, translations_found_in_Link);
                     Q.reset_set(selected_new_target_category_nodes);
 
@@ -742,7 +742,7 @@ public class DBCreate_Modify_Source {
                     }
 
                     if (addNewET) {
-                        Vector<String> newValues = new Vector<String>();
+                        ArrayList<String> newValues = new ArrayList<String>();
                         newValues.add(newValue);
                         errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_translations_found_in, Q, sis_session, dbGen, TA, tms_session));
                         if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
@@ -761,7 +761,7 @@ public class DBCreate_Modify_Source {
 
             if (gtLinks > 0) {
                 Q.reset_name_scope();
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(deleteGtLinks, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -804,7 +804,7 @@ public class DBCreate_Modify_Source {
                     Q.reset_name_scope();
                     Q.set_current_node(targetTermObj);
 
-                    Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                    ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                     int selected_new_target_category_nodes = Q.get_link_from_by_category(0, primary_found_in_Class, primary_found_in_Link);
                     Q.reset_set(selected_new_target_category_nodes);
 
@@ -894,7 +894,7 @@ public class DBCreate_Modify_Source {
                     }
 
                     if (addNewGT) {
-                        Vector<String> newValues = new Vector<String>();
+                        ArrayList<String> newValues = new ArrayList<String>();
                         newValues.add(newValue);
                         errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_PRIMARY_FOUND_IN, Q, sis_session, dbGen, TA, tms_session));
                         if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {

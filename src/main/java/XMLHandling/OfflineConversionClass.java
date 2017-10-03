@@ -37,7 +37,7 @@ import Utils.ConstantParameters;
 import Utils.Parameters;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -105,11 +105,11 @@ public class OfflineConversionClass {
         ConstantParameters.SchemePrefix ="http://www.getty.edu/research/tools/vocabularies/aat";
         
         //for use with aatToTHEMAS function
-        Vector<String> filterFacets = new Vector<String>();
-        Vector<String> filterHierarchies = new Vector<String>();
+        ArrayList<String> filterFacets = new ArrayList<String>();
+        ArrayList<String> filterHierarchies = new ArrayList<String>();
 
         //for use with aatSpecificSubjectIds function
-        Vector<String> targetSubjectIds = new Vector<String>();
+        ArrayList<String> targetSubjectIds = new ArrayList<String>();
 /*
         targetSubjectIds.add("300041622");
         targetSubjectIds.add("300041619");
@@ -248,8 +248,8 @@ public class OfflineConversionClass {
         
 
         /*
-        filterFacets = new Vector<String>();
-        filterHierarchies = new Vector<String>();
+        filterFacets = new ArrayList<String>();
+        filterHierarchies = new ArrayList<String>();
         filterHierarchies.add("Object Groupings and Systems");
         outputFilePath = "C:\\Documents and Settings\\tzortzak\\Desktop\\themasdraft\\THEMASLoad.rdf";
         ConversionActions.aatToSkos(inputFilePath, outputFilePath, filterFacets, filterHierarchies);*/

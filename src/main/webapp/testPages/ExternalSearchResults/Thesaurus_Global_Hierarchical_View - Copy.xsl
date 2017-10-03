@@ -71,7 +71,7 @@
     <xsl:variable name="pathToSaveScriptingAndLocale" select="//pathToSaveScriptingAndLocale"/>
     <xsl:variable name="localecommon" select="document($pathToSaveScriptingAndLocale)/root/common"/>
     <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/GlobalThesaurusSimpleHierarchicalView"/>        
-    <xsl:variable name="lang" select="/page/@language"/>
+    <xsl:variable name="lang" select="page/@language"/>
     <xsl:variable name="pageTitle">
         <xsl:choose>
                          <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">

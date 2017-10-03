@@ -35,7 +35,7 @@ package Users;
 
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.Return_Link_Row;
@@ -82,7 +82,7 @@ public class DBThesaurusTeamFilters {
         //StringObject label = new StringObject();
         //CMValue cmv = new CMValue();
         boolean termIsEditable = false;
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(linkSet, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 if (userLogicalName.getValue().equals(row.get_v3_cmv().getString())) {

@@ -44,14 +44,14 @@ import java.util.*;
  */
 public class TaxonomicCodeItem {
     
-    public Vector<String> codeParts;
+    public ArrayList<String> codeParts;
     public String nodeName;
     public String nodeNameTransliteration;
     
     
     public TaxonomicCodeItem(String name, String nodeNameTranslit) {
                 
-        codeParts =new Vector<String>();
+        codeParts =new ArrayList<String>();
         codeParts.add("");
         nodeName = name;
         nodeNameTransliteration = nodeNameTranslit;
@@ -68,7 +68,7 @@ public class TaxonomicCodeItem {
         
         
         String term_split[] = name.split("`");
-        codeParts =new Vector<String>();
+        codeParts =new ArrayList<String>();
         
         if(term_split.length ==2 ){
             //String codeStr = term_split[1];

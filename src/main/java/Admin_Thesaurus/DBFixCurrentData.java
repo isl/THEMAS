@@ -768,7 +768,7 @@ public class DBFixCurrentData {
                 Q.reset_name_scope();
                 int set_all_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
                 Q.reset_set(set_all_terms);
-                Vector<String> checkTerms = new Vector<String>();
+                ArrayList<String> checkTerms = new ArrayList<String>();
                 checkTerms.addAll(dbGen.get_Node_Names_Of_Set(set_all_terms, true, Q, sis_session));
                 Collections.sort(checkTerms, new StringLocaleComparator(targetLocale));
                 //for each term collect all its bts 
@@ -814,8 +814,8 @@ public class DBFixCurrentData {
                         //error case because not orphans cardinality is also > 0 
 
                         if (mode.compareTo("Preview") == 0) {
-                            Vector<String> correctBts_Vector = new Vector<String>();
-                            Vector<String> errorBts_Vector = new Vector<String>();
+                            ArrayList<String> correctBts_Vector = new ArrayList<String>();
+                            ArrayList<String> errorBts_Vector = new ArrayList<String>();
                             correctBts_Vector.addAll(dbGen.get_Node_Names_Of_Set(set_not_orphans, true, Q, sis_session));
                             errorBts_Vector.addAll(dbGen.get_Node_Names_Of_Set(set_bts, true, Q, sis_session));
                             try {
@@ -857,16 +857,16 @@ public class DBFixCurrentData {
                             }
                         } else {
                             //FIX CODE
-                            Vector<String> correctBts_Vector = new Vector<String>();
-                            Vector<String> errorBts_Vector = new Vector<String>();
+                            ArrayList<String> correctBts_Vector = new ArrayList<String>();
+                            ArrayList<String> errorBts_Vector = new ArrayList<String>();
                             correctBts_Vector.addAll(dbGen.get_Node_Names_Of_Set(set_not_orphans, false, Q, sis_session));
                             errorBts_Vector.addAll(dbGen.get_Node_Names_Of_Set(set_bts, false, Q, sis_session));
-                            Vector<Long> deleteLinkIds = new Vector<Long>();
+                            ArrayList<Long> deleteLinkIds = new ArrayList<Long>();
                             Q.reset_name_scope();
                             Q.reset_set(set_bt_labels);
 
                             //why call return_full_link_id and not call bulk_return_link
-                            Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                            ArrayList<Return_Link_Row> retVals = new ArrayList<>();
                             if (Q.bulk_return_link(set_bt_labels, retVals) != QClass.APIFail) {
                                 for (Return_Link_Row row : retVals) {
                                     String targetBt = row.get_v3_cmv().getString();
@@ -1009,7 +1009,7 @@ public class DBFixCurrentData {
         int set_hierarchy_nodes = Q.get_all_instances(0);
         Q.reset_set(set_hierarchy_nodes);
 
-        Vector<String> hierarchyNodes = new Vector<String>();
+        ArrayList<String> hierarchyNodes = new ArrayList<String>();
         hierarchyNodes.addAll(dbGen.get_Node_Names_Of_Set(set_hierarchy_nodes, false, Q, sis_session));
         Q.free_set(set_hierarchy_nodes);
         fixed = false;
@@ -1077,9 +1077,9 @@ public class DBFixCurrentData {
             int SisSessionId = sis_session.getValue();
             Q.reset_name_scope();
 
-            Vector<StringObject> classes = new Vector<StringObject>();
-            Vector<String> prefixes = new Vector<String>();
-            Vector<String> writenTerms = new Vector<String>();
+            ArrayList<StringObject> classes = new ArrayList<StringObject>();
+            ArrayList<String> prefixes = new ArrayList<String>();
+            ArrayList<String> writenTerms = new ArrayList<String>();
 
             prefixes.add(dbtr.getThesaurusPrefix_AlternativeTerm(selectedThesaurus, Q, SisSessionId));
             prefixes.add(dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, SisSessionId));
@@ -1135,7 +1135,7 @@ public class DBFixCurrentData {
                 int set_curr_instances = Q.get_all_instances(0);
                 Q.reset_set(set_curr_instances);
 
-                Vector<String> instanceNames = dbGen.get_Node_Names_Of_Set(set_curr_instances, false, Q, sis_session);
+                ArrayList<String> instanceNames = dbGen.get_Node_Names_Of_Set(set_curr_instances, false, Q, sis_session);
                 if (instanceNames != null && instanceNames.size() > 0) {
 
                     for (int k = 0; k < instanceNames.size(); k++) {
@@ -1339,29 +1339,29 @@ public class DBFixCurrentData {
 
             Q.reset_name_scope();
             int set_1 = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
-            Vector<String> set_1Names = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
+            ArrayList<String> set_1Names = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
             Q.free_set(set_1);
 
             Q.reset_name_scope();
             int set_2 = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
-            Vector<String> set_2Names = dbGen.get_Node_Names_Of_Set(set_2, false, Q, sis_session);
+            ArrayList<String> set_2Names = dbGen.get_Node_Names_Of_Set(set_2, false, Q, sis_session);
             Q.free_set(set_2);
 
             Q.reset_name_scope();
             int set_3 = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Vector<String> set_3Names = dbGen.get_Node_Names_Of_Set(set_3, false, Q, sis_session);
+            ArrayList<String> set_3Names = dbGen.get_Node_Names_Of_Set(set_3, false, Q, sis_session);
             Q.free_set(set_3);
 
             Q.reset_name_scope();
             Q.set_current_node(usedForClassObj);
             int set_4 = Q.get_all_instances(0);
-            Vector<String> set_4Names = dbGen.get_Node_Names_Of_Set(set_4, false, Q, sis_session);
+            ArrayList<String> set_4Names = dbGen.get_Node_Names_Of_Set(set_4, false, Q, sis_session);
             Q.free_set(set_4);
 
             Q.reset_name_scope();
             Q.set_current_node(altClassObj);
             int set_5 = Q.get_all_instances(0);
-            Vector<String> set_5Names = dbGen.get_Node_Names_Of_Set(set_5, false, Q, sis_session);
+            ArrayList<String> set_5Names = dbGen.get_Node_Names_Of_Set(set_5, false, Q, sis_session);
             Q.free_set(set_5);
 
             Q.reset_name_scope();
@@ -1369,7 +1369,7 @@ public class DBFixCurrentData {
             Q.set_current_node(toENLinkObj);
             int set_6_labels = Q.get_all_instances(0);
             int set_6 = Q.get_to_value(set_6_labels);
-            Vector<String> set_6Names = dbGen.get_Node_Names_Of_Set(set_6, false, Q, sis_session);
+            ArrayList<String> set_6Names = dbGen.get_Node_Names_Of_Set(set_6, false, Q, sis_session);
             Q.free_set(set_6_labels);
             Q.free_set(set_6);
 
@@ -1378,7 +1378,7 @@ public class DBFixCurrentData {
             Q.set_current_node(uk_ufLinkObj);
             int set_7_labels = Q.get_all_instances(0);
             int set_7 = Q.get_to_value(set_7_labels);
-            Vector<String> set_7Names = dbGen.get_Node_Names_Of_Set(set_7, false, Q, sis_session);
+            ArrayList<String> set_7Names = dbGen.get_Node_Names_Of_Set(set_7, false, Q, sis_session);
             Q.free_set(set_7_labels);
             Q.free_set(set_7);
 
@@ -1388,7 +1388,7 @@ public class DBFixCurrentData {
              Q.set_current_node(uk_altLinkObj);
              int set_8_labels = Q.get_all_instances(0);
              int set_8 = Q.get_to_value(set_8_labels);
-             Vector<String> set_8Names = dbGen.get_Node_Names_Of_Set(set_8, false, Q, sis_session);
+             ArrayList<String> set_8Names = dbGen.get_Node_Names_Of_Set(set_8, false, Q, sis_session);
              Q.free_set(set_8_labels);
              Q.free_set(set_8);
              *
@@ -1396,13 +1396,13 @@ public class DBFixCurrentData {
             Q.reset_name_scope();
             Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
             int set_9 = Q.get_all_instances(0);
-            Vector<String> set_9Names = dbGen.get_Node_Names_Of_Set(set_9, false, Q, sis_session);
+            ArrayList<String> set_9Names = dbGen.get_Node_Names_Of_Set(set_9, false, Q, sis_session);
             Q.free_set(set_9);
 
             Q.reset_name_scope();
             Q.set_current_node(editorClassObj);
             int set_10 = Q.get_all_instances(0);
-            Vector<String> set_10Names = dbGen.get_Node_Names_Of_Set(set_10, false, Q, sis_session);
+            ArrayList<String> set_10Names = dbGen.get_Node_Names_Of_Set(set_10, false, Q, sis_session);
             Q.free_set(set_10);
 
             Q.reset_name_scope();
@@ -1411,7 +1411,7 @@ public class DBFixCurrentData {
             int set_11_0 = Q.get_instances(0);
             Q.reset_set(set_11_0);
             int set_11 = Q.get_to_value(set_11_0);
-            Vector<String> set_11Names = dbGen.get_Node_Names_Of_Set(set_11, false, Q, sis_session);
+            ArrayList<String> set_11Names = dbGen.get_Node_Names_Of_Set(set_11, false, Q, sis_session);
             Q.free_set(set_11_0);
             Q.free_set(set_11);
 
@@ -1425,7 +1425,7 @@ public class DBFixCurrentData {
             int set_12_0 = Q.get_instances(0);
             Q.reset_set(set_12_0);
             int set_12 = Q.get_to_value(set_12_0);
-            Vector<String> set_12Names = dbGen.get_Node_Names_Of_Set(set_12, false, Q, sis_session);
+            ArrayList<String> set_12Names = dbGen.get_Node_Names_Of_Set(set_12, false, Q, sis_session);
             Q.free_set(set_12_0);
             Q.free_set(set_12);
 
@@ -1437,7 +1437,7 @@ public class DBFixCurrentData {
             Q.reset_set(set_created_labels);
             int set_created = Q.get_to_value(set_created_labels);
             Q.reset_set(set_created);
-            Vector<String> createdDates = dbGen.get_Node_Names_Of_Set(set_created, false, Q, sis_session);
+            ArrayList<String> createdDates = dbGen.get_Node_Names_Of_Set(set_created, false, Q, sis_session);
             Q.free_set(set_created);
             Q.free_set(set_created_labels);
 
@@ -1448,7 +1448,7 @@ public class DBFixCurrentData {
             Q.reset_set(set_modified_labels);
             int set_modified = Q.get_to_value(set_modified_labels);
             Q.reset_set(set_created);
-            Vector<String> modifiedDates = dbGen.get_Node_Names_Of_Set(set_modified, false, Q, sis_session);
+            ArrayList<String> modifiedDates = dbGen.get_Node_Names_Of_Set(set_modified, false, Q, sis_session);
             Q.free_set(set_modified);
             Q.free_set(set_modified_labels);
 
@@ -1458,7 +1458,7 @@ public class DBFixCurrentData {
             int set_13_0 = Q.get_instances(0);
             Q.reset_set(set_13_0);
             int set_13 = Q.get_to_value(set_13_0);
-            Vector<String> set_13Names = dbGen.get_Node_Names_Of_Set(set_13, false, Q, sis_session);
+            ArrayList<String> set_13Names = dbGen.get_Node_Names_Of_Set(set_13, false, Q, sis_session);
             Q.free_set(set_13_0);
             Q.free_set(set_13);
 
@@ -1518,7 +1518,7 @@ public class DBFixCurrentData {
         }
     }
 
-    void RepairNames_Preview_or_Fix(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, Vector<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
+    void RepairNames_Preview_or_Fix(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, ArrayList<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
 
         //DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1626,12 +1626,12 @@ public class DBFixCurrentData {
                     //IntegerObject categID = new IntegerObject();
                     //CMValue cmv = new CMValue();
                     //Storage of values in order to copy them as attributes to the new node
-                    Vector<Long> links_Ids = new Vector<Long>();
-                    Vector<CMValue> vals = new Vector<CMValue>();
-                    Vector<String> fromClasses = new Vector<String>();
-                    Vector<String> link_names = new Vector<String>();
+                    ArrayList<Long> links_Ids = new ArrayList<Long>();
+                    ArrayList<CMValue> vals = new ArrayList<CMValue>();
+                    ArrayList<String> fromClasses = new ArrayList<String>();
+                    ArrayList<String> link_names = new ArrayList<String>();
 
-                    Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+                    ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
                     if (Q.bulk_return_full_link_id(oldNode_links_from, retFLIVals) != QClass.APIFail) {
                         for (Return_Full_Link_Id_Row row : retFLIVals) {
                             //while (Q.retur_full_link_id(oldNode_links_from, cls, clsID, label, linkID, categ, fromcls, categID, cmv, uniq_categ) != QClass.APIFail) {
@@ -1735,7 +1735,7 @@ public class DBFixCurrentData {
 
                     //Get To Nodes AND LINKS
                     //Node name from is not known and must be stored also
-                    Vector<String> names = new Vector<String>();
+                    ArrayList<String> names = new ArrayList<String>();
                     links_Ids.clear();
                     vals.clear();
                     fromClasses.clear();
@@ -1944,7 +1944,7 @@ public class DBFixCurrentData {
             Q.set_current_node(new StringObject(SessionUserInfo.selectedThesaurus.concat("TopTerm")));
             int set_1 = Q.get_instances(0);
             Q.reset_set(set_1);
-            Vector<String> tts = new Vector<String>();
+            ArrayList<String> tts = new ArrayList<String>();
             tts.addAll(dbGen.get_Node_Names_Of_Set(set_1, true, Q, sis_session));
 
             if (mode.compareTo("Preview") == 0) {
@@ -1975,7 +1975,7 @@ public class DBFixCurrentData {
 
     }
 
-    void TopTerm_Inconsistencies_Preview(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale, Vector<String> topTerms, OutputStreamWriter out) {
+    void TopTerm_Inconsistencies_Preview(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale, ArrayList<String> topTerms, OutputStreamWriter out) {
 
         //tools
         Utilities u = new Utilities();
@@ -1985,9 +1985,9 @@ public class DBFixCurrentData {
 
         for (int i = 0; i < topTerms.size(); i++) {
 
-            Vector<String> BTsFordeletion = new Vector<String>();
-            Vector<String> HiersFordeletion = new Vector<String>();
-            Vector<String> shouldBeRenamedTo = new Vector<String>();
+            ArrayList<String> BTsFordeletion = new ArrayList<String>();
+            ArrayList<String> HiersFordeletion = new ArrayList<String>();
+            ArrayList<String> shouldBeRenamedTo = new ArrayList<String>();
 
             TopTermsBugDetection(selectedThesaurus, Q, sis_session, topTerms.get(i), BTsFordeletion, HiersFordeletion, shouldBeRenamedTo);
 
@@ -2056,7 +2056,7 @@ public class DBFixCurrentData {
 
     }
 
-    void TopTerm_Inconsistencies_Fix(String selectedThesaurus, QClass Q, IntegerObject sis_session, Boolean fixed, Vector<String> topTerms) {
+    void TopTerm_Inconsistencies_Fix(String selectedThesaurus, QClass Q, IntegerObject sis_session, Boolean fixed, ArrayList<String> topTerms) {
 
         //tools
         DBGeneral dbGen = new DBGeneral();
@@ -2072,9 +2072,9 @@ public class DBFixCurrentData {
             Q.reset_name_scope();
             String termName = new String(topTerms.get(i)); //might change
 
-            Vector<String> BTsFordeletion = new Vector<String>();
-            Vector<String> HiersFordeletion = new Vector<String>();
-            Vector<String> shouldBeRenamedTo = new Vector<String>();
+            ArrayList<String> BTsFordeletion = new ArrayList<String>();
+            ArrayList<String> HiersFordeletion = new ArrayList<String>();
+            ArrayList<String> shouldBeRenamedTo = new ArrayList<String>();
 
             TopTermsBugDetection(selectedThesaurus, Q, sis_session, topTerms.get(i), BTsFordeletion, HiersFordeletion, shouldBeRenamedTo);
 
@@ -2098,7 +2098,7 @@ public class DBFixCurrentData {
 
                             int index = HiersFordeletion.indexOf(termName);
                             if (index >= 0) {
-                                HiersFordeletion.removeElementAt(index);
+                                HiersFordeletion.remove(index);
                                 HiersFordeletion.trimToSize();
                             }
                         } else {//Else no default fix action is performed
@@ -2111,7 +2111,7 @@ public class DBFixCurrentData {
                         int index = HiersFordeletion.indexOf(shouldBeRenamedTo.get(0));
 
                         if (index >= 0) {
-                            HiersFordeletion.removeElementAt(index);
+                            HiersFordeletion.remove(index);
                             HiersFordeletion.trimToSize();
                         }
                     }
@@ -2161,7 +2161,7 @@ public class DBFixCurrentData {
         Q.reset_set(set_tts);
         Q.set_intersect(set_tts, set_descr);
 
-        Vector<String> declassifyTTs = dbGen.get_Node_Names_Of_Set(set_tts, false, Q, sis_session);
+        ArrayList<String> declassifyTTs = dbGen.get_Node_Names_Of_Set(set_tts, false, Q, sis_session);
 
         for (int i = 0; i < declassifyTTs.size(); i++) {
             Q.reset_name_scope();
@@ -2181,7 +2181,7 @@ public class DBFixCurrentData {
 
     }
 
-    boolean TopTermsBugDetection(String selectedThesaurus, QClass Q, IntegerObject sis_session, String checkNode, Vector<String> BTsFordeletion, Vector<String> HiersFordeletion, Vector<String> RelatedHier) {
+    boolean TopTermsBugDetection(String selectedThesaurus, QClass Q, IntegerObject sis_session, String checkNode, ArrayList<String> BTsFordeletion, ArrayList<String> HiersFordeletion, ArrayList<String> RelatedHier) {
 
         //tools
         DBGeneral dbGen = new DBGeneral();
@@ -2282,9 +2282,9 @@ public class DBFixCurrentData {
         Q.reset_set(BT_links_set);
 
         long BTlink_sysidL = QClass.APIFail;
-        Vector<Long> BTlinks_Ids = new Vector<Long>();
+        ArrayList<Long> BTlinks_Ids = new ArrayList<Long>();
 
-        Vector<Return_Link_Id_Row> retVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<>();
         if (Q.bulk_return_link_id(BT_links_set, retVals) != QClass.APIFail) {
             for (Return_Link_Id_Row row : retVals) {
                 BTlink_sysidL = row.get_v3_sysid();
@@ -2296,7 +2296,7 @@ public class DBFixCurrentData {
         /*
          StringObject node_name = new StringObject();
          IntegerObject BTlink_sysid = new IntegerObject();
-         Vector<Long> BTlinks_Ids = new Vector<Long>();
+         ArrayList<Long> BTlinks_Ids = new ArrayList<Long>();
          CMValue cmv = new CMValue();
          //while (Q.retur_link_id(BT_links_set, node_name, new IntegerObject(), BTlink_sysid, cmv, new IntegerObject()) != QClass.APIFail) {
          BTlinks_Ids.add(BTlink_sysid.getValue());
@@ -2422,7 +2422,7 @@ public class DBFixCurrentData {
             int set_class_filter = Q.get_all_instances(0);
             Q.reset_set(set_class_filter);
 
-            Vector<String> set_DescrNames = dbGen.get_Node_Names_Of_Set(set_all_descr, false, Q, sis_session);
+            ArrayList<String> set_DescrNames = dbGen.get_Node_Names_Of_Set(set_all_descr, false, Q, sis_session);
             set_DescrNames.trimToSize();
 
             Collections.sort(set_DescrNames, new StringLocaleComparator(targetLocale));
@@ -2453,7 +2453,7 @@ public class DBFixCurrentData {
                     out.write("<belongs_to_Hiers>");
                     if (Q.set_get_card(set_current_node_classes) > 0) {
 
-                        Vector<String> belongs_to_Hiers = dbGen.get_Node_Names_Of_Set(set_current_node_classes, true, Q, sis_session);
+                        ArrayList<String> belongs_to_Hiers = dbGen.get_Node_Names_Of_Set(set_current_node_classes, true, Q, sis_session);
 
                         for (int m = 0; m < belongs_to_Hiers.size(); m++) {
                             out.write(Utilities.escapeXML(belongs_to_Hiers.get(m)));
@@ -2472,7 +2472,7 @@ public class DBFixCurrentData {
 
                     if (Q.set_get_card(set_add_BTs) > 0) {
 
-                        Vector<String> add_BTs = dbGen.get_Node_Names_Of_Set(set_add_BTs, true, Q, sis_session);
+                        ArrayList<String> add_BTs = dbGen.get_Node_Names_Of_Set(set_add_BTs, true, Q, sis_session);
 
                         for (int m = 0; m < add_BTs.size(); m++) {
                             out.write(Utilities.escapeXML(add_BTs.get(m)));
@@ -2492,14 +2492,14 @@ public class DBFixCurrentData {
                     //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
                     Q.reset_name_scope();
 
-                    Vector<String> add_BTs = null;
+                    ArrayList<String> add_BTs = null;
                     StringObject term = new StringObject(set_DescrNames.get(k));
                     if (Q.set_get_card(set_add_BTs) > 0) {
-                        add_BTs = new Vector<String>();
+                        add_BTs = new ArrayList<String>();
                         add_BTs.addAll(dbGen.get_Node_Names_Of_Set(set_add_BTs, false, Q, sis_session));
 
                     } else {
-                        add_BTs = new Vector<String>();
+                        add_BTs = new ArrayList<String>();
                         add_BTs.add(prefix_term.concat(Parameters.UnclassifiedTermsLogicalname));
                         //Add hierarchy instance
                         Q.reset_name_scope();
@@ -2619,8 +2619,8 @@ public class DBFixCurrentData {
             int set_unclassified_nts = Q.get_from_value(set_unclassified_nts_labels);
             Q.reset_set(set_unclassified_nts);
 
-            Vector<String> unclassified_nts_Names = dbGen.get_Node_Names_Of_Set(set_unclassified_nts, false, Q, sis_session);
-            Vector<String> WrongTerms = new Vector<String>();
+            ArrayList<String> unclassified_nts_Names = dbGen.get_Node_Names_Of_Set(set_unclassified_nts, false, Q, sis_session);
+            ArrayList<String> WrongTerms = new ArrayList<String>();
 
             //Detect / fix Wrong Unclassified Bts
             for (int k = 0; k < unclassified_nts_Names.size(); k++) {
@@ -2640,7 +2640,7 @@ public class DBFixCurrentData {
                         //CMValue cmv = new CMValue();
                         Q.reset_name_scope();
                         Q.reset_set(set_direct_bts_labels);
-                        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                        ArrayList<Return_Link_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link(set_direct_bts_labels, retVals) != QClass.APIFail) {
                             for (Return_Link_Row row : retVals) {
                                 if (row.get_v3_cmv().getType() != CMValue.TYPE_NODE) {
@@ -2748,12 +2748,12 @@ public class DBFixCurrentData {
 
             Q.TEST_begin_transaction();
             int set_1 = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Vector<String> decr = dbGen.get_Node_Names_Of_Set(set_1, true, Q, sis_session);
+            ArrayList<String> decr = dbGen.get_Node_Names_Of_Set(set_1, true, Q, sis_session);
             decr.trimToSize();
             Q.free_set(set_1);
 
             for (int i = 0; i < decr.size(); i++) {
-                MoveToHierBugFix(SessionUserInfo.selectedThesaurus, Q, sis_session, mode, fixed, decr.get(i), new Vector<String>(), new Vector<String>());
+                MoveToHierBugFix(SessionUserInfo.selectedThesaurus, Q, sis_session, mode, fixed, decr.get(i), new ArrayList<String>(), new ArrayList<String>());
             }
 
             Q.TEST_end_transaction();
@@ -2778,7 +2778,7 @@ public class DBFixCurrentData {
 
             int set_1 = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
 
-            Vector<String> decr = dbGen.get_Node_Names_Of_Set(set_1, true, Q, sis_session);
+            ArrayList<String> decr = dbGen.get_Node_Names_Of_Set(set_1, true, Q, sis_session);
             Q.free_set(set_1);
             decr.trimToSize();
 
@@ -2789,8 +2789,8 @@ public class DBFixCurrentData {
             out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
             for (int i = 0; i < decr.size(); i++) {
 
-                Vector<String> deletion = new Vector<String>();
-                Vector<String> addtion = new Vector<String>();
+                ArrayList<String> deletion = new ArrayList<String>();
+                ArrayList<String> addtion = new ArrayList<String>();
                 MoveToHierBugFix(SessionUserInfo.selectedThesaurus, Q, sis_session, mode, fixed, decr.get(i), deletion, addtion);
                 deletion.trimToSize();
                 addtion.trimToSize();
@@ -2845,7 +2845,7 @@ public class DBFixCurrentData {
         }
     }
 
-    boolean MoveToHierBugFix(String selectedThesaurus, QClass Q, IntegerObject sis_session, String mode, Boolean fixed, String checkNode, Vector<String> deleteClassInstances, Vector<String> addClassInstances) {
+    boolean MoveToHierBugFix(String selectedThesaurus, QClass Q, IntegerObject sis_session, String mode, Boolean fixed, String checkNode, ArrayList<String> deleteClassInstances, ArrayList<String> addClassInstances) {
 
         //tools
         Utilities u = new Utilities();
@@ -2921,11 +2921,11 @@ public class DBFixCurrentData {
                     deleteClassInstances.addAll(dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session));
                     int index = deleteClassInstances.indexOf(checkNode);
                     if (index >= 0) {
-                        deleteClassInstances.removeElementAt(index);
+                        deleteClassInstances.remove(index);
                     }
 
                 } else {
-                    Vector<String> deletions = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
+                    ArrayList<String> deletions = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
                     deletions.trimToSize();
 
                     int ret;
@@ -2954,7 +2954,7 @@ public class DBFixCurrentData {
                     addClassInstances.addAll(dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session));
                 } else {
                     //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nAdd class Instances:\n" +dbGen.getStringList_Of_Set(set_recursive_bts, ",\n"));  
-                    Vector<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
+                    ArrayList<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
                     addInstancesClasses.trimToSize();
                     int ret;
                     for (int k = 0; k < addInstancesClasses.size(); k++) {
@@ -3040,7 +3040,7 @@ public class DBFixCurrentData {
 
             Q.reset_name_scope();
             int set_1 = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Vector<String> set_1Names = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
+            ArrayList<String> set_1Names = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
             Q.free_set(set_1);
 
             for (int i = 0; i < set_1Names.size(); i++) {
@@ -3088,7 +3088,7 @@ public class DBFixCurrentData {
 
                 if (mode.compareTo("Preview") == 0) {
 
-                    Vector<String> deleteRts = dbGen.get_Node_Names_Of_Set(set_rts, true, Q, sis_session);
+                    ArrayList<String> deleteRts = dbGen.get_Node_Names_Of_Set(set_rts, true, Q, sis_session);
                     Q.free_all_sets();
 
                     deleteRts.trimToSize();
@@ -3110,7 +3110,7 @@ public class DBFixCurrentData {
                     out.write("</concept>");
                 } else if (mode.compareTo("Fix") == 0) {
 
-                    Vector<String> deleteRts = dbGen.get_Node_Names_Of_Set(set_rts, false, Q, sis_session);
+                    ArrayList<String> deleteRts = dbGen.get_Node_Names_Of_Set(set_rts, false, Q, sis_session);
                     Q.free_all_sets();
                     deleteRts.trimToSize();
 
@@ -3121,14 +3121,14 @@ public class DBFixCurrentData {
                         int set_from_rts = Q.get_link_from_by_category(0, rtFromClassObj, rtLinkObj);
                         Q.reset_set(set_from_rts);
 
-                        Vector<Long> deleteIDs = new Vector<Long>();
+                        ArrayList<Long> deleteIDs = new ArrayList<Long>();
 
                         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
                         //IntegerObject linkID = new IntegerObject();
                         //CMValue cmv = new CMValue();
                         String checkRT = deleteRts.get(k);
 
-                        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                        ArrayList<Return_Link_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link(set_from_rts, retVals) != QClass.APIFail) {
                             for (Return_Link_Row row : retVals) {
                                 if (row.get_v3_cmv().getString() != null && row.get_v3_cmv().getString().compareTo(checkRT) == 0) {
@@ -3262,9 +3262,9 @@ public class DBFixCurrentData {
                 if (mode.compareTo("Fix") == 0) {
 
                     //Collect ids of links that must be reclassified
-                    Vector<Long> reClassifyIDs = new Vector<Long>();
+                    ArrayList<Long> reClassifyIDs = new ArrayList<>();
                     Q.reset_name_scope();
-                    Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                    ArrayList<Return_Link_Row> retVals = new ArrayList<>();
                     if (Q.bulk_return_link(set_unclassified_sources_labels, retVals) != QClass.APIFail) {
                         for (Return_Link_Row row : retVals) {
                             reClassifyIDs.add(row.get_Neo4j_NodeId());
@@ -3307,7 +3307,7 @@ public class DBFixCurrentData {
                     int set_sources = Q.get_to_value(set_unclassified_sources_labels);
                     Q.reset_set(set_sources);
 
-                    Vector<String> sources = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
+                    ArrayList<String> sources = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
                     sources.trimToSize();
 
                     for (int m = 0; m < sources.size(); m++) {
@@ -3321,8 +3321,8 @@ public class DBFixCurrentData {
                         Q.reset_set(set_related_terms_labels);
 
                         //collect term names tha have unclassified source links
-                        Vector<String> related_terms = new Vector<String>();
-                        Vector<Return_Full_Link_Row> retFLIVals = new Vector<Return_Full_Link_Row>();
+                        ArrayList<String> related_terms = new ArrayList<>();
+                        ArrayList<Return_Full_Link_Row> retFLIVals = new ArrayList<>();
                         if (Q.bulk_return_full_link(set_related_terms_labels, retFLIVals) != QClass.APIFail) {
                             for (Return_Full_Link_Row row : retFLIVals) {
                                 if (row.get_v3_categ().compareTo(foundInLinkObj.getValue()) == 0) {
@@ -3509,9 +3509,9 @@ public class DBFixCurrentData {
                 if (mode.compareTo("Fix") == 0) {
 
                     //Collect ids of links that must be reclassified
-                    Vector<Long> reClassifyIDs = new Vector<Long>();
+                    ArrayList<Long> reClassifyIDs = new ArrayList<>();
                     Q.reset_name_scope();
-                    Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+                    ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
                     if (Q.bulk_return_link(set_unclassified_editors_labels, retVals) != QClass.APIFail) {
                         for (Return_Link_Row row : retVals) {
                             reClassifyIDs.add(row.get_Neo4j_NodeId());
@@ -3554,7 +3554,7 @@ public class DBFixCurrentData {
                     int set_editors = Q.get_to_value(set_unclassified_editors_labels);
                     Q.reset_set(set_editors);
 
-                    Vector<String> editors = dbGen.get_Node_Names_Of_Set(set_editors, true, Q, sis_session);
+                    ArrayList<String> editors = dbGen.get_Node_Names_Of_Set(set_editors, true, Q, sis_session);
 
                     for (int m = 0; m < editors.size(); m++) {
 
@@ -3567,9 +3567,9 @@ public class DBFixCurrentData {
                         Q.reset_set(set_related_terms_labels);
 
                         //Store term names
-                        Vector<String> related_terms = new Vector<String>();
+                        ArrayList<String> related_terms = new ArrayList<>();
 
-                        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+                        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<>();
                         if (Q.bulk_return_full_link(set_related_terms_labels, retFLVals) != QClass.APIFail) {
                             for (Return_Full_Link_Row row : retFLVals) {
                                 if (row.get_v3_categ().compareTo(editorLinkObj.getValue()) == 0) {
@@ -3738,7 +3738,7 @@ public class DBFixCurrentData {
 
             if (Q.set_get_card(set_unclassified_terms) > 0) {
 
-                Vector<String> unclassified_terms = dbGen.get_Node_Names_Of_Set(set_unclassified_terms, true, Q, sis_session);
+                ArrayList<String> unclassified_terms = dbGen.get_Node_Names_Of_Set(set_unclassified_terms, true, Q, sis_session);
                 unclassified_terms.trimToSize();
 
                 for (int m = 0; m < unclassified_terms.size(); m++) {
@@ -3865,7 +3865,7 @@ public class DBFixCurrentData {
 
                 if (Q.set_get_card(set_all_nodes) > 0) {
 
-                    Vector<String> nodes = dbGen.get_Node_Names_Of_Set(set_all_nodes, false, Q, sis_session);
+                    ArrayList<String> nodes = dbGen.get_Node_Names_Of_Set(set_all_nodes, false, Q, sis_session);
                     Q.free_set(set_all_nodes);
                     for (int i = 0; i < nodes.size(); i++) {
 
@@ -3879,7 +3879,7 @@ public class DBFixCurrentData {
                         int set_classes = Q.get_classes(0);
                         Q.reset_set(set_classes);
                         out.write("<category>");
-                        Vector<String> classes = dbGen.get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
+                        ArrayList<String> classes = dbGen.get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
                         for (int k = 0; k < classes.size(); k++) {
 
                             out.write(classes.get(k));
@@ -3904,7 +3904,7 @@ public class DBFixCurrentData {
 
                 if (Q.set_get_card(set_all_nodes) > 0) {
 
-                    Vector<String> nodes = dbGen.get_Node_Names_Of_Set(set_all_nodes, false, Q, sis_session);
+                    ArrayList<String> nodes = dbGen.get_Node_Names_Of_Set(set_all_nodes, false, Q, sis_session);
                     Q.free_set(set_all_nodes);
                     for (int k = 0; k < nodes.size(); k++) {
 
@@ -4023,10 +4023,10 @@ public class DBFixCurrentData {
             Q.set_copy(set_translations_copy, set_translations);
             Q.reset_set(set_translations_copy);
 
-            Vector<String> TUvec = new Vector<String>();//translation and uk_uf
-            Vector<String> TAvec = new Vector<String>();//translation and uk_alt
-            Vector<String> UAvec = new Vector<String>();//uk_uf and uk_alt
-            Vector<String> TUAvec = new Vector<String>();//translation and uk_uf and uk_alt
+            ArrayList<String> TUvec = new ArrayList<String>();//translation and uk_uf
+            ArrayList<String> TAvec = new ArrayList<String>();//translation and uk_alt
+            ArrayList<String> UAvec = new ArrayList<String>();//uk_uf and uk_alt
+            ArrayList<String> TUAvec = new ArrayList<String>();//translation and uk_uf and uk_alt
 
             //keep in set_translations all terms that are both translations and ufs
             Q.set_intersect(set_translations, set_uf_translations);
@@ -4102,10 +4102,10 @@ public class DBFixCurrentData {
             Q.set_copy(set_descriptors_copy, set_descriptors);
             Q.reset_set(set_descriptors_copy);
 
-            Vector<String> DXvec = new Vector<String>();//descriptor and uf
-            Vector<String> DAvec = new Vector<String>();//descriptor and alt
-            Vector<String> XAvec = new Vector<String>();//uf and alt
-            Vector<String> DXAvec = new Vector<String>();//descriptor and uf and alt
+            ArrayList<String> DXvec = new ArrayList<String>();//descriptor and uf
+            ArrayList<String> DAvec = new ArrayList<String>();//descriptor and alt
+            ArrayList<String> XAvec = new ArrayList<String>();//uf and alt
+            ArrayList<String> DXAvec = new ArrayList<String>();//descriptor and uf and alt
 
             Q.set_intersect(set_descriptors, set_ufs);
             Q.reset_set(set_descriptors);
@@ -4325,7 +4325,7 @@ public class DBFixCurrentData {
             Q.set_union(set_descriptors, set_new_descriptors);
             Q.reset_set(set_descriptors);
 
-            Vector<String> allDescr = dbGen.get_Node_Names_Of_Set(set_descriptors, false, Q, sis_session);
+            ArrayList<String> allDescr = dbGen.get_Node_Names_Of_Set(set_descriptors, false, Q, sis_session);
 
             Q.free_set(set_new_descriptors);
             Q.free_set(set_descriptors);
@@ -4342,10 +4342,10 @@ public class DBFixCurrentData {
                 int set_from_labels = Q.get_link_from(0);
                 Q.reset_set(set_from_labels);
 
-                Vector<String> creators = new Vector<String>();
-                Vector<String> modificators = new Vector<String>();
-                Vector<String> created_on = new Vector<String>();
-                Vector<String> modified_on = new Vector<String>();
+                ArrayList<String> creators = new ArrayList<String>();
+                ArrayList<String> modificators = new ArrayList<String>();
+                ArrayList<String> created_on = new ArrayList<String>();
+                ArrayList<String> modified_on = new ArrayList<String>();
 
                 ///StringObject fromcls = new StringObject();
                 //StringObject label = new StringObject();
@@ -4357,7 +4357,7 @@ public class DBFixCurrentData {
                 //IntegerObject categID = new IntegerObject();
                 //CMValue cmv = new CMValue();
                 Q.reset_name_scope();
-                Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+                ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<>();
                 if (Q.bulk_return_full_link(set_from_labels, retFLVals) != QClass.APIFail) {
                     for (Return_Full_Link_Row row : retFLVals) {
 
@@ -4588,7 +4588,7 @@ public class DBFixCurrentData {
             Q.free_set(set_modified_labels);
             Q.free_set(set_created_labels);
 
-            Vector<String> dates = dbGen.get_Node_Names_Of_Set(set_dates, false, Q, sis_session);
+            ArrayList<String> dates = dbGen.get_Node_Names_Of_Set(set_dates, false, Q, sis_session);
             Q.free_set(set_dates);
 
             for (int i = 0; i < dates.size(); i++) {
@@ -4723,7 +4723,7 @@ public class DBFixCurrentData {
     }
     /*
      //not used replaced by a more generic implementation
-     void RepairPrefixes_Preview_or_Fix(QClass Q, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, Vector<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
+     void RepairPrefixes_Preview_or_Fix(QClass Q, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, ArrayList<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
 
      //tools 
      Utilities u = new Utilities();

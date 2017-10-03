@@ -47,7 +47,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 
@@ -123,7 +123,7 @@ public class CardOf_Source extends ApplicationBasicServlet {
                 return;
             }
             
-            Vector<String> targetSources = new Vector<String>();
+            ArrayList<String> targetSources = new ArrayList<String>();
             targetSources.add(targetSource);
             /*
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);

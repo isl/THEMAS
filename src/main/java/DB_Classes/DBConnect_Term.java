@@ -107,7 +107,7 @@ public class DBConnect_Term {
     all the hierarchies of the BTs.
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
-    public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
        CMValue cmv = new CMValue();
        cmv.assign_node(targetDescriptor.getValue(), -1, Utilities.getTransliterationString(targetDescriptor.getValue(), true),-1);
        
@@ -128,7 +128,7 @@ public class DBConnect_Term {
     all the hierarchies of the BTs.
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
-    public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, ArrayList<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         
         
         
@@ -150,7 +150,7 @@ public class DBConnect_Term {
         }
          */
         // check for the existence of each BT given and collect them in vec_bt Vector
-        Vector<StringObject> vec_bt = new Vector<StringObject>();
+        ArrayList<StringObject> vec_bt = new ArrayList<StringObject>();
         //String[] bt_split = bts.split("###");
         StringObject bt_obj;
         for (int i = 0; i < bts.size(); i++) {
@@ -162,7 +162,7 @@ public class DBConnect_Term {
                 errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Creation/BTMustExist", null),tms_session) + "");
                 continue;
             }
-            vec_bt.addElement(bt_obj);
+            vec_bt.add(bt_obj);
         }
 
         // create targetDescriptor if it doesn't exist
@@ -194,8 +194,8 @@ public class DBConnect_Term {
             return errorMsg;
         }
 
-        Vector<String> hiers = new Vector<String>();
-        Vector<String> prevHiers = new Vector<String>();
+        ArrayList<String> hiers = new ArrayList<String>();
+        ArrayList<String> prevHiers = new ArrayList<String>();
         for (int i = 0; i < vec_bt.size(); i++) {
             hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i),Q,sis_session);
             if (i == 0) {
@@ -253,15 +253,15 @@ public class DBConnect_Term {
         }
         // fill Vector vec_nt with the given NTs to DB format
         String[] nts_split = nts.split("###");
-        Vector<StringObject> vec_nt = new Vector<StringObject>();
+        ArrayList<StringObject> vec_nt = new ArrayList<StringObject>();
         for (int i = 0; i < nts_split.length; i++) {
             nts_split[i] = n_prefix.concat(nts_split[i]);
             StringObject nt_obj = new StringObject(nts_split[i]);
-            vec_nt.addElement(nt_obj);
+            vec_nt.add(nt_obj);
         }
 
         // get the Hierarchies of the targetDescriptor
-        Vector<String> hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, targetDescriptor,Q,sis_session);
+        ArrayList<String> hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, targetDescriptor,Q,sis_session);
         /*if (!hiers.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) hiers.get(0));
             errorMsg = errorMsg.concat((String) hiers.get(0));
@@ -280,7 +280,7 @@ public class DBConnect_Term {
                     continue;
                 }
                 // get the Hierarchies of the current NT
-                Vector<String> prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
+                ArrayList<String> prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
                 /*if (!prevHiers.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) prevHiers.get(0));
                     errorMsg = errorMsg.concat((String) prevHiers.get(0));
@@ -313,7 +313,7 @@ public class DBConnect_Term {
                     continue;
                 }
                 // get the Hierarchies of the current NT
-                Vector<String> hier0 = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
+                ArrayList<String> hier0 = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
                 /*if (!hier0.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) hier0.get(0));
                     errorMsg = errorMsg.concat((String) hier0.get(0));
@@ -346,7 +346,7 @@ public class DBConnect_Term {
     it is created with the TMS function CreateDescriptor
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectRTs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> rts ,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectRTs(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> rts ,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
         String errorMsg = new String("");
@@ -375,9 +375,9 @@ public class DBConnect_Term {
             rtsVector.addElement(new StringObject(rt_split[i]));
         }
         */
-        Vector<StringObject> rtsVector = new Vector<StringObject>();
+        ArrayList<StringObject> rtsVector = new ArrayList<StringObject>();
         for (int i = 0; i < rts.size(); i++) {            
-            rtsVector.addElement(new StringObject(prefix.concat(rts.get(i))));
+            rtsVector.add(new StringObject(prefix.concat(rts.get(i))));
         }
         
         // for each RT
@@ -435,7 +435,7 @@ public class DBConnect_Term {
     it is created with the TMS function CreateUsedForTerm
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectUFs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> ufs,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectUFs(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> ufs,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
         
@@ -459,9 +459,9 @@ public class DBConnect_Term {
         String[] uf_split = ufs.split("###");
         // fill a Vector with the UFs with prefix and DB encoding		
         */
-        Vector<StringObject> ufsVector = new Vector<StringObject>();
+        ArrayList<StringObject> ufsVector = new ArrayList<StringObject>();
         for (int i = 0; i < ufs.size(); i++) {           
-            ufsVector.addElement(new StringObject(prefix.concat(ufs.get(i))));
+            ufsVector.add(new StringObject(prefix.concat(ufs.get(i))));
         }
         StringObject prevThes = new StringObject();
         TA.GetThesaurusNameWithoutPrefix(prevThes);
@@ -577,10 +577,10 @@ public class DBConnect_Term {
         // get the Dewey values
         String[] dewey_split = dewey.split("###");
         // fill a Vector with the Deweys with prefix and DB encoding
-        Vector<StringObject> deweys = new Vector<StringObject>();
+        ArrayList<StringObject> deweys = new ArrayList<StringObject>();
         for (int i = 0; i < dewey_split.length; i++) {
             dewey_split[i] = DeweyPrefix.concat(dewey_split[i]);
-            deweys.addElement(new StringObject(dewey_split[i]));
+            deweys.add(new StringObject(dewey_split[i]));
         }
         // for each Dewey	
         for (int i = 0; i < deweys.size(); i++) {
@@ -650,7 +650,7 @@ public class DBConnect_Term {
     it is created as instance of class TaxonomicCode
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectTaxonomicCodes(String selectedThesaurus,StringObject targetDescriptor, Vector<String> tc,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTaxonomicCodes(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> tc,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
                
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
@@ -669,13 +669,13 @@ public class DBConnect_Term {
         }
         // fill a Vector with the Source values (with prefix and DB format)
         //String[] src_split = sourcesList.split("###");
-        Vector<StringObject> taxCodes = new Vector<StringObject>();
+        ArrayList<StringObject> taxCodes = new ArrayList<StringObject>();
         
         for (int i = 0; i < tc.size(); i++) {
             String tempTaxCode = tc.get(i);
             if(tempTaxCode!=null && tempTaxCode.trim().length()>0){
                 tempTaxCode = tcPrefix.concat(tempTaxCode.trim());
-                taxCodes.addElement(new StringObject(tempTaxCode));
+                taxCodes.add(new StringObject(tempTaxCode));
             }
         }
 
@@ -752,7 +752,7 @@ public class DBConnect_Term {
     doesn't exist in the database, it is created with the TMS function CreateSource()
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectSources(String selectedThesaurus,StringObject targetDescriptor, Vector<String> sourcesList, int sourceCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectSources(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> sourcesList, int sourceCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -777,13 +777,13 @@ public class DBConnect_Term {
         }
         // fill a Vector with the Source values (with prefix and DB format)
         //String[] src_split = sourcesList.split("###");
-        Vector<StringObject> sources = new Vector<StringObject>();
+        ArrayList<StringObject> sources = new ArrayList<StringObject>();
         
         for (int i = 0; i < sourcesList.size(); i++) {
             String tempSource = sourcesList.get(i);
             if(tempSource!=null && tempSource.trim().length()>0){
                 tempSource = prefix.concat(tempSource.trim());
-                sources.addElement(new StringObject(tempSource));
+                sources.add(new StringObject(tempSource));
             }
         }
         // for each Source value	
@@ -855,7 +855,7 @@ public class DBConnect_Term {
     doesn't exist in the database, it is created with the TMS function CreateEnglishWord()
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectEnglishWords(String selectedThesaurus,StringObject targetDescriptor, Vector<String> engWordList, int englishWordCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectEnglishWords(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> engWordList, int englishWordCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
         int SISapiSession = sis_session.getValue();
         int TMSapiSession = tms_session.getValue();
         String errorMsg = new String("");
@@ -869,13 +869,13 @@ public class DBConnect_Term {
         }
         // fill a Vector with the EnglishWord values (with prefix and DB format)	
         //String[] eng_split = engWordList.split("###");
-        Vector<StringObject> words = new Vector<StringObject>();
+        ArrayList<StringObject> words = new ArrayList<StringObject>();
         String e_prefix = dbtr.getThesaurusPrefix_EnglishWord(Q,sis_session.getValue());
         for (int i = 0; i < engWordList.size(); i++) {
             String tempWord = engWordList.get(i);
             if(tempWord!=null && tempWord.trim().length()>0){
                 tempWord=e_prefix.concat(tempWord.trim());
-                words.addElement(new StringObject(tempWord));
+                words.add(new StringObject(tempWord));
             }
         }
 
@@ -1020,7 +1020,7 @@ public class DBConnect_Term {
         // get the alt values	
         String[] alts_split = alts.split(",");
         // fill a Vector with the alt with prefix and DB encoding	
-        Vector<StringObject> alts_Vector = new Vector<StringObject>();
+        ArrayList<StringObject> alts_Vector = new ArrayList<StringObject>();
 
         for (int i = 0; i < alts_split.length; i++) {
             String tempSTR1 = new String(alts_split[i].trim());
@@ -1029,7 +1029,7 @@ public class DBConnect_Term {
                 StringObject tempSTR1Obj = new StringObject(prefix.concat(tempSTR1));
                 if (alts_Vector.contains(tempSTR1Obj) == false) {
 
-                    alts_Vector.addElement(tempSTR1Obj);
+                    alts_Vector.add(tempSTR1Obj);
                 }
             }
         }
@@ -1085,7 +1085,7 @@ public class DBConnect_Term {
 
     }
 
-    public String connectTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTranslation(String selectedThesaurus, StringObject targetDescriptor, ArrayList<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1108,7 +1108,7 @@ public class DBConnect_Term {
             return errorMsg;
         }
 
-        Vector<String> translationsVector = new Vector<String>();
+        ArrayList<String> translationsVector = new ArrayList<String>();
         for(int i=0 ; i<normalizedTranslations.size(); i++ ){
 
             String normalizedValue = normalizedTranslations.get(i); //i.e EN:some val
@@ -1119,7 +1119,7 @@ public class DBConnect_Term {
 
 
         
-        Hashtable<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, selectedThesaurus, null, false,false);
+        HashMap<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, selectedThesaurus, null, false,false);
 
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
@@ -1193,7 +1193,7 @@ public class DBConnect_Term {
 
     }
 
-    public String connectUFTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectUFTranslation(String selectedThesaurus, StringObject targetDescriptor, ArrayList<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1213,7 +1213,7 @@ public class DBConnect_Term {
             return errorMsg;
         }
 
-        Vector<String> translationsVector = new Vector<String>();
+        ArrayList<String> translationsVector = new ArrayList<String>();
         for(int i=0 ; i<normalizedTranslations.size(); i++ ){
 
             String normalizedValue = normalizedTranslations.get(i); //i.e EN:some val
@@ -1224,7 +1224,7 @@ public class DBConnect_Term {
 
 
 
-        Hashtable<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false,false);
+        HashMap<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false,false);
 
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
@@ -1558,7 +1558,7 @@ public class DBConnect_Term {
         StringObject linkObj = new StringObject(link);
         Q.reset_name_scope();
 
-        Vector<Long> deleteIDsL = new Vector<Long>();
+        ArrayList<Long> deleteIDsL = new ArrayList<Long>();
 
         //StringObject label = new StringObject();
         //IntegerObject sysid = new IntegerObject();
@@ -1570,13 +1570,13 @@ public class DBConnect_Term {
 
                 //must collect all Nodes Names with relation RT pointing to targetDescriptorObj in newTargets
                 //during this session we also collect the RTs labels sysids pointing to targetDescriptorObj in deleteDatesIDs
-                Vector<String> newTargets = new Vector<String>();
+                ArrayList<String> newTargets = new ArrayList<String>();
                 int selected_category_nodes = Q.get_link_to_by_category(0, fromClassObj, linkObj);
                 Q.reset_set(selected_category_nodes);
 
                 if (Q.set_get_card(selected_category_nodes) > 0) {
                     
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_category_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1600,7 +1600,7 @@ public class DBConnect_Term {
 
                 if (Q.set_get_card(select_category_values) > 0) {
 
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(select_category_values, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!newTargets.contains(row.get_v1_cls_logicalname())) {
@@ -1635,12 +1635,12 @@ public class DBConnect_Term {
                     Q.reset_name_scope();
                     Q.set_current_node(new StringObject(newTargets.get(k)));
 
-                    Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                    ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                     int selected_new_target_category_nodes = Q.get_link_from_by_category(0, fromClassObj, linkObj);
                     Q.reset_set(selected_new_target_category_nodes);
                     if (Q.set_get_card(selected_new_target_category_nodes) > 0) {
 
-                        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                         if(Q.bulk_return_nodes(selected_new_target_category_nodes, retVals)!=QClass.APIFail){
                             for(Return_Nodes_Row row:retVals){
                                 if (!deletenewTargetIDsL.contains(row.get_Neo4j_NodeId()) && deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1727,7 +1727,7 @@ public class DBConnect_Term {
                 Q.reset_set(selected_category_nodes);
                 if (Q.set_get_card(selected_category_nodes) > 0) {
 
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_category_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1806,7 +1806,7 @@ public class DBConnect_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject targetDescriptorObj = new StringObject(termPrefix.concat(targetDescriptor));
         
-        Vector<Long> deleteIDsL = new Vector<Long>();
+        ArrayList<Long> deleteIDsL = new ArrayList<Long>();
 
         //StringObject label  = new StringObject();
         //IntegerObject sysid = new IntegerObject();
@@ -1814,11 +1814,11 @@ public class DBConnect_Term {
 
         if (direction == ConstantParameters.TO_Direction) {
 
-            Vector<String> newTargets = new Vector<String>();
+            ArrayList<String> newTargets = new ArrayList<String>();
 
             //collect link ids for deletion
             if (Q.set_get_card(set_links) > 0) {
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_links, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1842,7 +1842,7 @@ public class DBConnect_Term {
             //collect their names in newTargets Vector
             if (Q.set_get_card(select_new_target_terms) > 0) {
 
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(select_new_target_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!newTargets.contains(row.get_v1_cls_logicalname())) {
@@ -1868,12 +1868,12 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 Q.set_current_node(new StringObject(newTargets.get(k)));
 
-                Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                 int selected_new_target_nodes = Q.get_link_from(0);
                 Q.reset_set(selected_new_target_nodes);
                 if (Q.set_get_card(selected_new_target_nodes) > 0) {
                     
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_new_target_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deletenewTargetIDsL.contains(row.get_Neo4j_NodeId()) && deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1959,7 +1959,7 @@ public class DBConnect_Term {
 
             if (Q.set_get_card(set_links) > 0) {
 
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_links, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -2031,7 +2031,7 @@ public class DBConnect_Term {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
         
-        Vector<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
+        ArrayList<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
         Q.free_set(set_classes);
         
         Identifier I_Accepted = new Identifier(accepted_IDL);
@@ -2131,7 +2131,7 @@ public class DBConnect_Term {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
         
-        Vector<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
+        ArrayList<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
         Q.free_set(set_classes);
         
         Identifier I_Under_Construction = new Identifier(under_construction_IDL);
@@ -2361,7 +2361,7 @@ public class DBConnect_Term {
      * Affected Nodes are target Node and all nodes in String otherModifiedNodes in a comma seperated list
      */
     public void CreateModify_Finalization(String selectedThesaurus,StringObject targetDescriptor, String user, 
-            Vector<String> otherModifiedNodes, int createORmodify,
+            ArrayList<String> otherModifiedNodes, int createORmodify,
             QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session,
             DBGeneral dbGen, StringObject errorMsg) {
 

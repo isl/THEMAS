@@ -159,20 +159,20 @@ public class SearchResults_Users extends ApplicationBasicServlet {
                 long startTime = Utilities.startTimer();
 
                 UsersClass tmsUsers = new UsersClass();
-                Vector allResultsUsers = tmsUsers.ReadWebAppUsersXMLFile(THEMASUsersFileName);
+                ArrayList allResultsUsers = tmsUsers.ReadWebAppUsersXMLFile(THEMASUsersFileName);
 
                 //Get only those users that will appear in next page
                 usersPagingQueryResultsCount = allResultsUsers.size();
                 if (usersPagingFirst > usersPagingQueryResultsCount) {
                     usersPagingFirst = 1;
                 }
-                Vector<UserInfoClass> resultsUsers = new Vector<UserInfoClass>();
+                ArrayList<UserInfoClass> resultsUsers = new ArrayList<UserInfoClass>();
                 for (int i = 0; i < usersPagingListStep; i++) {
                     if (i + usersPagingFirst > usersPagingQueryResultsCount) {
                         break;
                     }
                     UserInfoClass tmp = (UserInfoClass) allResultsUsers.get(i + usersPagingFirst - 1);
-                    resultsUsers.addElement(tmp);
+                    resultsUsers.add(tmp);
                 }
                 tmsUsers.getResultsInXml(request, resultsUsers, output, xmlResults);
 

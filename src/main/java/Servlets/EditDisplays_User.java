@@ -34,7 +34,6 @@
 package Servlets;
 
 import DB_Classes.DBGeneral;
-import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConstantParameters;
@@ -49,7 +48,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Locale;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -104,7 +104,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
             // get the set of thesaurus owned by current user
             //UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             UsersClass tmsUsers = new UsersClass();
             thesaurusVector = tmsUsers.GetThesaurusSetOfTMSUser(request, SessionUserInfo.name);
 
@@ -178,9 +178,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String administratorCheckBox = u.getDecodedParameterValue(request.getParameter("administratorCheckBox"));
         boolean createNewUserAsAdministrator = (administratorCheckBox != null);
         String[] selectThesaurusArray = null;
-        Vector<String> selectThesaurusVector = new Vector<String>();
+        ArrayList<String> selectThesaurusVector = new ArrayList<String>();
         String[] selectUserGroupArray = null;
-        Vector<String> selectUserGroupVector = new Vector<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
         // in case of no Administrator creation/editing get the list of thesaurus-groups
         if (createNewUserAsAdministrator == false) {
             selectThesaurusArray = request.getParameterValues("selectThesaurus");
@@ -210,7 +210,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         for (int i = 0; i < thesaurusNamesStoredSize; i++) {
             String thesaurusName = (String) selectThesaurusVector.get(i);
             String thesaurusGroup = (String) selectUserGroupVector.get(i);
-            xml.append("<thesaurus group=\"" + thesaurusGroup + "\" group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\">" + thesaurusName + "</thesaurus>");
+            // group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\"
+            xml.append("<thesaurus group=\"" + thesaurusGroup + "\">" + thesaurusName + "</thesaurus>");
         }
         xml.append("<description>" + Utilities.escapeXML(newDescription_User) + "</description>");
         xml.append("</newUserInfo>");
@@ -251,7 +252,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         // <AllTHEMASUsers>
         xml.append("<AllTHEMASUsers>");
         // print all existing users
-        Vector<String> TMSUsersNames = new Vector<String>();
+        ArrayList<String> TMSUsersNames = new ArrayList<String>();
         TMSUsersNames = tmsUsers.GetTMSUsersNames(request);
         int TMSUsersNamesSize = TMSUsersNames.size();
         for (int i = 0; i < TMSUsersNamesSize; i++) {
@@ -260,21 +261,25 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         xml.append("</AllTHEMASUsers>");
         // <THEMASUsersGroups>
         xml.append("<THEMASUsersGroups>");
-        int THEMASUsersGroupsSize = tmsUsers.UsersGroups.length;
-        for (int i = 0; i < THEMASUsersGroupsSize - 1; i++) { // do not display ADMINISTRATOR
-            xml.append("<THEMASUsersGroupName tr=\"" + tmsUsers.UsersGroupsGR[i] + "\">" + tmsUsers.UsersGroups[i] + "</THEMASUsersGroupName>");
+        for (String group : tmsUsers.UsersGroups) { // do not display ADMINISTRATOR
+            if(group.equals(ConstantParameters.Group_Administrator)){
+                continue;
+            }
+            // tr=\"" + tmsUsers.UsersGroupsGR[i] + "\"
+            xml.append("<THEMASUsersGroupName>" +group + "</THEMASUsersGroupName>");
         }
         xml.append("</THEMASUsersGroups>");
 
         // <ThesaurusUsers_Groups>
         xml.append("<ThesaurusUsers_Groups>");
         // print all existing users - groups of current thesaurus
-        Vector<String> UserNamesV = new Vector<String>();
-        Vector<String> GroupsV = new Vector<String>();
+        ArrayList<String> UserNamesV = new ArrayList<String>();
+        ArrayList<String> GroupsV = new ArrayList<String>();
         tmsUsers.GetTMSUsers_GroupsOfThesaurus(request, CurrentThesaurus, UserNamesV, GroupsV);
         int UserNamesVSize = UserNamesV.size();
         for (int i = 0; i < UserNamesVSize; i++) {
-            xml.append("<user group=\"" + (String) GroupsV.get(i) + "\" group_translated=\"" + tmsUsers.translateGroup((String) GroupsV.get(i)) + "\">" + (String) UserNamesV.get(i) + "</user>");
+            // group_translated=\"" + tmsUsers.translateGroup((String) GroupsV.get(i)) + "\"
+            xml.append("<user group=\"" + (String) GroupsV.get(i) + "\">" + (String) UserNamesV.get(i) + "</user>");
         }
         xml.append("</ThesaurusUsers_Groups>");
 
@@ -314,8 +319,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             String userNameStored = userForEditingInfo.name;
             String passwordStored = userForEditingInfo.password;
             String descriptionStored = userForEditingInfo.description;
-            Vector thesaurusNamesStored = userForEditingInfo.thesaurusNames;
-            Vector thesaurusGroupsStored = userForEditingInfo.thesaurusGroups;
+            ArrayList thesaurusNamesStored = userForEditingInfo.thesaurusNames;
+            ArrayList thesaurusGroupsStored = userForEditingInfo.thesaurusGroups;
             xml.append("<userForEditingInfo>");
             xml.append("<name>" + userNameStored + "</name>");
             xml.append("<password>" + passwordStored + "</password>");
@@ -323,7 +328,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             for (int i = 0; i < thesaurusNamesStoredSize; i++) {
                 String thesaurusName = (String) thesaurusNamesStored.get(i);
                 String thesaurusGroup = (String) thesaurusGroupsStored.get(i);
-                xml.append("<thesaurus group=\"" + thesaurusGroup + "\" group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\">" + thesaurusName + "</thesaurus>");
+                // group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\"
+                xml.append("<thesaurus group=\"" + thesaurusGroup + "\">" + thesaurusName + "</thesaurus>");
             }
             xml.append("<description>" + descriptionStored + "</description>");
             xml.append("</userForEditingInfo>");
@@ -353,8 +359,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             String userNameStored = userForEditingInfo.name;
             String passwordStored = userForEditingInfo.password;
             String descriptionStored = userForEditingInfo.description;
-            Vector thesaurusNamesStored = userForEditingInfo.thesaurusNames;
-            Vector thesaurusGroupsStored = userForEditingInfo.thesaurusGroups;
+            ArrayList thesaurusNamesStored = userForEditingInfo.thesaurusNames;
+            ArrayList thesaurusGroupsStored = userForEditingInfo.thesaurusGroups;
             xml.append("<userForEditingInfo>");
             xml.append("<name>" + userNameStored + "</name>");
             xml.append("<password>" + passwordStored + "</password>");
@@ -362,7 +368,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             for (int i = 0; i < thesaurusNamesStoredSize; i++) {
                 String thesaurusName = (String) thesaurusNamesStored.get(i);
                 String thesaurusGroup = (String) thesaurusGroupsStored.get(i);
-                xml.append("<thesaurus group=\"" + thesaurusGroup + "\" group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\">" + thesaurusName + "</thesaurus>");
+                // group_translated=\"" + tmsUsers.translateGroup(thesaurusGroup) + "\"
+                xml.append("<thesaurus group=\"" + thesaurusGroup + "\">" + thesaurusName + "</thesaurus>");
             }
             xml.append("<description>" + descriptionStored + "</description>");
             xml.append("</userForEditingInfo>");
@@ -458,7 +465,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             xml.append("<userForEditingThesaurusInfo>");
             xml.append("<name>" + userNameStored + "</name>");
             xml.append("<thesaurusOfUser>");
-            Vector thesaurusNamesStored = tmsUsers.GetThesaurusSetOfTMSUser(request, userNameStored);
+            ArrayList thesaurusNamesStored = tmsUsers.GetThesaurusSetOfTMSUser(request, userNameStored);
             int thesaurusNamesStoredSize = thesaurusNamesStored.size();
             for (int i = 0; i < thesaurusNamesStoredSize; i++) {
                 String thesaurusName = (String) thesaurusNamesStored.get(i);
@@ -475,7 +482,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
      OpenCardForUserCreation()
      ----------------------------------------------------------------------*/
-    private void OpenCardForUserCreation(ServletContext context, SessionWrapperClass sessionInstance, PrintWriter out, Vector thesaurusVector) {
+    private void OpenCardForUserCreation(ServletContext context, SessionWrapperClass sessionInstance, PrintWriter out, ArrayList thesaurusVector) {
         Utilities u = new Utilities();
         // write XML output
         StringBuffer xml = new StringBuffer();
@@ -487,7 +494,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
      writeXMLForUserCreation()
      ----------------------------------------------------------------------*/
-    private void writeXMLForUserCreation(SessionWrapperClass sessionInstance, StringBuffer xml, String targetField, String targetUser, Vector thesaurusVector) {
+    private void writeXMLForUserCreation(SessionWrapperClass sessionInstance, StringBuffer xml, String targetField, String targetUser, ArrayList thesaurusVector) {
         Utilities u = new Utilities();
         UsersClass tmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
@@ -508,9 +515,12 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         xml.append("</existingThesaurus>");
         // <THEMASUsersGroups>
         xml.append("<THEMASUsersGroups>");
-        int THEMASUsersGroupsSize = tmsUsers.UsersGroups.length;
-        for (int i = 0; i < THEMASUsersGroupsSize - 1; i++) { // do not display ADMINISTRATOR
-            xml.append("<THEMASUsersGroupName tr=\"" + tmsUsers.UsersGroupsGR[i] + "\">" + tmsUsers.UsersGroups[i] + "</THEMASUsersGroupName>");
+        for (String group : tmsUsers.UsersGroups) { // do not display ADMINISTRATOR
+            if(group.equals(ConstantParameters.Group_Administrator)){
+                continue;
+            }
+            // tr=\"" + tmsUsers.UsersGroupsGR[i] + "\"
+            xml.append("<THEMASUsersGroupName>" + group + "</THEMASUsersGroupName>");
         }
         xml.append("</THEMASUsersGroups>");
         xml.append("</pageInfo>");
@@ -531,9 +541,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String administratorCheckBox = u.getDecodedParameterValue(request.getParameter("administratorCheckBox"));
         boolean createNewUserAsAdministrator = (administratorCheckBox != null);
         String[] selectThesaurusArray = null;
-        Vector<String> selectThesaurusVector = new Vector<String>();
+        ArrayList<String> selectThesaurusVector = new ArrayList<String>();
         String[] selectUserGroupArray = null;
-        Vector<String> selectUserGroupVector = new Vector<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
         // in case of no Administrator creation/editing get the list of thesaurus-groups
         if (createNewUserAsAdministrator == false) {
             selectThesaurusArray = request.getParameterValues("selectThesaurus");
@@ -613,8 +623,8 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String[] selectThesaurusArray = request.getParameterValues("selectThesaurus");
         String[] selectUserGroupArray = request.getParameterValues("selectUserGroup");
 
-        Vector<String> selectThesaurusVector = new Vector<String>();
-        Vector<String> selectUserGroupVector = new Vector<String>();
+        ArrayList<String> selectThesaurusVector = new ArrayList<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
         boolean createUserAsAdministrator = false;
 
         if (selectUserGroupArray != null) {
@@ -729,7 +739,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
 
         //String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
         StringObject resultMessageObj = new StringObject();
-        //Vector<String> errorArgs = new Vector<String>();
+        //ArrayList<String> errorArgs = new ArrayList<String>();
         
         switch (resultOfEditUser) {
             case UsersClass.NO_USER_NAME_GIVEN:
@@ -965,9 +975,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         Utilities u = new Utilities();
         // get input parameters
         String[] selectUsersArray = null;
-        Vector<String> selectUsersVector = new Vector<String>();
+        ArrayList<String> selectUsersVector = new ArrayList<String>();
         String[] selectUserGroupArray = null;
-        Vector<String> selectUserGroupVector = new Vector<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
         // get the list of users-groups
         selectUsersArray = request.getParameterValues("selectUser");
         if (selectUsersArray != null) {

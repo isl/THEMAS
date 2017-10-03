@@ -51,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.util.Vector;
+import java.util.ArrayList;
 /**
  *
  * @author tzortzak
@@ -106,8 +106,8 @@ public class EditActions_Term extends ApplicationBasicServlet {
             
             //result
             StringObject errorMsg = new StringObject("");
-            Vector<String> ntsDecodedValues = new Vector<String>();
-            Vector<String> GuideTermsDecodedValues = new Vector<String>();
+            ArrayList<String> ntsDecodedValues = new ArrayList<String>();
+            ArrayList<String> GuideTermsDecodedValues = new ArrayList<String>();
                 
             if(targetField.compareTo(ConstantParameters.guide_term_kwd)==0){
                 
@@ -144,7 +144,7 @@ public class EditActions_Term extends ApplicationBasicServlet {
             String[] values = request.getParameterValues(NewtargetField);
             
             //values are always read in decodedValues vector from values[] --> if term_create then values[] is filled with bts  
-            Vector<String> decodedValues = new Vector<String>();
+            ArrayList<String> decodedValues = new ArrayList<String>();
             if(values!=null){
                 for(int i=0; i< values.length ;i++){
                     String temp =u.getDecodedParameterValue(values[i]);

@@ -76,7 +76,7 @@ public class nicajax extends ApplicationBasicServlet {
 
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-            Vector<String> Search_result = new Vector<String>();
+            ArrayList<String> Search_result = new ArrayList<String>();
 
             String inputType = u.getDecodedParameterValue(request.getParameter("inputType"));//params.get("inputType").toString();
             String inputvalue = u.getDecodedParameterValue(request.getParameter("inputvalue"));//params.get().toString();
@@ -173,10 +173,10 @@ public class nicajax extends ApplicationBasicServlet {
              else if(inputType.equals("inputvalue_Status")==true) { // Status suggestion                
                 if (inputvalue.length() == 1) {
                     
-                    Search_result.addElement(Parameters.Status_For_Insertion + "###");
-                    Search_result.addElement(Parameters.Status_Approved + "###");
-                    Search_result.addElement(Parameters.Status_For_Approval + "###");
-                    Search_result.addElement(Parameters.Status_Under_Construction + "###");
+                    Search_result.add(Parameters.Status_For_Insertion + "###");
+                    Search_result.add(Parameters.Status_Approved + "###");
+                    Search_result.add(Parameters.Status_For_Approval + "###");
+                    Search_result.add(Parameters.Status_Under_Construction + "###");
                 }
             }  
             

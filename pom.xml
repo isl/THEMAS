@@ -4,7 +4,7 @@
 
     <groupId>gr.forth.ics.isl</groupId>
     <artifactId>THEMAS</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <name>THEMAS</name>
     <packaging>war</packaging>     
     <licenses>
@@ -18,13 +18,14 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>Neo4j-sisapi</artifactId>
-            <version>1.1-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -59,12 +60,14 @@
                 <version>3.1</version>
                 <configuration>
                     
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                         
                     </compilerArguments>
+                    <showDeprecation>true</showDeprecation>
+                    <debug>true</debug>
                 </configuration>
             </plugin>
             <plugin>
@@ -117,8 +120,8 @@
                         <mkdir dir="${project.build.directory}/${project.build.finalName}/SVGproducer/SVG_temporary_files" />
                         <mkdir dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays/Save_Results_temporary_files" />
                         <mkdir dir="${project.build.directory}/${project.build.finalName}/Uploads" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/WEB-INF/SystemLogs" />                        
-                      </tasks>
+                        <mkdir dir="${project.build.directory}/${project.build.finalName}/WEB-INF/SystemLogs" />    
+                      </tasks>                      
                     </configuration>
                   </execution>
                 </executions>

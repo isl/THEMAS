@@ -111,9 +111,9 @@ public class Admin_Thesaurus extends ApplicationBasicServlet {
             }
            
             
-            Vector<String> thesaurusVector = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<>();
+            ArrayList<String> allHierarchies = new ArrayList<>();
+            ArrayList<String> allGuideTerms = new ArrayList<>();
             
             // Get the existing Thesaurus in DB
             thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector,Q,sis_session);        
@@ -143,7 +143,7 @@ public class Admin_Thesaurus extends ApplicationBasicServlet {
         }
     } 
     
-    public String getXMLMiddle(String CurrentShownDIV, Vector<String> thesaurusVector) {
+    public String getXMLMiddle(String CurrentShownDIV, ArrayList<String> thesaurusVector) {
         // get the active sessions
         int OtherActiveSessionsNO = SessionListener.activesessionsNO - 1;
         

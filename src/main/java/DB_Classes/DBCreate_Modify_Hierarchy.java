@@ -116,7 +116,7 @@ public class DBCreate_Modify_Hierarchy {
     CALLED BY: Create_Modify_Hierarchy servlet
     ----------------------------------------------------------------------*/
     public boolean Create_Or_ModifyHierarchy(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            DBGeneral dbGen, String targetHierarchy, Vector<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
+            DBGeneral dbGen, String targetHierarchy, ArrayList<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
             String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
 
 
@@ -329,7 +329,7 @@ public class DBCreate_Modify_Hierarchy {
     }
 
      public boolean Create_Or_ModifyHierarchySortItem(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            DBGeneral dbGen, SortItem targetHierarchySortItem, Vector<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
+            DBGeneral dbGen, SortItem targetHierarchySortItem, ArrayList<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
             String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData,
                                                  boolean resolveError,
                                                  OutputStreamWriter logFileWriter, 
@@ -433,7 +433,7 @@ public class DBCreate_Modify_Hierarchy {
                 if(termUsingThisReferenceId.equals(targetHierarchySortItem.getLogName())==false)
                 {
                     ConsistensyCheck con = new ConsistensyCheck();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
 
                     switch(ConsistencyChecksPolicy){
 
@@ -710,8 +710,8 @@ public class DBCreate_Modify_Hierarchy {
         Q.set_current_node(targetHierarchyObj);
         int termsOfHierarchy = Q.get_all_instances(0);
         
-        Vector<String> allHierarchyTermNames = new Vector<String>();
-        Vector<Return_Nodes_Row> retAllHierarchyTermRows = new Vector<Return_Nodes_Row>();
+        ArrayList<String> allHierarchyTermNames = new ArrayList<String>();
+        ArrayList<Return_Nodes_Row> retAllHierarchyTermRows = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(termsOfHierarchy, retAllHierarchyTermRows)==QClass.APIFail){
             errorMsg.setValue("Deletion Failed");
             Utils.StaticClass.webAppSystemOutPrintln("Deletion failed in DeleteHierarchy() of DB_Create_Modify_Hierarchy while trying to READ all nodes belonging to hierarchy: " + targetHierarchyObj.getValue());
@@ -725,8 +725,8 @@ public class DBCreate_Modify_Hierarchy {
         Q.set_current_node( thesTopTerm);
         int TopTermsSet = Q.get_all_instances( 0);
         Q.reset_set(TopTermsSet);
-        Vector<String> allTopTerms = new Vector<String>();
-        Vector<Return_Nodes_Row> retTopTermRows = new Vector<Return_Nodes_Row>();
+        ArrayList<String> allTopTerms = new ArrayList<String>();
+        ArrayList<Return_Nodes_Row> retTopTermRows = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(TopTermsSet, retTopTermRows)==QClass.APIFail){
             errorMsg.setValue("Deletion Failed");
             Utils.StaticClass.webAppSystemOutPrintln("Deletion failed in DeleteHierarchy() of DB_Create_Modify_Hierarchy while trying to READ Top term Nodes");
@@ -778,8 +778,8 @@ public class DBCreate_Modify_Hierarchy {
         if(Q.set_get_card(termsOfHierarchyBelongingToOtherHierarchiesAlso)>0){
             //ELIAS BugFix 2015-09-24 delete instance Set is not enough. The Bts that justified this should also be deleted
             //ret = Q.CHECK_IMPROVE_Delete_Instance_Set(termsOfHierarchyBelongingToOtherHierarchiesAlso, new Identifier(targetHierarchyObj.getValue()));
-            Vector<String> termsBelongingToOtherHierarchyAlso = new Vector<String>();
-            Vector<Return_Nodes_Row> retRows = new Vector<Return_Nodes_Row>();
+            ArrayList<String> termsBelongingToOtherHierarchyAlso = new ArrayList<String>();
+            ArrayList<Return_Nodes_Row> retRows = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(termsOfHierarchyBelongingToOtherHierarchiesAlso, retRows)==QClass.APIFail){
                 errorMsg.setValue("Deletion Failed");
                 Utils.StaticClass.webAppSystemOutPrintln("Deletion failed in DeleteHierarchy() of DB_Create_Modify_Hierarchy while trying to READ terms belonging to other hierarchies also");
@@ -787,7 +787,7 @@ public class DBCreate_Modify_Hierarchy {
             }
             for(Return_Nodes_Row row: retRows){
                 String termBelongingToOtherHierarchiesAlso = row.get_v1_cls_logicalname();
-                Vector<String> bts = dbGen.returnResults(SessionUserInfo, dbGen.removePrefix(termBelongingToOtherHierarchiesAlso), 
+                ArrayList<String> bts = dbGen.returnResults(SessionUserInfo, dbGen.removePrefix(termBelongingToOtherHierarchiesAlso), 
                         ConstantParameters.bt_kwd, Q, TA, sis_session);
                 bts.removeAll(allHierarchyTermNames);
                 
@@ -841,7 +841,7 @@ public class DBCreate_Modify_Hierarchy {
             // de-instantiate them from target hierarchy
             ret = Q.CHECK_IMPROVE_Delete_Instance_Set(termsOfHierarchyReferredByTermsOfOtherHierarchies, new Identifier(targetHierarchyObj.getValue()));
             */
-            Vector<Return_Nodes_Row> retNodes = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retNodes = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(termsOfHierarchyReferredByTermsOfOtherHierarchies, retNodes)==QClass.APIFail){
                 errorMsg.setValue("Deletion Failed");
                 Utils.StaticClass.webAppSystemOutPrintln("Deletion failed in DeleteHierarchy() of DB_Create_Modify_Hierarchy while trying to READ the nodes  that will be moved under Unclassified terms");
@@ -854,7 +854,7 @@ public class DBCreate_Modify_Hierarchy {
                 if(allTopTerms.contains(targetNode.getValue())==false){
                 /*
                     
-                    Vector<String> bts = new Vector<String>();
+                    ArrayList<String> bts = new ArrayList<String>();
                     bts.add(dbGen.removePrefix(orphansHierarchyTopTermObj.getValue()));
                     
                     DBCMT.commitTermTransaction(SessionUserInfo, dbGen.removePrefix(targetNode.getValue()),ConstantParameters.bt_kwd,
@@ -899,9 +899,9 @@ public class DBCreate_Modify_Hierarchy {
         termsOfHierarchy = Q.get_all_instances(0);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"termsOfHierarchy card = " + Q.set_get_card(termsOfHierarchy));
         // delete them
-        Vector<String> termsToBeDeleted = new Vector<String>();
+        ArrayList<String> termsToBeDeleted = new ArrayList<String>();
         Q.reset_set(termsOfHierarchy);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
 	if(Q.bulk_return_nodes(termsOfHierarchy, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 termsToBeDeleted.add(row.get_v1_cls_logicalname());
@@ -919,7 +919,7 @@ public class DBCreate_Modify_Hierarchy {
             String termToBeDeleted = (String) termsToBeDeleted.get(i);
             String termToBeDeletedUIWithoutPrefix = dbGen.removePrefix(termToBeDeleted);
             //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+i+1 + ". Delete term: " + termToBeDeletedUIWithoutPrefix);
-            Vector<String> old_top_terms = new Vector<String>();
+            ArrayList<String> old_top_terms = new ArrayList<String>();
             old_top_terms = dbGen.returnResults(SessionUserInfo, termToBeDeletedUIWithoutPrefix, "topterm", Q, TA, sis_session);
             //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"old_top_terms size = " + old_top_terms.size());
             if (DBCMT.deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
@@ -933,7 +933,7 @@ public class DBCreate_Modify_Hierarchy {
         //delete top term last
         String termToBeDeleted = topTermOfTargetHierarchy.getValue();
         String termToBeDeletedUIWithoutPrefix = dbGen.removePrefix(termToBeDeleted);
-        Vector<String> old_top_terms = new Vector<String>();
+        ArrayList<String> old_top_terms = new ArrayList<String>();
         //old_top_terms = dbGen.returnResults(SessionUserInfo, termToBeDeletedUIWithoutPrefix, "topterm", Q, TA, sis_session);
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"old_top_terms size = " + old_top_terms.size());
         if (DBCMT.deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
@@ -968,7 +968,7 @@ public class DBCreate_Modify_Hierarchy {
         //CMValue cmv = new CMValue();
         //IntegerObject flag = new IntegerObject();
                 
-        Vector<Return_Link_Id_Row> retLIVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retLIVals = new ArrayList<Return_Link_Id_Row>();
         if(Q.bulk_return_link_id(linksSet, retLIVals)!=QClass.APIFail){
             for(Return_Link_Id_Row row:retLIVals){
                 Identifier I_from = new Identifier(row.get_v2_fcid());
@@ -1114,7 +1114,7 @@ public class DBCreate_Modify_Hierarchy {
         //IntegerObject traversed = new IntegerObject();
         //CMValue cmv = new CMValue();
         int count = 0; //Top Term must only have its THES1TopTerm-->belongs_to_thes1_hierarchy relation and any modified /created etc links
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if(Q.bulk_return_full_link(set_from_links, retFLVals)!=QClass.APIFail){
             for(Return_Full_Link_Row row:retFLVals){
                 //while (Q.retur_full_link(set_from_links, cls, label, categ, fromcls, cmv, uniq_categ, traversed) != QClass.APIFail) {
@@ -1295,18 +1295,18 @@ public class DBCreate_Modify_Hierarchy {
     }
      */
     private void modifyFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            DBGeneral dbGen, String targetHierarchy, Vector<String> targetHierarchyFacets, Locale targetLocale, StringObject errorMsg) {
+            DBGeneral dbGen, String targetHierarchy, ArrayList<String> targetHierarchyFacets, Locale targetLocale, StringObject errorMsg) {
 
-        Vector<String> currentFacets = dbGen.getSelectedFacets(selectedThesaurus, targetHierarchy, Q, sis_session, targetLocale);
-        Vector<String> addFacets = new Vector<String>();
-        Vector<String> removeFacets = new Vector<String>();
+        ArrayList<String> currentFacets = dbGen.getSelectedFacets(selectedThesaurus, targetHierarchy, Q, sis_session, targetLocale);
+        ArrayList<String> addFacets = new ArrayList<String>();
+        ArrayList<String> removeFacets = new ArrayList<String>();
 
 
         for (int k = 0; k < currentFacets.size(); k++) {
 
             //if one current letter code does not exist in targetHierarchyLetterCodes then it should be deleted
             if (!targetHierarchyFacets.contains(currentFacets.get(k))) {
-                removeFacets.addElement(currentFacets.get(k));
+                removeFacets.add(currentFacets.get(k));
             }
         }
 
@@ -1316,7 +1316,7 @@ public class DBCreate_Modify_Hierarchy {
 
             if (!currentFacets.contains(targetHierarchyFacets.get(l))) {
 
-                addFacets.addElement(targetHierarchyFacets.get(l));
+                addFacets.add(targetHierarchyFacets.get(l));
             }
         }
 

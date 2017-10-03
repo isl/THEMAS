@@ -39,7 +39,7 @@ import Utils.Parameters;
 import org.w3c.dom.*;
 import javax.servlet.http.*;
 import java.nio.file.Paths;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /*-----------------------------------------------------
                   class ConfigDBadmin
@@ -95,7 +95,7 @@ public class ConfigDBadmin {
     /*----------------------------------------------------------------------
                           GetConfigurationValues()
     ------------------------------------------------------------------------*/
-    public Vector<String> GetConfigurationValues(String configurationTagName) {
+    public ArrayList<String> GetConfigurationValues(String configurationTagName) {
         Node configNodes[] = null;
         
         configNodes = configXmlParser.GetNodeListByTag(configurationTagName);
@@ -105,7 +105,7 @@ public class ConfigDBadmin {
             return null;
         }
         int nodesCount = configNodes.length;
-        Vector<String> values =  new Vector<String>();
+        ArrayList<String> values =  new ArrayList<String>();
         for (int i=0; i < nodesCount; i++) {
             values.add(configNodes[i].getFirstChild().getNodeValue());
         }

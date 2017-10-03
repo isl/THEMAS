@@ -69,9 +69,9 @@ public class DBGeneral {
      * Function used in order to pull all prefixes from thesaurus DB
      * Called by SearchResults_Terms_Alphabetical Servlet.
      */
-    public Vector<String> getPrefixes(QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getPrefixes(QClass Q, IntegerObject sis_session) {
 
-        Vector<String> vPrefixes = new Vector<String>();
+        ArrayList<String> vPrefixes = new ArrayList<String>();
         int sisSessionID = sis_session.getValue();
         Q.reset_name_scope();
         Q.set_current_node(new StringObject("Prefix"));
@@ -82,18 +82,18 @@ public class DBGeneral {
 
         if (numOfPrefixes > 0) {
             //StringObject c_name = new StringObject();
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set_Pr, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     if (!row.get_v1_cls_logicalname().trim().matches("")) {
-                        vPrefixes.addElement(row.get_v1_cls_logicalname());
+                        vPrefixes.add(row.get_v1_cls_logicalname());
                     }
                 }
             }
             /*
              while (Q.retur_nodes(set_Pr, c_name) != QClass.APIFail) {
              if(!c_name.getValue().trim().matches(""))
-             vPrefixes.addElement(c_name.getValue());
+             vPrefixes.add(c_name.getValue());
              }*/
         }
         //Sort is needed for alphabetical sort bug fix when prefixes like EL` and THES1EL` are defined
@@ -133,7 +133,7 @@ public class DBGeneral {
 
         boolean isReleased = true;
         //StringObject l_name = new StringObject();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 if (row.get_v1_cls_logicalname().equals(thesNewClass)) {
@@ -177,7 +177,7 @@ public class DBGeneral {
         Q.reset_set(set);
 
         boolean isReleased = true;
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 if (row.get_v1_cls_logicalname().equals(thesNewClass)) {
@@ -272,7 +272,7 @@ public class DBGeneral {
             Q.reset_set(set);
 
             boolean isReleased = true;
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     if (row.get_v1_cls_logicalname().equals(thesNewDescriptor)) {
@@ -320,13 +320,13 @@ public class DBGeneral {
     }
 
     /* Start TYPING AHEAD  */
-    public Vector<String> Search(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        Vector<String> hint = new Vector<String>();
+    public ArrayList<String> Search(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        ArrayList<String> hint = new ArrayList<String>();
 
         int set_descriptor, set_term, set_obsolete_descriptor, set_match, set_result;
 
         //StringObject results_name = new StringObject();
-        Vector<String> v_results = new Vector<String>();
+        ArrayList<String> v_results = new ArrayList<String>();
         StringObject Descriptor = new StringObject();
         StringObject TopTerm = new StringObject();
         StringObject ObsoleteDescriptor = new StringObject();
@@ -338,9 +338,9 @@ public class DBGeneral {
         ptrn.assign_string(prefix.concat(str) + "*");
 
         String term_split[];
-        Vector<String> vec = new Vector<String>();
-        Vector<String> removed = new Vector<String>();
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
+        ArrayList<String> removed = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<String>();
 
         //out.println("ptrn :"+ptrn.getString());
         Descriptor.setValue(SessionUserInfo.selectedThesaurus + "Descriptor");
@@ -380,14 +380,14 @@ public class DBGeneral {
         set_result = dbf.FilterTermsResults(SessionUserInfo, set_result, Q, sis_session);
 
         Q.reset_set(set_result);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                v_results.addElement(row.get_v1_cls_logicalname());
+                v_results.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes(set_result, results_name)) != QClass.APIFail) {
-         v_results.addElement(results_name.getValue());
+         v_results.add(results_name.getValue());
          }*/
 
         removed = removePrefix(v_results);
@@ -410,11 +410,11 @@ public class DBGeneral {
     }
 
     /* Start TYPING AHEAD  */
-    public Vector<String> Search_Facets(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> Search_Facets(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         int set_f, set_of, set_match, set_result;
         //StringObject results_name = new StringObject();
-        Vector<String> v_results = new Vector<String>();
+        ArrayList<String> v_results = new ArrayList<String>();
         StringObject Facet = new StringObject();
         StringObject ObsoleteFacet = new StringObject();
 
@@ -424,8 +424,8 @@ public class DBGeneral {
         String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         ptrn.assign_string(prefix.concat(str));
 
-        Vector<String> removed = new Vector<String>();
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> removed = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<String>();
 
         dbtr.getThesaurusClass_Facet(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), Facet);
         dbtr.getThesaurusClass_Facet(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), ObsoleteFacet);
@@ -456,14 +456,14 @@ public class DBGeneral {
         DBFilters dbf = new DBFilters();
         set_result = dbf.FilterFacetResults(SessionUserInfo, set_result, Q, sis_session);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                v_results.addElement(row.get_v1_cls_logicalname());
+                v_results.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes(set_result, results_name)) != QClass.APIFail) {
-         v_results.addElement(results_name.getValue());
+         v_results.add(results_name.getValue());
          }*/
 
         removed = removePrefix(v_results);
@@ -483,11 +483,11 @@ public class DBGeneral {
     }
 
     /* Start TYPING AHEAD  */
-    public Vector<String> Search_Hierarchies(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> Search_Hierarchies(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         int set_h, set_oh, set_match, set_result;
         //StringObject results_name = new StringObject();
-        Vector<String> v_results = new Vector<String>();
+        ArrayList<String> v_results = new ArrayList<String>();
         StringObject Hierarchy = new StringObject();
         StringObject ObsoleteHierarchy = new StringObject();
 
@@ -497,8 +497,8 @@ public class DBGeneral {
         String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         ptrn.assign_string(prefix.concat(str));
 
-        Vector<String> removed = new Vector<String>();
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> removed = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<String>();
 
         dbtr.getThesaurusClass_Hierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), Hierarchy);
         dbtr.getThesaurusClass_ObsoleteHierarchy(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), ObsoleteHierarchy);
@@ -528,14 +528,14 @@ public class DBGeneral {
         set_result = dbf.FilterHierResults(SessionUserInfo, set_result, Q, sis_session);
 
         Q.reset_set(set_result);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                v_results.addElement(row.get_v1_cls_logicalname());
+                v_results.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes(set_result, results_name)) != QClass.APIFail) {
-         v_results.addElement(results_name.getValue());
+         v_results.add(results_name.getValue());
          }*/
 
         removed = removePrefix(v_results);
@@ -563,7 +563,7 @@ public class DBGeneral {
      OUTPUT : - Vector options: filled with the instances of the given class that match 
      the given string pattern
      ------------------------------------------------------------------------*/
-    public Vector<String> Search_TYPE_AHEAD_ForClass(UserInfoClass SessionUserInfo, String prefix, String str, String className, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> Search_TYPE_AHEAD_ForClass(UserInfoClass SessionUserInfo, String prefix, String str, String className, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         int SISApiSession = sis_session.getValue();
         // get all instances of the given class
@@ -588,7 +588,7 @@ public class DBGeneral {
             instancesSet = dbf.FilterTermsResults(SessionUserInfo, instancesSet, Q, sis_session);
         }
 
-        Vector<String> v_results = new Vector<String>();
+        ArrayList<String> v_results = new ArrayList<String>();
         //StringObject results_name = new StringObject();
         // in case of prefix given != "", use the get_matched() mechanism
         if (prefix != null) {
@@ -598,39 +598,39 @@ public class DBGeneral {
             Q.set_put_prm(set_match, ptrn);
             int set_result = Q.get_matched(instancesSet, set_match);
             Q.reset_set(set_result);
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
-                    v_results.addElement(row.get_v1_cls_logicalname());
+                    v_results.add(row.get_v1_cls_logicalname());
                 }
             }
             /*while ((Q.retur_nodes( set_result, results_name)) != QClass.APIFail) {
-             v_results.addElement(results_name.getValue());
+             v_results.add(results_name.getValue());
              }*/
             Q.free_set(set_match);
             Q.free_set(set_result);
         } else { // in case of prefix given == "", collect the instances starting with the given string for match
             String patternForMatch = str;
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(instancesSet, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     if (row.get_v1_cls_logicalname().startsWith(patternForMatch) == true) {
-                        v_results.addElement(row.get_v1_cls_logicalname());
+                        v_results.add(row.get_v1_cls_logicalname());
                     }
                 }
             }
             /*while ((Q.retur_nodes( instancesSet, results_name)) != QClass.APIFail) {
              if (results_name.getValue().startsWith(patternForMatch) == true) {
-             v_results.addElement(results_name.getValue());
+             v_results.add(results_name.getValue());
              }
              } */
         }
 
-        Vector<String> removed = new Vector<String>();
+        ArrayList<String> removed = new ArrayList<String>();
         removed = removePrefix(v_results);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
             options.add((String) removed.get(i) + "###");
         }
@@ -640,7 +640,7 @@ public class DBGeneral {
         return (options);
     }
 
-    public Vector<String> Search_TYPE_AHEAD_ForTranslations(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> Search_TYPE_AHEAD_ForTranslations(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         int SISApiSession = sis_session.getValue();
@@ -675,8 +675,8 @@ public class DBGeneral {
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
         //CMValue cmv = new CMValue();
-        Vector<String> validPrefixes = new Vector<String>();
-        Vector<Return_Link_Row> retLVals = new Vector<Return_Link_Row>();
+        ArrayList<String> validPrefixes = new ArrayList<String>();
+        ArrayList<Return_Link_Row> retLVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_prefixes_links, retLVals) != QClass.APIFail) {
             for (Return_Link_Row row : retLVals) {
                 validPrefixes.add(row.get_v3_cmv().getString());
@@ -694,8 +694,8 @@ public class DBGeneral {
         DBFilters dbf = new DBFilters();
         instancesSet = dbf.FilterToValuesOfTerms(SessionUserInfo, instancesSet, Q, sis_session);
 
-        //Vector<String> targetSet = this.get_Node_Names_Of_Set(instancesSet, false, Q, sis_session);
-        Vector<String> v_results = new Vector<String>();
+        //ArrayList<String> targetSet = this.get_Node_Names_Of_Set(instancesSet, false, Q, sis_session);
+        ArrayList<String> v_results = new ArrayList<String>();
         int set_match = Q.set_get_new();//set6
         for (int i = 0; i < validPrefixes.size(); i++) {
             //prepare the set for get_matched()
@@ -716,24 +716,24 @@ public class DBGeneral {
         //int card2 = Q.set_get_card(instancesSet);
         int set_result = Q.get_matched(instancesSet, set_match);//set7
         Q.reset_set(set_result);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                v_results.addElement(row.get_v1_cls_logicalname());
+                v_results.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes( set_result, results_name)) != QClass.APIFail) {
-         v_results.addElement(results_name.getValue());
+         v_results.add(results_name.getValue());
          }*/
 
         Q.free_set(set_match);//free set6
         Q.free_set(set_result);//free set7
 
-        Vector<String> removed = new Vector<String>();
+        ArrayList<String> removed = new ArrayList<String>();
         removed = removePrefix(v_results);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
             options.add(removed.get(i) + "###");
         }
@@ -743,7 +743,7 @@ public class DBGeneral {
         return (options);
     }
 
-    public Vector<String> Search_TYPE_AHEAD_ForUFTranslations(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> Search_TYPE_AHEAD_ForUFTranslations(UserInfoClass SessionUserInfo, String str, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         int SISApiSession = sis_session.getValue();
@@ -778,8 +778,8 @@ public class DBGeneral {
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
         //CMValue cmv = new CMValue();
-        Vector<String> validPrefixes = new Vector<String>();
-        Vector<Return_Link_Row> retLVals = new Vector<Return_Link_Row>();
+        ArrayList<String> validPrefixes = new ArrayList<String>();
+        ArrayList<Return_Link_Row> retLVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_prefixes_links, retLVals) != QClass.APIFail) {
             for (Return_Link_Row row : retLVals) {
                 validPrefixes.add(row.get_v3_cmv().getString());
@@ -797,8 +797,8 @@ public class DBGeneral {
         DBFilters dbf = new DBFilters();
         instancesSet = dbf.FilterToValuesOfTerms(SessionUserInfo, instancesSet, Q, sis_session);
 
-        //Vector<String> targetSet = this.get_Node_Names_Of_Set(instancesSet, false, Q, sis_session);
-        Vector<String> v_results = new Vector<String>();
+        //ArrayList<String> targetSet = this.get_Node_Names_Of_Set(instancesSet, false, Q, sis_session);
+        ArrayList<String> v_results = new ArrayList<String>();
         int set_match = Q.set_get_new();//set6
         for (int i = 0; i < validPrefixes.size(); i++) {
             //prepare the set for get_matched()
@@ -819,24 +819,24 @@ public class DBGeneral {
         //int card2 = Q.set_get_card(instancesSet);
         int set_result = Q.get_matched(instancesSet, set_match);//set7
         Q.reset_set(set_result);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_result, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                v_results.addElement(row.get_v1_cls_logicalname());
+                v_results.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes( set_result, results_name)) != QClass.APIFail) {
-         v_results.addElement(results_name.getValue());
+         v_results.add(results_name.getValue());
          }*/
 
         Q.free_set(set_match);//free set6
         Q.free_set(set_result);//free set7
 
-        Vector<String> removed = new Vector<String>();
+        ArrayList<String> removed = new ArrayList<String>();
         removed = removePrefix(v_results);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
-        Vector<String> options = new Vector<String>();
+        ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
             options.add(removed.get(i) + "###");
         }
@@ -887,7 +887,7 @@ public class DBGeneral {
         Q.reset_set(nodeClassesSet);
         //StringObject nodeClassObj = new StringObject();
         boolean belongs = false;
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(nodeClassesSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 if (row.get_v1_cls_logicalname().compareTo(classObj.getValue()) == 0) {
@@ -942,7 +942,7 @@ public class DBGeneral {
      StringObject name = new StringObject();
      while ((Q.retur_nodes( set2, name)) != QClass.APIFail) {
      name.setValue(removePrefix(name.getValue()));
-     bt.addElement(name.getValue());
+     bt.add(name.getValue());
      }
      Q.free_set( set2);
      Q.free_set( set);
@@ -1013,7 +1013,7 @@ public class DBGeneral {
      FUNCTION: returns in a Vector all Concepts that are instances of the 
      THES1Facet,  sorted alphabetically and without their prefixes
      ----------------------------------------------------------------------*/
-    public Vector<String> getFacets(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> getFacets(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         int sisSessionId = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1038,19 +1038,19 @@ public class DBGeneral {
 
         Q.set_union(set_f, set_of);
 
-        Vector<String> conceptsVector = new Vector<String>();
+        ArrayList<String> conceptsVector = new ArrayList<String>();
 
         Q.reset_set(set_f);
         //StringObject c_name = new StringObject();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_f, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                conceptsVector.addElement(row.get_v1_cls_logicalname());
+                conceptsVector.add(row.get_v1_cls_logicalname());
             }
         }
         /*
          while ((Q.retur_nodes( set_f, c_name)) != QClass.APIFail) {
-         conceptsVector.addElement(c_name.getValue());
+         conceptsVector.add(c_name.getValue());
          }*/
         conceptsVector = removePrefix(conceptsVector);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
@@ -1069,7 +1069,7 @@ public class DBGeneral {
      THES1Facet which are either new or released (not obsolete) in order 
      to be used at new /edit hierarchy functionalities.
      ----------------------------------------------------------------------*/
-    public Vector<String> getAvailableFacets(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> getAvailableFacets(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         int sisSessionId = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1084,18 +1084,18 @@ public class DBGeneral {
 
         int set_f = Q.get_instances(0);
 
-        Vector<String> conceptsVector = new Vector<String>();
+        ArrayList<String> conceptsVector = new ArrayList<String>();
 
         Q.reset_set(set_f);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_f, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                conceptsVector.addElement(row.get_v1_cls_logicalname());
+                conceptsVector.add(row.get_v1_cls_logicalname());
             }
         }
         //StringObject c_name = new StringObject();
         //while ((Q.retur_nodes( set_f, c_name)) != QClass.APIFail) {
-        //    conceptsVector.addElement(c_name.getValue());
+        //    conceptsVector.add(c_name.getValue());
         //}
         conceptsVector = removePrefix(conceptsVector);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
@@ -1112,10 +1112,10 @@ public class DBGeneral {
      FUNCTION: returns in a Vector all Facets that targetHierarchy belongs to 
      Used in Hierarchy edit/delete page.
      ----------------------------------------------------------------------*/
-    public Vector<String> getSelectedFacets(String selectedThesaurus, String targetHierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> getSelectedFacets(String selectedThesaurus, String targetHierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
-        Vector<String> returnVector = new Vector<String>();
-        Vector<String> tempVector = new Vector<String>();
+        ArrayList<String> returnVector = new ArrayList<String>();
+        ArrayList<String> tempVector = new ArrayList<String>();
 
         if (targetHierarchy == null || targetHierarchy.length() == 0) {
             return returnVector;
@@ -1136,22 +1136,22 @@ public class DBGeneral {
         Q.reset_set(set_super);
         //StringObject c_name = new StringObject();
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_super, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                tempVector.addElement(row.get_v1_cls_logicalname());
+                tempVector.add(row.get_v1_cls_logicalname());
             }
         }
         /*while ((Q.retur_nodes( set_super, c_name)) != QClass.APIFail) {
-         tempVector.addElement(c_name.getValue());
+         tempVector.add(c_name.getValue());
          }*/
 
-        Vector<String> allfacets = getFacets(selectedThesaurus, Q, sis_session, targetLocale);
+        ArrayList<String> allfacets = getFacets(selectedThesaurus, Q, sis_session, targetLocale);
         tempVector = removePrefix(tempVector);
 
         for (int i = 0; i < tempVector.size(); i++) {
             if (allfacets.contains(tempVector.get(i))) {
-                returnVector.addElement(tempVector.get(i));
+                returnVector.add(tempVector.get(i));
             }
         }
         Q.free_set(set_super);
@@ -1167,7 +1167,7 @@ public class DBGeneral {
      FUNCTION: returns in a Vector all Concepts that are instances of the 
      THES1Hierarchy,  sorted alphabetically and without their prefixes
      ----------------------------------------------------------------------*/
-    public Vector<String> getHierarchies(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> getHierarchies(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         int sisSessionId = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -1190,18 +1190,18 @@ public class DBGeneral {
 
         Q.set_union(set_h, set_oh);
 
-        Vector<String> conceptsVector = new Vector<String>();
+        ArrayList<String> conceptsVector = new ArrayList<String>();
         Q.reset_set(set_h);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_h, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                conceptsVector.addElement(row.get_v1_cls_logicalname());
+                conceptsVector.add(row.get_v1_cls_logicalname());
             }
         }
         /*
          StringObject c_name = new StringObject();
          while ((Q.retur_nodes( set_h, c_name)) != QClass.APIFail) {
-         conceptsVector.addElement(c_name.getValue());
+         conceptsVector.add(c_name.getValue());
          }*/
         conceptsVector = removePrefix(conceptsVector);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
@@ -1220,20 +1220,20 @@ public class DBGeneral {
      instances of the THES1opTerm and THES1Descriptor, sorted alphabetically
      and without their prefixes
      ----------------------------------------------------------------------*/
-    public Vector<String> getDescriptors(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> getDescriptors(String selectedThesaurus, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         int sisSessionId = sis_session.getValue();
         int set_d = getDescriptorsSet(selectedThesaurus, Q, sis_session);
-        Vector<String> conceptsVector = new Vector<String>();
+        ArrayList<String> conceptsVector = new ArrayList<String>();
         Q.reset_set(set_d);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_d, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                conceptsVector.addElement(row.get_v1_cls_logicalname());
+                conceptsVector.add(row.get_v1_cls_logicalname());
             }
         }
         //StringObject c_name = new StringObject();
         //while ((Q.retur_nodes( set_d, c_name)) != QClass.APIFail) {
-        //conceptsVector.addElement(c_name.getValue());
+        //conceptsVector.add(c_name.getValue());
         //}
         conceptsVector = removePrefix(conceptsVector);
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
@@ -1299,15 +1299,15 @@ public class DBGeneral {
     /* Removes the prefix aka the string before the '`' from all the string that the vector contains.
      * Returns a new vector that contains all thesame string without the prefix.
      */
-    public Vector removePrefix(Vector<String> v) {
+    public ArrayList removePrefix(ArrayList<String> v) {
         String term_split[];
-        Vector<String> vec = new Vector<String>();
+        ArrayList<String> vec = new ArrayList<String>();
         String result;
 
         for (int i = 0; i < v.size(); i++) {
             /*term_split = ( v.get(i)).split("`");
              if (term_split.length == 1) {
-             vec.addElement(term_split[0]);
+             vec.add(term_split[0]);
              continue;
              }
              result = new String(term_split[1]);*/
@@ -1316,15 +1316,15 @@ public class DBGeneral {
             } else {
                 result = v.get(i);
             }
-            vec.addElement(result);
+            vec.add(result);
         }
         return (vec);
     }
     
     
-    public Vector removeCmvVectorPrefix(Vector<CMValue> v) {
+    public ArrayList removeCmvVectorPrefix(ArrayList<CMValue> v) {
         String term_split[];
-        Vector<CMValue> vec = new Vector<CMValue>();
+        ArrayList<CMValue> vec = new ArrayList<CMValue>();
         String result;
 
         CMValue newCmv = new CMValue();
@@ -1338,14 +1338,14 @@ public class DBGeneral {
                 result = itemI.getString();
             }
             newCmv.assign_node(result,itemI.getSysid(),itemI.getTransliterationString(),itemI.getRefid());
-            vec.addElement(newCmv.getCmvCopy());
+            vec.add(newCmv.getCmvCopy());
         }
         return (vec);
     }
             
-    public Vector removeSortItemVectorPrefix(Vector<SortItem> v) {
+    public ArrayList<SortItem> removeSortItemArrayListPrefix(ArrayList<SortItem> v) {
         String term_split[];
-        Vector<SortItem> vec = new Vector<SortItem>();
+        ArrayList<SortItem> vec = new ArrayList<SortItem>();
         String result;
 
         for (int i = 0; i < v.size(); i++) {
@@ -1357,7 +1357,7 @@ public class DBGeneral {
             } else {
                 result = itemI.getLogName();
             }
-            vec.addElement(new SortItem(result, itemI.getSysId(),itemI.getLinkClass(),itemI.getLogNameTransliteration(),itemI.getThesaurusReferenceId()));
+            vec.add(new SortItem(result, itemI.getSysId(),itemI.getLinkClass(),itemI.getLogNameTransliteration(),itemI.getThesaurusReferenceId()));
         }
         return (vec);
     }
@@ -1416,7 +1416,7 @@ public class DBGeneral {
         return CMVStringValue;
     }
 
-    public Vector<SortItem> getTranslationLinkValues(String selectedThesaurus, boolean preffered, String target, QClass Q, IntegerObject sis_session) {
+    public ArrayList<SortItem> getTranslationLinkValues(String selectedThesaurus, boolean preffered, String target, QClass Q, IntegerObject sis_session) {
         int API_sessionID = sis_session.getValue();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1445,11 +1445,11 @@ public class DBGeneral {
         //IntegerObject uniq_categ = new IntegerObject();
         //IntegerObject traversed = new IntegerObject();
         //CMValue cmv = new CMValue();
-        Vector<SortItem> linkValue = new Vector<SortItem>();
+        ArrayList<SortItem> linkValue = new ArrayList<SortItem>();
 
         Q.reset_set(linkSet);
         int translationSubStringLength = ConstantParameters.thesaursTranslationCategorysubString.length();
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if (Q.bulk_return_full_link(linkSet, retFLVals) != QClass.APIFail) {
             for (Return_Full_Link_Row row : retFLVals) {
                 String subCategory = row.get_v3_categ().substring(row.get_v3_categ().indexOf(ConstantParameters.thesaursTranslationCategorysubString) + translationSubStringLength);
@@ -1475,7 +1475,7 @@ public class DBGeneral {
      OUTPUT: a Vector with the to-values of the links under the specified category of the target term
      ----------------------------------------------------------------------*/
 
-    public Vector<String> getLinkValue(String selectedThesaurus, String target, String fromClass, String link_name, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getLinkValue(String selectedThesaurus, String target, String fromClass, String link_name, QClass Q, IntegerObject sis_session) {
 
         int API_sessionID = sis_session.getValue();
         // looking for THES1HierarchyTerm 
@@ -1504,11 +1504,11 @@ public class DBGeneral {
         //IntegerObject uniq_categ = new IntegerObject();
         //IntegerObject traversed = new IntegerObject();
         //CMValue cmv = new CMValue();
-        Vector<String> linkValue = new Vector<String>();
+        ArrayList<String> linkValue = new ArrayList<String>();
         Q.reset_set(linkSet);
         int card1 = Q.set_get_card(linkSet);
 
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if (Q.bulk_return_full_link(linkSet, retFLVals) != QClass.APIFail) {
             for (Return_Full_Link_Row row : retFLVals) {
                 //while (Q.retur_full_link( linkSet, cls, label, categ, fromcls, cmv, uniq_categ, traversed) != QClass.APIFail) {
@@ -1557,7 +1557,7 @@ public class DBGeneral {
      * If the concept has multiple links with the same name, 
      * the values are returned in a string with the delimeter '###' between them.
      */
-    public Vector<String> getLink(String selectedThesaurus, String concept, String link_name, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getLink(String selectedThesaurus, String concept, String link_name, QClass Q, IntegerObject sis_session) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject dn_link = new StringObject();
         StringObject tc_link = new StringObject();
@@ -1572,7 +1572,7 @@ public class DBGeneral {
         dbtr.getThesaurusCategory_UF(selectedThesaurus, Q, sis_session.getValue(), uf_link);
         Q.reset_name_scope();
 
-        Vector<String> linkValue = new Vector<String>();
+        ArrayList<String> linkValue = new ArrayList<String>();
         int set;
         StringObject link;
 
@@ -1617,7 +1617,7 @@ public class DBGeneral {
         set = Q.get_from_node_by_category(0, from, link);
         Q.reset_set(set);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -1646,7 +1646,7 @@ public class DBGeneral {
      FUNCTION: collects in a Vector the from values of the given 
      target under category RT (g.e. THES1HierarchyTerm->THES1_RT)
      ------------------------------------------------------------------------*/
-    public Vector<String> getFromRTLinks(String selectedThesaurus, String target, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getFromRTLinks(String selectedThesaurus, String target, QClass Q, IntegerObject sis_session) {
         int sisSessionId = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         // looking for THES1HierarchyTerm 
@@ -1666,8 +1666,8 @@ public class DBGeneral {
         int set = Q.get_from_node_by_category(0, thesHierarchyTerm, thes_RT);
         Q.reset_set(set);
         // fill the vector	
-        Vector<String> res = new Vector<String>();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<String> res = new ArrayList<String>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -1692,7 +1692,7 @@ public class DBGeneral {
      FUNCTION: collects in a Vector the union of the from and to values of the given 
      target under category RT (g.e. THES1HierarchyTerm->THES1_RT)
      ------------------------------------------------------------------------*/
-    public Vector<String> getRTlinksBothDirections(UserInfoClass SessionUserInfo, String target, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getRTlinksBothDirections(UserInfoClass SessionUserInfo, String target, QClass Q, IntegerObject sis_session) {
         int sisSessionId = sis_session.getValue();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1718,14 +1718,14 @@ public class DBGeneral {
         // get their union (result to setFrom)
         Q.set_union(setFrom, setTo);
         // fill the vector
-        Vector<String> RTsVector = new Vector<String>();
+        ArrayList<String> RTsVector = new ArrayList<String>();
         Q.reset_set(setFrom);
 
         // FILTER DB results depending on user group
         DBFilters dbf = new DBFilters();
         setFrom = dbf.FilterTermsResults(SessionUserInfo, setFrom, Q, sis_session);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(setFrom, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -1743,7 +1743,7 @@ public class DBGeneral {
         return RTsVector;
     }
 
-    public Vector<SortItem> getBT_NTwithGuideTerms(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, String descriptor, int direction) {
+    public ArrayList<SortItem> getBT_NTwithGuideTerms(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, String descriptor, int direction) {
 
         DBFilters dbf = new DBFilters();// FILTER DB results depending on user group
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -1757,7 +1757,7 @@ public class DBGeneral {
         String prefix_el = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject descriptor_el = new StringObject(prefix_el.concat(descriptor));
 
-        Vector<SortItem> results = new Vector<SortItem>();
+        ArrayList<SortItem> results = new ArrayList<SortItem>();
 
         //StringObject fromcls = new StringObject();
         //StringObject label = new StringObject();
@@ -1777,7 +1777,7 @@ public class DBGeneral {
             int set_filtered = dbf.FilterBTLinksSet(SessionUserInfo, set, Q, sis_session);
             Q.reset_set(set_filtered);
 
-            Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+            ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
             if (Q.bulk_return_full_link(set_filtered, retFLVals) != QClass.APIFail) {
                 for (Return_Full_Link_Row row : retFLVals) {
                     SortItem newItem = new SortItem(removePrefix(row.get_v5_cmv().getString()), row.get_v5_cmv().getSysid(), row.get_v3_categ());
@@ -1797,7 +1797,7 @@ public class DBGeneral {
             Q.reset_set(set);
             int set_filtered = dbf.FilterBTLinksSet(SessionUserInfo, set, Q, sis_session);
             Q.reset_set(set);
-            Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+            ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
             if (Q.bulk_return_full_link_id(set_filtered, retFLIVals) != QClass.APIFail) {
                 for (Return_Full_Link_Id_Row row : retFLIVals) {
                     SortItem newItem = new SortItem(removePrefix(row.get_v1_cls()), row.get_v2_clsid(), row.get_v5_categ());
@@ -1825,11 +1825,11 @@ public class DBGeneral {
      FUNCTION: gets the broader / narrower terms of the given descriptor
      ----------------------------------------------------------------------*/
 
-    public Vector<String> getBT_NT(UserInfoClass SessionUserInfo, String descriptor, int direction, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getBT_NT(UserInfoClass SessionUserInfo, String descriptor, int direction, QClass Q, IntegerObject sis_session) {
         
-        Vector<String> resultVector = new Vector<String>();
+        ArrayList<String> resultVector = new ArrayList<String>();
         
-        Vector<SortItem> resultVectorInSortItems = getBT_NTInSortItems(SessionUserInfo, descriptor, direction, Q, sis_session);
+        ArrayList<SortItem> resultVectorInSortItems = getBT_NTInSortItems(SessionUserInfo, descriptor, direction, Q, sis_session);
         if(resultVectorInSortItems!=null){
             for(SortItem item : resultVectorInSortItems){
                 resultVector.add(item.getLogName());
@@ -1838,7 +1838,7 @@ public class DBGeneral {
         return resultVector;
     }
 
-    public Vector<SortItem> getBT_NTInSortItems(UserInfoClass SessionUserInfo, String descriptor, int direction, QClass Q, IntegerObject sis_session) {
+    public ArrayList<SortItem> getBT_NTInSortItems(UserInfoClass SessionUserInfo, String descriptor, int direction, QClass Q, IntegerObject sis_session) {
         int SISsessionID = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -1861,14 +1861,14 @@ public class DBGeneral {
             set = Q.get_from_node_by_category(0, from, link);
         }
 
-        Vector<SortItem> resultVector = new Vector<SortItem>();
+        ArrayList<SortItem> resultVector = new ArrayList<SortItem>();
         Q.reset_set(set);
 
         // FILTER DB results depending on user group
         DBFilters dbf = new DBFilters();
         set = dbf.FilterTermsResults(SessionUserInfo, set, Q, sis_session);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -1887,7 +1887,7 @@ public class DBGeneral {
         return resultVector;
     }
     
-    public Vector<SortItem> returnResultsInSortItems(UserInfoClass SessionUserInfo, String term, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+    public ArrayList<SortItem> returnResultsInSortItems(UserInfoClass SessionUserInfo, String term, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         if (output.equals(ConstantParameters.bt_kwd)) {
             return getBT_NTInSortItems(SessionUserInfo, term, ConstantParameters.BT_DIRECTION, Q, sis_session);
         } else if (output.equals(ConstantParameters.nt_kwd)) {
@@ -1897,7 +1897,7 @@ public class DBGeneral {
         } else if (output.equals(ConstantParameters.topterm_kwd)) {
             return get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, ConstantParameters.get_Term_Top_Terms, Q, sis_session);
         }
-        return new Vector<SortItem>();
+        return new ArrayList<SortItem>();
     }
     /*---------------------------------------------------------------------
      returnResults()
@@ -1908,7 +1908,7 @@ public class DBGeneral {
      OUTPUT: - a Vector filled with the to-values of the links of the target 
      term under the specified category 
      ----------------------------------------------------------------------*/
-    public Vector<String> returnResults(UserInfoClass SessionUserInfo, String term, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+    public ArrayList<String> returnResults(UserInfoClass SessionUserInfo, String term, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         //term is in ui encoding and without prefix
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+term + " " +output );      
         if (output.equals(ConstantParameters.bt_kwd)) {
@@ -1927,7 +1927,7 @@ public class DBGeneral {
             return get_term_status(SessionUserInfo.selectedThesaurus, term, Q, sis_session);
         } else if (output.equals(ConstantParameters.comment_kwd) || output.equals(ConstantParameters.scope_note_kwd) || output.equals(ConstantParameters.translations_scope_note_kwd) || output.equals(ConstantParameters.historical_note_kwd)) {
             //else if (output.equals("comment")) {
-            Vector<String> temp = getTermComment(SessionUserInfo.selectedThesaurus, term, output, Q, TA, sis_session);
+            ArrayList<String> temp = getTermComment(SessionUserInfo.selectedThesaurus, term, output, Q, TA, sis_session);
             //if(output.equals(ConstantParameters.translations_scope_note_kwd)){
 
             //}
@@ -1935,8 +1935,8 @@ public class DBGeneral {
             return temp;
             //}
         } else if (output.equals(ConstantParameters.translation_kwd) || output.equals(ConstantParameters.uf_translations_kwd)) {
-            Vector<SortItem> tempVector = getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output.equals(ConstantParameters.translation_kwd), term, Q, sis_session);
-            Vector<String> retrunVec = new Vector<String>();
+            ArrayList<SortItem> tempVector = getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output.equals(ConstantParameters.translation_kwd), term, Q, sis_session);
+            ArrayList<String> retrunVec = new ArrayList<String>();
             for (int i = 0; i < tempVector.size(); i++) {
                 String newtranslation = tempVector.get(i).log_name;
                 if (retrunVec.contains(newtranslation) == false) {
@@ -1953,9 +1953,9 @@ public class DBGeneral {
         }
     }
 
-    Vector<String> get_accepted_status(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
+    ArrayList<String> get_accepted_status(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> acceptedOrNot = new Vector<String>();
+        ArrayList<String> acceptedOrNot = new ArrayList<String>();
 
         StringObject acceptedObj = new StringObject();
         StringObject notAcceptedObj = new StringObject();
@@ -1973,7 +1973,7 @@ public class DBGeneral {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
 
-        Vector<String> ClassNames = get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
+        ArrayList<String> ClassNames = get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
         Q.free_set(set_classes);
 
         if (ClassNames.contains(acceptedObj.getValue())) {
@@ -1985,9 +1985,9 @@ public class DBGeneral {
         return acceptedOrNot;
     }
 
-    Vector<String> get_term_status(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
+    ArrayList<String> get_term_status(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> termStatus = new Vector<String>();
+        ArrayList<String> termStatus = new ArrayList<String>();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2012,7 +2012,7 @@ public class DBGeneral {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
 
-        Vector<String> ClassNames = get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
+        ArrayList<String> ClassNames = get_Node_Names_Of_Set(set_classes, false, Q, sis_session);
         Q.free_set(set_classes);
 
         if (ClassNames.contains(statusUnderConstructionObj.getValue())) {
@@ -2039,19 +2039,18 @@ public class DBGeneral {
      OUTPUT: - a Vector filled with the to-values of the links of the target 
      facet under the specified category 
      ----------------------------------------------------------------------*/
-    public Vector<String> returnResults_Facet(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        Vector<String> abortVctr = new Vector<String>();
+    public ArrayList<String> returnResults_Facet(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        ArrayList<String> abortVctr = new ArrayList<String>();
         if (output.equals("hierarchy")) {
             return getFacetHierarchies(SessionUserInfo, facet, Q, sis_session, targetLocale);
         } else if (output.equals("letter_code")) {
-            return getLinkValue_Facet(SessionUserInfo.selectedThesaurus, facet, "letter_code",
-                    Q, sis_session, targetLocale);
+            return getLinkValue_Facet(SessionUserInfo.selectedThesaurus, facet, "letter_code", Q, sis_session, targetLocale);
         } else {
             return abortVctr;
         }
     }
-    public Vector<SortItem> returnResults_FacetInSortItems(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale){
-        Vector<SortItem> returnVec = new Vector<SortItem>();
+    public ArrayList<SortItem> returnResults_FacetInSortItems(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale){
+        ArrayList<SortItem> returnVec = new ArrayList<SortItem>();
         if (output.equals("hierarchy")) {
             return getFacetHierarchiesInSortItems(SessionUserInfo, facet, Q, sis_session, targetLocale);
         } 
@@ -2067,8 +2066,8 @@ public class DBGeneral {
      OUTPUT: - a Vector filled with the to-values of the links of the target 
      facet under the specified category 
      ----------------------------------------------------------------------*/
-    public Vector<String> returnResults_Hierarchy(UserInfoClass SessionUserInfo, String hierarchy, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        Vector<String> abortVctr = new Vector<String>();
+    public ArrayList<String> returnResults_Hierarchy(UserInfoClass SessionUserInfo, String hierarchy, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        ArrayList<String> abortVctr = new ArrayList<String>();
         if (output.equals(ConstantParameters.facet_kwd)) {
             return getHierarchyFacets(SessionUserInfo, hierarchy, Q, sis_session, targetLocale);
         }
@@ -2087,12 +2086,12 @@ public class DBGeneral {
      - String link_name: the name a specific category (g.e. "THES1_RT")
      OUTPUT: a Vector with the to-values of the links under the specified category of the target term
      ----------------------------------------------------------------------
-     public Vector<String> getLinkValue_Hierarchy(String selectedThesaurus,String target, String link_name,QClass Q, IntegerObject sis_session,Locale targetLocale) {
+     public ArrayList<String> getLinkValue_Hierarchy(String selectedThesaurus,String target, String link_name,QClass Q, IntegerObject sis_session,Locale targetLocale) {
 
      if(target==null || target.length()==0)
-     return new Vector<String>();
+     return new ArrayList<String>();
         
-     Vector<String> linkValue = new Vector<String>();
+     ArrayList<String> linkValue = new ArrayList<String>();
      int sisSessionId = sis_session.getValue();
      DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2124,19 +2123,19 @@ public class DBGeneral {
      }
             
      //            if (link_name.equals("letter_code")) {
-     //                Vector<String> tempVec = new Vector<String>();
+     //                ArrayList<String> tempVec = new ArrayList<String>();
      //                if (targetHierarchy.getValue().equals(cls.getValue())) {
-     //                    tempVec.addElement(cmv.getString());
-     //                    tempVec.addElement("enabled");
+     //                    tempVec.add(cmv.getString());
+     //                    tempVec.add("enabled");
      //                } else {
-     //                    tempVec.addElement(cmv.getString());
-     //                    tempVec.addElement("disabled");
+     //                    tempVec.add(cmv.getString());
+     //                    tempVec.add("disabled");
      //                }
      //
-     //                linkValue.addElement(tempVec);
+     //                linkValue.add(tempVec);
      //            }
      //            else
-     //                linkValue.addElement(cmv.getString());
+     //                linkValue.add(cmv.getString());
              
      }
 
@@ -2159,9 +2158,9 @@ public class DBGeneral {
      - String link_name: the name a specific category (g.e. "THES1_RT")
      OUTPUT: a Vector with the to-values of the links under the specified category of the target term
      ----------------------------------------------------------------------*/
-    public Vector getLinkValue_Facet(String selectedThesaurus, String facet, String link_name, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList getLinkValue_Facet(String selectedThesaurus, String facet, String link_name, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
-        Vector<String> linkValue = new Vector<String>();
+        ArrayList<String> linkValue = new ArrayList<String>();
         int sisSessionId = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2184,7 +2183,7 @@ public class DBGeneral {
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
         //CMValue cmv = new CMValue();
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(linkFromSet, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
                 linkValue.add(row.get_v3_cmv().getString());
@@ -2192,7 +2191,7 @@ public class DBGeneral {
         }
         /*while (Q.retur_link( linkFromSet, cls, label, cmv) != QClass.APIFail) {
 
-         linkValue.addElement(cmv.getString());
+         linkValue.add(cmv.getString());
          }
          */
 
@@ -2213,8 +2212,8 @@ public class DBGeneral {
      "scope_note" (for THES1ThesaurusConcept->thes1_scope_note) or "historical_note" (for THES1ThesaurusConcept->thes1_historical_note)
      OUTPUT: - a Vector filled with the comment string found
      ----------------------------------------------------------------------*/
-    public Vector<String> getTermComment(String selectedThesaurus, String targetTerm, String commentKind, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
-        Vector<String> result = new Vector<String>();
+    public ArrayList<String> getTermComment(String selectedThesaurus, String targetTerm, String commentKind, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+        ArrayList<String> result = new ArrayList<String>();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -2246,7 +2245,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_ObsoleteDescriptor(selectedThesaurus, Q, sis_session.getValue(), thesObsoleteDescriptor);
         boolean isObsolete = NodeBelongsToClass(targetTerm_el, thesObsoleteDescriptor, false, Q, sis_session);
         if (isObsolete == true) {
-            result.addElement("");
+            result.add("");
             return result;
         }
 
@@ -2269,7 +2268,7 @@ public class DBGeneral {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in getComment");
             TA.ALMOST_DONE_GetTMS_APIErrorMessage(errorMsg);
             //errorMsg = /*"<tr><td>" +*/ errorMsg.concat(check_success(ret, null)) /*+ "</td></tr>"*/;
-            result.addElement(errorMsg.getValue());
+            result.add(errorMsg.getValue());
         }
 
         //reset to previous thesaurus name if needed
@@ -2277,7 +2276,7 @@ public class DBGeneral {
             TA.SetThesaurusName(prevThes.getValue());
         }
 
-        result.addElement(comment.getValue());
+        result.add(comment.getValue());
         return result;
     }
 
@@ -2417,7 +2416,7 @@ public class DBGeneral {
      the given Descriptor does not belong to a Hierarchy and is not a TopTerm
      FUNCTION: collects in a Vector all the hierarchies that the given Descriptor is instance of
      ----------------------------------------------------------------------*/
-    public Vector<String> getDescriptorHierarchies(String selectedThesaurus, StringObject targetDescriptor, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getDescriptorHierarchies(String selectedThesaurus, StringObject targetDescriptor, QClass Q, IntegerObject sis_session) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
 
@@ -2439,9 +2438,9 @@ public class DBGeneral {
         Q.reset_set(set_c);
 
         // set_intersect(set_h, set_c)        
-        Vector<String> hierarchiesVector = new Vector<String>();
+        ArrayList<String> hierarchiesVector = new ArrayList<String>();
         String errorMsg = new String("");
-        Vector<String> error = new Vector<String>();
+        ArrayList<String> error = new ArrayList<String>();
 
         // in case targetDescriptor belongs to a Hierarchy
         if (Q.set_disjoint(set_h, set_c) == QClass.FALSEval) {
@@ -2449,15 +2448,15 @@ public class DBGeneral {
 
             if (Q.set_intersect(set_h, set_c) != QClass.APIFail) {
                 Q.reset_set(set_h);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if (Q.bulk_return_nodes(set_h, retVals) != QClass.APIFail) {
                     for (Return_Nodes_Row row : retVals) {
-                        hierarchiesVector.addElement(row.get_v1_cls_logicalname());
+                        hierarchiesVector.add(row.get_v1_cls_logicalname());
                     }
                 }
                 //StringObject lname = new StringObject();
                 /*while ((Q.retur_nodes( set_h, lname)) != QClass.APIFail) {
-                 hierarchiesVector.addElement(lname.getValue());
+                 hierarchiesVector.add(lname.getValue());
                  lname = new StringObject();
                  }*/
                 Q.free_set(set_h);
@@ -2465,7 +2464,7 @@ public class DBGeneral {
             } else {
                 errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/DBConnectionError", null) + "</td></tr>");
                 //errorMsg = errorMsg.concat("<tr><td>" + "A database connection error occurred. Please try again later." + "</td></tr>");
-                error.addElement(errorMsg);
+                error.add(errorMsg);
                 return error;
             }
         } else { // mporei o oros na mhn anhkei se ierarxia apo la8os h mporei na einai top term		
@@ -2479,12 +2478,12 @@ public class DBGeneral {
             if (isTopTerm == true) {
                 // looking for prefix "THES1Class`"
                 String classPrefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
-                hierarchiesVector.addElement(classPrefix.concat(removePrefix(targetDescriptor.getValue())));
+                hierarchiesVector.add(classPrefix.concat(removePrefix(targetDescriptor.getValue())));
                 return hierarchiesVector;
             }
             errorMsg = errorMsg.concat("<tr><td>" +u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{ removePrefix(targetDescriptor.getValue())}) + "</td></tr>");
             //errorMsg = errorMsg.concat("<tr><td>Term: '" + removePrefix(targetDescriptor.getValue()) + "' is not classified under any hierarchy.</td></tr>");
-            error.addElement(errorMsg);
+            error.add(errorMsg);
             return error;
         }
 
@@ -2497,7 +2496,7 @@ public class DBGeneral {
      INPUT: - String concept: the target term
      OUTPUT: a Vector with the classes of the given term
      ----------------------------------------------------------------------*/
-    public Vector<String> getClassesOfTerm(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getClassesOfTerm(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
 
@@ -2507,9 +2506,9 @@ public class DBGeneral {
         Q.set_current_node(concept_el);
         int set_c = Q.get_classes(0);
 
-        Vector<String> classes = new Vector<String>();
+        ArrayList<String> classes = new ArrayList<String>();
         Q.reset_set(set_c);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_c, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //Cname.setValue(removePrefix(Cname.getValue()));
@@ -2531,7 +2530,7 @@ public class DBGeneral {
      INPUT: - String targetHierarchy: the target Hierarchy (in UI encoding and without prefix)
      OUTPUT: a Vector with the terms of the given Hierarchy (in UI encoding and without prefix) - sorted
      ----------------------------------------------------------------------*/
-    public Vector<String> GetTermsOfHierarchy(String selectedThesaurus, String targetHierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public ArrayList<String> GetTermsOfHierarchy(String selectedThesaurus, String targetHierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
 
@@ -2541,9 +2540,9 @@ public class DBGeneral {
         Q.set_current_node(targetHierarchy_el);
         int set_c = Q.get_instances(0);
 
-        Vector<String> terms = new Vector<String>();
+        ArrayList<String> terms = new ArrayList<String>();
         Q.reset_set(set_c);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_c, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //Cname.setValue(removePrefix(Cname.getValue()));
@@ -2633,8 +2632,8 @@ public class DBGeneral {
         return null;
     }
 
-    public Vector<String> getMatchedByName(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getMatchedByName(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
         int tmp_set, ptrn_set;
@@ -2653,7 +2652,7 @@ public class DBGeneral {
 
         Q.reset_set(ans_set);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(ans_set, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2671,8 +2670,8 @@ public class DBGeneral {
         return v;
     }
 
-    public Vector<String> getNotEqualsByName(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getNotEqualsByName(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         int conceptsSet, s;
         //StringObject name = new StringObject();
         StringObject term = new StringObject(value);
@@ -2684,7 +2683,7 @@ public class DBGeneral {
         Q.reset_set(s);
         Q.set_difference(conceptsSet, s);
         Q.reset_set(conceptsSet);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(conceptsSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2702,8 +2701,8 @@ public class DBGeneral {
         return v;
     }
 
-    public Vector<String> getNotEqualsByBT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getNotEqualsByBT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         int allConceptsSet, setBT;
 
         //StringObject name = new StringObject();
@@ -2722,7 +2721,7 @@ public class DBGeneral {
 
         Q.set_difference(allConceptsSet, setBT);
         Q.reset_set(allConceptsSet);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(allConceptsSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2740,8 +2739,8 @@ public class DBGeneral {
         return v;
     }
 
-    public Vector<String> getNotEqualsByNT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getNotEqualsByNT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         int allConceptsSet, setNT;
         //StringObject name = new StringObject();
 
@@ -2760,7 +2759,7 @@ public class DBGeneral {
 
         Q.set_difference(allConceptsSet, setNT);
         Q.reset_set(allConceptsSet);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(allConceptsSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2778,8 +2777,8 @@ public class DBGeneral {
         return v;
     }
 
-    public Vector<String> getNotEqualsByRT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getNotEqualsByRT(String selectedThesaurus, String value, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         int allConceptsSet;
         allConceptsSet = getDescriptorsSet(selectedThesaurus, Q, sis_session);
         //StringObject name = new StringObject();
@@ -2829,7 +2828,7 @@ public class DBGeneral {
         Q.set_difference(allConceptsSet, set1);
         Q.reset_set(set1);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(allConceptsSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2847,8 +2846,8 @@ public class DBGeneral {
         return v;
     }
 
-    public Vector<String> getNotEquals(String selectedThesaurus, String value, String l, QClass Q, IntegerObject sis_session) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getNotEquals(String selectedThesaurus, String value, String l, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> v = new ArrayList<String>();
         int allConceptsSet, set;
 
         StringObject from = new StringObject(selectedThesaurus.concat("HierarchyTerm"));
@@ -2889,7 +2888,7 @@ public class DBGeneral {
         Q.set_difference(allConceptsSet, set);
         Q.reset_set(allConceptsSet);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(allConceptsSet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //name.setValue(removePrefix(name.getValue()));
@@ -2909,8 +2908,8 @@ public class DBGeneral {
     }
 
     /*
-     public Vector<String> getMatchedByBT(String selectedThesaurus, String value,QClass Q, IntegerObject sis_session) {
-     Vector<String> v = new Vector<String>();
+     public ArrayList<String> getMatchedByBT(String selectedThesaurus, String value,QClass Q, IntegerObject sis_session) {
+     ArrayList<String> v = new ArrayList<String>();
      DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
      String prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
@@ -2951,8 +2950,8 @@ public class DBGeneral {
      }
      */
     /*
-     public Vector<String> getMatchedByNT(String selectedThesaurus, String value,QClass Q, IntegerObject sis_session) {
-     Vector<String> v = new Vector<String>();
+     public ArrayList<String> getMatchedByNT(String selectedThesaurus, String value,QClass Q, IntegerObject sis_session) {
+     ArrayList<String> v = new ArrayList<String>();
      DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
      String prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
@@ -2999,9 +2998,9 @@ public class DBGeneral {
      */
     /*
      //TODO: 8elei kapoia beltiwsh...
-     public Vector<String> getMatchedByRT(UserInfoClass SessionUserInfo, String value,QClass Q, IntegerObject sis_session) {
-     Vector<String> v = new Vector<String>();
-     Vector<String> k = new Vector<String>();
+     public ArrayList<String> getMatchedByRT(UserInfoClass SessionUserInfo, String value,QClass Q, IntegerObject sis_session) {
+     ArrayList<String> v = new ArrayList<String>();
+     ArrayList<String> k = new ArrayList<String>();
 
      DBThesaurusReferences dbtr = new DBThesaurusReferences();
      String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus,Q,sis_session.getValue());
@@ -3053,9 +3052,9 @@ public class DBGeneral {
      }
      */
     /*
-     public Vector<String> getMatched(String selectedThesaurus,String value, String l,QClass Q, IntegerObject sis_session) {
+     public ArrayList<String> getMatched(String selectedThesaurus,String value, String l,QClass Q, IntegerObject sis_session) {
 
-     Vector<String> v = new Vector<String>();
+     ArrayList<String> v = new ArrayList<String>();
      int conceptsSet, matchSet, ptrn_set, set;
      CMValue prm = new CMValue();
      StringObject name = new StringObject();
@@ -3109,8 +3108,8 @@ public class DBGeneral {
      return v;
      }
      */
-    public Vector<String> getThesaurusTranslationPrefixes(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
-        Vector<String> returnVec = new Vector<String>();
+    public ArrayList<String> getThesaurusTranslationPrefixes(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> returnVec = new ArrayList<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         int SISsession = sis_session.getValue();
@@ -3138,7 +3137,7 @@ public class DBGeneral {
         //StringObject cls = new StringObject();
         //StringObject label = new StringObject();
         //CMValue cmv = new CMValue();
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_has_prefix_links, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
                 String newPrefix = row.get_v3_cmv().getString();
@@ -3212,7 +3211,7 @@ public class DBGeneral {
                     prefixes = new String[1];
                     prefixes[0] = prefix;
                     set_partial_descriptor_results = filterLinksByName(prefixes, set_d,
-                            operators[i].toString(), searchVal, Q, sis_session);
+                            operators[i].toString(), searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
                     Q.reset_set(set_partial_descriptor_results);
                 } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.translation_kwd)) {
 
@@ -3467,7 +3466,7 @@ public class DBGeneral {
         //Filter  Names contained in set_tt_nodes according to searchVal
         String[] prefixes = new String[1];
         prefixes[0] = prefix;
-        int set_tt_criteria_names = filterLinksByName(prefixes, set_tt_nodes, operator, searchVal, Q, sis_session);
+        int set_tt_criteria_names = filterLinksByName(prefixes, set_tt_nodes, operator, searchVal, Q, sis_session, selectedThesaurus);
         Q.reset_set(set_tt_criteria_names);
 
         int cardttcr = Q.set_get_card(set_tt_criteria_names);
@@ -3504,7 +3503,7 @@ public class DBGeneral {
         Q.reset_set(set_f_nodes);
 
         //Filter Facet Names contained in set_f according to searchVal
-        int set_f_criteria_names = filterLinksByName(prefixes, set_f_nodes, operator, searchVal, Q, sis_session);
+        int set_f_criteria_names = filterLinksByName(prefixes, set_f_nodes, operator, searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
         Q.reset_set(set_f_criteria_names);
 
         int set_results = Q.get_all_instances(set_f_criteria_names);
@@ -3635,8 +3634,8 @@ public class DBGeneral {
 
         // collect all terms with comment in a Vector
         //StringObject termName = new StringObject();
-        Vector<String> termNamesVector = new Vector<String>();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<String> termNamesVector = new ArrayList<String>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_terms_with_comment, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 termNamesVector.add(row.get_v1_cls_logicalname());
@@ -3651,7 +3650,7 @@ public class DBGeneral {
         int set_results = Q.set_get_new();
         // for each term
         int termNamesVectorSize = termNamesVector.size();
-        Vector<String> termComment = new Vector<String>();
+        ArrayList<String> termComment = new ArrayList<String>();
         for (int i = 0; i < termNamesVectorSize; i++) {
             String termNameStr = (String) (termNamesVector.get(i));
             String targetTerm_UI = removePrefix(termNameStr);
@@ -3741,7 +3740,7 @@ public class DBGeneral {
             Q.reset_set(set_from_names);
 
             //Filter BT Names contained in set_bt_names according to searchVal
-            int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session);
+            int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
             Q.reset_set(set_from_criteria_names);
 
             //get all BT Labels from BT Names (From NT --> LABEL --> TO BT)
@@ -3790,7 +3789,7 @@ public class DBGeneral {
             Q.reset_set(set_to_names);
 
             //Filter NT Names contained in set_nt_names according to searchVal
-            int set_to_criteria_names = filterLinksByName(prefixes, set_to_names, operator, searchVal, Q, sis_session);
+            int set_to_criteria_names = filterLinksByName(prefixes, set_to_names, operator, searchVal, Q, sis_session, SessionUserInfo.selectedThesaurus);
             Q.reset_set(set_to_criteria_names);
 
             //get all NT Labels originating from NT Names (From NT --> LABEL --> TO BT)
@@ -3829,7 +3828,7 @@ public class DBGeneral {
     //similar to filterLinksByRelation but customized in order to support the multiple prefixes of translations
     public int filterTransLationLinks(UserInfoClass SessionUserInfo, boolean prefferredTranslations, int sisSessionId, String operator, String searchVal, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> prefixesVector = getThesaurusTranslationPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session);
+        ArrayList<String> prefixesVector = getThesaurusTranslationPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session);
         String[] prefixes = new String[prefixesVector.size()];
         prefixesVector.toArray(prefixes);
 
@@ -3875,7 +3874,7 @@ public class DBGeneral {
         Q.reset_set(set_from_names);
 
         //Filter BT Names contained in set_bt_names according to searchVal
-        int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session);//set6
+        int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session, SessionUserInfo.selectedThesaurus);//set6
         Q.reset_set(set_from_criteria_names);
 
         //get all BT Labels from BT Names (From NT --> LABEL --> TO BT)
@@ -3922,7 +3921,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_StatusForReinspection(selectedThesaurus, statusForReinspectionObj);
         dbtr.getThesaurusClass_StatusApproved(selectedThesaurus, statusApprovedObj);
 
-        Hashtable<String, StringObject> all_statuses = new Hashtable<String, StringObject>();
+        HashMap<String, StringObject> all_statuses = new HashMap<String, StringObject>();
 
         all_statuses.put(Parameters.Status_Under_Construction, statusUnderConstructionObj);
         all_statuses.put(Parameters.Status_For_Approval, statusForApprovalObj);
@@ -3930,20 +3929,20 @@ public class DBGeneral {
         all_statuses.put(Parameters.Status_For_Reinspection, statusForReinspectionObj);
         all_statuses.put(Parameters.Status_Approved, statusApprovedObj);
 
-        Vector<StringObject> filtered_Status_Vec = new Vector<StringObject>();
-        all_statuses.keys();
-        Enumeration keysEnum = all_statuses.keys();
+        ArrayList<StringObject> filtered_Status_Vec = new ArrayList<StringObject>();
+        
+        Iterator keysEnum = all_statuses.keySet().iterator();
         String targetKey = new String();
-        while (keysEnum.hasMoreElements()) {
+        while (keysEnum.hasNext()) {
 
-            targetKey = (String) keysEnum.nextElement();
+            targetKey = (String) keysEnum.next();
 
             if (operator.equals("=")) {
                 if (targetKey.compareTo(searchVal) != 0) {
                     continue;
                 }
                 //if (targetKey.compareTo(Status_Approved) == 0) {                    
-                filtered_Status_Vec.addElement(all_statuses.get(targetKey));
+                filtered_Status_Vec.add(all_statuses.get(targetKey));
                 //}
 
             } else if (operator.equals("~")) {
@@ -3955,13 +3954,13 @@ public class DBGeneral {
                     searchVal = searchVal.substring(0, searchVal.length() - 1);
                 }
                 if (targetKey.toLowerCase().contains(searchVal.toLowerCase()) == true) {
-                    filtered_Status_Vec.addElement(all_statuses.get(targetKey));
+                    filtered_Status_Vec.add(all_statuses.get(targetKey));
                 }
 
             } else if (operator.equals("!")) {
 
                 if (targetKey.compareTo(searchVal) != 0) {
-                    filtered_Status_Vec.addElement(all_statuses.get(targetKey));
+                    filtered_Status_Vec.add(all_statuses.get(targetKey));
                 }
 
             } else if (operator.equals("!~")) {
@@ -3973,7 +3972,7 @@ public class DBGeneral {
                     searchVal = searchVal.substring(0, searchVal.length() - 1);
                 }
                 if (targetKey.toLowerCase().contains(searchVal.toLowerCase()) == false) {
-                    filtered_Status_Vec.addElement(all_statuses.get(targetKey));
+                    filtered_Status_Vec.add(all_statuses.get(targetKey));
                 }
             }
 
@@ -4001,7 +4000,7 @@ public class DBGeneral {
         return set_results;
     }
 
-    public int filterLinksByName(String[] prefixes, int set_target, String operator, String searchVal, QClass Q, IntegerObject sis_session) {
+    public int filterLinksByName(String[] prefixes, int set_target, String operator, String searchVal, QClass Q, IntegerObject sis_session, String selectedThesaurus) {
         
         //int set_results = Q.set_get_new();
         int set_results = -1;
@@ -4021,7 +4020,43 @@ public class DBGeneral {
                 }
             }
 
-        } else if (operator.equals("transliteration~")) {
+        } 
+        //else if (operator.equals("transliteration=")) {
+        //    Q.reset_set(set_target);
+        //    set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
+        //    Q.reset_set(set_results);
+        //}
+        else if (operator.equals("refid=")){
+            if (searchVal != null && searchVal.trim().length() > 0) {
+                
+                long refId =-1;
+                try{
+                    refId = Long.parseLong(searchVal);
+                }
+                catch(NumberFormatException ex){
+                    
+                }
+                
+                if(refId>0){
+                    if (Q.set_current_node_by_referenceId(refId, selectedThesaurus) != QClass.APIFail) {
+                     set_results = Q.set_get_new();
+                     Q.set_put(set_results);
+                     Q.reset_set(set_results);
+                    }
+                }
+                    
+                for (int i = 0; i < prefixes.length; i++) {
+                    String prefix = prefixes[i];
+                    if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                        set_results = Q.set_get_new();
+                        Q.set_put(set_results);
+                        Q.reset_set(set_results);
+
+                    }
+                }
+            }
+        }
+        else if (operator.equals("transliteration~")) {
             Q.reset_set(set_target);
             set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false));
             Q.reset_set(set_results);
@@ -4074,8 +4109,8 @@ public class DBGeneral {
         } else if (operator.equals(">=") || operator.equals("<=")) {
             Q.reset_set(set_target);
             //StringObject l_name = new StringObject();
-            Vector<String> termsVector = new Vector<String>();
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<String> termsVector = new ArrayList<String>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     if (operator.equals(">=")) {
@@ -4167,7 +4202,7 @@ public class DBGeneral {
      -----------------------------------------------------------------------
      OUTPUT: a Vector with the existing Thesaurus in DB
      ----------------------------------------------------------------------*/
-    public Vector<String> GetExistingThesaurus(boolean startQuerySession, Vector<String> thesaurusVector, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> GetExistingThesaurus(boolean startQuerySession, ArrayList<String> thesaurusVector, QClass Q, IntegerObject sis_session) {
 
         if (startQuerySession == true) {
             // START query
@@ -4184,7 +4219,7 @@ public class DBGeneral {
 
         //Vector thesaurusVector = new Vecto();
         Q.reset_set(set_c);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_c, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 //Cname.setValue(removePrefix(Cname.getValue()));
@@ -4236,7 +4271,7 @@ public class DBGeneral {
      }
      */
 
-    public Vector<SortItem> get_term_facets_or_topterms_InSortItemVector(UserInfoClass SessionUserInfo, String term, int facet_or_topterm, QClass Q, IntegerObject sis_session) {
+    public ArrayList<SortItem> get_term_facets_or_topterms_InSortItemVector(UserInfoClass SessionUserInfo, String term, int facet_or_topterm, QClass Q, IntegerObject sis_session) {
 
         int SISApiSession = sis_session.getValue();
         int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
@@ -4314,22 +4349,22 @@ public class DBGeneral {
 
             }
 
-            Vector<SortItem> results = get_Node_SortItems_Of_Set(set_all_classes, true, Q, sis_session);
+            ArrayList<SortItem> results = get_Node_Names_Of_Set_In_SortItems(set_all_classes, true, Q, sis_session);
             Q.free_set(set_all_classes);
             return results;
         }
 
-        Vector<SortItem> results = new Vector<SortItem>();
+        ArrayList<SortItem> results = new ArrayList<SortItem>();
         return results;
     }
     
     //facet_or_topterm: == get_Term_Facets   == 0   --> mode = facet
     //facet_or_topterm: ==get_Term_Top_Terms == 1 --> mode = topterm     
-    public Vector<String> get_term_facets_or_topterms(UserInfoClass SessionUserInfo, String term, int facet_or_topterm, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> get_term_facets_or_topterms(UserInfoClass SessionUserInfo, String term, int facet_or_topterm, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> results = new Vector<String>();
+        ArrayList<String> results = new ArrayList<String>();
         
-        Vector<SortItem> resultsInSortItem = get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, facet_or_topterm, Q, sis_session);
+        ArrayList<SortItem> resultsInSortItem = get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, facet_or_topterm, Q, sis_session);
         if(resultsInSortItem!=null){
             for(SortItem item : resultsInSortItem){
                 results.add(item.getLogName());
@@ -4338,15 +4373,15 @@ public class DBGeneral {
         return results;
     }
     
-    public Vector<CMValue> get_Node_Cmvalues_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
-        Vector<CMValue> names = new Vector<CMValue>();
+    public ArrayList<CMValue> get_Node_Cmvalues_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
+        ArrayList<CMValue> names = new ArrayList<CMValue>();
 
         Q.reset_name_scope();
         Q.reset_set(set_target);
         //StringObject label = new StringObject();
 
         CMValue newItem = new CMValue();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {                
                 newItem.assign_node(row.get_v1_cls_logicalname(),row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
@@ -4368,14 +4403,14 @@ public class DBGeneral {
     }
 
     
-    public Vector<SortItem> get_Node_SortItems_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
-        Vector<SortItem> names = new Vector<SortItem>();
+    public ArrayList<SortItem> get_Node_Names_Of_Set_In_SortItems(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
+        ArrayList<SortItem> names = new ArrayList<SortItem>();
 
         Q.reset_name_scope();
         Q.reset_set(set_target);
         //StringObject label = new StringObject();
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 SortItem newItem = new SortItem(row.get_v1_cls_logicalname(),row.get_Neo4j_NodeId(),"",row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
@@ -4388,7 +4423,7 @@ public class DBGeneral {
          }*/
 
         if (removePrefixes) {
-            names = removeSortItemVectorPrefix(names);
+            names = removeSortItemArrayListPrefix(names);
         }
 
         names.trimToSize();
@@ -4397,14 +4432,14 @@ public class DBGeneral {
     }
 
 
-    public Vector<String> get_Node_Names_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
-        Vector<String> names = new Vector<String>();
+    public ArrayList<String> get_Node_Names_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
+        ArrayList<String> names = new ArrayList<String>();
 
         Q.reset_name_scope();
         Q.reset_set(set_target);
         //StringObject label = new StringObject();
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 names.add(row.get_v1_cls_logicalname());
@@ -4761,7 +4796,7 @@ public class DBGeneral {
         //StringObject label = new StringObject();
         int howmany = Q.set_get_card(set_print);
         int index = 0;
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_print, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 index++;
@@ -4943,7 +4978,7 @@ public class DBGeneral {
         //StringObject cls = new StringObject();
         //CMValue cmv = new CMValue();
         int counter = 0;
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(BTlinksSet, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
                 String BTterm = row.get_v3_cmv().getString();
@@ -5091,10 +5126,10 @@ public class DBGeneral {
         return TMSAPIClass.TMS_APISucc;
     }
 
-    Vector<String> getHierarchyFacets(UserInfoClass SessionUserInfo, String hierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    ArrayList<String> getHierarchyFacets(UserInfoClass SessionUserInfo, String hierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         if (hierarchy == null || hierarchy.length() == 0) {
-            return new Vector<String>();
+            return new ArrayList<String>();
         }
         int index = Parameters.CLASS_SET.indexOf("FACET");
 
@@ -5106,7 +5141,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(language, country);
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        Vector<String> results = new Vector<String>();
+        ArrayList<String> results = new ArrayList<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
@@ -5135,7 +5170,7 @@ public class DBGeneral {
 
     }
 
-    Vector<String> getFacetHierarchies(UserInfoClass SessionUserInfo, String facet, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    ArrayList<String> getFacetHierarchies(UserInfoClass SessionUserInfo, String facet, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
         String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
@@ -5146,7 +5181,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(language, country);
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        Vector<String> results = new Vector<String>();
+        ArrayList<String> results = new ArrayList<String>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(facet));
@@ -5181,9 +5216,9 @@ public class DBGeneral {
 
     //getFacetHierarchiesInSortItems differs significantly from getFacetHierarchies as
     //it searches for the hierarchy reference Id in the TopTerm
-    Vector<SortItem> getFacetHierarchiesInSortItems(UserInfoClass SessionUserInfo, String facet, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    ArrayList<SortItem> getFacetHierarchiesInSortItems(UserInfoClass SessionUserInfo, String facet, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
-        Vector<SortItem> results = new Vector<SortItem>();
+        ArrayList<SortItem> results = new ArrayList<SortItem>();
         
         int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
         String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
@@ -5230,10 +5265,10 @@ public class DBGeneral {
 
             //String s1 = ""+card1+" " + card2 + " " + card3;
 
-            results.addAll(get_Node_SortItems_Of_Set(set_topterms, true, Q, sis_session));
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
         }
         else{
-            results.addAll(get_Node_SortItems_Of_Set(set_sub_classes, true, Q, sis_session));
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_sub_classes, true, Q, sis_session));
         }
         Q.free_set(set_sub_classes);
         Q.free_set(set_hiers);
@@ -5245,7 +5280,7 @@ public class DBGeneral {
     }
     
     //Nodes without dewey are read first. Such nodes should not exist though
-    public void collectResultsTaxonomicCodes(String selectedThesaurus, QClass Q, IntegerObject sis_session, int targetSet, Vector<TaxonomicCodeItem> descriptors, String separator) {
+    public void collectResultsTaxonomicCodes(String selectedThesaurus, QClass Q, IntegerObject sis_session, int targetSet, ArrayList<TaxonomicCodeItem> descriptors, String separator) {
 
         StringObject from = new StringObject();
         StringObject link = new StringObject();
@@ -5270,7 +5305,7 @@ public class DBGeneral {
         //IntegerObject sysid = new IntegerObject();
         //StringObject sclass = new StringObject();   // dummy
         Q.reset_set(noDeweySet);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(noDeweySet, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 String tempName = row.get_v1_cls_logicalname();
@@ -5300,7 +5335,7 @@ public class DBGeneral {
         //IntegerObject linkID = new IntegerObject();
         //IntegerObject categID = new IntegerObject();
         //CMValue cmv = new CMValue();
-        Vector<Return_Link_Row> retLVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retLVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(deweySetLabels, retLVals) != QClass.APIFail) {
             for (Return_Link_Row row : retLVals) {
                 String tempName = row.get_v1_cls();
@@ -5322,7 +5357,7 @@ public class DBGeneral {
 
     }
 
-    public void getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, Vector<String> allHierarcies, Vector<String> allGuideTerms) {
+    public void getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms) {
 
         Q.reset_name_scope();
 
@@ -5339,7 +5374,7 @@ public class DBGeneral {
         return;
     }
 
-    public Vector<String> getAllSearchSources(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator, QClass Q,
+    public ArrayList<String> getAllSearchSources(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator, QClass Q,
             TMSAPIClass TA, IntegerObject sis_session) {
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -5349,7 +5384,7 @@ public class DBGeneral {
         String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject SourceClassObj = new StringObject(ConstantParameters.SourceClass);
 
-        Vector<String> globalSourceResults = new Vector<String>();
+        ArrayList<String> globalSourceResults = new ArrayList<String>();
 
         Q.reset_name_scope();
         Q.set_current_node(SourceClassObj);
@@ -5545,7 +5580,7 @@ public class DBGeneral {
                         }
 
                         // collect all sources with source_note in a Vector
-                        Vector<String> Search_in_sources_Vec = new Vector<String>();
+                        ArrayList<String> Search_in_sources_Vec = new ArrayList<String>();
                         Search_in_sources_Vec.addAll(get_Node_Names_Of_Set(set_sources_with_source_note, false, Q, sis_session));
 
                         Q.free_set(set_all_source_note_nodes);
@@ -5655,15 +5690,15 @@ public class DBGeneral {
 
         Q.reset_set(set_global_source_results);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_global_source_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                globalSourceResults.addElement(row.get_v1_cls_logicalname());
+                globalSourceResults.add(row.get_v1_cls_logicalname());
             }
         }
         //StringObject c_name = new StringObject();
         /*while (Q.retur_nodes(set_global_source_results, c_name) != QClass.APIFail) {
-         globalSourceResults.addElement(c_name.getValue());
+         globalSourceResults.add(c_name.getValue());
          }*/
 
         globalSourceResults = removePrefix(globalSourceResults);
@@ -5674,7 +5709,7 @@ public class DBGeneral {
         return globalSourceResults;
     }
 
-    public Vector<String> returnResults_Source(UserInfoClass SessionUserInfo, String targetSource, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+    public ArrayList<String> returnResults_Source(UserInfoClass SessionUserInfo, String targetSource, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         //term is in ui encoding and without prefix
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+term + " " +output );      
         if (output.equals(ConstantParameters.primary_found_in_kwd)) {
@@ -5702,12 +5737,12 @@ public class DBGeneral {
             if (prevThes.getValue().equals(SessionUserInfo.selectedThesaurus) == false) {
                 TA.SetThesaurusName(prevThes.getValue());
             }
-            Vector<String> returnVec = new Vector<String>();
+            ArrayList<String> returnVec = new ArrayList<String>();
             returnVec.add(sourceNoteObj.getValue());
             return returnVec;
         } else {
 
-            Vector<String> noSupportedKwd = new Vector<String>();
+            ArrayList<String> noSupportedKwd = new ArrayList<String>();
             if (output.compareTo("name") != 0) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "returnResults_Source() called with output keyword " + output + ". No search function supported for this keyword");
             }
@@ -5716,9 +5751,9 @@ public class DBGeneral {
 
     }
 
-    public Vector<String> getGT_or_ET_SourceTerms(UserInfoClass SessionUserInfo, String targetSource, String mode_kwd, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getGT_or_ET_SourceTerms(UserInfoClass SessionUserInfo, String targetSource, String mode_kwd, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> termsWithThisSource = new Vector<String>();
+        ArrayList<String> termsWithThisSource = new ArrayList<String>();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -5751,7 +5786,7 @@ public class DBGeneral {
         return termsWithThisSource;
     }
 
-    public void applyKeywordMappings(String selectedThesaurus, QClass Q, IntegerObject sis_session, String[] output, Hashtable<String, String> kewyWordsMappings) {
+    public void applyKeywordMappings(String selectedThesaurus, QClass Q, IntegerObject sis_session, String[] output, HashMap<String, String> kewyWordsMappings) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
@@ -5779,7 +5814,7 @@ public class DBGeneral {
                 int set_thes_translation_categories = Q.get_subclasses(0);
                 Q.reset_set(set_thes_translation_categories);
 
-                Vector<String> trCats = get_Node_Names_Of_Set(set_thes_translation_categories, false, Q, sis_session);
+                ArrayList<String> trCats = get_Node_Names_Of_Set(set_thes_translation_categories, false, Q, sis_session);
                 Q.free_set(set_thes_translation_categories);
 
                 for (int k = 0; k < trCats.size(); k++) {
@@ -5806,7 +5841,7 @@ public class DBGeneral {
                 int set_thes_uf_translation_categories = Q.get_subclasses(0);
                 Q.reset_set(set_thes_uf_translation_categories);
 
-                Vector<String> ufTrCats = get_Node_Names_Of_Set(set_thes_uf_translation_categories, false, Q, sis_session);
+                ArrayList<String> ufTrCats = get_Node_Names_Of_Set(set_thes_uf_translation_categories, false, Q, sis_session);
                 Q.free_set(set_thes_uf_translation_categories);
 
                 for (int k = 0; k < ufTrCats.size(); k++) {
@@ -5850,7 +5885,7 @@ public class DBGeneral {
 
     //used for alphabetical display
     public void collectUsedForTermSetInfo(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, int set_results,
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> allTerms, Vector<Long> resultNodesIdsL) {
+            HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
         //must get all ufs that are linked to the result set and get all their nodes back to terms of current thes.
         DBFilters dbF = new DBFilters();
 
@@ -5882,7 +5917,7 @@ public class DBGeneral {
         //IntegerObject linkID = new IntegerObject();
         //IntegerObject categID = new IntegerObject();
 
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if (Q.bulk_return_full_link_id(set_uf_nodes_refs, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -5940,10 +5975,10 @@ public class DBGeneral {
     public void collectTermSetInfo(UserInfoClass SessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             int set_results,
-            Vector<String> output,
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo,
-            Vector<String> allTerms,
-            Vector<Long> resultNodesIds) throws IOException {
+            ArrayList<String> output,
+            HashMap<String, NodeInfoSortItemContainer> termsInfo,
+            ArrayList<String> allTerms,
+            ArrayList<Long> resultNodesIds) throws IOException {
         DBexportData dbExport = new DBexportData();
 
         boolean ntOutputSelected = output.contains(ConstantParameters.nt_kwd);
@@ -5968,7 +6003,7 @@ public class DBGeneral {
          Q.reset_set(set_guideTerms);
             
          StringObject label = new StringObject();
-         Vector<String> guideTermsVec = new Vector<String>();
+         ArrayList<String> guideTermsVec = new ArrayList<String>();
          while(Q.retur_nodes(set_guideTerms, label)!=QClass.APIFail){
          guideTermsVec.add(label.getValue());
          }
@@ -5984,9 +6019,9 @@ public class DBGeneral {
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
 
-        Vector<String> resultTermNamesWithPrefixes = new Vector<String>();
+        ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<String>();
         Q.reset_set(set_results);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 
@@ -6050,7 +6085,7 @@ public class DBGeneral {
                 if(Q.set_get_card(set_recursive_nts)>0){
                     
                     retVals.clear();
-                    Vector<SortItem> recNts = new Vector<SortItem>();
+                    ArrayList<SortItem> recNts = new ArrayList<SortItem>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6079,7 +6114,7 @@ public class DBGeneral {
                 if(Q.set_get_card(set_recursive_nts)>0){
                     
                     retVals.clear();
-                    Vector<SortItem> recBts = new Vector<SortItem>();
+                    ArrayList<SortItem> recBts = new ArrayList<SortItem>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6115,7 +6150,7 @@ public class DBGeneral {
     }
 
     public void collectTermSetInfoFrom(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_from_links,
-            Vector<String> output, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> allTerms, Vector<Long> resultNodesIdsL) {
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6126,7 +6161,7 @@ public class DBGeneral {
         }
 
         StringObject BTLinkObj = new StringObject();
-        Hashtable<String, String> keyWordsMappings = new Hashtable<String, String>();
+        HashMap<String, String> keyWordsMappings = new HashMap<String, String>();
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
@@ -6146,7 +6181,7 @@ public class DBGeneral {
          */
         int translationCategorySubStringLength = ConstantParameters.thesaursTranslationCategorysubString.length();
         int translationUFCategorySubStringLength = ConstantParameters.thesaursUFTranslationCategorysubString.length();
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if (Q.bulk_return_full_link_id(set_from_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -6349,13 +6384,13 @@ public class DBGeneral {
     }
 
     public void collectTermSetInfoTo(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_to_links,
-            Vector<String> output, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> allTerms, Vector<Long> resultNodesIdsL) {
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         StringObject BTLinkObj = new StringObject();
-        Hashtable<String, String> keyWordsMappings = new Hashtable<String, String>();
+        HashMap<String, String> keyWordsMappings = new HashMap<String, String>();
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
@@ -6373,7 +6408,7 @@ public class DBGeneral {
          IntegerObject linkID = new IntegerObject();
          IntegerObject categID = new IntegerObject();
          */
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if (Q.bulk_return_full_link_id(set_to_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -6543,9 +6578,9 @@ public class DBGeneral {
 
     }
 
-    public Vector<String> collectGuideLinks(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> collectGuideLinks(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
 
-        Vector<String> resultVec = new Vector<String>();
+        ArrayList<String> resultVec = new ArrayList<String>();
         StringObject BTClassObj = new StringObject();
         StringObject BTLinkObj = new StringObject();
 
@@ -6570,9 +6605,9 @@ public class DBGeneral {
         Q.reset_set(set_bts);
 
         //StringObject label = new StringObject();
-        Vector<String> tempNames = new Vector<String>();
+        ArrayList<String> tempNames = new ArrayList<String>();
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_bts, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 tempNames.add(row.get_v1_cls_logicalname());
@@ -6592,9 +6627,9 @@ public class DBGeneral {
         return resultVec;
     }
 
-    public Hashtable<String, String> getThesaurusTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
+    public HashMap<String, String> getThesaurusTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             String thesaurusName1, String thesaurusName2, boolean startQueryAndConnection, boolean languageWordAsKey) {
-        Hashtable<String, String> LanguageWordsAndIds = new Hashtable<String, String>();
+        HashMap<String, String> LanguageWordsAndIds = new HashMap<String, String>();
 
         if (startQueryAndConnection) {
             //open connection and start Query
@@ -6642,7 +6677,7 @@ public class DBGeneral {
          IntegerObject categID = new IntegerObject();
          CMValue cmv = new CMValue();
          */
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_prefixes, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
                 String langWord = row.get_v1_cls();
@@ -6758,7 +6793,7 @@ public class DBGeneral {
 
     public boolean createTranslationCategories(QClass Q, TMSAPIClass TA,
             IntegerObject sis_session, IntegerObject tms_session, String targetThesaurus,
-            Hashtable<String, String> LanguageWordsAndIds,
+            HashMap<String, String> LanguageWordsAndIds,
             boolean startTransactionAndConnection, StringObject errorMessage, String pathToTranslationsXML) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6867,9 +6902,9 @@ public class DBGeneral {
 
         //STEP 1 Create New Language Words and New Language Prefixes i.e. ItalianWord and IT`
         // <editor-fold defaultstate="collapsed" desc="STEP 1">
-        Enumeration<String> languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        Iterator<String> languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             //Create an Identifier for the new Language.
@@ -6956,9 +6991,9 @@ public class DBGeneral {
         ret = Q.set_put(set_c);
         ret = Q.reset_set(set_c);
 
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             /*
@@ -7006,9 +7041,9 @@ public class DBGeneral {
             }
         }
         //traverse all words
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             /*
@@ -7077,9 +7112,9 @@ public class DBGeneral {
         }
 
         //traverse all words
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             // <editor-fold defaultstate="collapsed" desc="Translations Section">
@@ -7202,7 +7237,7 @@ public class DBGeneral {
      * @param args
      * @param pathToErrorXMLFile 
      
-    public void Translate(StringObject resultObj, String targetMessageBasePath, Vector<String> args, String pathToErrorXMLFile) {
+    public void Translate(StringObject resultObj, String targetMessageBasePath, ArrayList<String> args, String pathToErrorXMLFile) {
         //String CurrentValue = "";
         //resultObj.getValue();
         //if (CurrentValue == null) {
@@ -7215,7 +7250,7 @@ public class DBGeneral {
     */
 
     public boolean deleteTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            IntegerObject tms_session, String targetThesaurus, Hashtable<String, String> LanguageWordsAndIds,
+            IntegerObject tms_session, String targetThesaurus, HashMap<String, String> LanguageWordsAndIds,
             boolean startTransactionAndConnection, StringObject resultMessageObj, String pathToTranslationsXML) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -7325,9 +7360,9 @@ public class DBGeneral {
         // Reverse STEP 4 Delete thesauric translation categories i.e AAA_translation, to_IT and AAA_uf_translation, to_IT
         // <editor-fold defaultstate="collapsed" desc="Reverse STEP 4">
         //traverse all words
-        Enumeration<String> languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        Iterator<String> languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             // <editor-fold defaultstate="collapsed" desc="translations section">
@@ -7534,9 +7569,9 @@ public class DBGeneral {
             }
         }
 
-        Vector<String> otherLanguageReferences = new Vector<String>();
+        ArrayList<String> otherLanguageReferences = new ArrayList<String>();
 
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
         this.GetExistingThesaurus(false, thesauriNames, Q, sis_session);
 
         for (int k = 0; k < thesauriNames.size(); k++) {
@@ -7563,7 +7598,7 @@ public class DBGeneral {
             int set_words = Q.get_to_value(set_subClasses);
             Q.reset_set(set_words);
 
-            Vector<String> checkWords = this.get_Node_Names_Of_Set(set_words, false, Q, sis_session);
+            ArrayList<String> checkWords = this.get_Node_Names_Of_Set(set_words, false, Q, sis_session);
 
             Q.free_set(set_words);
             Q.free_set(set_subClasses);
@@ -7592,9 +7627,9 @@ public class DBGeneral {
             }
         }
         //traverse all words
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             if (otherLanguageReferences.contains(languageWord)) {
@@ -7690,9 +7725,9 @@ public class DBGeneral {
         ret = Q.set_put(set_c);
         ret = Q.reset_set(set_c);
 
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             if (otherLanguageReferences.contains(languageWord)) {
@@ -7794,9 +7829,9 @@ public class DBGeneral {
             }
         }
 
-        languagesEnumeration = LanguageWordsAndIds.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             if (otherLanguageReferences.contains(languageWord)) {
@@ -7930,10 +7965,10 @@ public class DBGeneral {
         return true;
     }
 
-    public boolean synchronizeTranslationCategories(Hashtable<String, String> currentTranslationCategories,
-            Hashtable<String, String> userSelections,
-            Vector<String> userSelectedTranslationWords,
-            Vector<String> userSelectedTranslationIdentifiers,
+    public boolean synchronizeTranslationCategories(HashMap<String, String> currentTranslationCategories,
+            HashMap<String, String> userSelections,
+            ArrayList<String> userSelectedTranslationWords,
+            ArrayList<String> userSelectedTranslationIdentifiers,
             String selectedThesaurus,
             StringObject resultMessageStrObj,
             String pathToMessagesXML,
@@ -7941,13 +7976,13 @@ public class DBGeneral {
 
         boolean commitTransaction = true;
         //FIND OUT WHICH TRANSLATION CATEGORIES TO KEEP/ADD/DELETE
-        Hashtable<String, String> languagesForDeletion = new Hashtable<String, String>();
-        Hashtable<String, String> languagesForAddition = new Hashtable<String, String>();
+        HashMap<String, String> languagesForDeletion = new HashMap<String, String>();
+        HashMap<String, String> languagesForAddition = new HashMap<String, String>();
 
         //check current languages in order to find which ones to delete
-        Enumeration<String> languagesEnumeration = currentTranslationCategories.keys();
-        while (languagesEnumeration.hasMoreElements()) {
-            String languageWord = languagesEnumeration.nextElement();
+        Iterator<String> languagesEnumeration = currentTranslationCategories.keySet().iterator();
+        while (languagesEnumeration.hasNext()) {
+            String languageWord = languagesEnumeration.next();
             String languageId = currentTranslationCategories.get(languageWord);
 
             //if language word does not exist in user selection then delete it
@@ -7965,10 +8000,10 @@ public class DBGeneral {
         }
 
         //check user selection in order to find out which languages to add
-        Enumeration<String> userLanguagesEnumeration = userSelections.keys();
-        while (userLanguagesEnumeration.hasMoreElements()) {
+        Iterator<String> userLanguagesEnumeration = userSelections.keySet().iterator();
+        while (userLanguagesEnumeration.hasNext()) {
 
-            String languageWord = userLanguagesEnumeration.nextElement();
+            String languageWord = userLanguagesEnumeration.next();
             String languageId = userSelections.get(languageWord);
 
             //if db contains the user selected word then check also if it has the same prefix.

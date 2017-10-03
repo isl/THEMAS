@@ -98,9 +98,9 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
             
             
             StringObject reasonTargetTermCannotBeMovedToHierarchy = new StringObject("");
-            Vector<String> targetBTsVector = new Vector<String>();
-            Vector<String> allHierarchiesVector = new Vector<String>();
-            Vector<String> targetHierarchiesVector = new Vector<String>();
+            ArrayList<String> targetBTsVector = new ArrayList<String>();
+            ArrayList<String> allHierarchiesVector = new ArrayList<String>();
+            ArrayList<String> targetHierarchiesVector = new ArrayList<String>();
             boolean targetTermCanBeMovedToHierarchy = false;
 
             String targetTermUTF8 = u.getDecodedParameterValue(request.getParameter("targetTerm")); 
@@ -124,7 +124,7 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
                 targetTermCanBeMovedToHierarchy = dbGen.DescriptorCanBeMovedToHierarchy(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix, reasonTargetTermCannotBeMovedToHierarchy,Q,sis_session);
 
                 // get the target existing Hierarchies
-                Vector<String> tmpVector = new Vector<String>();
+                ArrayList<String> tmpVector = new ArrayList<String>();
                 tmpVector = dbGen.getDescriptorHierarchies(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix,Q,sis_session);
 
                 /*
@@ -199,7 +199,7 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
     OUTPUT: a String with the XML representation of the necessary data to be 
             used by Move to Hierarchy operation
     ----------------------------------------------------------------------*/                                
-    String MoveToHierarchyXML(String targetTerm,boolean targetTermCanBeMovedToHierarchy, StringObject reasonTargetTermCannotBeMovedToHierarchy, Vector targetHierarchiesVector, Vector<String> targetBTsVector,Vector  allHierarchiesVector) {	
+    String MoveToHierarchyXML(String targetTerm,boolean targetTermCanBeMovedToHierarchy, StringObject reasonTargetTermCannotBeMovedToHierarchy, ArrayList targetHierarchiesVector, ArrayList<String> targetBTsVector,ArrayList  allHierarchiesVector) {	
         
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();

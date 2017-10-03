@@ -71,10 +71,10 @@ public abstract class ProduceHierarchies_common {
     protected int LIDsArray[];
     protected int TIDsArray[];
     protected int ModesArray[];
-    protected Vector<String> V1;
-    protected Vector<String> V2;
-    protected Vector<String> V3;
-    protected Vector<SVGOBJ> svgV;
+    protected ArrayList<String> V1;
+    protected ArrayList<String> V2;
+    protected ArrayList<String> V3;
+    protected ArrayList<SVGOBJ> svgV;
     protected double relheight;
     protected double svgwidth;
     protected double svgheight;
@@ -101,7 +101,7 @@ public abstract class ProduceHierarchies_common {
     Font SVGFont = new Font("Verdana", Font.PLAIN, 12);    // do NOT set the font family "Arial", because SVG is buggy for the combination of text "πώ" (ellhiko pi kai tonoymeno wmega)
     // do NOT set the size more than 16. The layout algorithm does NOT work for big font sizes!!
     // do NOT change the style (PLAIN). The code does not set it in SVG code => default (plain) is used
-    Vector<String> DBPrefixes = new Vector<String>();
+    ArrayList<String> DBPrefixes = new ArrayList<String>();
     //protected  Vector CurrentlyParsedNodes;
     final static String PATTERN_FOR_MARKING_CYCLIC_NODES = "||";
 
@@ -135,10 +135,10 @@ public abstract class ProduceHierarchies_common {
         Q = new QClass();
         sis_session = new IntegerObject();
 
-        V1 = new Vector<String>();
-        V2 = new Vector<String>();
-        V3 = new Vector<String>();
-        svgV = new Vector<SVGOBJ>();
+        V1 = new ArrayList<String>();
+        V2 = new ArrayList<String>();
+        V3 = new ArrayList<String>();
+        svgV = new ArrayList<SVGOBJ>();
 
         resultString = new String();
 
@@ -162,10 +162,10 @@ public abstract class ProduceHierarchies_common {
 
 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"doJob " + ((UserInfoClass)sessionInstance.getAttribute("SessionUser")).selectedThesaurus) ;
         resultString = "";
-        V1 = new Vector<String>();
-        V2 = new Vector<String>();
-        V3 = new Vector<String>();
-        svgV = new Vector<SVGOBJ>();
+        V1 = new ArrayList<String>();
+        V2 = new ArrayList<String>();
+        V3 = new ArrayList<String>();
+        svgV = new ArrayList<SVGOBJ>();
         DBGeneral dbGen = new DBGeneral();
 
         // BUG fix (karam): reseting of class members (without this, any graph following the first, has wrong x, y dimensions!)
@@ -187,7 +187,7 @@ public abstract class ProduceHierarchies_common {
         //open connection and start Query
         if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)!=QClass.APIFail){
 
-            DBPrefixes = new Vector<String>();
+            DBPrefixes = new ArrayList<String>();
             DBPrefixes = GetDBPrefixes();
 
             if (GetHierarchySet(SessionUserInfo, nameUnicode, lang, style) != 0) {
@@ -220,15 +220,15 @@ public abstract class ProduceHierarchies_common {
     -----------------------------------------------------------------------
     OUTPUT: a Vector with the declared prefixes in the DB (instances of class Prefix)
     ----------------------------------------------------------------------*/
-    public Vector<String> GetDBPrefixes() {
+    public ArrayList<String> GetDBPrefixes() {
         int SISsession = sis_session.getValue();
         Q.reset_name_scope();
         Q.set_current_node(new StringObject("Prefix"));
         int set_c = Q.get_instances(0);
 
-        Vector<String> prefixes = new Vector<String>();
+        ArrayList<String> prefixes = new ArrayList<String>();
         Q.reset_set(set_c);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_c, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 prefixes.add(row.get_v1_cls_logicalname());
@@ -329,23 +329,23 @@ public abstract class ProduceHierarchies_common {
     -----------------------------------------------------------------------
     OUTPUT: sorts alphabetically the 1st Vector V1 and pararelly the parallel Vector V2
     ----------------------------------------------------------------------*/
-    public void SortParallelVectors(Vector V1, Vector V2) {
+    public void SortParallelVectors(ArrayList V1, ArrayList V2) {
         // fill Vector V2 with prefixes the corresponding values of Vector V1
         // separated with "@@@@@"
         int size = V1.size();
         for (int i = 0; i < size; i++) {
-            String str1 = V1.elementAt(i).toString();
-            String str2 = V2.elementAt(i).toString();
-            V2.setElementAt(str1 + "@@@@@" + str2, i);
+            String str1 = V1.get(i).toString();
+            String str2 = V2.get(i).toString();
+            V2.set(i,(str1 + "@@@@@" + str2));
         }
         // sort both Vectors V1 and V2
         Collections.sort(V1);
         Collections.sort(V2);
         // remove from Vector V2 the prefixes added above
         for (int i = 0; i < size; i++) {
-            String str2 = V2.elementAt(i).toString();
+            String str2 = V2.get(i).toString();
             String old_value = str2.substring(str2.indexOf("@@@@@") + 5);
-            V2.setElementAt(old_value, i);
+            V2.set(i,old_value);
         }
     }
 
@@ -367,9 +367,9 @@ public abstract class ProduceHierarchies_common {
         int kidno = 0;
         double kidsheight = 0;
         double termheight = 0;
-        Vector<String> V = new Vector<String>();
-        Vector<String> Vstyles = new Vector<String>();
-        Vector<String> hlpV = new Vector<String>();
+        ArrayList<String> V = new ArrayList<String>();
+        ArrayList<String> Vstyles = new ArrayList<String>();
+        ArrayList<String> hlpV = new ArrayList<String>();
         double w;
 
         /* freezed
@@ -380,12 +380,12 @@ public abstract class ProduceHierarchies_common {
 
         // if (cycleDetected == false || isAdded == false) {
         for (i = 0; i < V2.size(); i++) {
-            x = V2.elementAt(i).toString();
+            x = V2.get(i).toString();
 
             if (x.compareTo(topterm) == 0) {
-                y = V1.elementAt(i).toString();
+                y = V1.get(i).toString();
                 V.add(y);
-                String currentStyle = V3.elementAt(i).toString();
+                String currentStyle = V3.get(i).toString();
                 Vstyles.add(currentStyle);
                 // TRYING TO FIX THE BUG of wrong cordinates for FRENCH graphs SVGproducer = new ProduceISAHierarchy(conf);
                 //String translatedTerm = LanguageSwitch(sessionInstance, LID, y);
@@ -410,12 +410,12 @@ public abstract class ProduceHierarchies_common {
             SortParallelVectors(V, Vstyles);
 
             for (i = 0; i < V.size(); i++) {
-                double tmp = RecurseHierarchy(V.elementAt(i).toString(), maxkidsize, maxparentsize + 6 + maxsiblingsize, mode, LID, TID, Vstyles.elementAt(i).toString());
+                double tmp = RecurseHierarchy(V.get(i).toString(), maxkidsize, maxparentsize + 6 + maxsiblingsize, mode, LID, TID, Vstyles.get(i).toString());
                 kidsheight += tmp;
                 hlpV.add(Double.toString(tmp));
             }
             for (i = 0; i < hlpV.size(); i++) {
-                double tmp = Double.parseDouble(hlpV.elementAt(i).toString());
+                double tmp = Double.parseDouble(hlpV.get(i).toString());
                 String translatedTopTerm;
                 translatedTopTerm = topterm;
 
@@ -473,11 +473,11 @@ public abstract class ProduceHierarchies_common {
         }
         // for each from-value: search from current target
         for (int i = 0; i < V2.size(); i++) {
-            String fromValue = V2.elementAt(i).toString();
+            String fromValue = V2.get(i).toString();
             // if found
             if (fromValue.compareTo(currentTarget) == 0) {
                 // get the to-value
-                String toValue = V1.elementAt(i).toString();
+                String toValue = V1.get(i).toString();
                 // in case of link from target to itself => cycle
                 if (toValue.compareTo(rootTarget) == 0) {
                     return true;
@@ -552,7 +552,7 @@ public abstract class ProduceHierarchies_common {
 
         for (int i = 0; i < svgV.size(); i++) {
 
-            SVGOBJ obj = (SVGOBJ) (svgV.elementAt(i));
+            SVGOBJ obj = (SVGOBJ) (svgV.get(i));
             if (obj.type == 0) {
 
                 FileContents.append("<g>\n");

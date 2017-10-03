@@ -62,7 +62,7 @@ import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 
@@ -151,8 +151,8 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 //data structures
                 StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
                 StringObject BTLinkObj = new StringObject();
-                Vector<SortItem> nts = new Vector<SortItem>();
-                Vector<String> existingGuideTermsVec = new Vector<String>(); 
+                ArrayList<SortItem> nts = new ArrayList<SortItem>();
+                ArrayList<String> existingGuideTermsVec = new ArrayList<String>(); 
                 
                 //collection of db data
                 dbtr.getThesaurusCategory_BT(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);

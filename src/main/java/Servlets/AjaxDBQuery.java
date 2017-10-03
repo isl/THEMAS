@@ -139,7 +139,7 @@ public class AjaxDBQuery extends ApplicationBasicServlet {
         DBGeneral dbGen = new DBGeneral();
         
         
-        Vector<String> termsVector = new Vector<String>();
+        ArrayList<String> termsVector = new ArrayList<String>();
         
         
         termsVector = dbGen.GetTermsOfHierarchy(selectedThesaurus, targetHierarchy,Q,sis_session,targetLocale);

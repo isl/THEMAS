@@ -44,7 +44,6 @@ import Utils.Utilities;
 import Utils.Parameters;
 import Utils.SessionWrapperClass;
 
-import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -53,13 +52,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletContext;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 /*
@@ -73,6 +69,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
      *
      * @param request servlet request
      * @param response servlet response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     //final String LogFilesFolderName = "LogFiles";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -192,7 +190,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
      -----------------------------------------------------------------------
      OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
      ----------------------------------------------------------------------*/
-    public String getXMLMiddle(Vector<String> thesaurusVector, String MergeThesaurusMessage) {
+    public String getXMLMiddle(ArrayList<String> thesaurusVector, String MergeThesaurusMessage) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
 
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
@@ -228,9 +226,9 @@ public class MergeThesauri extends ApplicationBasicServlet {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
 
@@ -286,9 +284,9 @@ public class MergeThesauri extends ApplicationBasicServlet {
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
 
         UserInfoClass refSessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);

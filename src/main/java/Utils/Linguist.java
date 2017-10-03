@@ -41,8 +41,8 @@ package Utils;
  */
 
 import java.util.AbstractCollection;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Check,find and return the html language acronym.
@@ -53,7 +53,7 @@ import java.util.Vector;
 public class Linguist {
 
     String errorBuffer = "";
-    Hashtable<String, String> newLanguages = new Hashtable<String, String>();
+    HashMap<String, String> newLanguages = new HashMap<String, String>();
 
     /**
      * Takes a text and checks about known languages, which included in AAT model.

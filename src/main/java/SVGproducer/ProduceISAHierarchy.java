@@ -92,7 +92,7 @@ public final class ProduceISAHierarchy extends ProduceHierarchies_common {
         // FILTER hierarchies depending on user group
         DBFilters dbf = new DBFilters();
         
-        Vector<Return_Isa_Row> retVals = new Vector<Return_Isa_Row>();
+        ArrayList<Return_Isa_Row> retVals = new ArrayList<Return_Isa_Row>();
             if(Q.bulk_return_isA(ret_set, retVals)!=QClass.APIFail){
                 for(Return_Isa_Row row:retVals){
                     //while (Q.retur_isA(ret_set, local_cls, local_cls2 ) != Q.APIFail) {

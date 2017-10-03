@@ -55,7 +55,7 @@
         <!-- #343839 -->
        
     <xsl:variable name="pageBgColor">        
-        <xsl:text>#D9EDFC</xsl:text>
+        <!--<xsl:text>#D9EDFC</xsl:text>-->
         <xsl:text/>
     </xsl:variable>
     <xsl:variable name="onMouseOverColor">

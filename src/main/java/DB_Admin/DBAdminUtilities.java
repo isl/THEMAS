@@ -59,7 +59,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.*;
@@ -235,7 +235,7 @@ public class DBAdminUtilities {
      GivenThesaurusCanBeCreated()
      ------------------------------------------------------------------------*/
     public boolean GivenThesaurusCanBeCreated(ConfigDBadmin config, CommonUtilsDBadmin common_utils,
-            Vector thesaurusVector, String NewThesaurusName, String NewThesaurusNameDBformatted,
+            ArrayList thesaurusVector, String NewThesaurusName, String NewThesaurusNameDBformatted,
             StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
         // check if the given NewThesaurusName exists
         boolean exists = thesaurusVector.contains(NewThesaurusName);
@@ -404,7 +404,7 @@ public class DBAdminUtilities {
          // get the modification date of db folder contents before telos parsing
          long DBmodificationBeforeTelos = common_utils.GetFolderContentsModificationDate(common_utils.DBPath);
          // call telos for TelosFileName x N times
-         Vector<String> tlsFiles = new Vector<String>();
+         ArrayList<String> tlsFiles = new ArrayList<String>();
          StringObject telosOutputObj = new StringObject("");
          fillTlsFilesVector(tlsFiles, common_utils, NewThesaurusNameDBformatted, CREATE_BAT_FILE_FOR_CREATE_THESAURUS);
 
@@ -466,7 +466,7 @@ public class DBAdminUtilities {
      -------------------------------------------------------*/
     public boolean InitializeDB(CommonUtilsDBadmin common_utils, StringObject InitializeDBResultMessage) {
 
-        //Vector<String> tlsFiles = new Vector<String>();
+        //ArrayList<String> tlsFiles = new ArrayList<String>();
         //fillTlsFilesVector(tlsFiles, common_utils, null, CREATE_BAT_FILE_FOR_INIT_DB);
         // check if server runs (close it before creating DB initialization)
         /*
@@ -740,7 +740,7 @@ public class DBAdminUtilities {
 
         //StringObject nodeName = new StringObject();
         Q.reset_set(set_classes);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_classes, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 orphansHierarchyFacet.setValue(row.get_v1_cls_logicalname());
@@ -756,7 +756,7 @@ public class DBAdminUtilities {
 
         //0 DELETE GUIDE TERMS FROM THESAURUS
         DBEditGuideTerms editGuideTerms = new DBEditGuideTerms();
-        Vector<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
+        ArrayList<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
             String GuideTermForDeletion = guideTerms.get(i);
             editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg);
@@ -779,7 +779,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansHierarchy);
         int hierarchiesSetWithoutOrphansHierarchy = hierarchiesSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"hierarchiesSetWithoutOrphansHierarchy card = " + Q.set_get_card( hierarchiesSetWithoutOrphansHierarchy));
-        Vector<String> hierarchiesToBeDeleted = new Vector<String>();
+        ArrayList<String> hierarchiesToBeDeleted = new ArrayList<String>();
         Q.reset_set(hierarchiesSetWithoutOrphansHierarchy);
         retVals.clear();
         if (Q.bulk_return_nodes(hierarchiesSetWithoutOrphansHierarchy, retVals) != QClass.APIFail) {
@@ -824,7 +824,7 @@ public class DBAdminUtilities {
          DBCreate_Modify_Term DBCMT = new DBCreate_Modify_Term();
          String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(sessionInstance, Q, sis_session.getValue());
         
-         Vector<String> oldTopTerms = new Vector<String>();
+         ArrayList<String> oldTopTerms = new ArrayList<String>();
          oldTopTerms.add(Parameters.UnclassifiedTermsLogicalname);
         
          Q.reset_name_scope();
@@ -867,7 +867,7 @@ public class DBAdminUtilities {
          Q.set_difference(set_leaf_nodes,set_non_leaf_nodes);
          Q.reset_set(set_leaf_nodes);
         
-         Vector<String> termsForDeletion = new Vector<String>();
+         ArrayList<String> termsForDeletion = new ArrayList<String>();
          termsForDeletion.addAll(dbGen.get_Node_Names_Of_Set(set_leaf_nodes, true, Q, sis_session));
         
          Q.free_set(set_leaf_nodes);
@@ -914,7 +914,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansTopTerm);
         int orphanTermsSetWithoutOrphansTopTerm = orphanTermsSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"orphanTermsSetWithoutOrphansTopTerm card = " + Q.set_get_card( orphanTermsSetWithoutOrphansTopTerm));        
-        Vector<String> orphanTermsToBeDeleted = new Vector<String>();
+        ArrayList<String> orphanTermsToBeDeleted = new ArrayList<String>();
         Q.reset_set(orphanTermsSetWithoutOrphansTopTerm);
         retVals.clear();
         if (Q.bulk_return_nodes(orphanTermsSetWithoutOrphansTopTerm, retVals) != QClass.APIFail) {
@@ -953,7 +953,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansFacet);
         int facetsOfThesaurusSetWithoutOrphansFacet = facetsOfThesaurusSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"facetsOfThesaurusSetWithoutOrphansFacet card = " + Q.set_get_card( facetsOfThesaurusSetWithoutOrphansFacet));                
-        Vector<String> facetsToBeDeleted = new Vector<String>();
+        ArrayList<String> facetsToBeDeleted = new ArrayList<String>();
         Q.reset_set(facetsOfThesaurusSetWithoutOrphansFacet);
         retVals.clear();
         if (Q.bulk_return_nodes(facetsOfThesaurusSetWithoutOrphansFacet, retVals) != QClass.APIFail) {
@@ -1001,7 +1001,7 @@ public class DBAdminUtilities {
         //CMValue cmv = new CMValue();
         //IntegerObject flag = new IntegerObject();
 
-        Vector<Return_Link_Id_Row> retLIVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retLIVals = new ArrayList<Return_Link_Id_Row>();
         if (Q.bulk_return_link_id(linksSet, retLIVals) != QClass.APIFail) {
             //while (Q.retur_link_id( linksSet, cls, fromid, link_sysid, cmv, flag) != QClass.APIFail) {
             for (Return_Link_Id_Row row : retLIVals) {

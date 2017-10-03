@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import neo4j_sisapi.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -123,7 +123,7 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             StringBuffer xml = new StringBuffer();
             
             
-            Vector<String> outputVec = new Vector<String>();
+            ArrayList<String> outputVec = new ArrayList<String>();
             outputVec.add("name");
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 outputVec.add(ConstantParameters.system_transliteration_kwd);                
@@ -192,7 +192,7 @@ public class CardOf_Facet extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
                 return;
             }
-            Vector<SortItem> tmp = new Vector<SortItem>();            
+            ArrayList<SortItem> tmp = new ArrayList<SortItem>();            
             tmp.add(dbGen.getSortItemFromCMValue(checkIfFacetExistsCmv, true));//tmp created just in order to reuse code that finds hierarchies of a facet set
             
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
@@ -243,7 +243,9 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             if(!skipClose){
                 out.close();
             }
-            sessionInstance.writeBackToSession(session);
+            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+                sessionInstance.writeBackToSession(session);
+            }
         }
     } 
     

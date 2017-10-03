@@ -307,13 +307,21 @@
     </savealltermshierarchicalsimple>
     <GlobalThesaurusSimpleHierarchicalView>
         <titleprefix>
-            <option lang="en">Hierarchical Simple Presentation of Thesaurus </option>
-            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού </option>
+            <option lang="en">Hierarchical Simple Presentation of Thesaurus: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
         </titleprefix>
+        <facettitleprefix>
+            <option lang="en">Hierarchical Simple Presentation of Facet: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Μικροθησαυρού: </option>
+        </facettitleprefix>
         <baselabel>
             <option lang="en">Hierarchical Simple Presentation of Thesaurus: </option>
             <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
+        <facetbaselabel>
+            <option lang="en">Hierarchical Simple Presentation of Facet: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Μικροθησαυρού: </option>
+        </facetbaselabel>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
@@ -322,25 +330,42 @@
             <option lang="en">Thesaurus Tree Presentation</option>
             <option lang="el">Δενδρική Παρουσίαση Θησαυρού</option>
         </linktotree>
+        <facetlinktotree>
+            <option lang="en">Facet Tree Presentation</option>
+            <option lang="el">Δενδρική Παρουσίαση Μικροθησαυρού</option>
+        </facetlinktotree>
     </GlobalThesaurusSimpleHierarchicalView>
     <GlobalThesaurusTreeView>
         <titleprefix>
             <option lang="en">Tree Presentation of Thesaurus </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού </option>
         </titleprefix>
+        <facettitleprefix>
+            <option lang="en">Tree Presentation of Facet: </option>
+            <option lang="el">Δενδρική Παρουσίαση του Μικροθησαυρού: </option>
+        </facettitleprefix>
         <baselabel>
             <option lang="en">Tree Presentation of Thesaurus: </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
+        <facetbaselabel>
+            <option lang="en">Tree Presentation of Facet: </option>
+            <option lang="el">Δενδρική Παρουσίαση του Μικροθησαυρού: </option>
+        </facetbaselabel>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
         </noterms>
         <linktotypical>
             <option lang="en">Thesaurus Hierarchical Simple Presentation</option>
-            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού</option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση Θησαυρού</option>
         </linktotypical>
+        <facetlinktotypical>
+            <option lang="en">Facet Hierarchical Simple Presentation</option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση Μικροθησαυρού</option>
+        </facetlinktotypical>
     </GlobalThesaurusTreeView>
+    
     
     <statistics>
         <terms>

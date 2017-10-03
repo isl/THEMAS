@@ -53,7 +53,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.io.OutputStreamWriter;
 import java.io.OutputStream;
@@ -251,7 +251,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             long startTime = Utilities.startTimer();
 
 
-            Vector<String> allResultsSources = dbGen.getAllSearchSources(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
+            ArrayList<String> allResultsSources = dbGen.getAllSearchSources(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
 
 
             Collections.sort(allResultsSources, new StringLocaleComparator(targetLocale));
@@ -309,13 +309,13 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             }
 
 
-            Vector<String> resultsSources = new Vector<String>();
+            ArrayList<String> resultsSources = new ArrayList<String>();
             for (int i = 0; i < sourcesPagingListStep; i++) {
                 if (i + sourcesPagingFirst > sourcesPagingQueryResultsCount) {
                     break;
                 }
                 String tmp = allResultsSources.get(i + sourcesPagingFirst - 1);
-                resultsSources.addElement(tmp);
+                resultsSources.add(tmp);
             }
 
 
@@ -350,7 +350,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
         }
     }
 
-    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, Vector<String> allSources, Utilities u, String title, SearchCriteria sc, 
+    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allSources, Utilities u, String title, SearchCriteria sc, 
             String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, TMSAPIClass TA, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
     
         DBGeneral dbGen = new DBGeneral();
@@ -407,7 +407,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                     temp.append("<name>" + Utilities.escapeXML(currentSource) + "</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Source(SessionUserInfo, allSources.get(i), output[j],Q , TA,sis_session);
+                    ArrayList<String> v = dbGen.returnResults_Source(SessionUserInfo, allSources.get(i), output[j],Q , TA,sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
                     
                     for (int k = 0; k < v.size(); k++) {

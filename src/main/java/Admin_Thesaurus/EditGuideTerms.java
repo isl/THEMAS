@@ -40,21 +40,17 @@ import DB_Classes.DBGeneral;
 import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.Utilities;
-import Utils.Parameters;
 import Utils.SessionWrapperClass;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
 
 /**
  *
@@ -66,6 +62,8 @@ public class EditGuideTerms extends ApplicationBasicServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -119,7 +117,7 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             //result
             boolean operationSucceded = false;
             StringObject errorMsg = new StringObject("");
-            Vector<String> GuideTermsDecodedValues = new Vector<String>();
+            ArrayList<String> GuideTermsDecodedValues = new ArrayList<String>();
 
             
             //open connection and start Transaction

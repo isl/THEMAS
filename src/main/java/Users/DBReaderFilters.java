@@ -405,13 +405,13 @@ public class DBReaderFilters {
         // fill FROM_Vector and TO_Vector with the pairs of BT links,
         // BTlink_sysid_Vector with the sysids of BT links and
         // LinkIsHidden_Vector with true in case the link must be hidden (full of false initially)
-        Vector<String> FROM_Vector = new Vector<String>();
-        Vector<String> TO_Vector = new Vector<String>();
-        Vector<Long> BTlink_sysid_Vector = new Vector<Long>();
-        Vector<Boolean> LinkIsHidden_Vector = new Vector<Boolean>();
+        ArrayList<String> FROM_Vector = new ArrayList<String>();
+        ArrayList<String> TO_Vector = new ArrayList<String>();
+        ArrayList<Long> BTlink_sysid_Vector = new ArrayList<Long>();
+        ArrayList<Boolean> LinkIsHidden_Vector = new ArrayList<Boolean>();
         
         
-        Vector<Return_Link_Id_Row> retVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
         if(Q.bulk_return_link_id(BTLinksSet, retVals)!=QClass.APIFail){
             for(Return_Link_Id_Row row: retVals){
                 FROM_Vector.add(row.get_v4_cmv().getString());
@@ -495,7 +495,7 @@ public class DBReaderFilters {
            - LinkIsHidden_Vector: parallel Vector with true in case the link must be hidden
     FUNCTION: recursively marks as hidden the subtree of BT-links with root the given one
     ----------------------------------------------------------------------*/
-    public void HideBTSubTree(String root, Vector FROM_Vector, Vector TO_Vector, Vector LinkIsHidden_Vector, UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session) {
+    public void HideBTSubTree(String root, ArrayList FROM_Vector, ArrayList TO_Vector, ArrayList LinkIsHidden_Vector, UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session) {
         // for each child of the root (links with from-values == root)
         int FROM_VectorSize = FROM_Vector.size();
         for (int i = 0; i < FROM_VectorSize; i++) {

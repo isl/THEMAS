@@ -85,7 +85,7 @@ public class ConsistensyCheck {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus,Q,sis_session.getValue());
         
-        Vector<Integer> moveHierarchyChecks = new Vector<Integer>();
+        ArrayList<Integer> moveHierarchyChecks = new ArrayList<Integer>();
         /*
         case 1: {move_To_Hierarchy_Consistency_Test_1
         case 2: {move_To_Hierarchy_Consistency_Test_2
@@ -218,7 +218,7 @@ public class ConsistensyCheck {
                 }
                 case 7: {
                     
-                    Vector<String> decodedValues = new Vector<String>();
+                    ArrayList<String> decodedValues = new ArrayList<String>();
                     decodedValues.add(newBT);
                     if (create_modify_check_27(SessionUserInfo, Q, sis_session,descriptor, decodedValues, errorMsg, pathToErrorsXML,false, null,EDIT_TERM_POLICY) == false) {
                         return false;
@@ -233,7 +233,7 @@ public class ConsistensyCheck {
                     StringObject BTLinkObj = new StringObject();
                     dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.bt_kwd, BTClassObj, BTLinkObj, Q, sis_session);
                     StringObject descriptorObj = new StringObject(prefix.concat(descriptor));
-                    Vector<String> decodedValues = new Vector<String>();
+                    ArrayList<String> decodedValues = new ArrayList<String>();
                     
                     
                     Q.reset_name_scope();
@@ -269,7 +269,7 @@ public class ConsistensyCheck {
                     descriptor = descriptor;
                     newBT = newBT;
                     if(descriptor.compareTo(newBT)==0){
-                        Vector<String> errorArgs=new Vector<String>();
+                        ArrayList<String> errorArgs=new ArrayList<String>();
                         errorArgs.add(descriptor);
                         errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
 
@@ -302,7 +302,7 @@ public class ConsistensyCheck {
         return true;
     }
    
-    public boolean create_modify_check_03(Vector<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML){
+    public boolean create_modify_check_03(ArrayList<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML){
         if(Parameters.TermModificationChecks.contains(3)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_3");
@@ -326,7 +326,7 @@ public class ConsistensyCheck {
         return true;
     }
    /*
-    public boolean create_modify_check_04(Vector<String> tcs_Vector,StringObject errorMsg,String pathToErrorsXML){
+    public boolean create_modify_check_04(ArrayList<String> tcs_Vector,StringObject errorMsg,String pathToErrorsXML){
         if(Parameters.TermModificationChecks.contains(4)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_4");
@@ -369,7 +369,7 @@ public class ConsistensyCheck {
         return true;
     }
     */
-    public boolean create_modify_check_07(Vector<String> invalidNames_Vector, StringObject errorMsg,String pathToErrorsXML, String targetDescriptor){
+    public boolean create_modify_check_07(ArrayList<String> invalidNames_Vector, StringObject errorMsg,String pathToErrorsXML, String targetDescriptor){
         if(Parameters.TermModificationChecks.contains(7)==false)
             return true;
         
@@ -385,7 +385,7 @@ public class ConsistensyCheck {
         return true;
     }
     /*
-    public boolean create_modify_check_08(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML,Vector<String> bts_Vector, String prefix){
+    public boolean create_modify_check_08(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_Vector, String prefix){
         if(Parameters.TermModificationChecks.contains(8)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_8");
@@ -398,7 +398,7 @@ public class ConsistensyCheck {
 
             if (Q.set_current_node( targetBt) == QClass.APIFail) {
 
-                Vector<String> errorArgs= new Vector<String>();
+                ArrayList<String> errorArgs= new ArrayList<String>();
                 errorArgs.add(bts_Vector.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("BT: '" + UnclassifiedClass + "' declared for the creation of the new term was not found in the database.";
@@ -425,7 +425,7 @@ public class ConsistensyCheck {
 
             if (Q.set_current_node( targetDescr) != QClass.APIFail) {
 
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(targetDescriptor);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Term '" + targetDescriptor + "' already exists in the database.";
                 
@@ -441,7 +441,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_11(StringObject errorMsg,String pathToErrorsXML,Vector<String> tcs_Vector){
+    public boolean create_modify_check_11(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> tcs_Vector){
         if(Parameters.TermModificationChecks.contains(11)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_11");
@@ -450,7 +450,7 @@ public class ConsistensyCheck {
 
             String testTC = tcs_Vector.get(i);
             if(!testTC.matches(Parameters.TaxonomicalCodeFormat)){
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(testTC);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Non approved taxinomical code : '" + testDN + "'.";
@@ -476,7 +476,7 @@ public class ConsistensyCheck {
             }
 
             if (digits_and_dots == false || testTC.endsWith(".")) {
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(testTC);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs);
                 //errorMsg.setValue(errorMsg.getValue().concat("Non approved taxinomical code : '" + testDN + "'.";
@@ -487,7 +487,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_12(String selectedThesaurus,QClass Q, IntegerObject sis_session,  DBGeneral dbGen, StringObject errorMsg, String pathToErrorsXML, Vector<String> tcs_Vector, String prefix_TC, String targetDescriptor/*,String create_modify*/) {
+    public boolean create_modify_check_12(String selectedThesaurus,QClass Q, IntegerObject sis_session,  DBGeneral dbGen, StringObject errorMsg, String pathToErrorsXML, ArrayList<String> tcs_Vector, String prefix_TC, String targetDescriptor/*,String create_modify*/) {
 
         if(Parameters.TermModificationChecks.contains(12)==false)
             return true;
@@ -539,7 +539,7 @@ public class ConsistensyCheck {
                 int set_problematic_tcs = Q.get_to_value(set_problematic_labels);
                 Q.reset_set(set_problematic_tcs);
 
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(getStringList_Of_Set(Q, sis_session, dbGen, set_problematic_tcs, "', '") + "\n");
                 errorMsg.setValue(errorMsg.getValue().concat(translate(12, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Taxinomical codes : '" + dns_Vector.get(i) + "' already exist in database and are used for other terms.";
@@ -574,7 +574,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_13(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML, Vector<String> sources_Vector,String prefix_Source){
+    public boolean create_modify_check_13(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML, ArrayList<String> sources_Vector,String prefix_Source){
         if(Parameters.TermModificationChecks.contains(13)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_13");
@@ -591,7 +591,7 @@ public class ConsistensyCheck {
                 StringObject term_source = new StringObject(prefix_Source.concat(sources_Vector.get(i)));
                 if (Q.set_current_node( term_source) == QClass.APIFail) {
                     
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(sources_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(13, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     //errorMsg.setValue(errorMsg.getValue().concat("Source : '" + sources_Vector.get(i) + "' does not exist in database.";
@@ -607,7 +607,7 @@ public class ConsistensyCheck {
     }
     
     /*
-    public boolean create_modify_check_14(StringObject errorMsg,String pathToErrorsXML,String targetDescriptor,Vector<String> bts_Vector, Vector<String> rts_Vector,String create_modify){
+    public boolean create_modify_check_14(StringObject errorMsg,String pathToErrorsXML,String targetDescriptor,ArrayList<String> bts_Vector, ArrayList<String> rts_Vector,String create_modify){
         if(Parameters.TermModificationChecks.contains(14)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_14");
@@ -617,7 +617,7 @@ public class ConsistensyCheck {
             for(int i=0 ; i < bts_Vector.size(); i++){
                 
                 if (rts_Vector.size() > 0 && rts_Vector.contains(bts_Vector.get(i))) {
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(targetDescriptor);
                     errorArgs.add(bts_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(14, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
@@ -632,7 +632,7 @@ public class ConsistensyCheck {
     }
     */
     
-    public boolean create_modify_check_15(String selectedThesaurus, QClass Q,IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,Vector<String> bts_or_rts_Vector,String prefix,int errorMsgOffset){
+    public boolean create_modify_check_15(String selectedThesaurus, QClass Q,IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_or_rts_Vector,String prefix,int errorMsgOffset){
         //if bts check --> errorMsgOffset = 2 else if rts check errorMsgOffset = 0
         if(Parameters.TermModificationChecks.contains(15)==false)
             return true;
@@ -654,7 +654,7 @@ public class ConsistensyCheck {
                     Q.set_put( set_bts_or_rts);
                     Q.reset_set( set_bts_or_rts);
                 } else {
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(bts_or_rts_Vector.get(i));
                     errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+1), Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     //errorMsg.setValue(errorMsg.getValue().concat("RT '" + rts_Vector.get(i) + "' does not exist in database.";
@@ -681,7 +681,7 @@ public class ConsistensyCheck {
             Q.free_set( valid_bts_or_rts);
             if (Q.set_get_card( set_bts_or_rts) != 0) {
 
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_bts_or_rts, "', '")+"\n");
                 errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+2), Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Terms: '" + getStringList_Of_Set(set_rts, "', '") + "' do not belong in related terms in condition to be used in the field of RT.";
@@ -699,7 +699,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_16(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,Vector<String> ufs_Vector,String prefix,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_16(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> ufs_Vector,String prefix,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
         if(Parameters.TermModificationChecks.contains(16)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_16");
@@ -724,7 +724,7 @@ public class ConsistensyCheck {
 
             if (Q.set_get_card( set_check_ufs) != 0) {
 
-                Vector<String> removeUfs = new Vector<String>();
+                ArrayList<String> removeUfs = new ArrayList<String>();
                 
                 DBThesaurusReferences dbtr = new DBThesaurusReferences();
                 StringObject usedForClassObj = new StringObject();
@@ -749,7 +749,7 @@ public class ConsistensyCheck {
 
                 if (invalid_card > 0) {
 
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_ufs_str);
                     try {
                         if (resolveError) {
@@ -789,7 +789,7 @@ public class ConsistensyCheck {
         return true;
     }
     /*
-    public boolean create_modify_check_17(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,Vector<String> alts_Vector,String prefix){
+    public boolean create_modify_check_17(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> alts_Vector,String prefix){
         if(Parameters.TermModificationChecks.contains(17)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_17");
@@ -834,7 +834,7 @@ public class ConsistensyCheck {
                 Q.reset_name_scope();
 
                 if (invalid_card > 0) {
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_uk_alts);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(17, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     //errorMsg.setValue(errorMsg.getValue().concat("The Alternative terms : '" + non_valid_uk_alts + "', are used in database beyond of the set of the alternative terms.";
@@ -850,7 +850,7 @@ public class ConsistensyCheck {
         return true;
     }
     */
-    public boolean create_modify_check_18(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,Vector<String> uk_ufs_Vector,String prefixEN,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_18(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,ArrayList<String> uk_ufs_Vector,String prefixEN,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
         if(Parameters.TermModificationChecks.contains(18)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_18");
@@ -894,7 +894,7 @@ public class ConsistensyCheck {
                 if (Q.set_get_card(set_ens) > 0) {
                     int wrong_ens = Q.get_to_value(set_ens);
                     String non_valid_ens = getStringList_Of_Set(Q,sis_session,dbGen,wrong_ens, "', '");
-                    Vector<String> errorUFENValues = new Vector<String>();
+                    ArrayList<String> errorUFENValues = new ArrayList<String>();
                     errorUFENValues.addAll(dbGen.get_Node_Names_Of_Set(wrong_ens, true, Q, sis_session));
                     
                     Q.free_set(wrong_ens);
@@ -902,7 +902,7 @@ public class ConsistensyCheck {
                     Q.free_set( set_check_uk_ufs);
                     
                     Q.reset_name_scope();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_ens);
                     
                     try {
@@ -944,7 +944,7 @@ public class ConsistensyCheck {
                     Q.free_set( set_check_uk_ufs);
                     
                     Q.reset_name_scope();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_ens);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(18, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     return false;
@@ -968,7 +968,7 @@ public class ConsistensyCheck {
         return true;
     }
     /*
-    public boolean create_modify_check_19(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,Vector<String> uk_alts_Vector, String prefixEN){
+    public boolean create_modify_check_19(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> uk_alts_Vector, String prefixEN){
         if(Parameters.TermModificationChecks.contains(19)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_19");
@@ -1017,7 +1017,7 @@ public class ConsistensyCheck {
                     Q.free_set( set_uk_alt_links_to);
                     Q.free_set( set_check_uk_alts);
                     Q.reset_name_scope();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_uk_alts);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     //errorMsg.setValue(errorMsg.getValue().concat("UF terms:  '" + non_valid_uk_ufs + "' declared are already used in the database beyond the set of Used For Terms.";
@@ -1046,7 +1046,7 @@ public class ConsistensyCheck {
     */
     //Function "check_Rts_Modification_Consistency" 
     //checks if "targetDescriptor" has BTs or NTs that are also declared as "targetDescriptor"'s RTs
-    public boolean create_modify_check_20(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral  dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, Vector<String> rts_Vector, String prefix, String create_modify, boolean resolveError, OutputStreamWriter logFileWriter) {
+    public boolean create_modify_check_20(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral  dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> rts_Vector, String prefix, String create_modify, boolean resolveError, OutputStreamWriter logFileWriter) {
         
         //Check if RTs delared exist in set that includes all BTs and all NTs recursively of target Node
         //DEBUG NOTE: propably some set is lost in this code
@@ -1063,7 +1063,7 @@ public class ConsistensyCheck {
         StringObject descriptorObj = new StringObject(prefix.concat(descriptor));
 
         if (Q.set_current_node(descriptorObj) == QClass.APIFail) {
-            Vector<String> errorArgs = new Vector<String>();
+            ArrayList<String> errorArgs = new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(20, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + "  not found in database.";
@@ -1090,7 +1090,7 @@ public class ConsistensyCheck {
             Q.reset_name_scope();
             if (Q.set_current_node(new StringObject(prefix.concat(rts_Vector.get(i)))) == QClass.APIFail) {
                 
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(rts_Vector.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(20, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term '" + rts_Vector.get(i) + "'  was not found in database.";
@@ -1134,11 +1134,11 @@ public class ConsistensyCheck {
         Q.free_set( set_1);
         
         boolean rtsRemoved = false;
-        Vector<String> removeRts = new Vector<String>();
+        ArrayList<String> removeRts = new ArrayList<String>();
         
         if (Q.set_get_card( set_2) != 0) {
 
-            Vector<String> errorArgs = new Vector<String>();
+            ArrayList<String> errorArgs = new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_2, "', '"));
             
@@ -1188,7 +1188,7 @@ public class ConsistensyCheck {
         return true;
     }
    
-    public boolean create_modify_check_24(StringObject errorMsg,String pathToErrorsXML,Vector<String> bts_Vector,String UnclassifiedClass){
+    public boolean create_modify_check_24(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_Vector,String UnclassifiedClass){
         if(Parameters.TermModificationChecks.contains(24)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_24");  
@@ -1196,7 +1196,7 @@ public class ConsistensyCheck {
 
         if(bts_Vector.size() > 1){
             if(bts_Vector.contains(UnclassifiedClass)){
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(UnclassifiedClass);
                 errorMsg.setValue(errorMsg.getValue().concat(translate(24,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
                 return false;
@@ -1206,7 +1206,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_25(String selectedThesaurus,QClass Q,IntegerObject sis_session,  DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String targetTerm, Vector<String> bts_Vector, String create_modify,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_25(String selectedThesaurus,QClass Q,IntegerObject sis_session,  DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String targetTerm, ArrayList<String> bts_Vector, String create_modify,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
         if (Parameters.TermModificationChecks.contains(25) == false) {
             return true;
         }
@@ -1219,7 +1219,7 @@ public class ConsistensyCheck {
         //collect its bts recursively in tempVec
         //check if tempVec and bts_Vector have anything if common. they should not
         boolean btsRemoved = false;
-        Vector<String> removeBts = new Vector<String>();
+        ArrayList<String> removeBts = new ArrayList<String>();
 
         if (bts_Vector.size() == 1) {
             return true;
@@ -1238,14 +1238,14 @@ public class ConsistensyCheck {
             }
             Q.reset_set(set_all_bts);
 
-            Vector<String> target_Rec_BTs_Names_Vec = dbGen.get_Node_Names_Of_Set(set_all_bts, true, Q, sis_session);
+            ArrayList<String> target_Rec_BTs_Names_Vec = dbGen.get_Node_Names_Of_Set(set_all_bts, true, Q, sis_session);
             Q.free_set(set_all_bts);
 
             for (int k = 0; k < target_Rec_BTs_Names_Vec.size(); k++) {
 
                 if (bts_Vector.contains(target_Rec_BTs_Names_Vec.get(k))) {
 
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(bts_Vector.get(i));
                     errorArgs.add(target_Rec_BTs_Names_Vec.get(k));
                     errorArgs.add(targetTerm);
@@ -1299,7 +1299,7 @@ public class ConsistensyCheck {
 
     }
     
-    public boolean create_modify_check_26(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,Vector<String> translations_Vector,String prefixEN){
+    public boolean create_modify_check_26(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,ArrayList<String> translations_Vector,String prefixEN){
         if(Parameters.TermModificationChecks.contains(26)==false)
             return true;
         //abandoned due to multiplicity of translations 
@@ -1354,7 +1354,7 @@ public class ConsistensyCheck {
                     Q.free_set( set_check_ens);
                     
                     Q.reset_name_scope();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_ens);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(26, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     return false;
@@ -1376,7 +1376,7 @@ public class ConsistensyCheck {
                     Q.free_set( set_check_ens);
                     
                     Q.reset_name_scope();
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(non_valid_ens);
                     errorMsg.setValue(errorMsg.getValue().concat(translate(26, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
                     return false;
@@ -1401,7 +1401,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_27(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,String targetTerm, Vector<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
+    public boolean create_modify_check_27(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,String targetTerm, ArrayList<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
         //test if new BT values of target term will break the rule that a term may not
         //participate both in orphans hierarchy and another one
         //this test must be performed to targetTerm and all its subtree regarding newBts values
@@ -1422,7 +1422,7 @@ public class ConsistensyCheck {
         String prefixClass = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         String prefixTerm  = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject orphanClassObj = new StringObject(prefixClass + Parameters.UnclassifiedTermsLogicalname);
-        Vector<StringObject> DB_bts_Vector = new Vector<StringObject>();
+        ArrayList<StringObject> DB_bts_Vector = new ArrayList<StringObject>();
         for(int i=0; i< bts_Vector.size();i++){
             StringObject newStrObj = new StringObject(prefixTerm + bts_Vector.get(i));
             DB_bts_Vector.add(newStrObj);
@@ -1462,14 +1462,14 @@ public class ConsistensyCheck {
         String OrphannsStringList = dbGen.getStringList_Of_Set(set_orphans, ", ", Q, sis_session);
         String NonOrphannsStringList = dbGen.getStringList_Of_Set(set_non_orphans, ", ", Q, sis_session);
         /*
-        Vector<String> orphansVec = new Vector<String>();
-        Vector<String> nonOrphansVec = new Vector<String>();
+        ArrayList<String> orphansVec = new ArrayList<String>();
+        ArrayList<String> nonOrphansVec = new ArrayList<String>();
         orphansVec.addAll(dbGen.get_Node_Names_Of_Set(set_orphans, true, Q, sis_session));
         nonOrphansVec.addAll(dbGen.get_Node_Names_Of_Set(set_non_orhans, true, Q, sis_session));
         */
         if(howmanyOrphans>0 && howmanyNonOrphans>0){
     
-            Vector<String> errorArgs = new Vector<String>();
+            ArrayList<String> errorArgs = new ArrayList<String>();
                     
             switch(policy){
                 
@@ -1480,7 +1480,7 @@ public class ConsistensyCheck {
                     errorArgs.add(targetTerm);
                     errorArgs.add(NonOrphannsStringList);
                     
-                    Vector<String> removeBts = new Vector<String>();
+                    ArrayList<String> removeBts = new ArrayList<String>();
                     removeBts.addAll(dbGen.get_Node_Names_Of_Set(set_orphans, true, Q, sis_session)); 
                     
                     if(resolveError){
@@ -1640,8 +1640,8 @@ public class ConsistensyCheck {
             int set_leaf_topterms = Q.set_get_new();
             Q.reset_set(set_leaf_topterms);
             /*
-            Vector<String> test_vec1 = new Vector<String>();
-            Vector<String> test_vec2 = new Vector<String>();
+            ArrayList<String> test_vec1 = new ArrayList<String>();
+            ArrayList<String> test_vec2 = new ArrayList<String>();
             test_vec1.addAll(dbGen.get_Node_Names_Of_Set(set_leaf_topterms, true, Q, sis_session));
             test_vec2.addAll(dbGen.get_Node_Names_Of_Set(set_partial, true, Q, sis_session));
             */
@@ -1705,7 +1705,7 @@ public class ConsistensyCheck {
             Q.set_intersect(set_leaf_topterms, set_top_terms);
             Q.reset_set(set_leaf_topterms);
             
-            Vector<String> ntsClasses = new Vector<String>();
+            ArrayList<String> ntsClasses = new ArrayList<String>();
             ntsClasses.addAll(dbGen.get_Node_Names_Of_Set(set_leaf_topterms, true, Q, sis_session));
             
             Q.free_set(set_top_terms);
@@ -1732,7 +1732,7 @@ public class ConsistensyCheck {
                         return true;
                     }
                     else{
-                        Vector<String> errorArgs = new Vector<String>();
+                        ArrayList<String> errorArgs = new ArrayList<String>();
                         errorArgs.add(OrphannsStringList);
                         errorArgs.add(targetTerm);
                         errorArgs.add(targetTerm);
@@ -1746,7 +1746,7 @@ public class ConsistensyCheck {
                 }
                 else
                 if(howManyHiers>1){
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(OrphannsStringList);
                     errorArgs.add(targetTerm);
                     errorArgs.add(targetTerm);
@@ -1762,7 +1762,7 @@ public class ConsistensyCheck {
             
             if(howmanyNonOrphans>0){
                 if(ntsClasses.contains(Parameters.UnclassifiedTermsLogicalname)){
-                    Vector<String> errorArgs = new Vector<String>();
+                    ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(NonOrphannsStringList);
                     errorArgs.add(targetTerm);
                     errorArgs.add(targetTerm);
@@ -1802,7 +1802,7 @@ public class ConsistensyCheck {
      * @param policy
      * @return 
      */
-    public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,SortItem targetTermSortItem, Vector<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
+    public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,SortItem targetTermSortItem, ArrayList<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
         
         boolean suchATermExists = Q.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetTermSortItem.getThesaurusReferenceId());
         
@@ -1813,7 +1813,7 @@ public class ConsistensyCheck {
             String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, targetTermSortItem.getThesaurusReferenceId()));
             
             if(termUsingThisReferenceId.equals(targetTermSortItem.getLogName())==false){
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
 
                 switch(policy){
 
@@ -1873,7 +1873,7 @@ public class ConsistensyCheck {
         StringObject sourceObj = new StringObject(prefix + descriptor);
 
         if (dbGen.NodeBelongsToClass(sourceObj, new StringObject(selectedThesaurus + "TopTerm"), false,Q,sis_session)) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " is declared as Top Term and cannot be moved from the hierarchy."; //Do not Translate
@@ -1909,7 +1909,7 @@ public class ConsistensyCheck {
         /*Check if target node exists*/
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(2,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
@@ -1937,7 +1937,7 @@ public class ConsistensyCheck {
 
         if (Q.set_get_card( set_RTs) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_RTs, "', '"));
             errorArgs.add(newBT);
@@ -1974,7 +1974,7 @@ public class ConsistensyCheck {
         /*Create set_1*/
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
@@ -2028,7 +2028,7 @@ public class ConsistensyCheck {
         Q.free_set( set_3);
         if (Q.set_get_card( set_1) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
             errorMsg.setValue(errorMsg.getValue().concat(translate(3,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
@@ -2076,7 +2076,7 @@ public class ConsistensyCheck {
         //Create set_1 with all NTS recursively of source - source not included
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
@@ -2088,14 +2088,14 @@ public class ConsistensyCheck {
         Q.set_put( set_0);
         Q.reset_set( set_0);
 
-        //Vector<String> test = dbGen.get_Node_Names_Of_Set(set_0, false, Q, sis_session);
+        //ArrayList<String> test = dbGen.get_Node_Names_Of_Set(set_0, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test.toString());
         int set_1 = Q.set_get_new();
         dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,Q,sis_session);
         Q.reset_set( set_1);
         
 
-        //Vector<String> test1 = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
+        //ArrayList<String> test1 = dbGen.get_Node_Names_Of_Set(set_1, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test1.toString());
         //Create set_2
         int set_2 = Q.set_get_new();
@@ -2106,12 +2106,12 @@ public class ConsistensyCheck {
         Q.reset_set( set_2);
         Q.free_set(set_0);
         
-        //Vector<String> test2 = dbGen.get_Node_Names_Of_Set(set_2, false, Q, sis_session);
+        //ArrayList<String> test2 = dbGen.get_Node_Names_Of_Set(set_2, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test2.toString());
         Q.reset_name_scope();
         if (Q.set_current_node( targetObj) == QClass.APIFail) {
             
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(4,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
@@ -2127,7 +2127,7 @@ public class ConsistensyCheck {
 
         dbGen.collect_Recurcively_ALL_BTs_Of_Set(selectedThesaurus,set_3, set_3, true,Q,sis_session);
         Q.reset_set( set_3);
-        //Vector<String> test3 = dbGen.get_Node_Names_Of_Set(set_3, false, Q, sis_session);
+        //ArrayList<String> test3 = dbGen.get_Node_Names_Of_Set(set_3, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test3.toString());
 
         //Create set_4
@@ -2135,7 +2135,7 @@ public class ConsistensyCheck {
         dbGen.collect_Direct_Links_Of_Set(set_3, set_4, false, rtFromObj.getValue(), rtLinkObj.getValue(), ConstantParameters.BOTH_Direction,Q,sis_session);
         Q.reset_set( set_4);
 
-        //Vector<String> test4 = dbGen.get_Node_Names_Of_Set(set_4, false, Q, sis_session);
+        //ArrayList<String> test4 = dbGen.get_Node_Names_Of_Set(set_4, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test4.toString());
         //Check Condition 1
         Q.reset_set( set_2);
@@ -2145,7 +2145,7 @@ public class ConsistensyCheck {
         
         if (Q.set_get_card( set_3) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
@@ -2171,7 +2171,7 @@ public class ConsistensyCheck {
         
         if (Q.set_get_card( set_4) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(newBT);
@@ -2219,7 +2219,7 @@ public class ConsistensyCheck {
         //Create set_0
         Q.reset_name_scope();
         if (Q.set_current_node( targetObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
@@ -2234,7 +2234,7 @@ public class ConsistensyCheck {
         //Create set_1
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(5,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
@@ -2267,7 +2267,7 @@ public class ConsistensyCheck {
         
         if (Q.set_get_card( set_2) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
@@ -2294,7 +2294,7 @@ public class ConsistensyCheck {
 
         if (Q.set_get_card( set_3) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
@@ -2352,7 +2352,7 @@ public class ConsistensyCheck {
         //Create set_1 with all NTS recursively of source - source not included
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
@@ -2379,7 +2379,7 @@ public class ConsistensyCheck {
         
         Q.reset_name_scope();
         if (Q.set_current_node( targetObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
             errorMsg.setValue(errorMsg.getValue().concat(translate(6,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
@@ -2411,7 +2411,7 @@ public class ConsistensyCheck {
         
         if (Q.set_get_card( set_3) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
@@ -2439,7 +2439,7 @@ public class ConsistensyCheck {
         
         if (Q.set_get_card( set_4) != 0) {
 
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
@@ -2465,7 +2465,7 @@ public class ConsistensyCheck {
     }
     
     
-    public boolean move_To_Hierarchy_Consistency_Test_7(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, Vector<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean move_To_Hierarchy_Consistency_Test_7(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
         //Applies to moveActions: CONNECT_NODE_AND_SUBTREE similar to cc 5 except that source node's bts are now passed as parameters
 
         //in each loop set_0 includes targetObj  only
@@ -2491,11 +2491,11 @@ public class ConsistensyCheck {
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.bt_kwd, btFromObj, btLinkObj,Q,sis_session);
         
         boolean btsRemoved = false;
-        Vector<String> removeBts = new Vector<String>();
+        ArrayList<String> removeBts = new ArrayList<String>();
         //Create set_1
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
@@ -2513,7 +2513,7 @@ public class ConsistensyCheck {
             StringObject targetObj = new StringObject(prefix + decodedValues.get(i));
             Q.reset_name_scope();
             if (Q.set_current_node( targetObj) == QClass.APIFail) {
-                Vector<String> errorArgs=new Vector<String>();
+                ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
@@ -2542,7 +2542,7 @@ public class ConsistensyCheck {
             Q.reset_set(set_0);
             Q.reset_name_scope();
             if (Q.set_current_node( targetObj) == QClass.APIFail) {
-                Vector<String> errorArgs=new Vector<String>();
+                ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
@@ -2606,7 +2606,7 @@ public class ConsistensyCheck {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_Find_out_nodes\n" +getStringList_Of_Set(Q,sis_session,dbGen,set_Find_out_nodes, "', '"));
                 
                 
-                Vector<String> errorArgs=new Vector<String>();
+                ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(descriptor);
                 errorArgs.add(decodedValues.get(i));
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_Find_out_nodes, "', '"));
@@ -2673,7 +2673,7 @@ public class ConsistensyCheck {
                 Q.set_intersect(set_Find_out_nodes, set_2patchCopy2);
                 Q.reset_set( set_Find_out_nodes);
                 
-                Vector<String> errorArgs=new Vector<String>();
+                ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(descriptor);
                 errorArgs.add(decodedValues.get(i));
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_Find_out_nodes, "', '"));
@@ -2752,14 +2752,14 @@ public class ConsistensyCheck {
     }
     
     
-    public boolean move_To_Hierarchy_Consistency_Test_8(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, Vector<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean move_To_Hierarchy_Consistency_Test_8(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
         //Applies to moveAction: CONNECT_NODE_AND_SUBTREE  similar to check 6 but decodedValues will declare source Nodes bts
         // thus set_1 should change and so that it does not include sourceObj and set 2 should be appended with nodes defined from decoded values 
 
         // set_0:includes only sourceObj
         // set_1: must include NTs of sourceObj recursively without sourceObj 
         // set_2: must include direct BTs of set_1 and set_1 itself plus set_0 (case of not nts)
-        // set_allBts: includes all new Bts passed in Vector<String> parameter decodedValues
+        // set_allBts: includes all new Bts passed in ArrayList<String> parameter decodedValues
         // set_2patch will initially contain all contents of set_all_Bts, except for the new BT that is tested in each loop independently of its prior source Node's prior/current BTs
         // set_3: initially includes targetObj and is used in a set difference action for set_2patch in order to 
         //        exclude the bt that is tested in each loop.
@@ -2787,12 +2787,12 @@ public class ConsistensyCheck {
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.rt_kwd, rtFromObj, rtLinkObj,Q,sis_session);
 
         boolean btsRemoved = false;
-        Vector<String> removeBts = new Vector<String>();
+        ArrayList<String> removeBts = new ArrayList<String>();
 
         //Create set_1 with all NTS recursively of source - source not included
         Q.reset_name_scope();
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
-            Vector<String> errorArgs=new Vector<String>();
+            ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
             
@@ -2830,7 +2830,7 @@ public class ConsistensyCheck {
             Q.reset_name_scope();
             StringObject newBTObj = new StringObject(prefix + decodedValues.get(i));
             if (Q.set_current_node( newBTObj) == QClass.APIFail) {
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
                 Q.free_set(set_1);
@@ -2858,7 +2858,7 @@ public class ConsistensyCheck {
             Q.reset_name_scope();
             StringObject newBTObj = new StringObject(prefix + decodedValues.get(i));
             if (Q.set_current_node( newBTObj) == QClass.APIFail) {
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
                 errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
                 Q.free_set(set_1);
@@ -2922,7 +2922,7 @@ public class ConsistensyCheck {
                 Q.set_intersect(set_Find_out_nodes, set_3Copy);
                 Q.reset_set( set_Find_out_nodes);
                 
-                Vector<String> errorArgs=new Vector<String>();
+                ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(descriptor);
                 errorArgs.add(decodedValues.get(i));
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_Find_out_nodes, "', '"));
@@ -2993,7 +2993,7 @@ public class ConsistensyCheck {
                 Q.reset_set( set_Find_out_nodes);
                 
                 
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(descriptor);
                 errorArgs.add(decodedValues.get(i));
                 errorArgs.add(getStringList_Of_Set(Q, sis_session, dbGen, set_Find_out_nodes, "', '") );
@@ -3085,7 +3085,7 @@ public class ConsistensyCheck {
         
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject targetFacetObj = new StringObject();
-        Vector<String> subHierarchies = new Vector<String>();
+        ArrayList<String> subHierarchies = new ArrayList<String>();
         int set_sub_hiers, set_hier_facets, set_f_nodes;
         
         Q.reset_name_scope();
@@ -3125,7 +3125,7 @@ public class ConsistensyCheck {
                 Q.set_intersect(set_hier_facets, set_f_nodes);
                 Q.reset_set(set_hier_facets);
                 
-                Vector<String> hierFacets = dbGen.get_Node_Names_Of_Set(set_hier_facets, false, Q, sis_session);
+                ArrayList<String> hierFacets = dbGen.get_Node_Names_Of_Set(set_hier_facets, false, Q, sis_session);
                 Q.free_set(set_hier_facets);
                 if(hierFacets.size()==1){
                     allHiersMoreThanOneFacet = false;
@@ -3155,7 +3155,7 @@ public class ConsistensyCheck {
         //StringObject label = new StringObject();
         int howmany = Q.set_get_card(set_print);
         int index = 0;
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
 	if(Q.bulk_return_nodes(set_print, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 index++;
@@ -3181,9 +3181,9 @@ public class ConsistensyCheck {
     }
 
     //Turn a comma seperated String to Vector --> No dublicates
-    public Vector<String> get_Vector_from_String(String str, String delimeter) {
+    public ArrayList<String> get_Vector_from_String(String str, String delimeter) {
 
-        Vector<String> result = new Vector<String>();
+        ArrayList<String> result = new ArrayList<String>();
 
         if (str == null) {
             return result;
@@ -3208,7 +3208,7 @@ public class ConsistensyCheck {
 
     }
 
-    public String translate(int errCode, int errorCase, String groupMode, Vector<String> args,String pathToErrorsXML){
+    public String translate(int errCode, int errorCase, String groupMode, ArrayList<String> args,String pathToErrorsXML){
 
         Utilities u = new Utilities();
         

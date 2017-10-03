@@ -56,10 +56,10 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
 
 import javax.xml.transform.*;
@@ -177,8 +177,8 @@ public class ExportData extends ApplicationBasicServlet {
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
                 Filename += ".rdf";
                 ConstantParameters.referenceThesaurusSchemeName = "http://localhost:" + port + "/" + Parameters.ApplicationName + "#" + exprortThesaurus;
-                ConstantParameters.SchemePrefix = "http://localhost:" + port + "/" + Parameters.ApplicationName + "/" + exprortThesaurus;
-                ConstantParameters.SchemePrefix = ConstantParameters.SchemePrefix.toLowerCase();
+                ConstantParameters.SchemePrefix = "http://localhost:" + port + "/" + Parameters.ApplicationName ;//+ "/" ;//+ exprortThesaurus;
+                //ConstantParameters.SchemePrefix = ConstantParameters.SchemePrefix.toLowerCase();
 
             } else if (exportSchemaName.equals(ConstantParameters.xmlschematype_THEMAS)) {
                 Filename += ".xml";
@@ -201,9 +201,9 @@ public class ExportData extends ApplicationBasicServlet {
                 Utils.StaticClass.handleException(exc);
             }
 
-            Vector<String> thesauriNames = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<String>();
+            ArrayList<String> allHierarchies = new ArrayList<String>();
+            ArrayList<String> allGuideTerms = new ArrayList<String>();
             
             exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
@@ -237,7 +237,7 @@ public class ExportData extends ApplicationBasicServlet {
 
     }
 
-    public String getXMLMiddle(Vector<String> thesaurusVector, String filePath) {
+    public String getXMLMiddle(ArrayList<String> thesaurusVector, String filePath) {
         // get the active sessions
         int OtherActiveSessionsNO = SessionListener.activesessionsNO - 1;
 

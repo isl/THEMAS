@@ -210,7 +210,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             
             long startTime = Utilities.startTimer();
 
-            Vector<String> allResultsHierarchies = getAllSearchHierarchies(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
+            ArrayList<String> allResultsHierarchies = getAllSearchHierarchies(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
             Collections.sort(allResultsHierarchies, new StringLocaleComparator(targetLocale));
 
             //Get only those hierarchies that will appear in next page
@@ -265,13 +265,13 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                 return;
             }
 
-            Vector<String> resultsHierarchies = new Vector<String>();
+            ArrayList<String> resultsHierarchies = new ArrayList<String>();
             for (int i = 0; i < hierarchiesPagingListStep; i++) {
                 if (i + hierarchiesPagingFirst > hierarchiesPagingQueryResultsCount) {
                     break;
                 }
                 String tmp = allResultsHierarchies.get(i + hierarchiesPagingFirst - 1).toString();
-                resultsHierarchies.addElement(tmp);
+                resultsHierarchies.add(tmp);
             }
             String xmlResults = u.getResultsinXml_Hierarchy(SessionUserInfo, resultsHierarchies, output, Q, sis_session, targetLocale);
 
@@ -305,12 +305,12 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
     }
 
     /**Returns a Vector with the hierarchies which match with criteria*/
-    public Vector<String> getAllSearchHierarchies(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, 
+    public ArrayList<String> getAllSearchHierarchies(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, 
             String globalOperator, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         DBGeneral dbGen = new DBGeneral();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-        Vector<String> globalHierachyResults = new Vector<String>();
+        ArrayList<String> globalHierachyResults = new ArrayList<String>();
 
         int sisSessionId = sis_session.getValue();
         int set_global_hierarchy_results = -1;
@@ -491,7 +491,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row:retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -581,7 +581,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -670,7 +670,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -773,7 +773,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -908,10 +908,10 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
         DBFilters dbf = new DBFilters();
         set_global_hierarchy_results = dbf.FilterHierResults(SessionUserInfo, set_global_hierarchy_results, Q, sis_session);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_global_hierarchy_results, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
-                globalHierachyResults.addElement(row.get_v1_cls_logicalname());
+                globalHierachyResults.add(row.get_v1_cls_logicalname());
             }
         }
         /*StringObject c_name = new StringObject();
@@ -928,7 +928,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
     }
 
-    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, Vector<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
         DBGeneral dbGen = new DBGeneral();
         
@@ -985,7 +985,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         temp.append("<name>" + Utilities.escapeXML(currentHierarchy) + "</name>");
 
                     } else {
-                        Vector<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
+                        ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
 
                         for (int k = 0; k < v.size(); k++) {

@@ -33,14 +33,10 @@
  */
 package Admin_Thesaurus;
 
-import DB_Admin.CommonUtilsDBadmin;
-import neo4j_sisapi.StringObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

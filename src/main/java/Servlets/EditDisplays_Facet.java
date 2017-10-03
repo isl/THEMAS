@@ -46,7 +46,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 import javax.servlet.ServletContext;
 

@@ -42,7 +42,7 @@ import Utils.ConstantParameters;
 
 import Utils.StringLocaleComparator;
 import java.util.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -68,19 +68,19 @@ public class DBStatisticsSources {
     /*----------------------------------------------------------------------
                         GetNumberOfTermsPerSourceGrEn()
     -----------------------------------------------------------------------
-    OUTPUT: - Vector<String> SourcesVector: a Vector with the existing Sources (DB encoded)
-            - Vector<IntegerObject> TermsSourceGrCountVector: parallel Vector with the 
+    OUTPUT: - ArrayList<String> SourcesVector: a Vector with the existing Sources (DB encoded)
+            - ArrayList<IntegerObject> TermsSourceGrCountVector: parallel Vector with the 
                              cardinality of the terms having as Greek Source the corresponding source
-            - Vector<IntegerObject> TermsSourceEnCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> TermsSourceEnCountVector: parallel Vector with the 
                              cardinality of the terms having as English Source the corresponding source
     ------------------------------------------------------------------------*/
-    public void GetNumberOfTermsPerSourceGrEn(QClass Q, IntegerObject sis_session, UserInfoClass SessionUserInfo, Locale targetLocale, Vector<String> SourcesVector, Vector<IntegerObject> TermsSourceGrCountVector, Vector<IntegerObject> TermsSourceEnCountVector) {
+    public void GetNumberOfTermsPerSourceGrEn(QClass Q, IntegerObject sis_session, UserInfoClass SessionUserInfo, Locale targetLocale, ArrayList<String> SourcesVector, ArrayList<IntegerObject> TermsSourceGrCountVector, ArrayList<IntegerObject> TermsSourceEnCountVector) {
         DBFilters dbf = new DBFilters();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
         // get all Sources
         int set_s = GetAllSources(Q, sis_session, SessionUserInfo);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
 	if(Q.bulk_return_nodes(set_s, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 SourcesVector.add(row.get_v1_cls_logicalname());
@@ -95,7 +95,7 @@ public class DBStatisticsSources {
         
         // copy SourcesVector to SourcesVectorSortedUI (sorted and UI encoded)
         DBGeneral dbGen = new DBGeneral();
-        Vector<String> SourcesVectorSortedUI = new Vector<String>();      
+        ArrayList<String> SourcesVectorSortedUI = new ArrayList<String>();      
         
         int SourcesVectorSize = SourcesVector.size();
         for (int i = 0; i < SourcesVectorSize; i++) {

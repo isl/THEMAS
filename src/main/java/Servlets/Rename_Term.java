@@ -181,7 +181,7 @@ public class Rename_Term extends ApplicationBasicServlet {
             } else {
 
                 //in case the option to save old name as uf is enabled
-                Vector<String> existingUFs = new Vector<String>();
+                ArrayList<String> existingUFs = new ArrayList<String>();
 
                 if(Parameters.AtRenameSaveOldNameAsUf && saveAsUf!=null && saveAsUf.equalsIgnoreCase("yes")){
 
@@ -192,11 +192,11 @@ public class Rename_Term extends ApplicationBasicServlet {
                 }
                 
                 //==========Start of Rename_Term New Descriptor===================================================================
-                Vector<String> modifiedNodes = new Vector<String>();
+                ArrayList<String> modifiedNodes = new ArrayList<String>();
 
-                Vector<String> bts_vec = new Vector<String>();
-                Vector<String> nts_vec = new Vector<String>();
-                Vector<String> rts_vec = new Vector<String>();
+                ArrayList<String> bts_vec = new ArrayList<String>();
+                ArrayList<String> nts_vec = new ArrayList<String>();
+                ArrayList<String> rts_vec = new ArrayList<String>();
                 bts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.bt_kwd, Q, TA, sis_session);
                 nts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.nt_kwd, Q, TA, sis_session);
                 rts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.rt_kwd, Q, TA, sis_session);

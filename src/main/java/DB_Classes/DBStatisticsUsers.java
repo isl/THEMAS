@@ -42,7 +42,7 @@ import Users.UserInfoClass;
 import Utils.StringLocaleComparator;
 import java.util.*;
 import javax.servlet.http.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -69,19 +69,19 @@ public class DBStatisticsUsers {
     /*----------------------------------------------------------------------
                         GetNumberOfTermsCreatedAndLastModifiedPerUser()
     -----------------------------------------------------------------------
-    OUTPUT: - Vector<String> UsersVector: a Vector with the existing Editors of current thesaurus (DB encoded)
-            - Vector<IntegerObject> TermsCreatedCountVector: parallel Vector with the 
+    OUTPUT: - ArrayList<String> UsersVector: a Vector with the existing Editors of current thesaurus (DB encoded)
+            - ArrayList<IntegerObject> TermsCreatedCountVector: parallel Vector with the 
                              cardinality of the terms created by the corresponding user
-            - Vector<IntegerObject> TermsLastModifiedCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> TermsLastModifiedCountVector: parallel Vector with the 
                              cardinality of the terms being last modified by the corresponding user
     ------------------------------------------------------------------------*/
-    public void GetNumberOfTermsCreatedAndLastModifiedPerUser(QClass Q, IntegerObject sis_session, UserInfoClass SessionUserInfo, Locale targetLocale, Vector<String> UsersVector, Vector<IntegerObject> TermsCreatedCountVector, Vector<IntegerObject> TermsLastModifiedCountVector) {
+    public void GetNumberOfTermsCreatedAndLastModifiedPerUser(QClass Q, IntegerObject sis_session, UserInfoClass SessionUserInfo, Locale targetLocale, ArrayList<String> UsersVector, ArrayList<IntegerObject> TermsCreatedCountVector, ArrayList<IntegerObject> TermsLastModifiedCountVector) {
         DBFilters dbf = new DBFilters();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
         // get all Users
         int set_e = GetAllUsers(Q, sis_session, SessionUserInfo);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_e, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 UsersVector.add(row.get_v1_cls_logicalname());            
@@ -96,7 +96,7 @@ public class DBStatisticsUsers {
         
         // copy UsersVector to UsersVectorSortedUI (sorted and UI encoded)
         DBGeneral dbGen = new DBGeneral();
-        Vector<String> UsersVectorSortedUI = new Vector<String>();      
+        ArrayList<String> UsersVectorSortedUI = new ArrayList<String>();      
         
         int UsersVectorSize = UsersVector.size();
         for (int i = 0; i < UsersVectorSize; i++) {

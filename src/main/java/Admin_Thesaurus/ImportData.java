@@ -120,7 +120,7 @@ public class ImportData extends ApplicationBasicServlet {
             DBMergeThesauri dbMerge = new DBMergeThesauri();
             StringObject translatedMsgObj = new StringObject("");
             
-            Vector<String> thesauriNames = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<String>();
 
             CommonUtilsDBadmin common_utils = new CommonUtilsDBadmin(config);
             StringObject resultObj = new StringObject("");
@@ -151,7 +151,7 @@ public class ImportData extends ApplicationBasicServlet {
                 UpDownFiles fup = new UpDownFiles();
                 String[] formData = new String[10];
                 FileItem[] dom = fup.prepareToUpBinary(request, formData);
-                //Hashtable initParams = UpDownFiles.uploadParams;
+                //HashMap initParams = UpDownFiles.uploadParams;
 
                 if (dom[0] != null) {
 
@@ -202,8 +202,8 @@ public class ImportData extends ApplicationBasicServlet {
                     resultObj.setValue(u.translateFromMessagesXML("root/ImportData/importThesaurusNameFailure", new String[] {importThesaurusName}));
                     //resultObj.setValue("Thesaurus '" + importThesaurusName + "' already exists in database. Please choose a different name for the Thesaurus.");
 
-                    Vector<String> allHierarchies = new Vector<String>();
-                    Vector<String> allGuideTerms = new Vector<String>();
+                    ArrayList<String> allHierarchies = new ArrayList<String>();
+                    ArrayList<String> allGuideTerms = new ArrayList<String>();
                     dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
 
                     //end query and close connection
@@ -232,13 +232,13 @@ public class ImportData extends ApplicationBasicServlet {
                     //String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
                     //StringObject resultMessageObj = new StringObject();
                     StringObject resultMessageObj_2 = new StringObject();
-                    //Vector<String> errorArgs = new Vector<String>();
+                    //ArrayList<String> errorArgs = new ArrayList<String>();
 
                     resultObj.setValue(u.translateFromMessagesXML("root/ImportData/ThesaurusDoesNotExist", new String[]{importThesaurusName}));
 
                     //resultObj.setValue("Thesaurus '" + importThesaurusName + "' does not exist in database. Please choose a different thesaurus if this one still exists.");
-                    Vector<String> allHierarchies = new Vector<String>();
-                    Vector<String> allGuideTerms = new Vector<String>();
+                    ArrayList<String> allHierarchies = new ArrayList<String>();
+                    ArrayList<String> allGuideTerms = new ArrayList<String>();
                     dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
 
                     //end query and close connection
@@ -351,8 +351,8 @@ public class ImportData extends ApplicationBasicServlet {
         }
     }
     /*
-     protected Hashtable<String, Object> getFormParams(HttpServletRequest request) {
-     Hashtable<String, Object> params = new Hashtable<String, Object>();
+     protected HashMap<String, Object> getFormParams(HttpServletRequest request) {
+     HashMap<String, Object> params = new HashMap<String, Object>();
      Enumeration paramNames = request.getParameterNames();
      while (paramNames.hasMoreElements()) {
      String paramName = (String)paramNames.nextElement();
@@ -418,9 +418,9 @@ public class ImportData extends ApplicationBasicServlet {
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         QClass Q = new QClass();
         TMSAPIClass TA = new TMSAPIClass();
@@ -485,9 +485,9 @@ public class ImportData extends ApplicationBasicServlet {
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
         String importMethodChoice = request.getParameter("ImportThesaurusMode");
         StringObject result = new StringObject("");
 
@@ -541,7 +541,7 @@ public class ImportData extends ApplicationBasicServlet {
         dbAdminUtils.UnlockSystemForAdministrativeJobs();
     }
 
-    public String getXMLMiddle(Vector<String> thesaurusVector, String importThesaurusMessage, String thesaurusOrBulkMode) {
+    public String getXMLMiddle(ArrayList<String> thesaurusVector, String importThesaurusMessage, String thesaurusOrBulkMode) {
         // get the active sessions
         String resultTagName = "importThesaurusMessage";
         if (thesaurusOrBulkMode.compareTo("bulkImport") == 0) {

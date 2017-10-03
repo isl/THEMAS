@@ -444,12 +444,12 @@ public class CommonUtilsDBadmin {
         long DBmodificationBeforeTelos = GetFolderContentsModificationDate(DBPath);
         // call telos for TelosFileName x N times
         StringObject telosOutputObj = new StringObject("");
-        Vector<String> tlsFiles = new Vector<String>();
+        ArrayList<String> tlsFiles = new ArrayList<String>();
         //tlsFiles.add(TelosFileName);
         for(int i=0; i< SISTelosParseTimes; i++) {
             // start telos
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- sisTelosIs STARTED  "+i+"--------------------");
-            //boolean telosStarted = common_utils.StartSIStelos(common_utils.SISTelosBatFileName,new Vector<String>(), common_utils.SISTelosBatFileDirectory, telosOutputObj);
+            //boolean telosStarted = common_utils.StartSIStelos(common_utils.SISTelosBatFileName,new ArrayList<String>(), common_utils.SISTelosBatFileDirectory, telosOutputObj);
             boolean telosStarted = StartSIStelos(tlsFiles, telosOutputObj);
             if (telosStarted == false) {
                 String StartTelosFailure = config.GetTranslation("StartTelosFailure");
@@ -505,7 +505,7 @@ public class CommonUtilsDBadmin {
     <SISTelosBatFileDirectory> g.e. C:\ICS-FORTH\TMS\telos.exe
     OUTPUT: true in case of succesfull execution, false otherwise
     ------------------------------------------------------------------------*/
-    public boolean StartSIStelos(Vector<String> tlsFiles, StringObject telosOutputObj) {
+    public boolean StartSIStelos(ArrayList<String> tlsFiles, StringObject telosOutputObj) {
 
         return true;
         /*
@@ -769,11 +769,11 @@ public class CommonUtilsDBadmin {
     /*----------------------------------------------------------------------
     GetListOfDBbackups()
     ------------------------------------------------------------------------*/
-    public Vector<String> GetListOfDBbackups() {
+    public ArrayList<String> GetListOfDBbackups() {
         // fill list with available backup files
         String filesFoundInDBBackupFolder[] = DB_BackupFolder.list();
         int filesFoundInDBBackupFolderCount = filesFoundInDBBackupFolder.length;
-        Vector<String> filesInDBBackupFolderToBeDisplayed = new Vector<String>();
+        ArrayList<String> filesInDBBackupFolderToBeDisplayed = new ArrayList<String>();
         for (int i = 0; i < filesFoundInDBBackupFolderCount; i++) {
             if (filesFoundInDBBackupFolder[i].startsWith("#") && filesFoundInDBBackupFolder[i].endsWith("@.zip")) {
                 filesInDBBackupFolderToBeDisplayed.add(filesFoundInDBBackupFolder[i]);

@@ -268,7 +268,7 @@ public class DBCreate_Modify_Facet {
             if(termUsingThisReferenceId.equals(targetFacetSortItem.getLogName())==false)
             {
                 ConsistensyCheck con = new ConsistensyCheck();
-                Vector<String> errorArgs = new Vector<String>();
+                ArrayList<String> errorArgs = new ArrayList<String>();
 
                 switch(ConsistencyChecksPolicy){
 

@@ -101,7 +101,7 @@ public class CreateDBbackup extends ApplicationBasicServlet {
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             backupDescription = params.get("Create_DB_backup_Description_NAME").toString();
 
             // create the configuration class
@@ -145,7 +145,7 @@ public class CreateDBbackup extends ApplicationBasicServlet {
         // in case there are other active sessions => write their number to XML, 
         // so as to warn user for their existence
         // GetListOfDBbackups
-        Vector<String> filesInDBBackupFolder = new Vector<String>();
+        ArrayList<String> filesInDBBackupFolder = new ArrayList<String>();
         filesInDBBackupFolder = common_utils.GetListOfDBbackups();
         int filesInDBBackupFolderCount = filesInDBBackupFolder.size();
         XMLMiddleStr += "<filesInDBBackupFolder>";

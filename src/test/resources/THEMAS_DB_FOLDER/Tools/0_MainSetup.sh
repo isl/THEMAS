@@ -30,23 +30,10 @@
 # Elias Tzortzakakis <tzortzak@ics.forth.gr>
 # 
 # This file is part of the THEMAS system.
-currentPath=$( cd $(dirname $0) ; pwd -P )
-cd  $currentPath
-
-source ./0_MainSetup.sh
-
-Mode=ExportToXML
-
-# for export of all thesauri
-# ThesaurusName=XXXXXX
-
-# for export of specific thesaurus named TEST
-ThesaurusName=ANCIENT 
-ExportFolderPath="$BaseInputOutpoutPath"
-
-SystemOutFilePath="$BaseInputOutpoutPath/OfflineToolsClassOutput.txt"
-
-cd "$BaseTHEMASwebappPath/WEB-INF/classes"
-
-"$JAVA_BIN_PATH/java"  -Xmx2048M -cp ".:$libFolder/*:" -Dfile.encoding=UTF8 Admin_Thesaurus.OfflineToolsClass $Mode "$BaseTHEMASwebappPath" $ThesaurusName $ExportFolderPath 1> $SystemOutFilePath 2>&1
-
+# java8 path
+JAVA_BIN_PATH=/usr/bin/
+BaseNeo4jFolderPath=/home/elias/Desktop/Installations/DevThemas/Neo4jDbs
+BaseTHEMASwebappPath=/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT
+libFolder=/home/elias/Desktop/Installations/DevThemas/THEMAS/target/THEMAS-1.1-SNAPSHOT/WEB-INF/lib
+BaseInputOutpoutPath=/home/elias/Desktop/Installations/DevThemas/Neo4jDbs/Tools/input-output
+PATH="$PATH:$libFolder"

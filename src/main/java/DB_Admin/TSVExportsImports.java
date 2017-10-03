@@ -37,7 +37,6 @@ import DB_Classes.DBGeneral;
 import Utils.Utilities;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,14 +44,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import neo4j_sisapi.Configs;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -149,7 +148,7 @@ public class TSVExportsImports {
         }
         
         
-        Vector<String> labelLines = new Vector<String>();
+        ArrayList<String> labelLines = new ArrayList<>();
         for(Label lbl : n.getLabels()){
             labelLines.add(nodeId+"\t"+LabelKey+"\t"+lbl.name()+"\r\n");
         }
@@ -159,7 +158,7 @@ public class TSVExportsImports {
         }
         
         if(n.hasRelationship(Rels.INSTANCEOF, Direction.OUTGOING)){
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<>();
             for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
                 String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
@@ -180,7 +179,7 @@ public class TSVExportsImports {
         if(skipGeneric){
             //get ingoing relationships that might be lost 
             //generic pointing to non generic
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<String>();
             if(n.hasRelationship(Rels.INSTANCEOF, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
@@ -198,7 +197,7 @@ public class TSVExportsImports {
             }
         }
         if(n.hasRelationship(Rels.ISA, Direction.OUTGOING)){
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<String>();
             for(Relationship rel: n.getRelationships(Rels.ISA, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
                 String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
@@ -218,7 +217,7 @@ public class TSVExportsImports {
         if(skipGeneric){
             //get ingoing relationships that might be lost 
             //generic pointing to non generic
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<String>();
             if(n.hasRelationship(Rels.ISA, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.ISA, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
@@ -236,7 +235,7 @@ public class TSVExportsImports {
             }
         }
         if(n.hasRelationship(Rels.RELATION, Direction.OUTGOING)){
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<String>();
             for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
                 String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
@@ -256,7 +255,7 @@ public class TSVExportsImports {
         if(skipGeneric){
             //get ingoing relationships that might be lost 
             //generic pointing to non generic
-            Vector<String> outputLines = new Vector<String>();
+            ArrayList<String> outputLines = new ArrayList<String>();
              if(n.hasRelationship(Rels.RELATION, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
@@ -286,7 +285,7 @@ public class TSVExportsImports {
         
             OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(filepath)), "UTF-8");
             
-            Vector<Node> nodesToExport = new Vector<Node>();
+            ArrayList<Node> nodesToExport = new ArrayList<Node>();
             
             String query = "";
             if(onlyGeneric){
@@ -338,7 +337,7 @@ public class TSVExportsImports {
     public boolean importSpecificFromFile(String filepath, boolean recomputeTransliteration){
         try{//called from create thesaurus indexes should have been created
         
-            Hashtable<Long, Hashtable<String, Vector<String>>> nodeInfo = new Hashtable<Long,Hashtable<String, Vector<String>>>();
+            HashMap<Long, HashMap<String, ArrayList<String>>> nodeInfo = new HashMap<Long,HashMap<String, ArrayList<String>>>();
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF8"));
             String linestr;
             int line = 0;
@@ -359,12 +358,12 @@ public class TSVExportsImports {
                     String valueStr = parts[2];
                     
                     if(nodeInfo.containsKey(internalId)==false){
-                        nodeInfo.put(internalId,new Hashtable<String, Vector<String>>());
+                        nodeInfo.put(internalId,new HashMap<String, ArrayList<String>>());
                     }
                     
                     //cast everything as String except multivalued elements - Labels and relationships
                     if(nodeInfo.get(internalId).containsKey(property)==false){
-                        nodeInfo.get(internalId).put(property, new Vector<String>());
+                        nodeInfo.get(internalId).put(property, new ArrayList<String>());
                     }
                     nodeInfo.get(internalId).get(property).add(valueStr);
                     
@@ -376,7 +375,7 @@ public class TSVExportsImports {
             }//parsing ended
             
             
-            Hashtable<Long,Long> tsvToNeo4jIds = new Hashtable<Long,Long>();
+            HashMap<Long,Long> tsvToNeo4jIds = new HashMap<Long,Long>();
             GraphDatabaseService graphDb = Utils.StaticClass.getDBService();
             
             long maxGenericNeo4jId = -1;
@@ -450,14 +449,14 @@ public class TSVExportsImports {
                     
                 
                 //create nodes
-                Enumeration<Long> nodeIdentifiers = nodeInfo.keys();
-                while(nodeIdentifiers.hasMoreElements()){
-                    long nodeId = nodeIdentifiers.nextElement();
+                Iterator<Long> nodeIdentifiers = nodeInfo.keySet().iterator();
+                while(nodeIdentifiers.hasNext()){
+                    long nodeId = nodeIdentifiers.next();
                     //long startNodeNeo4jId = tsvToNeo4jIds.get(nodeId);
                     if(nodeId<=maxGenericNeo4jId){
                         continue;
                     }
-                    Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
+                    HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
 
                     
 
@@ -466,7 +465,7 @@ public class TSVExportsImports {
                     String value = "";
                     long neo4jId = -1;
                     
-                    Vector<String> labels = new Vector<String>();
+                    ArrayList<String> labels = new ArrayList<String>();
                     if(strVals.containsKey(LabelKey)){
                         labels.addAll(strVals.get(LabelKey));                    
                     }
@@ -475,7 +474,7 @@ public class TSVExportsImports {
                    
                     Node newNode = graphDb.createNode();
                     for(String lbl: labels){
-                        Label label = DynamicLabel.label(lbl);
+                        Label label = Label.label(lbl);
                         newNode.addLabel(label);
                     }
                     
@@ -538,31 +537,31 @@ public class TSVExportsImports {
             
             //create InstanceOf, ISA, Relation relationships
             try(Transaction tx =  graphDb.beginTx()){
-                Enumeration<Long> nodeIdentifiers = nodeInfo.keys();
-                while(nodeIdentifiers.hasMoreElements()){
-                    long nodeId = nodeIdentifiers.nextElement();
+                Iterator<Long> nodeIdentifiers = nodeInfo.keySet().iterator();
+                while(nodeIdentifiers.hasNext()){
+                    long nodeId = nodeIdentifiers.next();
                     long startNodeNeo4jId = tsvToNeo4jIds.get(nodeId);
-                    Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
+                    HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
                     
-                    Vector<Long> isA = new Vector<Long>();
-                    Vector<Long> relation = new Vector<Long>();
-                    Vector<Long> instanceOf = new Vector<Long>();
+                    ArrayList<Long> isA = new ArrayList<Long>();
+                    ArrayList<Long> relation = new ArrayList<Long>();
+                    ArrayList<Long> instanceOf = new ArrayList<Long>();
                     if(strVals.containsKey(Rels.ISA.name())){
-                        Vector<String> stringVals = strVals.get(Rels.ISA.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.ISA.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             isA.add(tsvToNeo4jIds.get(endNodeId));
                         }
                     }
                     if(strVals.containsKey(Rels.RELATION.name())){
-                        Vector<String> stringVals = strVals.get(Rels.RELATION.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.RELATION.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             relation.add(tsvToNeo4jIds.get(endNodeId));
                         }
                     }
                     if(strVals.containsKey(Rels.INSTANCEOF.name())){
-                        Vector<String> stringVals = strVals.get(Rels.INSTANCEOF.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.INSTANCEOF.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             instanceOf.add(tsvToNeo4jIds.get(endNodeId));
@@ -576,19 +575,19 @@ public class TSVExportsImports {
                     Node startNode = getSingleNodesByNeo4jId(startNodeNeo4jId,graphDb);
                     
                     if(isA.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(isA, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(isA, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.ISA);
                         }
                     }
                     if(instanceOf.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(instanceOf, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(instanceOf, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.INSTANCEOF);
                         }
                     }
                     if(relation.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(relation, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(relation, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.RELATION);
                         }
@@ -601,7 +600,7 @@ public class TSVExportsImports {
             IntegerObject sis_session = new IntegerObject();
             
               
-            Vector<String> thesauriVector = new Vector<String>();
+            ArrayList<String> thesauriVector = new ArrayList<String>();
              
             //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
             
@@ -650,9 +649,9 @@ public class TSVExportsImports {
     
     boolean globalImportFromFile(String filepath, boolean recomputeTransliteration){
         try{
-            Hashtable<Long, Hashtable<String, Vector<String>>> nodeInfo = new Hashtable<Long,Hashtable<String, Vector<String>>>();
+            HashMap<Long, HashMap<String, ArrayList<String>>> nodeInfo = new HashMap<Long,HashMap<String, ArrayList<String>>>();
             
-            //Vector<String> multivaluedElements = new Vector<String>();
+            //ArrayList<String> multivaluedElements = new ArrayList<String>();
             //multivaluedElements.add(LabelKey);
             //multivaluedElements.add(Rels.INSTANCEOF.name());
             //multivaluedElements.add(Rels.ISA.name());
@@ -679,12 +678,12 @@ public class TSVExportsImports {
                     String valueStr = parts[2];
                     
                     if(nodeInfo.containsKey(internalId)==false){
-                        nodeInfo.put(internalId,new Hashtable<String, Vector<String>>());
+                        nodeInfo.put(internalId,new HashMap<String, ArrayList<String>>());
                     }
                     
                     //cast everything as String except multivalued elements - Labels and relationships
                     if(nodeInfo.get(internalId).containsKey(property)==false){
-                        nodeInfo.get(internalId).put(property, new Vector<String>());
+                        nodeInfo.get(internalId).put(property, new ArrayList<String>());
                     }
                     nodeInfo.get(internalId).get(property).add(valueStr);
                     
@@ -696,14 +695,14 @@ public class TSVExportsImports {
             }//parsing ended
             
             
-            //Hashtable<Long,Long> tsvToNeo4jIds = new Hashtable<Long,Long>();
+            //HashMap<Long,Long> tsvToNeo4jIds = new HashMap<Long,Long>();
             
             //long maxGenericNeo4jId = 0;
             /*
             Enumeration<Long> nodeIdentifiers = nodeInfo.keys();
             while(nodeIdentifiers.hasMoreElements()){
                 long nodeId = nodeIdentifiers.nextElement();
-                Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
+                HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
                 if(strVals.containsKey(LabelKey) && strVals.get(LabelKey).contains(GenericLabel)){
                     long neo4jId = Long.parseLong(strVals.get(Neo4j_Key_For_Neo4j_Id).get(0));
                     if(neo4jId>maxGenericNeo4jId){
@@ -721,10 +720,10 @@ public class TSVExportsImports {
             try(Transaction tx =  graphDb.beginTx()){
                 
                 //create nodes
-                Enumeration<Long> nodeIdentifiers = nodeInfo.keys();
-                while(nodeIdentifiers.hasMoreElements()){
-                    long nodeId = nodeIdentifiers.nextElement();
-                    Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
+                Iterator<Long> nodeIdentifiers = nodeInfo.keySet().iterator();
+                while(nodeIdentifiers.hasNext()){
+                    long nodeId = nodeIdentifiers.next();
+                    HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
 
 
                     String logicalName = "";
@@ -732,7 +731,7 @@ public class TSVExportsImports {
                     String value = "";
                     long neo4jId = -1;
                     
-                    Vector<String> labels = new Vector<String>();
+                    ArrayList<String> labels = new ArrayList<String>();
                     if(strVals.containsKey(LabelKey)){
                         labels.addAll(strVals.get(LabelKey));                    
                     }
@@ -741,7 +740,7 @@ public class TSVExportsImports {
                    
                     Node newNode = graphDb.createNode();
                     for(String lbl: labels){
-                        Label label = DynamicLabel.label(lbl);
+                        Label label = Label.label(lbl);
                         newNode.addLabel(label);
                     }
                     
@@ -818,31 +817,31 @@ public class TSVExportsImports {
             
             //create InstanceOf, ISA, Relation relationships
             try(Transaction tx =  graphDb.beginTx()){
-                Enumeration<Long> nodeIdentifiers = nodeInfo.keys();
-                while(nodeIdentifiers.hasMoreElements()){
-                    long nodeId = nodeIdentifiers.nextElement();
+                Iterator<Long> nodeIdentifiers = nodeInfo.keySet().iterator();
+                while(nodeIdentifiers.hasNext()){
+                    long nodeId = nodeIdentifiers.next();
                     long startNodeNeo4jId = nodeId;//tsvToNeo4jIds.get(nodeId);
-                    Hashtable<String,Vector<String>> strVals = nodeInfo.get(nodeId);
+                    HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
                     
-                    Vector<Long> isA = new Vector<Long>();
-                    Vector<Long> relation = new Vector<Long>();
-                    Vector<Long> instanceOf = new Vector<Long>();
+                    ArrayList<Long> isA = new ArrayList<Long>();
+                    ArrayList<Long> relation = new ArrayList<Long>();
+                    ArrayList<Long> instanceOf = new ArrayList<Long>();
                     if(strVals.containsKey(Rels.ISA.name())){
-                        Vector<String> stringVals = strVals.get(Rels.ISA.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.ISA.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             isA.add(endNodeId/*tsvToNeo4jIds.get(endNodeId)*/);
                         }
                     }
                     if(strVals.containsKey(Rels.RELATION.name())){
-                        Vector<String> stringVals = strVals.get(Rels.RELATION.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.RELATION.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             relation.add(endNodeId/*tsvToNeo4jIds.get(endNodeId)*/);
                         }
                     }
                     if(strVals.containsKey(Rels.INSTANCEOF.name())){
-                        Vector<String> stringVals = strVals.get(Rels.INSTANCEOF.name());
+                        ArrayList<String> stringVals = strVals.get(Rels.INSTANCEOF.name());
                         for(String str : stringVals){
                             long endNodeId = Long.parseLong(str);
                             instanceOf.add(endNodeId/*tsvToNeo4jIds.get(endNodeId)*/);
@@ -856,19 +855,19 @@ public class TSVExportsImports {
                     Node startNode = getSingleNodesByNeo4jId(startNodeNeo4jId,graphDb);
                     
                     if(isA.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(isA, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(isA, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.ISA);
                         }
                     }
                     if(instanceOf.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(instanceOf, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(instanceOf, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.INSTANCEOF);
                         }
                     }
                     if(relation.size()>0){
-                        Vector<Node> toNodes = getNodesByNeo4jIds(relation, graphDb);
+                        ArrayList<Node> toNodes = getNodesByNeo4jIds(relation, graphDb);
                         for(Node toNode : toNodes){
                             startNode.createRelationshipTo(toNode, Rels.RELATION);
                         }
@@ -879,7 +878,7 @@ public class TSVExportsImports {
             
             
             
-            Vector<String> thesauriVector = new Vector<String>();
+            ArrayList<String> thesauriVector = new ArrayList<String>();
              
             //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
             
@@ -1017,8 +1016,8 @@ public class TSVExportsImports {
         return true;
     }
     
-    Vector<Long> collectSequenctiallyAsubsetOfValues(int startindex,int howmanyToGet, Vector<Long> targetVals){
-        Vector<Long> returnVals = new Vector<Long>();
+    ArrayList<Long> collectSequenctiallyAsubsetOfValues(int startindex,int howmanyToGet, ArrayList<Long> targetVals){
+        ArrayList<Long> returnVals = new ArrayList<Long>();
         if(howmanyToGet<=0){
             throw new UnsupportedOperationException("collectSequenctiallyAsubsetOfValues was called with howmanyToGet: " +howmanyToGet);
         }
@@ -1063,8 +1062,8 @@ public class TSVExportsImports {
         return returnNode;
     }
     
-    Vector<Node> getNodesByNeo4jIds(Vector<Long> neo4jIds, GraphDatabaseService graphDb){
-        Vector<Node> returnVec = new Vector<Node>();
+    ArrayList<Node> getNodesByNeo4jIds(ArrayList<Long> neo4jIds, GraphDatabaseService graphDb){
+        ArrayList<Node> returnVec = new ArrayList<Node>();
         
         int loopIndex = 0;
         int maxIndex = neo4jIds.size();
@@ -1075,7 +1074,7 @@ public class TSVExportsImports {
         
         while (loopIndex < maxIndex) {
 
-            Vector<Long> subSetofIds = collectSequenctiallyAsubsetOfValues(loopIndex,500, neo4jIds);
+            ArrayList<Long> subSetofIds = collectSequenctiallyAsubsetOfValues(loopIndex,500, neo4jIds);
             loopIndex += subSetofIds.size();
             if(subSetofIds.size()==0){
                 break;

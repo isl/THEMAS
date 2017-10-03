@@ -92,7 +92,7 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
 
             // get form parameters
             Utilities u = new Utilities();
-            Hashtable params = u.getFormParams(request); 
+            HashMap params = u.getFormParams(request); 
             String selectedDBbackupFileName = params.get("DB_backupsListNAME").toString();
 
             // create the common-utils class
@@ -149,7 +149,7 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
             // so as to warn user for their existence
             XMLMiddleStr += "<OtherActiveSessionsNO>0</OtherActiveSessionsNO>";
             // GetListOfDBbackups
-            Vector<String> filesInDBBackupFolder = new Vector<String>();
+            ArrayList<String> filesInDBBackupFolder = new ArrayList<String>();
             filesInDBBackupFolder = common_utils.GetListOfDBbackups();
             int filesInDBBackupFolderCount = filesInDBBackupFolder.size();
             XMLMiddleStr += "<filesInDBBackupFolder>";

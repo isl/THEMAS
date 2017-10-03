@@ -54,10 +54,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashMap;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 /**
  *
@@ -168,9 +168,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
             
             //data storage
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo = new Hashtable<String, NodeInfoSortItemContainer>();              
-            Vector<Long> resultNodesIdsL = new Vector<Long>();            
-            Vector<String> output = new Vector<String>(); //all alphabetical except use and historical notes output
+            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<String, NodeInfoSortItemContainer>();              
+            ArrayList<Long> resultNodesIdsL = new ArrayList<Long>();            
+            ArrayList<String> output = new ArrayList<String>(); //all alphabetical except use and historical notes output
             StringObject targetTermObj = new StringObject();
             StringObject TopTermClassObj = new  StringObject();
             StringBuffer xml = new StringBuffer();
@@ -236,7 +236,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_set(set_Target);
             
             //temp structure - Vector
-            Vector<String> allTerms = new Vector<String>();
+            ArrayList<String> allTerms = new ArrayList<String>();
             dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
             
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
@@ -316,7 +316,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(!skipClose){
                 out.close();
             }
-            sessionInstance.writeBackToSession(session);
+            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+                sessionInstance.writeBackToSession(session);
+            }
         }
     } 
     

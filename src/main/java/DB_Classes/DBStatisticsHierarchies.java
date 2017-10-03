@@ -42,7 +42,7 @@ import Utils.ConstantParameters;
 
 import Utils.StringLocaleComparator;
 import java.util.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -68,28 +68,28 @@ public class DBStatisticsHierarchies {
     /*----------------------------------------------------------------------
                         GetNumberOfTermsAndTranslationsPerHierarchy()
     -----------------------------------------------------------------------
-    OUTPUT: - Vector<String> HierarchiesVector: a sorted Vector with the existing hierarchies (DB encoded)
-            - Vector<IntegerObject> HierarchiesTermsCountVector: parallel Vector with the 
+    OUTPUT: - ArrayList<String> HierarchiesVector: a sorted Vector with the existing hierarchies (DB encoded)
+            - ArrayList<IntegerObject> HierarchiesTermsCountVector: parallel Vector with the 
                              cardinality of the terms of the corresponding hierarchy
-            - Vector<IntegerObject> HierarchiesNonPrefferedTermsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> HierarchiesNonPrefferedTermsCountVector: parallel Vector with the 
                              cardinality of the NonPreffered terms of the corresponding hierarchy (XA)
-            - Vector<IntegerObject> HierarchiesEnglishWordsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> HierarchiesEnglishWordsCountVector: parallel Vector with the 
                              cardinality of the EnglishWords of the corresponding hierarchy
-            - Vector<IntegerObject> HierarchiesNonPrefferedEnglishWordsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> HierarchiesNonPrefferedEnglishWordsCountVector: parallel Vector with the 
                              cardinality of the NonPreffered EnglishWords of the corresponding hierarchy (UF)
     ------------------------------------------------------------------------*/
     public void GetNumberOfTermsAndTranslationsPerHierarchy(QClass Q, IntegerObject sis_session, UserInfoClass SessionUserInfo,
-            Locale targetLocale, Vector<String> HierarchiesVector, 
-            Vector<IntegerObject> HierarchiesTermsCountVector, 
-            Vector<IntegerObject> HierarchiesNonPrefferedTermsCountVector, 
-            Vector<IntegerObject> HierarchiesTranslationsCountVector,
-            Vector<IntegerObject> HierarchiesNonPrefferedEnglishWordsCountVector) {
+            Locale targetLocale, ArrayList<String> HierarchiesVector, 
+            ArrayList<IntegerObject> HierarchiesTermsCountVector, 
+            ArrayList<IntegerObject> HierarchiesNonPrefferedTermsCountVector, 
+            ArrayList<IntegerObject> HierarchiesTranslationsCountVector,
+            ArrayList<IntegerObject> HierarchiesNonPrefferedEnglishWordsCountVector) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
         // get all Hierarchies
         int set_h = GetAllHierarchies(Q, sis_session, SessionUserInfo);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_h, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 HierarchiesVector.add(row.get_v1_cls_logicalname());
@@ -104,7 +104,7 @@ public class DBStatisticsHierarchies {
         
         // copy HierarchiesVector to HierarchiesVectorSortedUI (sorted and UI encoded)
         DBGeneral dbGen = new DBGeneral();
-        Vector<String> HierarchiesVectorSortedUI = new Vector<String>();      
+        ArrayList<String> HierarchiesVectorSortedUI = new ArrayList<String>();      
         
         int HierarchiesVectorSize = HierarchiesVector.size();
         for (int i = 0; i < HierarchiesVectorSize; i++) {

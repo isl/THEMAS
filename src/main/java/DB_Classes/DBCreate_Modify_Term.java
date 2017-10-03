@@ -63,14 +63,14 @@ public class DBCreate_Modify_Term {
     public DBCreate_Modify_Term() {
     }
 
-    public void createNewTerm(UserInfoClass SessionUserInfo, String newName, Vector<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+    public void createNewTerm(UserInfoClass SessionUserInfo, String newName, ArrayList<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
         
         SortItem newNameObj = new SortItem(newName,-1,Utilities.getTransliterationString(newName, false),-1);
         createNewTermSortItem(SessionUserInfo,newNameObj,decodedValues,user,errorMsg,Q,sis_session,TA,tms_session,dbGen,pathToErrorsXML,updateModifiedFields,resolveError,logFileWriter,ConsistencyChecksPolicy);
     }
 
     
-    public void createNewTermSortItem(UserInfoClass SessionUserInfo, SortItem newName, Vector<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+    public void createNewTermSortItem(UserInfoClass SessionUserInfo, SortItem newName, ArrayList<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
 
         if (Parameters.DEBUG) {
             Utils.StaticClass.webAppSystemOutPrintln("Target NEW Term: " + newName.getLogName() + " Target bts: " + decodedValues.toString());
@@ -183,9 +183,9 @@ public class DBCreate_Modify_Term {
     }
 
     public boolean guideTermsMoveToHierarchyBugFixStep1Of2(String selectedThesaurus,
-            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, Vector<Long> guideTermBugFixLinkIdsL,
-            Vector<Long> guideTermBugFixLinkCategIdsL, Vector<SortItem> guideTermBugFixBtsWithGuideTerms,
-            Vector<String> old_bts, StringObject errorMsg) {
+            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, ArrayList<Long> guideTermBugFixLinkIdsL,
+            ArrayList<Long> guideTermBugFixLinkCategIdsL, ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms,
+            ArrayList<String> old_bts, StringObject errorMsg) {
 
         //String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
@@ -217,7 +217,7 @@ public class DBCreate_Modify_Term {
         //IntegerObject linkID = new IntegerObject();
         //IntegerObject categID = new IntegerObject();
 
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if(Q.bulk_return_full_link_id(set, retFLIVals)!=QClass.APIFail){
             for(Return_Full_Link_Id_Row row:retFLIVals){
                 String bt = dbGen.removePrefix(row.get_v8_cmv().getString());
@@ -282,8 +282,8 @@ public class DBCreate_Modify_Term {
     }
 
     public boolean guideTermsMoveToHierarchyBugFixStep2Of2(String selectedThesaurus,
-            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, Vector<Long> guideTermBugFixLinkCategIdsL,
-            Vector<SortItem> guideTermBugFixBtsWithGuideTerms, StringObject errorMsg) {
+            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, ArrayList<Long> guideTermBugFixLinkCategIdsL,
+            ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms, StringObject errorMsg) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -300,8 +300,8 @@ public class DBCreate_Modify_Term {
         Identifier btLinkIdent = new Identifier(btLinkidL);
 
         //link ids have changed. thus they must be read again in order to restore prior GuideTerm relations
-        Vector<Long> newGuideTermBugFixLinkIdsL = new Vector<Long>();
-        Vector<String> new_current_Bts = new Vector<String>();
+        ArrayList<Long> newGuideTermBugFixLinkIdsL = new ArrayList<Long>();
+        ArrayList<String> new_current_Bts = new ArrayList<String>();
 
 
         //StringObject fromcls = new StringObject();
@@ -319,7 +319,7 @@ public class DBCreate_Modify_Term {
         int set_new_bts = Q.get_link_from_by_category(0, fromClassObj, LinkObj);
         Q.reset_set(set_new_bts);
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(set_new_bts, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
@@ -371,7 +371,7 @@ public class DBCreate_Modify_Term {
     }
 
     public void commitTermTransactionInSortItem(UserInfoClass SessionUserInfo, SortItem targetTerm,
-            String targetField, Vector<String> decodedValues,
+            String targetField, ArrayList<String> decodedValues,
             String user, StringObject errorMsg,
             QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session,
             DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
@@ -423,7 +423,7 @@ public class DBCreate_Modify_Term {
 
             //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"checks succeded for " + targetTerm);
             //Find out which nodes where modified
-            Vector<String> modifiedNodesVector = new Vector<String>();
+            ArrayList<String> modifiedNodesVector = new ArrayList<String>();
             modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.bt_kwd, Q,TA, sis_session));
             modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.nt_kwd, Q,TA, sis_session));
             modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.rt_kwd, Q,TA, sis_session));
@@ -435,7 +435,7 @@ public class DBCreate_Modify_Term {
                 }
             }
 
-            Vector<String> old_top_terms = new Vector<String>();
+            ArrayList<String> old_top_terms = new ArrayList<String>();
             old_top_terms = dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session);
             if (deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
                     dbGen, dbCon, ConstantParameters.DESCRIPTOR_OF_KIND_NEW, targetDescriptorObj, targetTermWithoutPrefix, errorMsg, old_top_terms) == false) {
@@ -449,7 +449,7 @@ public class DBCreate_Modify_Term {
             //<editor-fold defaultstate="collapsed" desc="Edit Status...">  
             //No consistency check
 
-            Vector<String> status = new Vector<String>();
+            ArrayList<String> status = new ArrayList<String>();
             status.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.status_kwd, Q,TA, sis_session));
             if (status.size() > 0 && decodedValues.get(0).compareTo(status.get(0)) == 0) {
                 return;
@@ -501,10 +501,10 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> old_bts = new Vector<String>();
-            Vector<Long> guideTermBugFixLinkIdsL = new Vector<Long>();
-            Vector<Long> guideTermBugFixLinkCategIdsL = new Vector<Long>();
-            Vector<SortItem> guideTermBugFixBtsWithGuideTerms = new Vector<SortItem>();
+            ArrayList<String> old_bts = new ArrayList<String>();
+            ArrayList<Long> guideTermBugFixLinkIdsL = new ArrayList<Long>();
+            ArrayList<Long> guideTermBugFixLinkCategIdsL = new ArrayList<Long>();
+            ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms = new ArrayList<SortItem>();
 
             //GuideTerms Bug Fix - Keep GuideTerms information related to this term , delete guide terms with its bts and then perform Move to hierarchy actions
             if (guideTermsMoveToHierarchyBugFixStep1Of2(SessionUserInfo.selectedThesaurus, Q, sis_session, targetDescriptorObj, 
@@ -514,8 +514,8 @@ public class DBCreate_Modify_Term {
 
 
 
-            Vector<String> add_bts = new Vector<String>();
-            Vector<String> delete_bts = new Vector<String>();
+            ArrayList<String> add_bts = new ArrayList<String>();
+            ArrayList<String> delete_bts = new ArrayList<String>();
 
             for (int i = 0; i < decodedValues.size(); i++) {
                 int index = old_bts.indexOf(decodedValues.get(i));
@@ -574,10 +574,10 @@ public class DBCreate_Modify_Term {
             }
 
             //first move Node and subtree with first bt declared and then connect rest bts of decodedValues Vector if any more exist
-            Vector<String> fromhiers = new Vector<String>();
+            ArrayList<String> fromhiers = new ArrayList<String>();
             fromhiers.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session));
 
-            Vector<String> tohiers = new Vector<String>();
+            ArrayList<String> tohiers = new ArrayList<String>();
             tohiers.addAll(dbGen.returnResults(SessionUserInfo, decodedValues.get(0), "topterm", Q,TA, sis_session));
 
             boolean performmovement = true;
@@ -603,9 +603,9 @@ public class DBCreate_Modify_Term {
 
                     for (int i = 1; i < decodedValues.size(); i++) {
 
-                        Vector<String> FromNewBThiers = new Vector<String>();
+                        ArrayList<String> FromNewBThiers = new ArrayList<String>();
                         FromNewBThiers.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session));
-                        Vector<String> ToNewBThiers = new Vector<String>();
+                        ArrayList<String> ToNewBThiers = new ArrayList<String>();
                         ToNewBThiers.addAll(dbGen.returnResults(SessionUserInfo, decodedValues.get(i), "topterm", Q,TA, sis_session));
                         if (MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTermWithoutPrefix, FromNewBThiers.get(0), ToNewBThiers.get(0), decodedValues.get(i), ConstantParameters.CONNECT_NODE_AND_SUBTREE, user, errorMsg) == false) {
                             return;
@@ -681,14 +681,14 @@ public class DBCreate_Modify_Term {
             }
 
             //prepare modified nodes
-            Vector<String> modified_rts = new Vector<String>();
+            ArrayList<String> modified_rts = new ArrayList<String>();
             modified_rts.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.rt_kwd, Q,TA,  sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_rts.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_rts.removeElementAt(index);
+                    String s = modified_rts.remove(index);
                 } else {
                     modified_rts.add(decodedValues.get(i));
                 }
@@ -731,7 +731,7 @@ public class DBCreate_Modify_Term {
 
             //String prefixEN = dbtr.getThesaurusPrefix_EnglishWord(SessionUserInfo.selectedThesaurus,Q,sis_session.getValue());
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
                 String langPrefix = "";
@@ -799,9 +799,9 @@ public class DBCreate_Modify_Term {
 
 
             //prepare modified nodes
-            Vector<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, true, targetTermWithoutPrefix, Q, sis_session);
+            ArrayList<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, true, targetTermWithoutPrefix, Q, sis_session);
 
-            Vector<String> normalizedModeifiedNodes = new Vector<String>();
+            ArrayList<String> normalizedModeifiedNodes = new ArrayList<String>();
 
             for (int i = 0; i < modified_translations.size(); i++) {
                 SortItem targetSort = modified_translations.get(i);
@@ -809,7 +809,7 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> normalizedDecodedValues = new Vector<String>();
+            ArrayList<String> normalizedDecodedValues = new ArrayList<String>();
             for (int i = 0; i < decodedValues.size(); i++) {
                 String targetValue = decodedValues.get(i); //eg EN: some en term
 
@@ -827,7 +827,7 @@ public class DBCreate_Modify_Term {
 
                 int index = normalizedModeifiedNodes.indexOf(normalizedDecodedValues.get(i));
                 if (index >= 0) {
-                    normalizedModeifiedNodes.removeElementAt(index);
+                    String s = normalizedModeifiedNodes.remove(index);
                 } else {
                     normalizedModeifiedNodes.add(normalizedDecodedValues.get(i));
                 }
@@ -861,7 +861,7 @@ public class DBCreate_Modify_Term {
             //create_modify_check_16 //Check if UFs declared already exist in db but not as uf links
             //UFs may not contain target descriptor
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
 
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
@@ -925,14 +925,14 @@ public class DBCreate_Modify_Term {
             }
 
             //prepare modified nodes
-            Vector<String> modified_ufs = new Vector<String>();
+            ArrayList<String> modified_ufs = new ArrayList<String>();
             modified_ufs.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.uf_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_ufs.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_ufs.removeElementAt(index);
+                    String s = modified_ufs.remove(index);
                 } else {
                     modified_ufs.add(decodedValues.get(i));
                 }
@@ -974,7 +974,7 @@ public class DBCreate_Modify_Term {
             }
              */
             //prepare modified nodes
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
                 String langPrefix = "";
@@ -1030,9 +1030,9 @@ public class DBCreate_Modify_Term {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            Vector<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, false, targetTermWithoutPrefix, Q, sis_session);
+            ArrayList<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, false, targetTermWithoutPrefix, Q, sis_session);
 
-            Vector<String> normalizedModeifiedNodes = new Vector<String>();
+            ArrayList<String> normalizedModeifiedNodes = new ArrayList<String>();
 
             for (int i = 0; i < modified_translations.size(); i++) {
                 SortItem targetSort = modified_translations.get(i);
@@ -1040,7 +1040,7 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> normalizedDecodedValues = new Vector<String>();
+            ArrayList<String> normalizedDecodedValues = new ArrayList<String>();
             for (int i = 0; i < decodedValues.size(); i++) {
                 String targetValue = decodedValues.get(i); //eg EN: some en term
 
@@ -1055,7 +1055,7 @@ public class DBCreate_Modify_Term {
 
                 int index = normalizedModeifiedNodes.indexOf(normalizedDecodedValues.get(i));
                 if (index >= 0) {
-                    normalizedModeifiedNodes.removeElementAt(index);
+                    String s = normalizedModeifiedNodes.remove(index);
                 } else {
                     normalizedModeifiedNodes.add(normalizedDecodedValues.get(i));
                 }
@@ -1086,7 +1086,7 @@ public class DBCreate_Modify_Term {
 
             String prefix_Source = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
@@ -1145,14 +1145,14 @@ public class DBCreate_Modify_Term {
             }
 
             //prepare modified nodes
-            Vector<String> modified_gts = new Vector<String>();
+            ArrayList<String> modified_gts = new ArrayList<String>();
             modified_gts.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.primary_found_in_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_gts.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_gts.removeElementAt(index);
+                    String s =modified_gts.remove(index);
                 } else {
                     modified_gts.add(decodedValues.get(i));
                 }
@@ -1183,7 +1183,7 @@ public class DBCreate_Modify_Term {
             //create_modify_check_07 //Check if the same values with term name are used for another link declaration
             //create_modify_check_18 //Check if uk_ufs declared already exist in db but not as uk_uf links
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             String prefix_Source = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
@@ -1240,14 +1240,14 @@ public class DBCreate_Modify_Term {
             }
 
             //prepare modified nodes
-            Vector<String> modified_ets = new Vector<String>();
+            ArrayList<String> modified_ets = new ArrayList<String>();
             modified_ets.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.translations_found_in_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_ets.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_ets.removeElementAt(index);
+                    String s = modified_ets.remove(index);
                 } else {
                     modified_ets.add(decodedValues.get(i));
                 }
@@ -1276,7 +1276,7 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.tc_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit TC...">
             //prepare values --> 12.35 --> transform to --> 012.35
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             String prefix_TC = dbtr.getThesaurusPrefix_TaxonomicCode(Q, sis_session.getValue());
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
@@ -1330,7 +1330,7 @@ public class DBCreate_Modify_Term {
             /*
             for(int i=0; i< decodedValues.size();i++){
             TaxonomicCodeItem tempItem = new TaxonomicCodeItem(decodedValues.get(i),"");
-            Vector<String> codeParts = new Vector<String>();
+            ArrayList<String> codeParts = new ArrayList<String>();
             codeParts.addAll(tempItem.codeParts);
             String codeStr = "";
             for(int j=0; j< codeParts.size(); j++){
@@ -1352,14 +1352,14 @@ public class DBCreate_Modify_Term {
 
 
             //prepare modified nodes
-            Vector<String> modified_tcs = new Vector<String>();
+            ArrayList<String> modified_tcs = new ArrayList<String>();
             modified_tcs.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.tc_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_tcs.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_tcs.removeElementAt(index);
+                    String s = modified_tcs.remove(index);
                 } else {
                     modified_tcs.add(decodedValues.get(i));
                 }
@@ -1388,8 +1388,8 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.scope_note_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit SN...">
 
-            Vector<String> valsToRemove = new Vector<String>();
-            Vector<String> scopeNote = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
+            ArrayList<String> scopeNote = new ArrayList<String>();
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
@@ -1538,7 +1538,7 @@ public class DBCreate_Modify_Term {
                 return;
             }
             
-            Vector<String> scopeNoteEN = new Vector<String>();
+            ArrayList<String> scopeNoteEN = new ArrayList<String>();
             scopeNoteEN.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session));
             if (checkStr.length() > 0 && scopeNoteEN.size() > 0 && checkStr.compareTo(scopeNoteEN.get(0)) == 0) {
                 return;
@@ -1547,8 +1547,8 @@ public class DBCreate_Modify_Term {
 
             
             
-            Hashtable<String, String> trSns = u.getTranslationScopeNotes(checkStr);
-            Vector<String> langCodes = new Vector<String>();
+            HashMap<String, String> trSns = u.getTranslationScopeNotes(checkStr);
+            ArrayList<String> langCodes = new ArrayList<String>();
             langCodes.addAll(trSns.keySet());
             Collections.sort(langCodes);
 
@@ -1596,7 +1596,7 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.historical_note_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit Historical Note...">
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
@@ -1647,7 +1647,7 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> historicalNote = new Vector<String>();
+            ArrayList<String> historicalNote = new ArrayList<String>();
             historicalNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.historical_note_kwd, Q, TA, sis_session));
             if (decodedValues.size() > 0 && historicalNote.size() > 0 && decodedValues.get(0).compareTo(historicalNote.get(0)) == 0) {
                 return;
@@ -1702,7 +1702,7 @@ public class DBCreate_Modify_Term {
     }
 
     public void commitTermTransaction(UserInfoClass SessionUserInfo, String targetTerm,
-            String targetField, Vector<String> decodedValues,
+            String targetField, ArrayList<String> decodedValues,
             String user, StringObject errorMsg,
             QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session,
             DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
@@ -1716,7 +1716,7 @@ public class DBCreate_Modify_Term {
                                         ConsistencyChecksPolicy);
     }
 
-    public int findLogNameIndexInSortItemVector(Vector<SortItem> containerVector, String targetLogName) {
+    public int findLogNameIndexInSortItemVector(ArrayList<SortItem> containerVector, String targetLogName) {
         int index = -1;
         for (int i = 0; i < containerVector.size(); i++) {
             if (targetLogName.compareTo(containerVector.get(i).log_name) == 0) {
@@ -1728,7 +1728,7 @@ public class DBCreate_Modify_Term {
 
     public boolean deleteDescriptor(String selectedThesaurus, QClass Q, IntegerObject sis_session, 
             TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, DBConnect_Term dbCon, int KindOfDescriptor,
-            StringObject targetDescriptorObj, String targetDescriptorUTF8, StringObject errorMsg, Vector<String> old_top_terms) {
+            StringObject targetDescriptorObj, String targetDescriptorUTF8, StringObject errorMsg, ArrayList<String> old_top_terms) {
         
         String initialVal = errorMsg.getValue()==null?"":errorMsg.getValue();
         if (KindOfDescriptor == ConstantParameters.DESCRIPTOR_OF_KIND_NEW) {
@@ -1842,7 +1842,7 @@ public class DBCreate_Modify_Term {
     int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg) {
 
         //String pathToMessagesXML = Utilities.getXml_For_Messages();
-        //Vector<String> errorArgs = new Vector<String>();
+        //ArrayList<String> errorArgs = new ArrayList<String>();
         Utilities u = new Utilities();
 
         // looking for Term prefix
@@ -1956,7 +1956,7 @@ public class DBCreate_Modify_Term {
         //IntegerObject BTlink_sysid = new IntegerObject();
         //CMValue cmv = new CMValue();
         long BTlink_sysidL =-1;
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(BT_links_set, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 String BTlink_toValue = row.get_v3_cmv().getString();
@@ -2011,7 +2011,7 @@ public class DBCreate_Modify_Term {
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
 
-        Vector<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
+        ArrayList<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
         StringObject TopTermObjClass = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("TopTerm"));
         StringObject HierarchyObj = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("ThesaurusNotionType"));
         StringObject TopTermHierRelationObj = new StringObject();//("belongs_to_" + SessionUserInfo.selectedThesaurus.toLowerCase().concat("_hierarchy"));
@@ -2092,7 +2092,7 @@ public class DBCreate_Modify_Term {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nDelete Classes Instances:\n" +dbGen.getStringList_Of_Set(set_classes_topterms, ",\n",Q,sis_session));
                 if (Q.set_get_card( set_classes_topterms) > 0) {
 
-                    Vector<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
+                    ArrayList<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
 
                     String tempStr = checkNodes.get(i);
                     tempStr = dbGen.removePrefix(tempStr);
@@ -2124,7 +2124,7 @@ public class DBCreate_Modify_Term {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nAdd class Instances:\n" +dbGen.getStringList_Of_Set(set_recursive_bts, ",\n",Q,sis_session));
                 if (Q.set_get_card( set_recursive_bts) > 0) {
 
-                    Vector<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
+                    ArrayList<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
                     int ret;
                     for (int k = 0; k < addInstancesClasses.size(); k++) {
 
@@ -2156,7 +2156,7 @@ public class DBCreate_Modify_Term {
         return true;
     }
 
-    public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, Vector<String> decodedNtsVec, Vector<String> decodedGuideTermsVec) {
+    public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, ArrayList<String> decodedNtsVec, ArrayList<String> decodedGuideTermsVec) {
 
         Utilities u = new Utilities();
 
@@ -2174,7 +2174,7 @@ public class DBCreate_Modify_Term {
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.nt_kwd, NTClassObj, NTLinkObj, Q, sis_session);
         dbtr.getThesaurusClass_HierarchyTerm(selectedThesaurus, Q, sis_session.getValue(), HierarchyTermObj);
 
-        Vector<String> existingGuideTerms = new Vector<String>();
+        ArrayList<String> existingGuideTerms = new ArrayList<String>();
         existingGuideTerms.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         String termPrefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
@@ -2197,11 +2197,11 @@ public class DBCreate_Modify_Term {
 //
   //      CMValue cmv = new CMValue();
 
-        Vector<String> currentNts = new Vector<String>();
-        Vector<Long> linkIdsL = new Vector<Long>();
-        Vector<String> currentNtsGuideTerms = new Vector<String>();
+        ArrayList<String> currentNts = new ArrayList<String>();
+        ArrayList<Long> linkIdsL = new ArrayList<Long>();
+        ArrayList<String> currentNtsGuideTerms = new ArrayList<String>();
 
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if(Q.bulk_return_full_link(set_nts, retFLVals)!=QClass.APIFail){
             for(Return_Full_Link_Row row:retFLVals){
                 currentNts.add(row.get_v1_cls());

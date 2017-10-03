@@ -39,7 +39,7 @@ import DB_Classes.DBGeneral;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.Parameters;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------

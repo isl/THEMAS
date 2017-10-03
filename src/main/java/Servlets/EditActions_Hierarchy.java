@@ -49,7 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -113,7 +113,7 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             
             String[] values = request.getParameterValues(NewtargetField);
             //values are always read in decodedValues vector from values[] --> if hierarchy_create then values[] are filled with facets  
-            Vector<String> decodedValues = new Vector<String>();
+            ArrayList<String> decodedValues = new ArrayList<String>();
             if(values!=null){
                 for(int i=0; i< values.length ;i++){
                     String temp =u.getDecodedParameterValue(values[i]);

@@ -173,7 +173,7 @@ public final class ProduceMCHierarchy extends ProduceHierarchies_common {
             //categ = new StringObject();
             //uniq = new IntegerObject();
             //tr = new IntegerObject();
-            Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+            ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
             if(Q.bulk_return_full_link(ret_set, retFLVals)!=QClass.APIFail){
                 for(Return_Full_Link_Row row:retFLVals){
                     //while (Q.retur_full_link(ret_set, cls, label, categ, from_cls, cmv, uniq, tr) != QClass.APIFail) {
@@ -257,7 +257,7 @@ public final class ProduceMCHierarchy extends ProduceHierarchies_common {
        Q.reset_set( RT_linksSetBack);
        //Q.set_union(RT_linksSetForw, RT_linksSetBack);
        //Q.free_set(RT_linksSetBack);
-       Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+       ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
        if(Q.bulk_return_link(RT_linksSetForw, retVals)!=QClass.APIFail){
            for(Return_Link_Row row:retVals){
                //while (Q.retur_link( RT_linksSet, cls, label, cmv) != Q.APIFail) {
@@ -304,8 +304,8 @@ public final class ProduceMCHierarchy extends ProduceHierarchies_common {
     void MarkCyclicPaths(String currentRoot, StringBuffer currentPath) {
         boolean endOfPath = true;
         for (int i=0; i < V2.size(); i++) {
-            String fromValue = V2.elementAt(i).toString();
-            String toValue = V1.elementAt(i).toString();
+            String fromValue = V2.get(i).toString();
+            String toValue = V1.get(i).toString();
             if (fromValue.compareTo(currentRoot) == 0) {
                 endOfPath = false;
                 if (currentPath.toString().indexOf(toValue + "###") != -1) {

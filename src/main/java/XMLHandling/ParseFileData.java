@@ -49,8 +49,8 @@ import Utils.Utilities;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Enumeration;
 
 
@@ -60,6 +60,7 @@ import XMLHandling.AAT_TermLanguage.AAT_TermLanguage_Term_Type_Enum;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import neo4j_sisapi.CMValue;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -169,7 +170,7 @@ public class ParseFileData {
         return returnVal;
     }
 
-    public void getAAT_SpecificSubjectIds(String xmlFilePath, String xmlSchemaType, Vector<String> targetSubjectIds) {
+    public void getAAT_SpecificSubjectIds(String xmlFilePath, String xmlSchemaType, ArrayList<String> targetSubjectIds) {
         if (xmlSchemaType != ConstantParameters.xmlschematype_aat) {
             return;
 
@@ -278,7 +279,7 @@ public class ParseFileData {
         Utils.StaticClass.webAppSystemOutPrintln("\r\n</results>");
     }
 
-    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Hashtable<String,SortItem> xmlFacetSortItems) {
+    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, HashMap<String,SortItem> xmlFacetSortItems) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets in sort Items from file: " + xmlFilePath + ".");
 
          
@@ -518,7 +519,7 @@ public class ParseFileData {
 
     
     
-    public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<String> xmlFacets) {
+    public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, ArrayList<String> xmlFacets) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets from file: " + xmlFilePath + ".");
 
         try {
@@ -791,8 +792,8 @@ public class ParseFileData {
         return returnTerm;
     }
 
-    public Vector<AAT_SubjectTermClass> parseAAT_DescriptiveNotes(XmlPullParser xpp) {
-        Vector<AAT_SubjectTermClass> returnVals = new Vector<AAT_SubjectTermClass>();
+    public ArrayList<AAT_SubjectTermClass> parseAAT_DescriptiveNotes(XmlPullParser xpp) {
+        ArrayList<AAT_SubjectTermClass> returnVals = new ArrayList<AAT_SubjectTermClass>();
 
         String openingTagName = xpp.getName();
         if (openingTagName.equals(ConstantParameters.aat_Descriptive_NotesWrapper_tag) == false) {
@@ -859,8 +860,8 @@ public class ParseFileData {
 
     }
 
-    public Vector<AAT_RevisionClass> parseAAT_RevisionHistory(XmlPullParser xpp) {
-        Vector<AAT_RevisionClass> returnVals = new Vector<AAT_RevisionClass>();
+    public ArrayList<AAT_RevisionClass> parseAAT_RevisionHistory(XmlPullParser xpp) {
+        ArrayList<AAT_RevisionClass> returnVals = new ArrayList<AAT_RevisionClass>();
 
         String openingTagName = xpp.getName();
         if (openingTagName.equals(ConstantParameters.aat_Revision_History_Wrapper_tag) == false) {
@@ -925,8 +926,8 @@ public class ParseFileData {
         return returnVals;
     }
 
-    public Vector<String> parseAAT_Associative_Relationships(XmlPullParser xpp) {
-        Vector<String> returnVals = new Vector<String>();
+    public ArrayList<String> parseAAT_Associative_Relationships(XmlPullParser xpp) {
+        ArrayList<String> returnVals = new ArrayList<String>();
 
 
         String openingTagName = xpp.getName();
@@ -1037,8 +1038,8 @@ public class ParseFileData {
 
     }
 
-    public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Hashtable<String, String> languageSelections) {
+    public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, HashMap<String, NodeInfoStringContainer> termsInfo,
+            HashMap<String, String> languageSelections) {
 
         String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
             ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
@@ -1061,7 +1062,7 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
             } // <editor-fold defaultstate="collapsed" desc="skos case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 // <editor-fold defaultstate="collapsed" desc="parse All ids">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1130,7 +1131,7 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="terms parsing with ids">
 
-                //Hashtable<String, NodeInfoStringContainer> termsInfoIds = new Hashtable<String, NodeInfoStringContainer>();
+                //HashMap<String, NodeInfoStringContainer> termsInfoIds = new HashMap<String, NodeInfoStringContainer>();
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
@@ -1220,7 +1221,7 @@ public class ParseFileData {
 
     public boolean readXMLHierarchies(String importThesaurusName,
             String xmlFilePath, String xmlSchemaType,
-            Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> xmlFacets) {
+            HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> xmlFacets) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Hierarchies from file: " + xmlFilePath + ".");
 
         int mainLanguageNotFound = 0;
@@ -1242,7 +1243,7 @@ public class ParseFileData {
                 boolean insidePrefferred = false;
                 String targetSubjectId = "";
                 String targetHierarchyName = "";
-                Vector<String> hierFacets = new Vector<String>();
+                ArrayList<String> hierFacets = new ArrayList<String>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
@@ -1294,10 +1295,10 @@ public class ParseFileData {
                                 if (insideHierarchy) {
 
                                     if (targetHierarchyName != null && targetHierarchyName.length() > 0 && hierarchyFacets.containsKey(targetHierarchyName) == false) {
-                                        hierarchyFacets.put(targetHierarchyName, new Vector<String>());
+                                        hierarchyFacets.put(targetHierarchyName, new ArrayList<String>());
                                     }
 
-                                    Vector<String> existingFacets = new Vector<String>();
+                                    ArrayList<String> existingFacets = new ArrayList<String>();
                                     if (hierarchyFacets.containsKey(targetHierarchyName)) {
                                         existingFacets.addAll(hierarchyFacets.get(targetHierarchyName));
                                     }
@@ -1335,7 +1336,7 @@ public class ParseFileData {
                                 targetHierarchyName = "";
                                 insideHierarchy = false;
                                 insideSubject = false;
-                                hierFacets = new Vector<String>();
+                                hierFacets = new ArrayList<String>();
                             }
                         } else {
                             String closingTagName = this.closingTagEncoutered(xpp, null);
@@ -1354,12 +1355,12 @@ public class ParseFileData {
                 //aat allows hierarchy under hierarchy. We will not allow this
                 //The subhierarchy will be considered as simple term
 
-                Vector<String> hierarchiesToRemove = new Vector<String>();
+                ArrayList<String> hierarchiesToRemove = new ArrayList<String>();
                 //clean sub hierarchies
-                Enumeration<String> allhiers = hierarchyFacets.keys();
-                while (allhiers.hasMoreElements()) {
-                    targetHierarchyName = allhiers.nextElement();
-                    Vector<String> facets = hierarchyFacets.get(targetHierarchyName);
+                Iterator<String> allhiers = hierarchyFacets.keySet().iterator();
+                while (allhiers.hasNext()) {
+                    targetHierarchyName = allhiers.next();
+                    ArrayList<String> facets = hierarchyFacets.get(targetHierarchyName);
 
                     for (int j = 0; j < facets.size(); j++) {
                         String facetStr = facets.get(j);
@@ -1384,7 +1385,7 @@ public class ParseFileData {
 
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
@@ -1466,20 +1467,20 @@ public class ParseFileData {
 
                 Utils.StaticClass.webAppSystemOutPrintln(idsToNames.size() + " terms found undefined in main language: " + mainLanguageNotFound);
 
-                Hashtable<String, Vector<String>> hierarchyFacetsIds = new Hashtable<String, Vector<String>>();
+                HashMap<String, ArrayList<String>> hierarchyFacetsIds = new HashMap<String, ArrayList<String>>();
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
                 this.parseHierarchyNodes(xpp, xmlSchemaType, hierarchyFacetsIds, xmlFacets);
 
                 //now replace ids with values
-                Enumeration<String> enum1 = hierarchyFacetsIds.keys();
-                while (enum1.hasMoreElements()) {
-                    String hierarchyId = enum1.nextElement();
-                    Vector<String> facetIds = hierarchyFacetsIds.get(hierarchyId);
+                Iterator<String> enum1 = hierarchyFacetsIds.keySet().iterator();
+                while (enum1.hasNext()) {
+                    String hierarchyId = enum1.next();
+                    ArrayList<String> facetIds = hierarchyFacetsIds.get(hierarchyId);
 
                     String hierarchyName = idsToNames.get(hierarchyId);
-                    Vector<String> facetNames = new Vector<String>();
+                    ArrayList<String> facetNames = new ArrayList<String>();
                     for (int k = 0; k < facetIds.size(); k++) {
                         String facetName = idsToNames.get(facetIds.get(k));
                         if (facetName != null && facetName.length() > 0 && facetNames.contains(facetName) == false) {
@@ -1493,7 +1494,7 @@ public class ParseFileData {
                     if (hierarchyFacets.containsKey(hierarchyName) == false) {
                         hierarchyFacets.put(hierarchyName, facetNames);
                     } else {
-                        Vector<String> existingFacets = hierarchyFacets.get(hierarchyName);
+                        ArrayList<String> existingFacets = hierarchyFacets.get(hierarchyName);
                         for (int k = 0; k < existingFacets.size(); k++) {
                             if (facetNames.contains(existingFacets.get(k)) == false) {
                                 facetNames.add(existingFacets.get(k));
@@ -1543,7 +1544,7 @@ public class ParseFileData {
         return true;
     }
 
-    public boolean readXMLSources(String xmlFilePath, String xmlSchemaType, Hashtable<String, String> XMLsources) {
+    public boolean readXMLSources(String xmlFilePath, String xmlSchemaType, HashMap<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Sources from file: " + xmlFilePath + ".");
@@ -1595,8 +1596,8 @@ public class ParseFileData {
         return true;
     }
 
-    public Vector<String> findGuideTermRelatedBts(Hashtable<String, AAT_SubjectClass> allSubjects, AAT_SubjectClass guideTermClass) {
-        Vector<String> returnVals = new Vector<String>();
+    public ArrayList<String> findGuideTermRelatedBts(HashMap<String, AAT_SubjectClass> allSubjects, AAT_SubjectClass guideTermClass) {
+        ArrayList<String> returnVals = new ArrayList<String>();
 
         if (guideTermClass != null && guideTermClass.parentSubjectIds != null) {
             for (int i = 0; i < guideTermClass.parentSubjectIds.size(); i++) {
@@ -1613,7 +1614,7 @@ public class ParseFileData {
                         }
                     } else if (cadidateBt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
 
-                        Vector<String> newBts = findGuideTermRelatedBts(allSubjects, cadidateBt);
+                        ArrayList<String> newBts = findGuideTermRelatedBts(allSubjects, cadidateBt);
                         for (int k = 0; k < newBts.size(); k++) {
                             String val = newBts.get(k);
                             if (val != null && val.length() > 0 && returnVals.contains(val) == false) {
@@ -1632,11 +1633,11 @@ public class ParseFileData {
     }
 
     public boolean readAAT_XML(String xmlFilePath, String xmlSchemaType,
-            Vector<String> xmlFacets,
-            Hashtable<String, Vector<String>> hierarchyFacets,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> guideTerms,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+            ArrayList<String> xmlFacets,
+            HashMap<String, ArrayList<String>> hierarchyFacets,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> guideTerms,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
         XmlPullParserFactory factory;
         try {
 
@@ -1652,7 +1653,7 @@ public class ParseFileData {
                 };
 
 
-                Hashtable<String, AAT_SubjectClass> allSubjects = new Hashtable<String, AAT_SubjectClass>();
+                HashMap<String, AAT_SubjectClass> allSubjects = new HashMap<String, AAT_SubjectClass>();
 
                 //<editor-fold defaultstate="collapsed" desc="Parse XML">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1700,17 +1701,17 @@ public class ParseFileData {
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Associative_Relationships_tag)) {
                                     
-                                    Vector<String> relSubjectIds = parseAAT_Associative_Relationships(xpp);
+                                    ArrayList<String> relSubjectIds = parseAAT_Associative_Relationships(xpp);
                                     if (relSubjectIds != null) {
                                         targetSubjectClass.associatedSubjectIds.addAll(relSubjectIds);
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Descriptive_NotesWrapper_tag)) {
-                                    Vector<AAT_SubjectTermClass> scopeNotes = this.parseAAT_DescriptiveNotes(xpp);
+                                    ArrayList<AAT_SubjectTermClass> scopeNotes = this.parseAAT_DescriptiveNotes(xpp);
                                     if (scopeNotes != null) {
                                         targetSubjectClass.descriptiveNotes.addAll(scopeNotes);
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Revision_History_Wrapper_tag)) {
-                                    Vector<AAT_RevisionClass> newRevs = this.parseAAT_RevisionHistory(xpp);
+                                    ArrayList<AAT_RevisionClass> newRevs = this.parseAAT_RevisionHistory(xpp);
                                     if (newRevs != null) {
                                         targetSubjectClass.contributors.addAll(newRevs);
                                     }
@@ -1769,9 +1770,9 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="facets">
                 //find facets
-                Enumeration<String> subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                Iterator<String> subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_FACET) {
@@ -1821,9 +1822,9 @@ public class ParseFileData {
                 // <editor-fold defaultstate="collapsed" desc="hierarchies">
 
                 //find hierarchies
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_HIERARCHY) {
@@ -1852,8 +1853,8 @@ public class ParseFileData {
 
 
                         boolean isValidHierarchy = true;//true if it is not placed under some other Hierarchy
-                        Vector<String> parentIds = targetClass.parentSubjectIds;
-                        Vector<String> finalHierarchyFacets = new Vector<String>();
+                        ArrayList<String> parentIds = targetClass.parentSubjectIds;
+                        ArrayList<String> finalHierarchyFacets = new ArrayList<String>();
                         if (parentIds != null) {
                             for (int k = 0; k < parentIds.size(); k++) {
                                 String checkParentId = parentIds.get(k);
@@ -1897,9 +1898,9 @@ public class ParseFileData {
                 // <editor-fold defaultstate="collapsed" desc="guide terms">
 
                 //find guideTerms
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
@@ -1951,9 +1952,9 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="Step 1 tcs and names/renames">
                 //find terms - step 1 get names/renames and tcs
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
@@ -2001,16 +2002,19 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="bts nts and guide terms">
                 //now find bts nts and guide terms
-                subjectEnum = termsInfo.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetTermName = subjectEnum.nextElement();
+                subjectEnum = termsInfo.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetTermName = subjectEnum.next();
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTermName);
-                    String targetTermId = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd).firstElement();
+                    
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    String targetTermId = (tcs!=null && !tcs.isEmpty()) ? tcs.get(0) : "";
+                    
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetTermId);
 
-                    Vector<String> parentIds = targetClass.parentSubjectIds;
-                    Vector<String> finalBts = new Vector<String>();
+                    ArrayList<String> parentIds = targetClass.parentSubjectIds;
+                    ArrayList<String> finalBts = new ArrayList<String>();
 
                     if (parentIds != null) {
                         for (int k = 0; k < parentIds.size(); k++) {
@@ -2027,7 +2031,7 @@ public class ParseFileData {
                                         finalBts.add(candidateBtName);
                                     }
                                     if (termsInfo.containsKey(candidateBtName)) {
-                                        Vector<String> existingNts = termsInfo.get(candidateBtName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                        ArrayList<String> existingNts = termsInfo.get(candidateBtName).descriptorInfo.get(ConstantParameters.nt_kwd);
                                         if (existingNts.contains(targetTermName) == false) {
                                             existingNts.add(targetTermName);
                                         }
@@ -2036,7 +2040,7 @@ public class ParseFileData {
                                 } else if (candidateBt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
 
                                     String targetGuideTermName = candidateBt.SubjectPreferredTermName.termName;
-                                    Vector<String> bts = findGuideTermRelatedBts(allSubjects, candidateBt);
+                                    ArrayList<String> bts = findGuideTermRelatedBts(allSubjects, candidateBt);
 
                                     for (int m = 0; m < bts.size(); m++) {
                                         String btName = bts.get(m);
@@ -2044,14 +2048,14 @@ public class ParseFileData {
                                             finalBts.add(btName);
                                         }
                                         if (termsInfo.containsKey(btName)) {
-                                            Vector<String> existingNts = termsInfo.get(btName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                            ArrayList<String> existingNts = termsInfo.get(btName).descriptorInfo.get(ConstantParameters.nt_kwd);
                                             if (existingNts.contains(targetTermName) == false) {
                                                 existingNts.add(targetTermName);
                                             }
                                             termsInfo.get(btName).descriptorInfo.put(ConstantParameters.nt_kwd, existingNts);
                                         }
 
-                                        Vector<SortItem> newNts = new Vector<SortItem>();
+                                        ArrayList<SortItem> newNts = new ArrayList<SortItem>();
                                         SortItem sortItemToAdd = new SortItem(targetTermName, -1, targetGuideTermName);
                                         if (guideTerms.contains(targetGuideTermName) == false) {
                                             guideTerms.add(targetGuideTermName);
@@ -2060,7 +2064,7 @@ public class ParseFileData {
                                             newNts.add(sortItemToAdd);
                                         } else {
 
-                                            Vector<SortItem> existingNts = XMLguideTermsRelations.get(btName);
+                                            ArrayList<SortItem> existingNts = XMLguideTermsRelations.get(btName);
                                             newNts.addAll(existingNts);
                                             boolean itemExists = false;
                                             for (int j = 0; j < newNts.size(); j++) {
@@ -2094,17 +2098,18 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="rts tra. ufs (and tra.) scope_note (and tra.), sources(and tra.) creators modificators and dates">
                 //now find bts nts and guide terms
-                subjectEnum = termsInfo.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetTermName = subjectEnum.nextElement();
+                subjectEnum = termsInfo.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetTermName = subjectEnum.next();
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTermName);
-                    String targetTermId = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd).firstElement();
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    String targetTermId = (tcs!=null && !tcs.isEmpty()) ? tcs.get(0) : "";
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetTermId);
 
                     
-                    Vector<String> assocatedIds = targetClass.associatedSubjectIds;
-                    Vector<String> finalRts = new Vector<String>();
+                    ArrayList<String> assocatedIds = targetClass.associatedSubjectIds;
+                    ArrayList<String> finalRts = new ArrayList<String>();
 
                     if (assocatedIds != null) {
                         for (int k = 0; k < assocatedIds.size(); k++) {
@@ -2119,7 +2124,7 @@ public class ParseFileData {
                                     if (finalRts.contains(candidateRtName) == false) {
                                         finalRts.add(candidateRtName);
                                         if (termsInfo.containsKey(candidateRtName)) {
-                                            Vector<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                            ArrayList<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
                                             if (existingRts.contains(targetTermName) == false) {
                                                 existingRts.add(targetTermName);
                                             }
@@ -2129,7 +2134,7 @@ public class ParseFileData {
                                         }
                                     }
                                 } else if (candidateRt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
-                                    Vector<String> rts = this.findGuideTermRelatedBts(allSubjects, candidateRt);
+                                    ArrayList<String> rts = this.findGuideTermRelatedBts(allSubjects, candidateRt);
                                     for (int m = 0; m < rts.size(); m++) {
                                         String candidateRtName = rts.get(m);
 
@@ -2139,7 +2144,7 @@ public class ParseFileData {
                                         if (finalRts.contains(candidateRtName) == false) {
                                             finalRts.add(candidateRtName);
                                             if (termsInfo.containsKey(candidateRtName)) {
-                                                Vector<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                                ArrayList<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
                                                 if (existingRts.contains(targetTermName) == false) {
                                                     existingRts.add(targetTermName);
                                                 }
@@ -2157,11 +2162,11 @@ public class ParseFileData {
 
                     targetInfo.descriptorInfo.put(ConstantParameters.rt_kwd, finalRts);
 
-                    Vector<String> finalTranslations = new Vector<String>();
-                    Vector<String> finalPrimarySources = new Vector<String>();
-                    Vector<String> finalTranslationSources = new Vector<String>();
-                    Vector<String> finalUfs = new Vector<String>();
-                    Vector<String> finalTranslationUfs = new Vector<String>();
+                    ArrayList<String> finalTranslations = new ArrayList<String>();
+                    ArrayList<String> finalPrimarySources = new ArrayList<String>();
+                    ArrayList<String> finalTranslationSources = new ArrayList<String>();
+                    ArrayList<String> finalUfs = new ArrayList<String>();
+                    ArrayList<String> finalTranslationUfs = new ArrayList<String>();
 
                     for (int i = 0; i < targetClass.SubjectPreferredTermName.termSources.size(); i++) {
                         String source = targetClass.SubjectPreferredTermName.termSources.get(i);
@@ -2269,8 +2274,8 @@ public class ParseFileData {
                     targetInfo.descriptorInfo.put(ConstantParameters.uf_translations_kwd, finalTranslationUfs);
 
 
-                    Vector<String> finalScopeNoteVec = new Vector<String>();
-                    Vector<String> finalTranslationsScopeNoteVec = new Vector<String>();
+                    ArrayList<String> finalScopeNoteVec = new ArrayList<String>();
+                    ArrayList<String> finalTranslationsScopeNoteVec = new ArrayList<String>();
 
                     String finalScopeNoteStr = "";
                     String finalTranslationsScopeNoteStr = "";
@@ -2283,7 +2288,8 @@ public class ParseFileData {
                             continue;
                         }
 
-                        AAT_TermLanguage checkLang = checkNote.langCodes.firstElement();
+                        ArrayList<AAT_TermLanguage> langCodes = checkNote.langCodes;
+                        AAT_TermLanguage checkLang =(langCodes!=null && !langCodes.isEmpty()) ? langCodes.get(0) : null;
                         if (checkLang != null) {
                             if (checkLang.languageCode.toUpperCase().equals(Parameters.PrimaryLang.toUpperCase())) {
                                 finalScopeNoteStr += baseNote;
@@ -2327,10 +2333,10 @@ public class ParseFileData {
                     }
 
 
-                    Vector<String> finalCreatedBy = new Vector<String>();
-                    Vector<String> finalCreatedOn = new Vector<String>();
-                    Vector<String> finalModifiedBy = new Vector<String>();
-                    Vector<String> finalModifiedOn = new Vector<String>();
+                    ArrayList<String> finalCreatedBy = new ArrayList<String>();
+                    ArrayList<String> finalCreatedOn = new ArrayList<String>();
+                    ArrayList<String> finalModifiedBy = new ArrayList<String>();
+                    ArrayList<String> finalModifiedOn = new ArrayList<String>();
 
                     for (int i = 0; i < targetClass.contributors.size(); i++) {
                         AAT_RevisionClass checkRev = targetClass.contributors.get(i);
@@ -2387,7 +2393,7 @@ public class ParseFileData {
 
     }
 
-    private void readAllGuideTerms(String xmlFilePath, String xmlSchemaType, Vector<String> guideTerms){
+    private void readAllGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms){
 
         XmlPullParserFactory factory;
         try {
@@ -2434,8 +2440,8 @@ public class ParseFileData {
         return;
     }
 
-    public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, Vector<String> guideTerms,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+    public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Guide Terms / Node labels from file: " + xmlFilePath + ".");
 
@@ -2443,7 +2449,7 @@ public class ParseFileData {
 
         readAllGuideTerms(xmlFilePath, xmlSchemaType, guideTerms);
         //read all subjectIds, subjectClass values
-        //read all guide terms by storing values in Vector<String> guideTerms
+        //read all guide terms by storing values in ArrayList<String> guideTerms
         //read all term/guideterms - parentSubject Id pairs
 
 
@@ -2455,7 +2461,7 @@ public class ParseFileData {
             //<editor-fold defaultstate="collapsed" desc="SKOS Case">
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 // <editor-fold defaultstate="collapsed" desc="parse All ids">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -2525,7 +2531,7 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="Guide Terms Parsing">
 
-                //Hashtable<String, NodeInfoStringContainer> termsInfoIds = new Hashtable<String, NodeInfoStringContainer>();
+                //HashMap<String, NodeInfoStringContainer> termsInfoIds = new HashMap<String, NodeInfoStringContainer>();
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
@@ -2576,7 +2582,7 @@ public class ParseFileData {
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
                                     } else {
-                                        Vector<String> collectionIds = new Vector<String>();
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
                                         targetGuideTerm = parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
 
                                         if (collectionIds != null) {
@@ -2585,10 +2591,10 @@ public class ParseFileData {
                                                     guideTerms.add(targetGuideTerm);
                                                 }
                                                 if (XMLguideTermsRelations.containsKey(targetTermName) == false) {
-                                                    XMLguideTermsRelations.put(targetTermName, new Vector<SortItem>());
+                                                    XMLguideTermsRelations.put(targetTermName, new ArrayList<SortItem>());
                                                 }
 
-                                                Vector<SortItem> finalGts = XMLguideTermsRelations.get(targetTermName);
+                                                ArrayList<SortItem> finalGts = XMLguideTermsRelations.get(targetTermName);
 
                                                 for (int k = 0; k < collectionIds.size(); k++) {
                                                     String collectionMemberId = collectionIds.get(k);
@@ -2690,7 +2696,7 @@ public class ParseFileData {
         return true;
     }
 
-    private void parseHierarchyNodes(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> xmlFacets) {
+    private void parseHierarchyNodes(XmlPullParser xpp, String xmlSchemaType, HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> xmlFacets) {
         try {
 
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
@@ -2731,13 +2737,13 @@ public class ParseFileData {
                                 String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
                                 if (facetId != null && facetId.length() > 0 && targetId != null && targetId.length() > 0) {
                                     if (hierarchyFacets.containsKey(targetId)) {
-                                        Vector<String> facetIds = hierarchyFacets.get(targetId);
+                                        ArrayList<String> facetIds = hierarchyFacets.get(targetId);
                                         if (facetIds.contains(facetId) == false) {
                                             facetIds.add(facetId);
                                         }
                                         hierarchyFacets.put(targetId, facetIds);
                                     } else {
-                                        Vector<String> facetIds = new Vector<String>();
+                                        ArrayList<String> facetIds = new ArrayList<String>();
                                         facetIds.add(facetId);
                                         hierarchyFacets.put(targetId, facetIds);
                                     }
@@ -2745,7 +2751,7 @@ public class ParseFileData {
                             } else if (insideConcept && openingTagName.equals(ConstantParameters.XML_skos_topConceptOf)) {
                                 if (hierarchyId != null && hierarchyId.length() > 0) {
                                     if (hierarchyFacets.containsKey(hierarchyId) == false) {
-                                        hierarchyFacets.put(hierarchyId, new Vector<String>());
+                                        hierarchyFacets.put(hierarchyId, new ArrayList<String>());
                                     }
                                 }
 
@@ -2786,7 +2792,7 @@ public class ParseFileData {
 
 
                 String targetHierarchyName = "";
-                Vector<String> targetHierarcyFacets = null;
+                ArrayList<String> targetHierarcyFacets = null;
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -2797,7 +2803,7 @@ public class ParseFileData {
                         String currentTagName = this.openingTagEncoutered(xpp, null);
                         if (currentTagName.equals("hierarchy")) {
                             targetHierarchyName = "";
-                            targetHierarcyFacets = new Vector<String>();
+                            targetHierarcyFacets = new ArrayList<String>();
 
                         } else if (currentTagName.equals("name")) {
                             String targetValue = this.parseSimpleContentElement(xpp);
@@ -2840,12 +2846,12 @@ public class ParseFileData {
 
                                 if (hierarchyFacets.containsKey(targetHierarchyName) == false) {
                                     if (targetHierarcyFacets == null) {
-                                        targetHierarcyFacets = new Vector<String>();
+                                        targetHierarcyFacets = new ArrayList<String>();
                                     }
                                     hierarchyFacets.put(targetHierarchyName, targetHierarcyFacets);
                                 } else {
                                     if (targetHierarcyFacets != null && targetHierarcyFacets.size() > 0) {
-                                        Vector<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
+                                        ArrayList<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
                                         for (int k = 0; k < targetHierarcyFacets.size(); k++) {
                                             String checkFacet = targetHierarcyFacets.get(k);
                                             if (existingFacets.contains(checkFacet) == false) {
@@ -2873,11 +2879,11 @@ public class ParseFileData {
     }
 
     
-    private void parseHierarchyNodesWithFacetsInSortItems(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, Vector<String>> hierarchyFacets, Vector<SortItem> xmlFacets) {
+    private void parseHierarchyNodesWithFacetsInSortItems(XmlPullParser xpp, String xmlSchemaType, HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<SortItem> xmlFacets) {
         try {
             
             //creating a vector for String only comparison of logical name
-            Vector<String> xmlFacetStrings = new Vector<String>();
+            ArrayList<String> xmlFacetStrings = new ArrayList<String>();
             for(SortItem item: xmlFacets){
                 xmlFacetStrings.add(item.getLogName());
             }
@@ -2920,13 +2926,13 @@ public class ParseFileData {
                                 String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
                                 if (facetId != null && facetId.length() > 0 && targetId != null && targetId.length() > 0) {
                                     if (hierarchyFacets.containsKey(targetId)) {
-                                        Vector<String> facetIds = hierarchyFacets.get(targetId);
+                                        ArrayList<String> facetIds = hierarchyFacets.get(targetId);
                                         if (facetIds.contains(facetId) == false) {
                                             facetIds.add(facetId);
                                         }
                                         hierarchyFacets.put(targetId, facetIds);
                                     } else {
-                                        Vector<String> facetIds = new Vector<String>();
+                                        ArrayList<String> facetIds = new ArrayList<String>();
                                         facetIds.add(facetId);
                                         hierarchyFacets.put(targetId, facetIds);
                                     }
@@ -2934,7 +2940,7 @@ public class ParseFileData {
                             } else if (insideConcept && openingTagName.equals(ConstantParameters.XML_skos_topConceptOf)) {
                                 if (hierarchyId != null && hierarchyId.length() > 0) {
                                     if (hierarchyFacets.containsKey(hierarchyId) == false) {
-                                        hierarchyFacets.put(hierarchyId, new Vector<String>());
+                                        hierarchyFacets.put(hierarchyId, new ArrayList<String>());
                                     }
                                 }
 
@@ -2975,7 +2981,7 @@ public class ParseFileData {
 
 
                 String targetHierarchyName = "";
-                Vector<String> targetHierarcyFacets = null;
+                ArrayList<String> targetHierarcyFacets = null;
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -2986,7 +2992,7 @@ public class ParseFileData {
                         String currentTagName = this.openingTagEncoutered(xpp, null);
                         if (currentTagName.equals("hierarchy")) {
                             targetHierarchyName = "";
-                            targetHierarcyFacets = new Vector<String>();
+                            targetHierarcyFacets = new ArrayList<String>();
 
                         } else if (currentTagName.equals("name")) {
                             String targetValue = this.parseSimpleContentElement(xpp);
@@ -3031,12 +3037,12 @@ public class ParseFileData {
 
                                 if (hierarchyFacets.containsKey(targetHierarchyName) == false) {
                                     if (targetHierarcyFacets == null) {
-                                        targetHierarcyFacets = new Vector<String>();
+                                        targetHierarcyFacets = new ArrayList<String>();
                                     }
                                     hierarchyFacets.put(targetHierarchyName, targetHierarcyFacets);
                                 } else {
                                     if (targetHierarcyFacets != null && targetHierarcyFacets.size() > 0) {
-                                        Vector<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
+                                        ArrayList<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
                                         for (int k = 0; k < targetHierarcyFacets.size(); k++) {
                                             String checkFacet = targetHierarcyFacets.get(k);
                                             if (existingFacets.contains(checkFacet) == false) {
@@ -3063,7 +3069,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseSourceNodes(XmlPullParser xpp, Hashtable<String, String> XMLsources) {
+    private void parseSourceNodes(XmlPullParser xpp, HashMap<String, String> XMLsources) {
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
@@ -3153,7 +3159,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseTermNodesSources(XmlPullParser xpp, Hashtable<String, String> XMLsources) {
+    private void parseTermNodesSources(XmlPullParser xpp, HashMap<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
         try {
@@ -3208,7 +3214,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseGuideTerms(XmlPullParser xpp, Vector<String> guideTerms, Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+    private void parseGuideTerms(XmlPullParser xpp, ArrayList<String> guideTerms, HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
         DBGeneral dbGen = new DBGeneral();
         try {
@@ -3265,12 +3271,12 @@ public class ParseFileData {
                                 SortItem newSI = new SortItem(targetNt, -1, targetGuideTerm.trim());
 
                                 if (XMLguideTermsRelations.containsKey(targetTerm) == false) {
-                                    Vector<SortItem> newGTs = new Vector<SortItem>();
+                                    ArrayList<SortItem> newGTs = new ArrayList<SortItem>();
                                     newGTs.add(newSI);
                                     XMLguideTermsRelations.put(targetTerm, newGTs);
 
                                 } else {
-                                    Vector<SortItem> oldGTs = XMLguideTermsRelations.get(targetTerm);
+                                    ArrayList<SortItem> oldGTs = XMLguideTermsRelations.get(targetTerm);
                                     if (oldGTs.contains(newSI) == false) {
                                         oldGTs.add(newSI);
                                     }
@@ -3311,8 +3317,8 @@ public class ParseFileData {
         }
     }
 
-    private String parseSkosCollectionMembers(XmlPullParser xpp, String endTag, Vector<String> returnVals) {
-        //Vector<String> returnVals = new Vector<String>();
+    private String parseSkosCollectionMembers(XmlPullParser xpp, String endTag, ArrayList<String> returnVals) {
+        //ArrayList<String> returnVals = new ArrayList<String>();
 
         String collectionName = "";
         try {
@@ -3352,11 +3358,11 @@ public class ParseFileData {
     }
 
     private boolean parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
-            Hashtable<String, NodeInfoStringContainer> termsInfo, 
+            HashMap<String, NodeInfoStringContainer> termsInfo, 
             String translationSeparator, 
             String[] output, 
-            Hashtable<String, String> idsToNames,
-            Hashtable<String, String> languageSelections) {
+            HashMap<String, String> idsToNames,
+            HashMap<String, String> languageSelections) {
 
         try {
 
@@ -3397,7 +3403,7 @@ public class ParseFileData {
                                     termName = targetId;
                                 }
                                 targetTermInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-                                Vector<String> tcs = new Vector<String>();
+                                ArrayList<String> tcs = new ArrayList<String>();
                                 String tcValue = readSkosTC(targetId);
 
                                 /*if (targetId.startsWith("http://")) {
@@ -3423,13 +3429,13 @@ public class ParseFileData {
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
 
-                                        //if it is the same then skip as we will find it from the idsToNames hashtable
+                                        //if it is the same then skip as we will find it from the idsToNames HashMap
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase()) == false) {
                                             //skip languages not supported
                                             if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
+                                                ArrayList<String> translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
                                                 if (translationValues == null) {
-                                                    translationValues = new Vector<String>();
+                                                    translationValues = new ArrayList<String>();
                                                 }
                                                 String translationValue = langCode.toUpperCase() + translationSeparator + targetValue;
 
@@ -3452,9 +3458,9 @@ public class ParseFileData {
 
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
 
-                                            Vector<String> ufValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
+                                            ArrayList<String> ufValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
                                             if (ufValues == null) {
-                                                ufValues = new Vector<String>();
+                                                ufValues = new ArrayList<String>();
                                             }
                                             String newValue = targetValue;
 
@@ -3464,9 +3470,9 @@ public class ParseFileData {
                                             }
                                         } else {
                                             if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> uf_translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
+                                                ArrayList<String> uf_translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
                                                 if (uf_translationValues == null) {
-                                                    uf_translationValues = new Vector<String>();
+                                                    uf_translationValues = new ArrayList<String>();
                                                 }
                                                 String newValue = langCode.toUpperCase() + translationSeparator + targetValue;
 
@@ -3489,9 +3495,9 @@ public class ParseFileData {
                                             relatedName = relatedId;
                                         }
                                         if (relatedName != null && relatedName.trim().length() > 0) {
-                                            Vector<String> relatedValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                                            ArrayList<String> relatedValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
                                             if (relatedValues == null) {
-                                                relatedValues = new Vector<String>();
+                                                relatedValues = new ArrayList<String>();
                                             }
                                             if (relatedValues.contains(relatedName) == false) {
                                                 relatedValues.add(relatedName);
@@ -3500,7 +3506,7 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
                                         parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_related, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
@@ -3513,9 +3519,9 @@ public class ParseFileData {
                                                         rtName = collectionMemberId;
                                                     }
                                                     if (rtName != null && rtName.trim().length() > 0) {
-                                                        Vector<String> rtValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                                                        ArrayList<String> rtValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
                                                         if (rtValues == null) {
-                                                            rtValues = new Vector<String>();
+                                                            rtValues = new ArrayList<String>();
                                                         }
                                                         if (rtValues.contains(rtName) == false) {
                                                             rtValues.add(rtName);
@@ -3540,9 +3546,9 @@ public class ParseFileData {
                                             broaderName = broaderId;
                                         }
                                         if (broaderName != null && broaderName.trim().length() > 0) {
-                                            Vector<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                                            ArrayList<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
                                             if (btValues == null) {
-                                                btValues = new Vector<String>();
+                                                btValues = new ArrayList<String>();
                                             }
                                             if (btValues.contains(broaderName) == false) {
                                                 btValues.add(broaderName);
@@ -3551,7 +3557,7 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
                                         parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_broader, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
@@ -3564,9 +3570,9 @@ public class ParseFileData {
                                                         btName = collectionMemberId;
                                                     }
                                                     if (btName != null && btName.trim().length() > 0) {
-                                                        Vector<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                                                        ArrayList<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
                                                         if (btValues == null) {
-                                                            btValues = new Vector<String>();
+                                                            btValues = new ArrayList<String>();
                                                         }
                                                         if (btValues.contains(btName) == false) {
                                                             btValues.add(btName);
@@ -3590,9 +3596,9 @@ public class ParseFileData {
                                             ntName = narrowerId;
                                         }
                                         if (ntName != null && ntName.trim().length() > 0) {
-                                            Vector<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                            ArrayList<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
                                             if (ntValues == null) {
-                                                ntValues = new Vector<String>();
+                                                ntValues = new ArrayList<String>();
                                             }
                                             if (ntValues.contains(ntName) == false) {
                                                 ntValues.add(ntName);
@@ -3601,7 +3607,7 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
                                         parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
@@ -3614,9 +3620,9 @@ public class ParseFileData {
                                                         ntName = collectionMemberId;
                                                     }
                                                     if (ntName != null && ntName.trim().length() > 0) {
-                                                        Vector<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                                        ArrayList<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
                                                         if (ntValues == null) {
-                                                            ntValues = new Vector<String>();
+                                                            ntValues = new ArrayList<String>();
                                                         }
                                                         if (ntValues.contains(ntName) == false) {
                                                             ntValues.add(ntName);
@@ -3633,9 +3639,9 @@ public class ParseFileData {
                                 else if (openingTagName.equals(ConstantParameters.XML_dc_creator)) {
                                     String targetValue = this.parseSimpleContentElement(xpp);
                                     if (targetValue != null && targetValue.length() > 0) {
-                                        Vector<String> creatorValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_by_kwd);
+                                        ArrayList<String> creatorValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_by_kwd);
                                         if (creatorValues == null) {
-                                            creatorValues = new Vector<String>();
+                                            creatorValues = new ArrayList<String>();
                                         }
                                         if (creatorValues.contains(targetValue) == false) {
                                             creatorValues.add(targetValue);
@@ -3666,9 +3672,9 @@ public class ParseFileData {
                                     }
                                     if (targetValue != null && targetValue.length() > 0) {
 
-                                        Vector<String> creationDateValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_on_kwd);
+                                        ArrayList<String> creationDateValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_on_kwd);
                                         if (creationDateValues == null) {
-                                            creationDateValues = new Vector<String>();
+                                            creationDateValues = new ArrayList<String>();
                                         }
                                         if (creationDateValues.contains(targetValue) == false) {
                                             creationDateValues.add(targetValue);
@@ -3684,7 +3690,7 @@ public class ParseFileData {
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
 
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
-                                            Vector<String> snValues = targetTermInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
+                                            ArrayList<String> snValues = targetTermInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
                                             String Snvalue = "";
                                             if (snValues != null && snValues.size() > 0) {
                                                 Snvalue = snValues.get(0);
@@ -3695,16 +3701,16 @@ public class ParseFileData {
                                             } else if (Snvalue.equals(targetValue) == false) {
                                                 Snvalue += " " + targetValue;
                                             }
-                                            snValues = new Vector<String>();
+                                            snValues = new ArrayList<String>();
                                             snValues.add(Snvalue);
                                             targetTermInfo.descriptorInfo.put(ConstantParameters.scope_note_kwd, snValues);
 
                                         } else {
                                             if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> snTrValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+                                                ArrayList<String> snTrValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
                                                 if (snTrValues == null) {
-                                                    snTrValues = new Vector<String>();
-                                                    targetTermInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, new Vector<String>());
+                                                    snTrValues = new ArrayList<String>();
+                                                    targetTermInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, new ArrayList<String>());
                                                 }
 
                                                 String Snvalue = "";
@@ -3717,7 +3723,7 @@ public class ParseFileData {
                                                 //} else if (Snvalue.equals(targetValue) == false) {
                                                 //    Snvalue += "\n" + langCode.toUpperCase() + translationSeparator + "\n" + targetValue.trim();
                                                 //}
-                                                //snTrValues = new Vector<String>();
+                                                //snTrValues = new ArrayList<String>();
                                                 //snTrValues.add(Snvalue);
                                                 if(snTrValues.contains(Snvalue)==false){
                                                     targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd).add(Snvalue);
@@ -3767,7 +3773,7 @@ public class ParseFileData {
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
 
-                Vector<String> validAttrKeywords = new Vector<String>();
+                ArrayList<String> validAttrKeywords = new ArrayList<String>();
                 validAttrKeywords.add(ConstantParameters.XMLDescriptorElementName);
                 for (int i = 0; i < output.length; i++) {
                     validAttrKeywords.add(output[i]);
@@ -3870,7 +3876,7 @@ public class ParseFileData {
 
                                 targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator +" "+ parsedValue);
 
-                                /*Vector<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
+                                /*ArrayList<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
 
                                 if (existingTRSN != null && existingTRSN.size() > 0) {
                                     String existingStr = existingTRSN.get(0);
@@ -3880,7 +3886,7 @@ public class ParseFileData {
                                     existingStr += languagePrefix + translationSeparator + "\n" + parsedValue;
                                     existingTRSN.set(0, existingStr);
                                 } else {
-                                    existingTRSN = new Vector<String>();
+                                    existingTRSN = new ArrayList<String>();
                                     existingTRSN.add(languagePrefix + translationSeparator + "\n" + parsedValue);
                                 }
                                 targetTermInfo.descriptorInfo.put(currentTagName, existingTRSN);*/
@@ -3934,21 +3940,21 @@ public class ParseFileData {
                                 else {
 
                                     NodeInfoStringContainer existingInfo = termsInfo.get(targetTermName);
-                                    //Vector<String> refIdInfo = targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+                                    //ArrayList<String> refIdInfo = targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
                                     
-                                    
-                                    for (Enumeration<String> e = targetTermInfo.descriptorInfo.keys(); e.hasMoreElements();) {
-                                        String code = e.nextElement();
-                                        Vector<String> values = targetTermInfo.descriptorInfo.get(code);
+                                    Iterator<String> e = targetTermInfo.descriptorInfo.keySet().iterator();
+                                    while(e.hasNext()){
+                                        String code = e.next();
+                                        ArrayList<String> values = targetTermInfo.descriptorInfo.get(code);
 
                                         if (values != null && values.size() > 0) {
-                                            Vector<String> existingValues = existingInfo.descriptorInfo.get(code);
+                                            ArrayList<String> existingValues = existingInfo.descriptorInfo.get(code);
                                             if (existingValues == null) {
-                                                existingValues = new Vector<String>();
+                                                existingValues = new ArrayList<String>();
                                             }
 
                                             for (int i = 0; i < values.size(); i++) {
-                                                String val = values.elementAt(i);
+                                                String val = values.get(i);
                                                 if (existingValues.contains(val) == false) {
                                                     if(existingValues.size()>0){
                                                         if(code.equals(ConstantParameters.system_referenceUri_kwd)){
@@ -3966,9 +3972,9 @@ public class ParseFileData {
                                 }
 
                             
-                                Vector<String> bts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.bt_kwd);
-                                Vector<String> nts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.nt_kwd);
-                                Vector<String> rts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                ArrayList<String> bts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.bt_kwd);
+                                ArrayList<String> nts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                ArrayList<String> rts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.rt_kwd);
 
                                 for (int k = 0; k < bts.size(); k++) {
                                     String checkExists = bts.get(k);
@@ -4016,7 +4022,7 @@ public class ParseFileData {
         return true;
     }
 
-    private void parseTranslationCategories(XmlPullParser xpp, Vector<String> userSelectedTranslationWords, Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
+    private void parseTranslationCategories(XmlPullParser xpp, ArrayList<String> userSelectedTranslationWords, ArrayList<String> userSelectedTranslationIdentifiers, HashMap<String, String> userSelections) {
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
@@ -4098,7 +4104,7 @@ public class ParseFileData {
         return returnVal;
     }
 
-    private void parseGuideTermNodes(XmlPullParser xpp, String xmlSchemaType, Vector<String> xmlGuideTerms) {
+    private void parseGuideTermNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<String> xmlGuideTerms) {
 
         try {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
@@ -4143,7 +4149,7 @@ public class ParseFileData {
         }
     }
     
-    private void parseFacetNodes(XmlPullParser xpp, String xmlSchemaType, Vector<String> xmlFacets) {
+    private void parseFacetNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<String> xmlFacets) {
         
         try {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
@@ -4207,7 +4213,7 @@ public class ParseFileData {
 
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-                Hashtable<String,SortItem> xmlFacetsInSortItems = new Hashtable<String,SortItem>();
+                HashMap<String,SortItem> xmlFacetsInSortItems = new HashMap<String,SortItem>();
                 
                 parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetsInSortItems);
                 xmlFacets.addAll(xmlFacetsInSortItems.keySet());
@@ -4220,7 +4226,7 @@ public class ParseFileData {
         }
     }
 
-    private boolean parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, SortItem> xmlFacets) {
+    private boolean parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, HashMap<String, SortItem> xmlFacets) {
 
         try {
             
@@ -4497,14 +4503,14 @@ public class ParseFileData {
     }
     // </editor-fold>
 
-    public boolean readTranslationCategoriesFromTerms(Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> filterTerms,
-            Vector<String> userSelectedTranslationWords, Vector<String> userSelectedTranslationIdentifiers,
-            Hashtable<String, String> userSelections){
+    public boolean readTranslationCategoriesFromTerms(HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> filterTerms,
+            ArrayList<String> userSelectedTranslationWords, ArrayList<String> userSelectedTranslationIdentifiers,
+            HashMap<String, String> userSelections){
         boolean applyFiltering = (filterTerms!=null && filterTerms.size()>0);
-        Enumeration<String> termEnum = termsInfo.keys();
-        while(termEnum.hasMoreElements()){
-            String targetTerm = termEnum.nextElement();
+        Iterator<String> termEnum = termsInfo.keySet().iterator();
+        while(termEnum.hasNext()){
+            String targetTerm = termEnum.next();
             if(applyFiltering){
                 if(filterTerms.contains(targetTerm)==false){
                     continue;
@@ -4512,7 +4518,7 @@ public class ParseFileData {
             }
             NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translation_kwd)){
-                Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
+                ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
                 for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
@@ -4537,7 +4543,7 @@ public class ParseFileData {
                 
             }
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.uf_translations_kwd)){
-                Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
+                ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
                 for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
@@ -4561,7 +4567,7 @@ public class ParseFileData {
                 }
             }
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)){
-               Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+               ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
                for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
@@ -4595,8 +4601,8 @@ public class ParseFileData {
         return true;
     }
 
-    public boolean readTranslationCategories(String xmlFilePath, String xmlSchemaType, Vector<String> userSelectedTranslationWords,
-            Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
+    public boolean readTranslationCategories(String xmlFilePath, String xmlSchemaType, ArrayList<String> userSelectedTranslationWords,
+            ArrayList<String> userSelectedTranslationIdentifiers, HashMap<String, String> userSelections) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading translation categories from file: " + xmlFilePath + ".");
 
@@ -4621,7 +4627,7 @@ public class ParseFileData {
                 boolean insideDescriptiveNote = false;
                 boolean insideTermLanguages = false;
 
-                Vector<String> langCodes = new Vector<String>();
+                ArrayList<String> langCodes = new ArrayList<String>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
@@ -4699,7 +4705,7 @@ public class ParseFileData {
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
-                Vector<String> langCodes = new Vector<String>();
+                ArrayList<String> langCodes = new ArrayList<String>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
@@ -4765,22 +4771,22 @@ public class ParseFileData {
         return true;
     }
 
-    public Vector<String> getRecursiveNts(Vector<String> targetSet, Hashtable<String, NodeInfoStringContainer> termsInfo) {
+    public ArrayList<String> getRecursiveNts(ArrayList<String> targetSet, HashMap<String, NodeInfoStringContainer> termsInfo) {
         DBGeneral dbGen = new DBGeneral();
 
-        Vector<String> returnVals = new Vector<String>();
+        ArrayList<String> returnVals = new ArrayList<String>();
         returnVals.addAll(targetSet);
 
-        Vector<String> newVals = new Vector<String>();
+        ArrayList<String> newVals = new ArrayList<String>();
         newVals.addAll(targetSet);
 
-        Vector<String> loopVals = new Vector<String>();
+        ArrayList<String> loopVals = new ArrayList<String>();
         while (newVals.size() > 0) {
-            loopVals = new Vector<String>();
+            loopVals = new ArrayList<String>();
 
             for (int i = 0; i < newVals.size(); i++) {
                 String checkTerm = newVals.get(i);
-                Vector<String> nts = new Vector<String>();
+                ArrayList<String> nts = new ArrayList<String>();
                 if (termsInfo.containsKey(checkTerm)) {
                     nts.addAll(termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd));
                 }

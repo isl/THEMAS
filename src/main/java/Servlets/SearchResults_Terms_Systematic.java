@@ -196,7 +196,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             // timer begin
             long startTime = Utilities.startTimer();
             
-            Vector<TaxonomicCodeItem> descriptors = new Vector<TaxonomicCodeItem>();
+            ArrayList<TaxonomicCodeItem> descriptors = new ArrayList<TaxonomicCodeItem>();
             
             //Get All Results Set satisying Criteria
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator,Q,TA ,sis_session);
@@ -245,13 +245,13 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
             //Get only those descriptors that will appear in next page
             systematicPagingQueryResultsCount = descriptors.size();
-            Vector<TaxonomicCodeItem> pageDescriptors = new Vector<TaxonomicCodeItem>();
+            ArrayList<TaxonomicCodeItem> pageDescriptors = new ArrayList<TaxonomicCodeItem>();
             for (int i = 0; i < systematicPagingListStep; i++) {
                 if (i + systematicPagingFirst > systematicPagingQueryResultsCount) {
                     break;
                 }
                 TaxonomicCodeItem tmp = (TaxonomicCodeItem) descriptors.get(i + systematicPagingFirst - 1);
-                pageDescriptors.addElement(tmp);
+                pageDescriptors.add(tmp);
             }
 
             //Collect systematic display data for all nodes of next page
@@ -295,10 +295,10 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     this function is somewhat different from getResultsInXml_ForTableLayout() in Utilities.java since it must 
     display only the relevant dewey code --> Not all dewey codes declared for each 
-    term. That's why it handles a Vector<TaxonomicCodeItem> parameter instead of a Vector
+    term. That's why it handles a ArrayList<TaxonomicCodeItem> parameter instead of a Vector
     filled with Strings which is used in Utilities.java file.
     ----------------------------------------------------------------------*/
-    public String getResultsInXml(Vector<TaxonomicCodeItem> allTerms, String[] output) {
+    public String getResultsInXml(ArrayList<TaxonomicCodeItem> allTerms, String[] output) {
         //DBThesaurusReferences dbtr = new DBThesaurusReferences(sis_session);
         //String prefix_el = dbtr.getThesaurusPrefix_Descriptor();
 
@@ -328,7 +328,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
     }
     
     
-    public String writeResultsInXMLFile(Vector<TaxonomicCodeItem> allTerms, Utilities u, String title, SearchCriteria sc,String webAppSaveResults_temporary_filesAbsolutePath,String Save_Results_file_name,String pathToSaveScriptingAndLocale ) {
+    public String writeResultsInXMLFile(ArrayList<TaxonomicCodeItem> allTerms, Utilities u, String title, SearchCriteria sc,String webAppSaveResults_temporary_filesAbsolutePath,String Save_Results_file_name,String pathToSaveScriptingAndLocale ) {
         //DBThesaurusReferences dbtr = new DBThesaurusReferences(sis_session);
         //String prefix_el = dbtr.getThesaurusPrefix_Descriptor();
 

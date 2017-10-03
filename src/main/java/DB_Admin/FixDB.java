@@ -131,7 +131,7 @@ public class FixDB extends ApplicationBasicServlet {
             XMLMiddleStr += "<CurrentShownDIV>" + "Fix_DB_DIV" + "</CurrentShownDIV>";
             
             // GetListOfDBbackups
-            Vector<String> filesInDBBackupFolder = new Vector<String>();
+            ArrayList<String> filesInDBBackupFolder = new ArrayList<String>();
             filesInDBBackupFolder = common_utils_global.GetListOfDBbackups();
             int filesInDBBackupFolderCount = filesInDBBackupFolder.size();
             XMLMiddleStr += "<filesInDBBackupFolder>";

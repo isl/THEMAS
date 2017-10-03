@@ -201,11 +201,11 @@ public class Index extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     OUTPUT: a Vector with the existing Thesaurus in DB
     ----------------------------------------------------------------------*/
-    public Vector GetExistingThesaurus() {
+    public ArrayList<String> GetExistingThesaurus() {
         
 
         // Get the existing Thesaurus in DB
-        Vector<String> thesaurusVector = new Vector<String>();
+        ArrayList<String> thesaurusVector = new ArrayList<String>();
         
        // open SIS and connection
         QClass Q = new neo4j_sisapi.QClass();
@@ -247,7 +247,7 @@ public class Index extends ApplicationBasicServlet {
                 "</content>";
 
         // Get the existing Thesaurus in DB
-        Vector thesaurusVector = GetExistingThesaurus();
+        ArrayList<String> thesaurusVector = GetExistingThesaurus();
         int thesaurusVectorCount = thesaurusVector.size();
         XMLLoginStart += "<existingThesaurus>";
         for (int i = 0; i < thesaurusVectorCount; i++) {

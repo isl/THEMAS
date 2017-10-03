@@ -50,8 +50,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.StringObject;
 
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  *
@@ -60,29 +61,29 @@ import java.util.Hashtable;
 public class ConversionActions {
 
     private static void themasConvert(String inputFilePath, String outputScheme, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         boolean processSucceded = true;
         String inputScheme = ConstantParameters.xmlschematype_THEMAS;
 
         //internal structures
-        Vector<String> xmlFacets = new Vector<String>();
-        Vector<String> guideTerms = new Vector<String>();
+        ArrayList<String> xmlFacets = new ArrayList<String>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
 
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        //Vector<String> LinkingToSelf = new Vector<String>();
+        //ArrayList<String> LinkingToSelf = new ArrayList<String>();
 
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
-
-
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
 
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> userSelections = new Hashtable<String, String>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+
+
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> userSelections = new HashMap<String, String>();
 
         ParseFileData parser = new ParseFileData();
         WriteFileData writer = new WriteFileData();
@@ -124,7 +125,7 @@ public class ConversionActions {
         }
 
 
-        Vector<String> filterTerms = new Vector<String>();
+        ArrayList<String> filterTerms = new ArrayList<String>();
 
         OutputStreamWriter logFileWriter = null;
 
@@ -163,29 +164,29 @@ public class ConversionActions {
         
     }
     private static void skosConvert(String inputFilePath, String outputScheme, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         boolean processSucceded = true;
         String inputScheme = ConstantParameters.xmlschematype_skos;
 
         //internal structures
-        Vector<String> xmlFacets = new Vector<String>();
-        Vector<String> guideTerms = new Vector<String>();
+        ArrayList<String> xmlFacets = new ArrayList<String>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
 
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        //Vector<String> LinkingToSelf = new Vector<String>();
+        //ArrayList<String> LinkingToSelf = new ArrayList<String>();
 
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
-
-
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
 
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> userSelections = new Hashtable<String, String>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+
+
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> userSelections = new HashMap<String, String>();
 
         ParseFileData parser = new ParseFileData();
         WriteFileData writer = new WriteFileData();
@@ -227,7 +228,7 @@ public class ConversionActions {
         }
 
 
-        Vector<String> filterTerms = new Vector<String>();
+        ArrayList<String> filterTerms = new ArrayList<String>();
 
         OutputStreamWriter logFileWriter = null;
 
@@ -266,18 +267,18 @@ public class ConversionActions {
     }
 
     public static void skosToTHEMAS(String inputFilePath, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         skosConvert(inputFilePath, ConstantParameters.xmlschematype_THEMAS, outputFilePath, filterFacets, filterHierarchies);
     }
 
     public static void themasToSkos(String inputFilePath, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         themasConvert(inputFilePath, ConstantParameters.xmlschematype_skos, outputFilePath, filterFacets, filterHierarchies);
     }
 
-    public static void aatSpecificSubjectIds(String inputFilePath, String outputFilePath, Vector<String> targetSubjectIds) {
+    public static void aatSpecificSubjectIds(String inputFilePath, String outputFilePath, ArrayList<String> targetSubjectIds) {
         ParseFileData parser = new ParseFileData();
 
         PrintStream stdout = System.out;
@@ -314,25 +315,25 @@ public class ConversionActions {
     }
 
     private static void aatConvert(String inputFilePath, String outputScheme, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         boolean processSucceded = true;
         ParseFileData parser = new ParseFileData();
 
-        Vector<String> xmlFacets = new Vector<String>();
-        Vector<String> guideTerms = new Vector<String>();
+        ArrayList<String> xmlFacets = new ArrayList<String>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
 
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
 
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
 
 
-        Vector<String> userSelectedTranslationWords = new Vector<String>();
-        Vector<String> userSelectedTranslationIdentifiers = new Vector<String>();
-        Hashtable<String, String> userSelections = new Hashtable<String, String>();
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
+        HashMap<String, String> userSelections = new HashMap<String, String>();
 
 
         //String inputFilePath =xmlFilePath;
@@ -360,14 +361,14 @@ public class ConversionActions {
         }
 
 
-        Vector<String> filterTerms = new Vector<String>();
+        ArrayList<String> filterTerms = new ArrayList<String>();
 
         if (filterFacets.size() > 0) {
             //include  every hierarchy term that is under this facet
-            Enumeration<String> hierEnum = hierarchyFacets.keys();
-            while (hierEnum.hasMoreElements()) {
-                String hierarchyName = hierEnum.nextElement();
-                Vector<String> hierFacets = hierarchyFacets.get(hierarchyName);
+            Iterator<String> hierEnum = hierarchyFacets.keySet().iterator();
+            while (hierEnum.hasNext()) {
+                String hierarchyName = hierEnum.next();
+                ArrayList<String> hierFacets = hierarchyFacets.get(hierarchyName);
                 for (int i = 0; i < hierFacets.size(); i++) {
                     String facetName = hierFacets.get(i);
                     if (filterFacets.contains(facetName)) {
@@ -383,7 +384,7 @@ public class ConversionActions {
             //include all facets of the filtered hierarchies and their relevant terms
             for (int i = 0; i < filterHierarchies.size(); i++) {
                 String hierName = filterHierarchies.get(i);
-                Vector<String> hierFacets = hierarchyFacets.get(hierName);
+                ArrayList<String> hierFacets = hierarchyFacets.get(hierName);
 
                 if (filterTerms.contains(hierName) == false) {
                     filterTerms.add(hierName);
@@ -449,13 +450,13 @@ public class ConversionActions {
     }
 
     public static void aatToTHEMAS(String inputFilePath, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         aatConvert(inputFilePath, ConstantParameters.xmlschematype_THEMAS, outputFilePath, filterFacets, filterHierarchies);
     }
 
     public static void aatToSkos(String inputFilePath, String outputFilePath,
-            Vector<String> filterFacets, Vector<String> filterHierarchies) {
+            ArrayList<String> filterFacets, ArrayList<String> filterHierarchies) {
 
         aatConvert(inputFilePath, ConstantParameters.xmlschematype_skos, outputFilePath, filterFacets, filterHierarchies);
     }

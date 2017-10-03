@@ -123,7 +123,7 @@ _____________________________________________________________________________ --
             
             <table border="0" align="center">
                 
-                <!--  Όνομα Χρήστη: -->
+                <!--  UserName: -->
                 <tr>
                     <td width="15%" align="right">
                         <b>
@@ -141,7 +141,7 @@ _____________________________________________________________________________ --
                     </td>
                 </tr>
                 
-                <!--  Κωδικός Χρήστη: -->
+                <!--  Password: -->
                 <tr>
                     <td width="15%" align="right">
                         <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/passwordprompt/option[@lang=$lang]"/>
@@ -153,7 +153,7 @@ _____________________________________________________________________________ --
                     </td>
                 </tr>
                 
-                <!--  Περιγραφή: -->
+                <!--  User Description: -->
                 <tr>                    
                     <td width="15%" align="right">
                         <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/descriptionprompt/option[@lang=$lang]"/>
@@ -181,7 +181,7 @@ _____________________________________________________________________________ --
                 
             </table>
             
-            <!--  Θησαυροί - Γκρουπ -->
+            <!--  Groups - Thesauri -->
             <hr/>
 
             <table border="0" align="center" id="thesaurusGroupTable" style="margin:auto;">
@@ -206,7 +206,7 @@ _____________________________________________________________________________ --
                     </tr>
                     
                     <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName">
-                        <!-- Θησαυρός -->
+                        <!-- Thesaurus -->
                         <td bgcolor="#FFFFFF" ></td>
                         <td >
                             <select id="selectThesaurus_ID" name="selectThesaurus" style="width:160px;">
@@ -216,18 +216,11 @@ _____________________________________________________________________________ --
                                         <xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
                                         <xsl:value-of select="."/>
                                     </option>
-                                </xsl:for-each>
-                                <!-- όλοι -->
-                                <!--
-                                <option>
-                                    <xsl:attribute name="value">*</xsl:attribute>
-                                    <xsl:text>Όλοι</xsl:text>
-                                </option>
-                                -->
+                                </xsl:for-each>                                
                             </select>
                         </td>
                         
-                        <!-- Γκρουπ -->
+                        <!-- Group -->
                         <td >
                             <select id="selectUserGroup_ID" name="selectUserGroup">
                                 <xsl:for-each select="$THEMASUsersGroupName">

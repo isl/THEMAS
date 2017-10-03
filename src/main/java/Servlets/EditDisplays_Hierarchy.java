@@ -47,7 +47,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import neo4j_sisapi.*;
@@ -107,8 +107,8 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path + "/xml-xsl/EditHierarchyActions/Edit_Hierarchy.xsl");
                 return;
             }
-            Vector<String> availableFacets = new Vector<String>();
-            Vector<String> currentFacets = new Vector<String>();
+            ArrayList<String> availableFacets = new ArrayList<String>();
+            ArrayList<String> currentFacets = new ArrayList<String>();
 
             //open connection and start Query
             if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
@@ -123,13 +123,13 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 availableFacets.addAll(dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q, sis_session, targetLocale));
             }
             else if(targetField.compareTo("hierarchy_facets")==0){
-                Vector<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
+                ArrayList<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
                 
                 currentFacets.addAll(dbGen.getSelectedFacets(SessionUserInfo.selectedThesaurus,targetHierarchy, Q, sis_session, targetLocale));
                 
                 for (int i = 0; i < tempAvailableFacets.size(); i++) {
                     if (!currentFacets.contains(tempAvailableFacets.get(i))) {
-                        availableFacets.addElement(tempAvailableFacets.get(i));
+                        availableFacets.add(tempAvailableFacets.get(i));
                     }
                 }
             }

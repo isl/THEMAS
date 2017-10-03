@@ -41,7 +41,7 @@ import Utils.Utilities;
 
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /**
@@ -59,7 +59,7 @@ public class DBEditGuideTerms {
         Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-        Vector<String> guideTermLinks = new Vector<String>();
+        ArrayList<String> guideTermLinks = new ArrayList<String>();
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(newGuideTerm)) {
@@ -180,7 +180,7 @@ public class DBEditGuideTerms {
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
 
-        Vector<String> guideTermLinks = new Vector<String>();
+        ArrayList<String> guideTermLinks = new ArrayList<String>();
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(deleteGuideTerm) == false) {
@@ -258,7 +258,7 @@ public class DBEditGuideTerms {
             */
         }
 
-        Vector<String> guideTermLinks = new Vector<String>();
+        ArrayList<String> guideTermLinks = new ArrayList<String>();
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(renameGuideTermFrom) == false) {

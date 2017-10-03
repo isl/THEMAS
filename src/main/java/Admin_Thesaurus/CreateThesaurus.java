@@ -109,7 +109,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             Utilities u = new Utilities();
 
             // get form parameters
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             String NewThesaurusName = params.get("Create_Thesaurus_NewName_NAME").toString();
             NewThesaurusName = NewThesaurusName.trim();
             NewThesaurusName = NewThesaurusName.replaceAll(" ", "_");
@@ -133,7 +133,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
 
             // Get the existing Thesaurus in DB
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<>();
             thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector, Q, sis_session);
 
 
@@ -208,8 +208,8 @@ public class CreateThesaurus extends ApplicationBasicServlet {
                 }
             }
 
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> allHierarchies = new ArrayList<>();
+            ArrayList<String> allGuideTerms = new ArrayList<>();
 
             // open SIS and TMS connection
             Q = new neo4j_sisapi.QClass(); TMSAPIClass TA = new TMSAPIClass();
@@ -227,7 +227,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
             dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies,allGuideTerms);
 
-            Vector<String> status = new Vector<String>();
+            ArrayList<String> status = new ArrayList<>();
             status.addAll(dbGen.returnResults(SessionUserInfo, Parameters.UnclassifiedTermsLogicalname, ConstantParameters.status_kwd,Q, TA,sis_session));
 
 
@@ -279,7 +279,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
     ----------------------------------------------------------------------*/
-    public String getXMLMiddle(CommonUtilsDBadmin common_utils, Vector thesaurusVector, String NewThesaurusName, StringObject InitializeDBResultMessage, StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
+    public String getXMLMiddle(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector, String NewThesaurusName, StringObject InitializeDBResultMessage, StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
         // in case there are other active sessions => write their number to XML, 

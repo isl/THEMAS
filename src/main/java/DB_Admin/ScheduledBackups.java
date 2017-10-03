@@ -60,7 +60,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.TimerTask;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Properties;
 //import javax.mail.*;
 //import javax.mail.internet.*;
@@ -140,7 +140,7 @@ public class ScheduledBackups extends TimerTask {
         File MonitorMaintananceFile = new File(NewRestoreBackupTxtFilePath);
         try{
             //Data Storage
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             StringObject CreateDBbackupResultMessage = new StringObject("");
 
 
@@ -264,7 +264,7 @@ public class ScheduledBackups extends TimerTask {
         this.performScheduledBackupActions(Parameters.AUTOMATIC_BACKUPS_DESCRIPTION);
     }
 
-    private boolean exportAllTHesauri(Vector<String> thesaurusVector, String testName) {
+    private boolean exportAllTHesauri(ArrayList<String> thesaurusVector, String testName) {
 
         DBGeneral dbGen = new DBGeneral();
         UsersClass WTMSUsers = new UsersClass();
@@ -345,9 +345,9 @@ public class ScheduledBackups extends TimerTask {
 
             //exporting Data
 
-            Vector<String> thesauriNames = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<String>();
+            ArrayList<String> allHierarchies = new ArrayList<String>();
+            ArrayList<String> allGuideTerms = new ArrayList<String>();
 
             dbExport.exportThesaurusActions(SessionUserInfo, exprortThesaurus, ConstantParameters.xmlschematype_THEMAS, 
                     logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
@@ -410,7 +410,7 @@ public class ScheduledBackups extends TimerTask {
         return true;
     }
     
-    private boolean importAllThesauri(Vector<String> thesaurusVector, String testName) {
+    private boolean importAllThesauri(ArrayList<String> thesaurusVector, String testName) {
         //QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
         //IntegerObject sis_session = new IntegerObject();
         //IntegerObject tms_session = new IntegerObject();

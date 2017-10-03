@@ -97,7 +97,7 @@ public class GraphicalView extends ApplicationBasicServlet {
             String CalledBySVGgraph = u.getDecodedParameterValue(request.getParameter("CalledBySVGgraph"));
             String TargetName = u.getDecodedParameterValue(request.getParameter("TargetName"));
             
-            Vector<String> targetBTterms = new Vector<String>();
+            ArrayList<String> targetBTterms = new ArrayList<String>();
             
             
             if (SessionUserInfo == null) {
@@ -212,7 +212,7 @@ public class GraphicalView extends ApplicationBasicServlet {
     /*-----------------------------------------------------------------------
                               GetTargetBTs()
     -------------------------------------------------------------------------*/
-    Vector<String> GetTargetBTs(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,String TargetTerm) {
+    ArrayList<String> GetTargetBTs(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,String TargetTerm) {
         // looking for Descriptor EKTHierarchy
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
@@ -236,8 +236,8 @@ public class GraphicalView extends ApplicationBasicServlet {
         DBFilters dbf = new DBFilters();
         linkSetToValues = dbf.FilterTermsResults(SessionUserInfo, linkSetToValues, Q, sis_session);
         
-        Vector<String> targetBTs = new Vector<String>();
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<String> targetBTs = new ArrayList<String>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
 	if(Q.bulk_return_nodes(linkSetToValues, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 String BTterm = row.get_v1_cls_logicalname();
@@ -264,7 +264,7 @@ public class GraphicalView extends ApplicationBasicServlet {
            - SVG_file_name: the name of the temporary SVG file to be displayed (g.e. SVGtempGraph2008-08-22 16-41-35.svg)
     OUTPUT: a String with the XML representation of the necessary data to be used for displaying the SVG graph
     ----------------------------------------------------------------------*/                                
-    String GraphicalViewXML(String TargetName, String TargetKind, String SVG_file_name,Vector targetBTterms) {
+    String GraphicalViewXML(String TargetName, String TargetKind, String SVG_file_name,ArrayList targetBTterms) {
         String TargetNameWithoutPrefix = TargetName.substring(TargetName.indexOf("`") + 1);
         Utilities u = new Utilities();
         // temporary SVG graph

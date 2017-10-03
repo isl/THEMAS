@@ -347,7 +347,7 @@
                         <td align="center" width="10%">
 				
                             <a href="#">
-                                <img width="16" height="16" border="0">
+                                <img width="16" height="16" border="0"  style="margin-left:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$tableresultslocale/hierarchicalimage/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -362,7 +362,7 @@
                                 </img>
                             </a>    
                             <a href="#">
-                                <img width="16" height="16" border="0" >
+                                <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$tableresultslocale/graphicalimage/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -380,7 +380,7 @@
                             <!-- DISABLE editing in case of user of group READER -->
                             <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
                                 <a href="#">
-                                    <img width="16" height="16" border="0" >
+                                    <img width="16" height="16" border="0"  style="margin-right:4px;">
                                         <xsl:attribute name="src">
                                             <xsl:value-of select="$tableresultslocale/editimage/src/option[@lang=$lang]"/>
                                         </xsl:attribute>

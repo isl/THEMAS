@@ -333,7 +333,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         //Move Node actions modify relations of some terms. Thus modified by and on fileds must be updated. 
         //In a later version descriptor status should also be updated 
 
-        Vector<String>  otherModifiedNodes = new Vector<String> ();
+        ArrayList<String>  otherModifiedNodes = new ArrayList<String> ();
         if (MoveToHierarchyOption.compareTo("MOVE_NODE_ONLY") == 0) {
             MTHoption = TMSAPIClass.MOVE_NODE_ONLY;
             //if successfull must update modify fields of source's direct bts and nts. Also update target 
@@ -416,7 +416,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         */
         
         long BTlink_sysidL = QClass.APIFail;
-        Vector<Return_Link_Id_Row> retVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
         if(Q.bulk_return_link_id(BT_links_set, retVals)!=QClass.APIFail){
             //while (Q.retur_link_id(BT_links_set, node_name, new IntegerObject(), BTlink_sysid, cmv, new IntegerObject()) != QClass.APIFail) {
             for(Return_Link_Id_Row row: retVals){
@@ -445,7 +445,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
             ret = Q.CHECK_Delete_Unnamed_Attribute(BTlinkID);
         }
         //find out which nodes must be updated--> same as connect node --> source and target
-        Vector<String> otherModifiedNodes = new Vector<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
         otherModifiedNodes.addAll(getRemoveBTModifiedTerms(TargetBTforDeletion));
         if (ret == QClass.APISucc) { // SUCCESS
             Q.free_all_sets();
@@ -475,16 +475,16 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
     }
 
-    Vector<String> getMoveNodeOnlyModifiedTerms(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen, String TargetTermName, String MoveBTterm) {
-        Vector<String> otherModifiedNodes = new Vector<String>();
+    ArrayList<String> getMoveNodeOnlyModifiedTerms(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen, String TargetTermName, String MoveBTterm) {
+        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
 
         //if successfull must update modify fields of source's direct bts and nts. Also update target 
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        Vector<String> sourceBts = new Vector<String>();
+        ArrayList<String> sourceBts = new ArrayList<String>();
         sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
         sourceBts.trimToSize();
 
-        Vector<String> sourceNts = new Vector<String>();
+        ArrayList<String> sourceNts = new ArrayList<String>();
         sourceNts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.nt_kwd, Q, TA, sis_session);
         sourceNts.trimToSize();
 
@@ -510,12 +510,12 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         return otherModifiedNodes;
     }
 
-    Vector<String> getMoveNodeAndSubtreeModifiedTerms(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen, String TargetTermName, String MoveBTterm) {
+    ArrayList<String> getMoveNodeAndSubtreeModifiedTerms(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen, String TargetTermName, String MoveBTterm) {
         //if successfull must update modify fields of source and its direct bts. Also update target
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        Vector<String> otherModifiedNodes = new Vector<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
 
-        Vector<String> sourceBts = new Vector<String>();
+        ArrayList<String> sourceBts = new ArrayList<String>();
         sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
         sourceBts.trimToSize();
 
@@ -535,10 +535,10 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         return otherModifiedNodes;
     }
 
-    Vector<String> getConnectNodeModifiedTerms(String MoveBTterm) {
+    ArrayList<String> getConnectNodeModifiedTerms(String MoveBTterm) {
         //if successfull must update modify fields of source and target
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        Vector<String> otherModifiedNodes = new Vector<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
 
         otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim();
 
@@ -548,10 +548,10 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         return otherModifiedNodes;
     }
 
-    Vector<String> getRemoveBTModifiedTerms(String TargetBTforDeletion) {
+    ArrayList<String> getRemoveBTModifiedTerms(String TargetBTforDeletion) {
         //if successfull must update modify fields of source and target
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        Vector<String> otherModifiedNodes = new Vector<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
 
         otherModifiedNodes.add(TargetBTforDeletion.trim());// += TargetBTforDeletion.trim();
 
@@ -568,7 +568,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         Q.reset_name_scope();
         Utilities u = new Utilities();
 
-        Vector<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
+        ArrayList<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
         StringObject TopTermObjClass = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("TopTerm"));
         StringObject HierarchyObj = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("ThesaurusNotionType"));
         StringObject TopTermHierRelationObj = new StringObject();//("belongs_to_" + SessionUserInfo.selectedThesaurus.toLowerCase().concat("_hierarchy"));
@@ -648,7 +648,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\n\nDelete Classes Instances:\n" + dbGen.getStringList_Of_Set(set_classes_topterms, ",\n", Q, sis_session));
                 if (Q.set_get_card( set_classes_topterms) > 0) {
 
-                    Vector<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
+                    ArrayList<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
 
                     String tempStr = checkNodes.get(i);
                     tempStr = dbGen.removePrefix(tempStr);
@@ -679,7 +679,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\n\nAdd class Instances:\n" + dbGen.getStringList_Of_Set(set_recursive_bts, ",\n", Q, sis_session));
                 if (Q.set_get_card( set_recursive_bts) > 0) {
 
-                    Vector<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
+                    ArrayList<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
                     int ret;
                     for (int k = 0; k < addInstancesClasses.size(); k++) {
 

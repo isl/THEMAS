@@ -58,11 +58,12 @@ import neo4j_sisapi.tmsapi.TMSAPIClass;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Enumeration;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -77,9 +78,9 @@ public class DBexportData {
             String exprortThesaurus,
             String exportSchemaName,
             OutputStreamWriter logFileWriter,
-            Vector<String> thesauriNames,
-            Vector<String> allHierarchies,
-            Vector<String> allGuideTerms){
+            ArrayList<String> thesauriNames,
+            ArrayList<String> allHierarchies,
+            ArrayList<String> allGuideTerms){
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -91,23 +92,23 @@ public class DBexportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBImportData dbImport = new DBImportData();
 
-        Hashtable<String, String> translationCategories = new Hashtable<String, String>();
+        HashMap<String, String> translationCategories = new HashMap<String, String>();
         
-        Vector<SortItem> xmlFacetsInSortItem = new Vector<SortItem>();
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        ArrayList<SortItem> xmlFacetsInSortItem = new ArrayList<SortItem>();
+        HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets = new HashMap<SortItem, ArrayList<SortItem>>();
 
         
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<String>();
+        HashMap<String, String> XMLsources = new HashMap<String, String>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
 
-        Vector<String> topTerms = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+        ArrayList<String> topTerms = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
 
 
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
 
 
             //open connection and start Query
@@ -130,7 +131,9 @@ public class DBexportData {
             translationCategories = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, exprortThesaurus, null, false, true);
             
             SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, exprortThesaurus);
-
+            SortItem defaultHierarchySortItem = dbMerge.getDefaultUnclassifiedTopTermSortItem(SessionUserInfo, Q, sis_session, exprortThesaurus);
+            defaultHierarchySortItem.setLogName(dbGen.removePrefix(defaultHierarchySortItem.getLogName()));
+            
             xmlFacetsInSortItem.addAll(dbMerge.ReadThesaurusFacetsInSortItems(SessionUserInfo, Q, sis_session, exprortThesaurus, null));
 
             if (xmlFacetsInSortItem.contains(defaultFacetSortItem) == false) {
@@ -138,11 +141,12 @@ public class DBexportData {
             }
 
             //read hierarchies
-            hierarchyFacets = dbMerge.ReadThesaurusHierarchies(SessionUserInfo, Q, sis_session, exprortThesaurus, null);
-            if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
-                Vector<String> unclassifiedFacets = new Vector<String>();
-                unclassifiedFacets.add(defaultFacetSortItem.getLogName());
-                hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
+            hierarchyFacets = dbMerge.ReadThesaurusHierarchiesInSortItems(SessionUserInfo, Q, sis_session, exprortThesaurus, null);
+            
+            if (hierarchyFacets.containsKey(defaultHierarchySortItem) == false) {
+                ArrayList<SortItem> unclassifiedFacets = new ArrayList<>();
+                unclassifiedFacets.add(defaultFacetSortItem);
+                hierarchyFacets.put(defaultHierarchySortItem, unclassifiedFacets);
             }
 
 
@@ -152,8 +156,13 @@ public class DBexportData {
 
             guideTerms.clear();
             guideTerms.addAll(dbGen.collectGuideLinks(exprortThesaurus, Q, sis_session));
+            HashMap<String, ArrayList<String>> hierarchyFacetsStrFormat = new HashMap<>();
+            hierarchyFacets.forEach( (key,value) -> {
+                hierarchyFacetsStrFormat.put(key.getLogName(), new ArrayList<String>(value.stream().map(item -> item.getLogName()).collect(Collectors.toList())));
+            });
+            
             //read terms
-            dbImport.processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
+            dbImport.processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacetsStrFormat, topTerms, allLevelsOfImportThes);
 
             //read sources
             dbMerge.ReadThesaurusSources(SessionUserInfo, Q,TA, sis_session, XMLsources);
@@ -168,7 +177,7 @@ public class DBexportData {
 
              //check if tcs are defined for skos case
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
-                Vector<String> termNames = new Vector<String>(termsInfo.keySet());
+                ArrayList<String> termNames = new ArrayList<String>(termsInfo.keySet());
                 Collections.sort(termNames);
                 int howmanyWithoutTc = 0;
                 String homanytermNames = "000" + termNames.size();
@@ -177,9 +186,9 @@ public class DBexportData {
                 for (int k = 0; k < termNames.size(); k++) {
                     String targetTerm = termNames.get(k);
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
-                    Vector<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
                     if (tcs == null || tcs.size() == 0) {
-                        Vector<String> newTcs = new Vector<String>();
+                        ArrayList<String> newTcs = new ArrayList<String>();
                         howmanyWithoutTc++;
 
                         String newTCValue = exprortThesaurus+formatter.format(howmanyWithoutTc);
@@ -196,8 +205,8 @@ public class DBexportData {
                 writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
 
                 writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
-                writer.WriteHierarchies(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, null);
-                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null);
+                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
                 writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
                 writer.WriteFileEnd(logFileWriter, exportSchemaName);
@@ -211,8 +220,8 @@ public class DBexportData {
     }
     
     public void ReadTermStatuses(String selectedThesaurus, QClass Q, IntegerObject sis_session, 
-            Vector<String> output, Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo,
-            Vector<Long> resultNodesIds) throws IOException {
+            ArrayList<String> output, ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo,
+            ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         if (output.contains(ConstantParameters.status_kwd) == false) {
@@ -230,7 +239,7 @@ public class DBexportData {
         StringObject THESstatusForApproval = new StringObject();
         StringObject THESstatusApproved = new StringObject();
 
-        Vector<StringObject> allStatuses = new Vector<StringObject>();
+        ArrayList<StringObject> allStatuses = new ArrayList<StringObject>();
 
         //READING FROM THES1 
         dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus, THESstatusForInsertion);
@@ -252,7 +261,7 @@ public class DBexportData {
 
             Q.reset_set(set_all_such_terms);
             
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_all_such_terms, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -325,7 +334,7 @@ public class DBexportData {
     }
 
     public void ReadTermCommentCategories(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, 
-            Vector<String> output, Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+            ArrayList<String> output, ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -340,7 +349,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.scope_note_kwd)) {
             //SCOPE NOTES 
-            Vector<String> terms_with_sn_Vec = new Vector<String>();
+            ArrayList<String> terms_with_sn_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject scopenoteFromClassObj = new StringObject();
             StringObject scopenoteLinkObj = new StringObject();
@@ -357,7 +366,7 @@ public class DBexportData {
             Q.free_set(set_all_links_sn);
 
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_sn, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -405,7 +414,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.translations_scope_note_kwd)) {
             //SCOPE NOTES EN
-            Vector<String> terms_with_sn_TR_Vec = new Vector<String>();
+            ArrayList<String> terms_with_sn_TR_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject scopenote_TR_FromClassObj = new StringObject();
             StringObject scopenote_TR_LinkObj = new StringObject();
@@ -421,7 +430,7 @@ public class DBexportData {
             Q.reset_set(set_terms_with_sn_tr);
             Q.free_set(set_all_links_sn_tr);
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_sn_tr, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -459,8 +468,8 @@ public class DBexportData {
                 if (commentObject.getValue().length() > 0) {
 
                     //break in parts
-                    Hashtable<String,String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
-                    Vector<String> langCodes = new Vector<String>(trSns.keySet());
+                    HashMap<String,String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
+                    ArrayList<String> langCodes = new ArrayList<String>(trSns.keySet());
                     Collections.sort(langCodes);
                     for(int m=0;m<langCodes.size();m++){
                         String lang = langCodes.get(m);
@@ -480,7 +489,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.historical_note_kwd)) {
             //HISTORICAL NOTES 
-            Vector<String> terms_with_hn_Vec = new Vector<String>();
+            ArrayList<String> terms_with_hn_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject historicalnoteFromClassObj = new StringObject();
             StringObject historicalnoteLinkObj = new StringObject();
@@ -495,7 +504,7 @@ public class DBexportData {
             Q.reset_set(set_terms_with_hn);
             Q.free_set(set_all_links_hn);
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_hn, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -543,8 +552,8 @@ public class DBexportData {
     }
 
     public void ReadTermFacetAndHierarchies(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,
-            int set_terms, Vector<String> output, Vector<String> allTerms, 
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+            int set_terms, ArrayList<String> output, ArrayList<String> allTerms, 
+            HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         
@@ -570,9 +579,9 @@ public class DBexportData {
             if (cardinalityOfFacets > cardinalityOfTerms) {
 
                 //set current node for each term
-                Vector<String> terms = new Vector<String>();
+                ArrayList<String> terms = new ArrayList<String>();
                 Q.reset_set(set_terms);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         terms.add(row.get_v1_cls_logicalname());
@@ -632,9 +641,9 @@ public class DBexportData {
             } else { //set current node for each facet
 
 
-                Vector<String> facets = new Vector<String>();
+                ArrayList<String> facets = new ArrayList<String>();
                 Q.reset_set(set_f);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_f, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         facets.add(row.get_v1_cls_logicalname());
@@ -712,9 +721,9 @@ public class DBexportData {
             if (cardinalityOfHierarchies > cardinalityOfTerms) { //set current node for each term
 
                 //set current node for each term
-                Vector<String> terms = new Vector<String>();
+                ArrayList<String> terms = new ArrayList<String>();
                 Q.reset_set(set_terms);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         terms.add(row.get_v1_cls_logicalname());
@@ -774,9 +783,9 @@ public class DBexportData {
 
             } else { //set current node for each hierarchy
 
-                Vector<String> hierarchies = new Vector<String>();
+                ArrayList<String> hierarchies = new ArrayList<String>();
                 Q.reset_set(set_h);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_h, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         hierarchies.add(row.get_v1_cls_logicalname());
@@ -861,8 +870,8 @@ public class DBexportData {
     }
     
     public void ReadTermFacetAndHierarchiesInSortItems(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,
-            int set_terms, Vector<String> output, Vector<String> allTerms, 
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+            int set_terms, ArrayList<String> output, ArrayList<String> allTerms, 
+            HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         
@@ -887,9 +896,9 @@ public class DBexportData {
 
 
             //set current node for each term
-            Vector<SortItem> terms = new Vector<SortItem>();
+            ArrayList<SortItem> terms = new ArrayList<SortItem>();
             Q.reset_set(set_terms);
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
@@ -970,9 +979,9 @@ public class DBexportData {
              //set current node for each term
 
             //set current node for each term
-            Vector<SortItem> terms = new Vector<SortItem>();
+            ArrayList<SortItem> terms = new ArrayList<SortItem>();
             Q.reset_set(set_terms);
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
@@ -986,10 +995,10 @@ public class DBexportData {
             /*
             if(Parameters.OnlyTopTermsHoldReferenceId){
                 int set_topterms = Q.get_from_node_by_category(set_sub_classes, belongsToHierClass, belongsToHierarchyLink);
-                results.addAll(get_Node_SortItems_Of_Set(set_topterms, true, Q, sis_session));
+                results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
             }
             else{
-                results.addAll(get_Node_SortItems_Of_Set(set_sub_classes, true, Q, sis_session));
+                results.addAll(get_Node_Names_Of_Set_In_SortItems(set_sub_classes, true, Q, sis_session));
             }*/
             for (SortItem targetTerm: terms) {
 
@@ -1038,7 +1047,7 @@ public class DBexportData {
     }
 
     public void ReadRelatedSources(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            int set_terms, Hashtable<String, NodeInfoSortItemContainer> sourcesInfo, Vector<String> allSources) {
+            int set_terms, HashMap<String, NodeInfoSortItemContainer> sourcesInfo, ArrayList<String> allSources) {
         //Abandoned Code that filtered only these sources that were referenced
         //It is not expected to see less sources after a scheduled backup (export 2 XML - import from XML)
         /*
@@ -1052,7 +1061,7 @@ public class DBexportData {
         StringObject etLinkObj      = new StringObject();
         StringObject sourceNoteFromObj = new StringObject();
         StringObject sourceNoteLinkObj = new StringObject();      
-        Vector<SortItem> referencedSources = new Vector<SortItem>(); 
+        ArrayList<SortItem> referencedSources = new ArrayList<SortItem>(); 
         
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.primary_found_in_kwd, gtFromClassObj, gtLinkObj, Q, sis_session);
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.translations_found_in_kwd, etFromClassObj, etLinkObj, Q, sis_session);
@@ -1122,7 +1131,7 @@ public class DBexportData {
          */
 
 
-        Vector<SortItem> targetSources = new Vector<SortItem>();
+        ArrayList<SortItem> targetSources = new ArrayList<SortItem>();
         DBGeneral dbGen = new DBGeneral();
         //DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Q.reset_name_scope();
@@ -1130,7 +1139,7 @@ public class DBexportData {
         int set_sources = Q.get_instances(0);
         Q.reset_set(set_sources);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_sources, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 SortItem sourceItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId());

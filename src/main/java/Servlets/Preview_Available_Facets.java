@@ -102,7 +102,7 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             }
             
 
-            Vector<String> availableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
+            ArrayList<String> availableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
 
            // String xmlResults = getResultsInXml_ForTableLayout(currentHierName_utf8, currentFacetName_utf8, availableFacets);
             

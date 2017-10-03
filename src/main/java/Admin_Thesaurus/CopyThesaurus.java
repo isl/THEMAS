@@ -37,13 +37,11 @@ import DB_Admin.CommonUtilsDBadmin;
 import DB_Admin.ConfigDBadmin;
 import DB_Admin.DBAdminUtilities;
 import Users.UsersClass;
-import DB_Classes.DBGeneral;
 import Servlets.ApplicationBasicServlet;
 import Utils.Utilities;
 import Utils.Parameters;
 import Utils.SessionWrapperClass;
 
-import Utils.ConsistensyCheck;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import java.io.IOException;
@@ -53,14 +51,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Vector;
 import java.util.Locale;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 /**
  *
@@ -72,6 +64,8 @@ public class CopyThesaurus extends ApplicationBasicServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     //final String LogFilesFolderName = "LogFiles";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -97,10 +91,7 @@ public class CopyThesaurus extends ApplicationBasicServlet {
         init(request, response, sessionInstance);
 
 
-        PrintWriter out = response.getWriter();
-        
-
-        try {
+        try (PrintWriter out = response.getWriter()) {
 
 
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
@@ -202,7 +193,6 @@ public class CopyThesaurus extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in servlet " + getServletName() + ". Message:" + e.getMessage());            
             Utils.StaticClass.handleException(e);            
         } finally {
-            out.close();
             sessionInstance.writeBackToSession(session);
         }
     }

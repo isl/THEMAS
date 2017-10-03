@@ -772,4 +772,13 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
     <welcome-file-list>
         <welcome-file>Index</welcome-file>
     </welcome-file-list>
+    <!-- allow Cross Origin Calls for servlets rpoviding XMLSTREAM output -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+      </filter>
+      <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
 </web-app>

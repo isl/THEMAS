@@ -50,7 +50,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import neo4j_sisapi.*;
@@ -139,7 +139,7 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
                 //u.getAvailableValues(session,targetField,Q, sis_session,xml);
             } 
             else if(targetField.compareTo(DBCreate_Modify_Source.source_move_references_kwd)==0){
-                Vector<String> allOtherSources = new Vector<String>();
+                ArrayList<String> allOtherSources = new ArrayList<String>();
                 Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
                 int set_allSources = Q.get_all_instances(0);
                 allOtherSources.addAll(dbGen.get_Node_Names_Of_Set(set_allSources, true, Q, sis_session));
@@ -156,7 +156,7 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
                 String[] output = new String[2];
                 output[0] = "name";
                 output[1] = targetField;
-                Vector<String> displaySources = new Vector<String>();
+                ArrayList<String> displaySources = new ArrayList<String>();
                 displaySources.add(targetSource);
                 u.getResultsInXml_Source(SessionUserInfo, displaySources, output, Q,TA, sis_session, targetLocale, xmlResults);
                 

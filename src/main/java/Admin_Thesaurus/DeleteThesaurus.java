@@ -103,7 +103,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
@@ -179,7 +179,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             }*/
 
             // Refresh the list of the existing Thesaurus in DB
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             Q = new neo4j_sisapi.QClass();
             sis_session = new IntegerObject();
 
@@ -217,9 +217,9 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             }
 
             // inform hierarchies statuses (needed by Fix DB)
-            Vector<String> thesauriNames = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<String>();
+            ArrayList<String> allHierarchies = new ArrayList<String>();
+            ArrayList<String> allGuideTerms = new ArrayList<String>();
             // open SIS and TMS connection
             if (thesaurusVector.size() > 0) {
                 Q = new neo4j_sisapi.QClass();
@@ -273,7 +273,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
     ----------------------------------------------------------------------*/
-    public String getXMLMiddle(CommonUtilsDBadmin common_utils, Vector thesaurusVector, String ThesaurusName, StringObject DeleteThesaurusResultMessage, boolean DeleteThesaurusSucceded) {
+    public String getXMLMiddle(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector, String ThesaurusName, StringObject DeleteThesaurusResultMessage, boolean DeleteThesaurusSucceded) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
         // in case there are other active sessions => write their number to XML, 

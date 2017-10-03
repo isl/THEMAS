@@ -44,7 +44,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 //import java.util.regex.Matcher;
 //import java.io.OutputStreamWriter;
 
@@ -83,19 +82,19 @@ public class Parameters {
     public static boolean CreatorInAlphabeticalTermDisplay = false;
 
     public static String TRANSLATION_SEPERATOR;
-    public static Vector<String> CLASS_SET;
+    public static ArrayList<String> CLASS_SET;
     public static String DELIMITER1;
     public static String DELIMITER2;
     
     public static String[] alphabetical_mode;
     public static String[] alphabetical_ignored_nodes;
-    public static Vector<String> alphabetical_mode_PAGING_COUNT_NODES;
+    public static ArrayList<String> alphabetical_mode_PAGING_COUNT_NODES;
     
     public static boolean TransliterationsToLowerCase = false;
-    public static Hashtable<String,String> TransliterationsReplacements = new Hashtable<>();
+    public static HashMap<String,String> TransliterationsReplacements = new HashMap<>();
     
     
-    public static Vector<Integer> TermModificationChecks;
+    public static ArrayList<Integer> TermModificationChecks;
     
     public static boolean SEARCH_MODE_CASE_TONE_INSENSITIVE = false; // true in case the system's searches are done in tone and case insensitive mode
     public static boolean ENABLE_AUTOMATIC_BACKUPS = true; // turning to false at first successfull login is reached.
@@ -225,7 +224,7 @@ public class Parameters {
                     }
                 }
                 
-                Vector<String> permittedClassesFromXml = new Vector();
+                ArrayList<String> permittedClassesFromXml = new ArrayList<>();
                 NodeList classesPermitted = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document,XPathConstants.NODESET);
                 if(classesPermitted!=null){
                     int howmanyClasses = classesPermitted.getLength();
@@ -300,7 +299,7 @@ public class Parameters {
 
             alphabetical_From_Class = xpath.evaluate("web-app/context-param[param-name='alphabetical_From_Class']/param-value[1]", document);
             alphabetical_Links = xpath.evaluate("web-app/context-param[param-name='alphabetical_Links']/param-value[1]", document);
-            alphabetical_mode_PAGING_COUNT_NODES = new Vector<String>();
+            alphabetical_mode_PAGING_COUNT_NODES = new ArrayList<String>();
             TempREADSTR = xpath.evaluate("web-app/context-param[param-name='alphabetical_mode_PAGING_COUNT_NODES']/param-value[1]", document);
             if (TempREADSTR.split(DELIMITER1).length > 0) {
                 String[] tempArray1 = TempREADSTR.split(DELIMITER1);
@@ -319,7 +318,7 @@ public class Parameters {
                 }
             }
 
-            CLASS_SET = new Vector<String>();
+            CLASS_SET = new ArrayList<String>();
             TempREADSTR = xpath.evaluate("web-app/context-param[param-name='CLASS_SET']/param-value[1]", document);
             if (TempREADSTR.split(DELIMITER1).length > 0) {
                 String[] tempArray1 = TempREADSTR.split(DELIMITER1);
@@ -331,7 +330,7 @@ public class Parameters {
             }
             CLASS_SET.trimToSize();
             String modifyTermChecks = xpath.evaluate("web-app/context-param[param-name='TermModificationChecks']/param-value[1]", document);
-            TermModificationChecks = new Vector<Integer>();
+            TermModificationChecks = new ArrayList<Integer>();
             if (modifyTermChecks != null) {
 
                 String[] termArray = modifyTermChecks.split(DELIMITER1);
@@ -552,7 +551,7 @@ public class Parameters {
 
             nodes = (NodeList) result;
             howmany = nodes.getLength();
-            SearchCriteria.termSpecialInputs = new Hashtable<String,String>();
+            SearchCriteria.termSpecialInputs = new HashMap<String,String>();
 
             for (int i = 0; i < howmany; i++) {
                 SearchCriteria.termSpecialInputs.put(xpath.evaluate("@keyword", nodes.item(i)), xpath.evaluate("./option[@lang='"+lang+"']", nodes.item(i)));
@@ -567,7 +566,7 @@ public class Parameters {
 
             nodes = (NodeList) result;
             howmany = nodes.getLength();
-            SearchCriteria.hierarchySpecialInputs = new Hashtable<String,String>();
+            SearchCriteria.hierarchySpecialInputs = new HashMap<String,String>();
 
             for (int i = 0; i < howmany; i++) {
                 SearchCriteria.hierarchySpecialInputs.put(xpath.evaluate("@keyword", nodes.item(i)), xpath.evaluate("./option[@lang='"+lang+"']", nodes.item(i)));
@@ -582,7 +581,7 @@ public class Parameters {
 
             nodes = (NodeList) result;
             howmany = nodes.getLength();
-            SearchCriteria.facetSpecialInputs = new Hashtable<String,String>();
+            SearchCriteria.facetSpecialInputs = new HashMap<String,String>();
 
             for (int i = 0; i < howmany; i++) {
                 SearchCriteria.facetSpecialInputs.put(xpath.evaluate("@keyword", nodes.item(i)), xpath.evaluate("./option[@lang='"+lang+"']", nodes.item(i)));
@@ -597,7 +596,7 @@ public class Parameters {
 
             nodes = (NodeList) result;
             howmany = nodes.getLength();
-            SearchCriteria.sourceSpecialInputs = new Hashtable<String,String>();
+            SearchCriteria.sourceSpecialInputs = new HashMap<String,String>();
 
             for (int i = 0; i < howmany; i++) {
                 SearchCriteria.sourceSpecialInputs.put(xpath.evaluate("@keyword", nodes.item(i)), xpath.evaluate("./option[@lang='"+lang+"']", nodes.item(i)));

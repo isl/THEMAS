@@ -217,11 +217,11 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
 
                 if (retAllowContinue == TMSAPIClass.TMS_APISucc) {
 
-                    Vector<String> modifiedNodes = new Vector<String>();
+                    ArrayList<String> modifiedNodes = new ArrayList<String>();
 
-                    Vector<String> bts_vec = new Vector<String>();
-                    Vector<String> nts_vec = new Vector<String>();
-                    Vector<String> rts_vec = new Vector<String>();
+                    ArrayList<String> bts_vec = new ArrayList<String>();
+                    ArrayList<String> nts_vec = new ArrayList<String>();
+                    ArrayList<String> rts_vec = new ArrayList<String>();
                     bts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.bt_kwd, Q,TA, sis_session);
                     nts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.nt_kwd, Q,TA, sis_session);
                     rts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.rt_kwd, Q,TA, sis_session);

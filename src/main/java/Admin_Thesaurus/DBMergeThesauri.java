@@ -54,13 +54,14 @@ import Utils.Parameters;
 import Utils.SortItem;
 
 import java.io.IOException;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.Iterator;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
@@ -78,7 +79,7 @@ public class DBMergeThesauri {
 
     public boolean CreateThesaurus(DBGeneral dbGen, ConfigDBadmin config, CommonUtilsDBadmin common_utils,
             String mergedThesaurusName, String mergedThesaurusNameDBformatted,
-            Vector<String> thesauriNames, StringObject CreateThesaurusResultMessage,
+            ArrayList<String> thesauriNames, StringObject CreateThesaurusResultMessage,
             String backUpDescription, StringObject DBbackupFileNameCreated) {
 
         QClass Q = new QClass();
@@ -166,8 +167,8 @@ public class DBMergeThesauri {
         //Step2: collect Guide term Relations
         //Step3: perform creation        
         //data structures that need to be prepared
-        Vector<String> allGuideTerms = new Vector<String>(); //Filled in step: 1
-        Hashtable<String, Vector<SortItem>> guideTermsRelations = new Hashtable<String, Vector<SortItem>>();//filled in step: 2
+        ArrayList<String> allGuideTerms = new ArrayList<String>(); //Filled in step: 1
+        HashMap<String, ArrayList<SortItem>> guideTermsRelations = new HashMap<String, ArrayList<SortItem>>();//filled in step: 2
 
         //tools
         Utilities u = new Utilities();
@@ -183,8 +184,8 @@ public class DBMergeThesauri {
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
 
         //Parrallel Vectors that will hold all guide termed links data
-        Vector<String> bts = new Vector<String>();
-        Vector<SortItem> nts = new Vector<SortItem>();
+        ArrayList<String> bts = new ArrayList<String>();
+        ArrayList<SortItem> nts = new ArrayList<SortItem>();
 
         StringObject BTFromObj = new StringObject();
         StringObject BTLinkObj = new StringObject();
@@ -207,7 +208,7 @@ public class DBMergeThesauri {
         //IntegerObject uniq_categ = new IntegerObject();
         //IntegerObject traversed = new IntegerObject();
         //CMValue cmv = new CMValue();
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if (Q.bulk_return_full_link(set_all_guide_termed_links_thes1, retFLVals) != QClass.APIFail) {
             for (Return_Full_Link_Row row : retFLVals) {
                 //while (Q.retur_full_link(set_all_guide_termed_links_thes1, cls, label, categ, fromcls, cmv, uniq_categ, traversed) != QClass.APIFail) {
@@ -303,14 +304,14 @@ public class DBMergeThesauri {
             SortItem targetSortItem = nts.get(i);
             String guideTerm = targetSortItem.getLinkClass();
             if (guideTermsRelations.containsKey(targetTerm) == false) {
-                Vector<SortItem> newEntry = new Vector<SortItem>();
+                ArrayList<SortItem> newEntry = new ArrayList<SortItem>();
                 newEntry.add(targetSortItem);
                 guideTermsRelations.put(targetTerm, newEntry);
                 if (allGuideTerms.contains(guideTerm) == false) {
                     allGuideTerms.add(guideTerm);
                 }
             } else {
-                Vector<SortItem> currentValues = guideTermsRelations.get(targetTerm);
+                ArrayList<SortItem> currentValues = guideTermsRelations.get(targetTerm);
                 int indexOfTestSortItem = indexOfSortItemLogNameInVector(currentValues, targetSortItem);
                 if (indexOfTestSortItem == -1) {
                     //this nt value did not exist so add it
@@ -346,7 +347,7 @@ public class DBMergeThesauri {
 
     }
 
-    public int indexOfSortItemLogNameInVector(Vector<SortItem> currentValues, SortItem testItem) {
+    public int indexOfSortItemLogNameInVector(ArrayList<SortItem> currentValues, SortItem testItem) {
 
         String testItemLogName = testItem.getLogName();
         int currentValuesSize = currentValues.size();
@@ -361,7 +362,7 @@ public class DBMergeThesauri {
 
     public boolean CreateGuideTerms(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            Vector<String> allGuideTerms, Hashtable<String, Vector<SortItem>> guideTermsRelations,
+            ArrayList<String> allGuideTerms, HashMap<String, ArrayList<SortItem>> guideTermsRelations,
             String mergedThesaurusName, StringObject resultObj) {
 
         UsersClass wtmsUsers = new UsersClass();
@@ -395,8 +396,8 @@ public class DBMergeThesauri {
         DBCreate_Modify_Term creation_modificationOfTerm = new DBCreate_Modify_Term();
         int linkRelations = 0;
         int homanyterms = guideTermsRelations.size();
-        Enumeration<String> XMLguideTermsEnum = guideTermsRelations.keys();
-        while (XMLguideTermsEnum.hasMoreElements()) {
+        Iterator<String> XMLguideTermsEnum = guideTermsRelations.keySet().iterator();
+        while (XMLguideTermsEnum.hasNext()) {
             if (linkRelations % restartInterval == 0) {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Terms gt update counter: " + linkRelations + " of " + homanyterms + "   ");
@@ -404,13 +405,13 @@ public class DBMergeThesauri {
                 }
             }
             linkRelations++;
-            String targetTerm = XMLguideTermsEnum.nextElement();
-            Vector<SortItem> targetTermNtsforChange = new Vector<SortItem>();
+            String targetTerm = XMLguideTermsEnum.next();
+            ArrayList<SortItem> targetTermNtsforChange = new ArrayList<SortItem>();
             targetTermNtsforChange.addAll(guideTermsRelations.get(targetTerm));
 
             //additional structures in order to reuse code for term editing
-            Vector<String> ntsDecodedValues = new Vector<String>();
-            Vector<String> GuideTermsDecodedValues = new Vector<String>();
+            ArrayList<String> ntsDecodedValues = new ArrayList<String>();
+            ArrayList<String> GuideTermsDecodedValues = new ArrayList<String>();
             int howmanyGuideTermNts = targetTermNtsforChange.size();
             for (int i = 0; i < howmanyGuideTermNts; i++) {
                 SortItem currentSortItem = targetTermNtsforChange.get(i);
@@ -444,21 +445,21 @@ public class DBMergeThesauri {
 
         //THEMASUserInfo SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         //Get Facets of Thesaurus 1
-        Vector<String> facets_thes1 = new Vector<String>();
+        ArrayList<String> facets_thes1 = new ArrayList<String>();
         facets_thes1.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, thesaurusName1, null));
 
         //Get Facets of Thesaurus 2
-        Vector<String> facets_thes2 = new Vector<String>();
+        ArrayList<String> facets_thes2 = new ArrayList<String>();
         if (thesaurusName2 != null) { // in oredr to support copy mode -> no second name is given
             facets_thes2.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, thesaurusName2, null));
         }
 
         //Get All Facets of New merged thesaurus --> UNCLASSFIED TERMS 
-        Vector<String> mergedFacetNames = new Vector<String>();
+        ArrayList<String> mergedFacetNames = new ArrayList<String>();
         mergedFacetNames.addAll(ReadThesaurusFacets(refSessionUserInfo, Q, sis_session, mergedThesaurusName, null));
 
         //prepare return Vector which will contain only Facets not included in Merged Thesaurus -- duplicate elimination
-        Vector<String> merged_thesaurus_NEW_facets = new Vector<String>();
+        ArrayList<String> merged_thesaurus_NEW_facets = new ArrayList<String>();
         for (int i = 0; i < facets_thes1.size(); i++) {
             if (mergedFacetNames.contains(facets_thes1.get(i)) == false) {
                 merged_thesaurus_NEW_facets.add(facets_thes1.get(i));
@@ -475,7 +476,7 @@ public class DBMergeThesauri {
 
     }
 
-    public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, Vector<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
+    public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, ArrayList<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
         String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
@@ -503,7 +504,7 @@ public class DBMergeThesauri {
                                                    TMSAPIClass TA, 
                                                    IntegerObject sis_session, 
                                                    IntegerObject tms_session, 
-                                                   Vector<SortItem> merged_thesaurus_NEW_facets, 
+                                                   ArrayList<SortItem> merged_thesaurus_NEW_facets, 
                                                    StringObject resultObj,
                                                    boolean resolveError,
                                                    OutputStreamWriter logFileWriter,
@@ -537,22 +538,22 @@ public class DBMergeThesauri {
         //Start Hierarchies merging
         //if a hierarchy is not under at least one facet (in both thesauri) add it to defaultFacetObj
         //read hiers of thesaurus 1 and thesaurus 2
-        Hashtable<String, Vector<String>> pairsOfThesaurus1 = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, thesaurusName1, null);
-        Hashtable<String, Vector<String>> pairsOfThesaurus2 = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, thesaurusName2, null);
+        HashMap<String, ArrayList<String>> pairsOfThesaurus1 = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, thesaurusName1, null);
+        HashMap<String, ArrayList<String>> pairsOfThesaurus2 = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, thesaurusName2, null);
 
         //read hiers of  merged thesaurus
-        Hashtable<String, Vector<String>> pairsOfMergedThesaurus = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, mergeThesaurus, null);
+        HashMap<String, ArrayList<String>> pairsOfMergedThesaurus = ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, mergeThesaurus, null);
 
         //add hiers of thesaurus 1 to merged thesaurus structure
-        Enumeration<String> pairsEnum1 = pairsOfThesaurus1.keys();
-        while (pairsEnum1.hasMoreElements()) {
-            String hierarchy = pairsEnum1.nextElement();
-            Vector<String> thes1Vals = pairsOfThesaurus1.get(hierarchy);
+        Iterator<String> pairsEnum1 = pairsOfThesaurus1.keySet().iterator();
+        while (pairsEnum1.hasNext()) {
+            String hierarchy = pairsEnum1.next();
+            ArrayList<String> thes1Vals = pairsOfThesaurus1.get(hierarchy);
 
             if (pairsOfMergedThesaurus.containsKey(hierarchy) == false) {
                 pairsOfMergedThesaurus.put(hierarchy, thes1Vals);
             } else {
-                Vector<String> mergedVals = pairsOfMergedThesaurus.get(hierarchy);
+                ArrayList<String> mergedVals = pairsOfMergedThesaurus.get(hierarchy);
 
                 for (int i = 0; i < thes1Vals.size(); i++) {
                     if (mergedVals.contains(thes1Vals) == false) {
@@ -565,15 +566,15 @@ public class DBMergeThesauri {
 
         //add hiers of thesaurus 2 to merged thesaurus structure (containing hiers of thes1)
         if (thesaurusName2 != null) {
-            Enumeration<String> pairsEnum2 = pairsOfThesaurus2.keys();
-            while (pairsEnum2.hasMoreElements()) {
-                String hierarchy = pairsEnum2.nextElement();
-                Vector<String> thes2Vals = pairsOfThesaurus2.get(hierarchy);
+            Iterator<String> pairsEnum2 = pairsOfThesaurus2.keySet().iterator();
+            while (pairsEnum2.hasNext()) {
+                String hierarchy = pairsEnum2.next();
+                ArrayList<String> thes2Vals = pairsOfThesaurus2.get(hierarchy);
 
                 if (pairsOfMergedThesaurus.containsKey(hierarchy) == false) {
                     pairsOfMergedThesaurus.put(hierarchy, thes2Vals);
                 } else {
-                    Vector<String> mergedVals = pairsOfMergedThesaurus.get(hierarchy);
+                    ArrayList<String> mergedVals = pairsOfMergedThesaurus.get(hierarchy);
 
                     for (int i = 0; i < thes2Vals.size(); i++) {
                         if (mergedVals.contains(thes2Vals) == false) {
@@ -603,7 +604,7 @@ public class DBMergeThesauri {
 
     public boolean CreateHierarchies(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String targetThesaurus, String defaultFacet, Locale targetLocale, StringObject resultObj, OutputStreamWriter logFileWriter,
-            Hashtable<String, Vector<String>> pairsOfMergedThesaurus) {
+            HashMap<String, ArrayList<String>> pairsOfMergedThesaurus) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of Hierarchies creation. Time: " + Utilities.GetNow());
         boolean HierarchiesSucceeded = true;
         try {
@@ -625,13 +626,13 @@ public class DBMergeThesauri {
             String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
             StringObject resultMessageObj = new StringObject();
-            //Vector<String> errorArgs = new Vector<String>();
+            //ArrayList<String> errorArgs = new ArrayList<String>();
 
             //Now for each pair of hierarchyplus facets create hierarchy and then change facets. If no facet is declared add hier under default facet
-            Enumeration<String> pairsEnumMerged = pairsOfMergedThesaurus.keys();
-            while (pairsEnumMerged.hasMoreElements()) {
-                String hierarchy = pairsEnumMerged.nextElement();
-                Vector<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
+            Iterator<String> pairsEnumMerged = pairsOfMergedThesaurus.keySet().iterator();
+            while (pairsEnumMerged.hasNext()) {
+                String hierarchy = pairsEnumMerged.next();
+                ArrayList<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
                 if (underFacets.size() == 0) {
 
                     logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchy) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacet) + "</errorValue>");
@@ -686,7 +687,7 @@ public class DBMergeThesauri {
                                                  SortItem defaultFacet, 
                                                  Locale targetLocale, 
                                                  StringObject resultObj, 
-                                                 Hashtable<SortItem, Vector<String>> pairsOfMergedThesaurus,
+                                                 HashMap<SortItem, ArrayList<String>> pairsOfMergedThesaurus,
                                                  
                                                  boolean resolveError,
                                                  OutputStreamWriter logFileWriter, 
@@ -718,13 +719,13 @@ public class DBMergeThesauri {
                 defaultFacetNameWithoutPrefix = dbGen.removePrefix(defaultFacetNameWithoutPrefix);
             }
             StringObject resultMessageObj = new StringObject();
-            //Vector<String> errorArgs = new Vector<String>();
+            //ArrayList<String> errorArgs = new ArrayList<String>();
 
             //Now for each pair of hierarchyplus facets create hierarchy and then change facets. If no facet is declared add hier under default facet
-            Enumeration<SortItem> pairsEnumMerged = pairsOfMergedThesaurus.keys();
-            while (pairsEnumMerged.hasMoreElements()) {
-                SortItem hierarchy = pairsEnumMerged.nextElement();
-                Vector<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
+            Iterator<SortItem> pairsEnumMerged = pairsOfMergedThesaurus.keySet().iterator();
+            while (pairsEnumMerged.hasNext()) {
+                SortItem hierarchy = pairsEnumMerged.next();
+                ArrayList<String> underFacets = pairsOfMergedThesaurus.get(hierarchy);
                 
                 String hierarchyNameWithoutPrefix = hierarchy.getLogName();
                 if(hierarchyNameWithoutPrefix.startsWith(prefix_class)){
@@ -878,7 +879,7 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying translations in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            Vector<String> errorProneUFs = new Vector<String>();
+            ArrayList<String> errorProneUFs = new ArrayList<String>();
             errorProneUFs.addAll(CollectErrorProneUfs(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of copying UFs.");
@@ -899,7 +900,7 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of copying UFs in time: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            Vector<String> errorProneUFTranslations = new Vector<String>();
+            ArrayList<String> errorProneUFTranslations = new ArrayList<String>();
 
             if (Parameters.TermModificationChecks.contains(18)) {
                 errorProneUFTranslations.addAll(CollectErrorProneUFTranslations(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null, logFileWriter));
@@ -1080,7 +1081,7 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging translations in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            Vector<String> errorProneUFs = new Vector<String>();
+            ArrayList<String> errorProneUFs = new ArrayList<String>();
             errorProneUFs.addAll(CollectErrorProneUfs(refSessionUserInfo, Q, sis_session, sourceThesaurusName1, sourceThesaurusName2, logFileWriter));
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tStart of mergis UFs.");
             keepCopying = CopySimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, sourceThesaurusName1, sourceThesaurusName2, mergedThesaurusName, logFileWriter, ConstantParameters.uf_kwd, errorProneUFs, resultObj, ConsistencyCheckPolicy);
@@ -1095,7 +1096,7 @@ public class DBMergeThesauri {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\tEnd of merging UFs in: " + elapsedTimeSec + " min.");
             logFileWriter.flush();
             startTime = System.currentTimeMillis();
-            Vector<String> errorProneUFTranslations = new Vector<String>();
+            ArrayList<String> errorProneUFTranslations = new ArrayList<String>();
 
             if (Parameters.TermModificationChecks.contains(18)) {
                 errorProneUFTranslations.addAll(CollectErrorProneUFTranslations(refSessionUserInfo, Q, sis_session, sourceThesaurusName1, sourceThesaurusName2, logFileWriter));
@@ -1176,8 +1177,8 @@ public class DBMergeThesauri {
         return keepCopying;
     }
 
-    public Vector<String> ReadThesaurusGuideTerms(String selectedThesaurus, QClass Q, IntegerObject sis_session, String thesaurusName) {
-        Vector<String> thesaurus_guideTerms = new Vector<String>();
+    public ArrayList<String> ReadThesaurusGuideTerms(String selectedThesaurus, QClass Q, IntegerObject sis_session, String thesaurusName) {
+        ArrayList<String> thesaurus_guideTerms = new ArrayList<String>();
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -1186,19 +1187,19 @@ public class DBMergeThesauri {
         return thesaurus_guideTerms;
     }
 
-    public Vector<String> ReadThesaurusFacets(UserInfoClass refSessionUserInfo,
+    public ArrayList<String> ReadThesaurusFacets(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
 
-        Vector<String> returnResults = new Vector<String>();
+        ArrayList<String> returnResults = new ArrayList<String>();
         returnResults.addAll(Utilities.getStringVectorFromSortItemVector(ReadThesaurusFacetsInSortItems(refSessionUserInfo,Q,sis_session,thesaurusName1,thesaurusName2)));
         return returnResults;
     }
 
-    public Vector<SortItem> ReadThesaurusFacetsInSortItems(UserInfoClass refSessionUserInfo,
+    public ArrayList<SortItem> ReadThesaurusFacetsInSortItems(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
 
         DBGeneral dbGen = new DBGeneral();
-        Vector<SortItem> thesaurus_facets = new Vector<SortItem>();
+        ArrayList<SortItem> thesaurus_facets = new ArrayList<SortItem>();
 
         //update all fields in order to keep it in consistent state
         UsersClass wtmsUsers = new UsersClass();
@@ -1214,7 +1215,7 @@ public class DBMergeThesauri {
         Q.reset_set(set_facets);
 
         
-        thesaurus_facets.addAll(dbGen.get_Node_SortItems_Of_Set(set_facets, true, Q, sis_session));
+        thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_facets, true, Q, sis_session));
         Q.free_set(set_facets);
 
         if (thesaurusName2 != null && thesaurusName2.length() > 0 && thesaurusName2.equals(thesaurusName1) == false) {
@@ -1229,11 +1230,11 @@ public class DBMergeThesauri {
             set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
             Q.reset_set(set_facets);
 
-            Vector<SortItem> thesaurus_facetsOfThes2 = new Vector<SortItem>();
-            thesaurus_facetsOfThes2.addAll(dbGen.get_Node_SortItems_Of_Set(set_facets, true, Q, sis_session));
+            ArrayList<SortItem> thesaurus_facetsOfThes2 = new ArrayList<SortItem>();
+            thesaurus_facetsOfThes2.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_facets, true, Q, sis_session));
             Q.free_set(set_facets);
             
-            Vector<String> thesaurus_facetsOfThes1Strs = new Vector<String>();
+            ArrayList<String> thesaurus_facetsOfThes1Strs = new ArrayList<String>();
             if(thesaurus_facets!=null){
                 for(SortItem item: thesaurus_facets){
                     thesaurus_facetsOfThes1Strs.add(item.getLogName());
@@ -1258,7 +1259,7 @@ public class DBMergeThesauri {
     }
     
     public void ReadTheasaurusTermCommentCategories(UserInfoClass refSessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            String thesaurusName1, String thesaurusName2, Hashtable<String, NodeInfoStringContainer> termsInfo) {
+            String thesaurusName1, String thesaurusName2, HashMap<String, NodeInfoStringContainer> termsInfo) {
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
@@ -1279,7 +1280,7 @@ public class DBMergeThesauri {
         int set_terms = dbGen.get_Instances_Set(termClasses, Q, sis_session);
         Q.reset_set(set_terms);
 
-        Vector<String> termsOfThes1 = new Vector<String>();
+        ArrayList<String> termsOfThes1 = new ArrayList<String>();
         termsOfThes1.addAll(dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session));
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tREADING COMMENT CATEGORIES FROM " + thesaurusName1 + ".");
@@ -1296,7 +1297,7 @@ public class DBMergeThesauri {
         StringObject classObj = new StringObject();
 
         //SCOPE NOTES 
-        Vector<String> terms_with_sn_Vec = new Vector<String>();
+        ArrayList<String> terms_with_sn_Vec = new ArrayList<String>();
 
         Q.reset_name_scope();
 
@@ -1308,7 +1309,7 @@ public class DBMergeThesauri {
         Q.reset_set(set_terms_with_sn);
         Q.free_set(set_all_links_sn);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_terms_with_sn, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 String targetTerm = row.get_v1_cls_logicalname();
@@ -1347,7 +1348,7 @@ public class DBMergeThesauri {
         }
 
         //Trnaslation SCOPE NOTES
-        Vector<String> terms_with_sn_TR_Vec = new Vector<String>();
+        ArrayList<String> terms_with_sn_TR_Vec = new ArrayList<String>();
         Q.reset_name_scope();
 
         Q.set_current_node(scopenote_TR_FromClassObj);
@@ -1389,8 +1390,8 @@ public class DBMergeThesauri {
             TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, scopenote_TR_FromClassObj, scopenote_TR_LinkObj);
 
             if (commentObject.getValue().length() > 0) {
-                Hashtable<String, String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
-                Vector<String> langCodes = new Vector<String>(trSns.keySet());
+                HashMap<String, String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
+                ArrayList<String> langCodes = new ArrayList<String>(trSns.keySet());
                 Collections.sort(langCodes);
                 for (int m = 0; m < langCodes.size(); m++) {
                     String lang = langCodes.get(m);
@@ -1408,7 +1409,7 @@ public class DBMergeThesauri {
         }
 
         //HISTORICAL NOTES
-        Vector<String> terms_with_hn_Vec = new Vector<String>();
+        ArrayList<String> terms_with_hn_Vec = new ArrayList<String>();
         Q.reset_name_scope();
 
         Q.set_current_node(historicalnoteFromClassObj);
@@ -1462,26 +1463,26 @@ public class DBMergeThesauri {
          NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
          if(targetInfo.descriptorInfo.containsKey(ConstantParameters.scope_note_kwd)){
          Q.reset_name_scope();
-         Vector<String> scopeNote = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q, sis_session);
+         ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q, sis_session);
          targetInfo.descriptorInfo.put(ConstantParameters.scope_note_kwd, scopeNote);
          }
 
          if(targetInfo.descriptorInfo.containsKey(ConstantParameters.comment_kwd)){
          Q.reset_name_scope();
-         Vector<String> comment = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, sis_session);
+         ArrayList<String> comment = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, sis_session);
          targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comment);
 
          }
 
          if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)){
          Q.reset_name_scope();
-         Vector<String> trSn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, sis_session);
+         ArrayList<String> trSn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, sis_session);
          targetInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, trSn);
          }
 
          if(targetInfo.descriptorInfo.containsKey(ConstantParameters.historical_note_kwd)){
          Q.reset_name_scope();
-         Vector<String> hn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, sis_session);
+         ArrayList<String> hn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, sis_session);
          targetInfo.descriptorInfo.put(ConstantParameters.historical_note_kwd, hn);
          }
          }
@@ -1497,7 +1498,7 @@ public class DBMergeThesauri {
             set_terms = dbGen.get_Instances_Set(termClasses, Q, sis_session);
             Q.reset_set(set_terms);
 
-            Vector<String> termsOfThes2 = new Vector<String>();
+            ArrayList<String> termsOfThes2 = new ArrayList<String>();
             termsOfThes2.addAll(dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session));
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tREADING COMMENT CATEGORIES FROM " + thesaurusName2 + ".");
@@ -1514,8 +1515,8 @@ public class DBMergeThesauri {
                 NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
                 if (targetInfo.descriptorInfo.containsKey(ConstantParameters.scope_note_kwd)) {
                     Q.reset_name_scope();
-                    Vector<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
-                    Vector<String> scopeNote = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
+                    ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q, TA, sis_session);
                     if (existing.size() == 1) {
                         String finalVal = "";
 
@@ -1553,8 +1554,8 @@ public class DBMergeThesauri {
 
                 if (targetInfo.descriptorInfo.containsKey(ConstantParameters.comment_kwd)) {
                     Q.reset_name_scope();
-                    Vector<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
-                    Vector<String> comments = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
+                    ArrayList<String> comments = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, TA, sis_session);
                     if (existing.size() == 1) {
                         String finalVal = "";
 
@@ -1594,8 +1595,8 @@ public class DBMergeThesauri {
                 if (targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)) {
                     Q.reset_name_scope();
 
-                    Vector<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
-                    Vector<String> trSn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+                    ArrayList<String> trSn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
                     if (existing.size() == 1) {
                         String finalVal = "";
 
@@ -1634,8 +1635,8 @@ public class DBMergeThesauri {
 
                 if (targetInfo.descriptorInfo.containsKey(ConstantParameters.historical_note_kwd)) {
                     Q.reset_name_scope();
-                    Vector<String> hn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, TA, sis_session);
-                    Vector<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.historical_note_kwd);
+                    ArrayList<String> hn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.historical_note_kwd);
 
                     if (existing.size() == 1) {
                         String finalVal = "";
@@ -1676,7 +1677,7 @@ public class DBMergeThesauri {
     }
 
     public void ReadThesaursTermStatuses(QClass Q, IntegerObject sis_session,
-            String thesaurusName1, String thesaurusName2, Hashtable<String, NodeInfoStringContainer> termsInfo) {
+            String thesaurusName1, String thesaurusName2, HashMap<String, NodeInfoStringContainer> termsInfo) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
 
@@ -1685,10 +1686,10 @@ public class DBMergeThesauri {
         StringObject THESstatusForReinspection = new StringObject();
         StringObject THESstatusForApproval = new StringObject();
         StringObject THESstatusApproved = new StringObject();
-        Vector<StringObject> allStatuses = new Vector<StringObject>();
+        ArrayList<StringObject> allStatuses = new ArrayList<StringObject>();
 
         //READING FROM THES1
-        //ALSO READ IDS OF STATUS CLASSES IN NEW MERGED THESAURUS --> KEEP THESE IDS IN HASHTABLE merged_thesaurus_status_classIds
+        //ALSO READ IDS OF STATUS CLASSES IN NEW MERGED THESAURUS --> KEEP THESE IDS IN HashMap merged_thesaurus_status_classIds
         /*UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
          wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
          */
@@ -1730,9 +1731,9 @@ public class DBMergeThesauri {
             Q.reset_set(set_all_such_terms);
             //StringObject nodeName = new StringObject();
 
-            Vector<String> termsWithThisStatus = new Vector<String>();
+            ArrayList<String> termsWithThisStatus = new ArrayList<String>();
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set_all_such_terms, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     String UIName = dbGen.removePrefix(row.get_v1_cls_logicalname());
@@ -1801,9 +1802,9 @@ public class DBMergeThesauri {
                 Q.reset_set(set_all_such_terms);
                 //StringObject nodeName = new StringObject();
 
-                Vector<String> termsWithThisStatus = new Vector<String>();
+                ArrayList<String> termsWithThisStatus = new ArrayList<String>();
 
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if (Q.bulk_return_nodes(set_all_such_terms, retVals) != QClass.APIFail) {
                     for (Return_Nodes_Row row : retVals) {
                         String UIName = dbGen.removePrefix(row.get_v1_cls_logicalname());
@@ -1822,7 +1823,7 @@ public class DBMergeThesauri {
                     if (termsInfo.containsKey(targetTerm)) {
                         NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
                         if (targetInfo.descriptorInfo.containsKey(ConstantParameters.status_kwd)) {
-                            Vector<String> existingStatuses = targetInfo.descriptorInfo.get(ConstantParameters.status_kwd);
+                            ArrayList<String> existingStatuses = targetInfo.descriptorInfo.get(ConstantParameters.status_kwd);
                             if (existingStatuses.size() == 1) {
                                 String existingStatusStr = existingStatuses.get(0);
                                 int existingStatusPriority = this.getStatusPriority(existingStatusStr, thesaurusName2);
@@ -1849,7 +1850,7 @@ public class DBMergeThesauri {
 
     public void ReadThesaurusSources(UserInfoClass refSessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            Hashtable<String, String> XMLsources) {
+            HashMap<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
@@ -1863,7 +1864,7 @@ public class DBMergeThesauri {
         Q.set_current_node(SourceObj);
         int set_sources = Q.get_all_instances(0);
         Q.reset_set(set_sources);
-        Vector<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
+        ArrayList<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
         Q.free_set(set_sources);
         Collections.sort(sourceNames);
 
@@ -1877,7 +1878,7 @@ public class DBMergeThesauri {
         int set_sources_with_source_note = Q.get_from_value(set_source_note_links);
         Q.reset_set(set_sources_with_source_note);
 
-        Vector<String> sourcesWithSourceNote = dbGen.get_Node_Names_Of_Set(set_sources_with_source_note, true, Q, sis_session);
+        ArrayList<String> sourcesWithSourceNote = dbGen.get_Node_Names_Of_Set(set_sources_with_source_note, true, Q, sis_session);
         Q.free_set(set_sources_with_source_note);
         Q.free_set(set_source_note_links);
 
@@ -1911,15 +1912,15 @@ public class DBMergeThesauri {
 
     public void ReadThesaurusTerms(UserInfoClass refSessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, String thesaurusName1, String thesaurusName2,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> guideTerms,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+            HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> guideTerms,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
-        Vector<String> allTerms = new Vector<String>();
+        ArrayList<String> allTerms = new ArrayList<String>();
 
         String[] output = Utilities.getSortedTermAllOutputArray();
 
-        Vector<String> outputVec = new Vector<String>();
+        ArrayList<String> outputVec = new ArrayList<String>();
         for (int k = 0; k < output.length; k++) {
             outputVec.add(output[k]);
         }
@@ -1945,7 +1946,7 @@ public class DBMergeThesauri {
          IntegerObject categID = new IntegerObject();
          */
         StringObject BTLinkObj = new StringObject();
-        Hashtable<String, String> kewyWordsMappings = new Hashtable<String, String>();
+        HashMap<String, String> kewyWordsMappings = new HashMap<String, String>();
         dbGen.applyKeywordMappings(SessionUserInfo.selectedThesaurus, Q, sis_session, output, kewyWordsMappings);
         dbtr.getThesaurusCategory_BT(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
 
@@ -1959,7 +1960,7 @@ public class DBMergeThesauri {
 
         Q.reset_set(set_from_links);
 
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if (Q.bulk_return_full_link_id(set_from_links, retFLIVals) != QClass.APIFail) {
 
             for (Return_Full_Link_Id_Row row : retFLIVals) {
@@ -2060,9 +2061,9 @@ public class DBMergeThesauri {
                     //guide terms
                     if (category.length() > 0) {
                         if (XMLguideTermsRelations.containsKey(value) == false) {
-                            XMLguideTermsRelations.put(value, new Vector<SortItem>());
+                            XMLguideTermsRelations.put(value, new ArrayList<SortItem>());
                         }
-                        Vector<SortItem> existingRelations = XMLguideTermsRelations.get(value);
+                        ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(value);
                         existingRelations.add(targetTermSortItem);
                         XMLguideTermsRelations.put(value, existingRelations);
                     }
@@ -2171,9 +2172,9 @@ public class DBMergeThesauri {
          //guide terms
          if (category.length() > 0) {
          if (XMLguideTermsRelations.containsKey(value) == false) {
-         XMLguideTermsRelations.put(value, new Vector<SortItem>());
+         XMLguideTermsRelations.put(value, new ArrayList<SortItem>());
          }
-         Vector<SortItem> existingRelations = XMLguideTermsRelations.get(value);
+         ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(value);
          existingRelations.add(targetTermSortItem);
          XMLguideTermsRelations.put(value, existingRelations);
          }
@@ -2295,7 +2296,7 @@ public class DBMergeThesauri {
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
-                        Vector<String> nts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd);
+                        ArrayList<String> nts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd);
                         if (nts.contains(targetTerm) == false) {
                             nts.add(targetTerm);
                             termsInfo.get(value).descriptorInfo.put(ConstantParameters.nt_kwd, nts);
@@ -2304,9 +2305,9 @@ public class DBMergeThesauri {
                         //guide terms
                         if (category.length() > 0) {
                             if (XMLguideTermsRelations.containsKey(value) == false) {
-                                XMLguideTermsRelations.put(value, new Vector<SortItem>());
+                                XMLguideTermsRelations.put(value, new ArrayList<SortItem>());
                             }
-                            Vector<SortItem> existingRelations = XMLguideTermsRelations.get(value);
+                            ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(value);
                             existingRelations.add(targetTermSortItem);
                             XMLguideTermsRelations.put(value, existingRelations);
                         }
@@ -2319,7 +2320,7 @@ public class DBMergeThesauri {
                             allTerms.add(value);
                         }
 
-                        Vector<String> rts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd);
+                        ArrayList<String> rts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd);
                         if (rts.contains(targetTerm) == false) {
                             rts.add(targetTerm);
                             termsInfo.get(value).descriptorInfo.put(ConstantParameters.rt_kwd, rts);
@@ -2413,7 +2414,7 @@ public class DBMergeThesauri {
              termsInfo.put(value, newContainer);
              allTerms.add(value);
              }
-             Vector<String> nts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd);
+             ArrayList<String> nts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd);
              if (nts.contains(targetTerm) == false) {
              nts.add(targetTerm);
              termsInfo.get(value).descriptorInfo.put(ConstantParameters.nt_kwd, nts);
@@ -2423,9 +2424,9 @@ public class DBMergeThesauri {
              //guide terms
              if (category.length() > 0) {
              if (XMLguideTermsRelations.containsKey(value) == false) {
-             XMLguideTermsRelations.put(value, new Vector<SortItem>());
+             XMLguideTermsRelations.put(value, new ArrayList<SortItem>());
              }
-             Vector<SortItem> existingRelations = XMLguideTermsRelations.get(value);
+             ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(value);
              existingRelations.add(targetTermSortItem);
              XMLguideTermsRelations.put(value, existingRelations);
              }
@@ -2440,7 +2441,7 @@ public class DBMergeThesauri {
              allTerms.add(value);
              }
 
-             Vector<String> rts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd);
+             ArrayList<String> rts = termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd);
              if (rts.contains(targetTerm) == false) {
              rts.add(targetTerm);
              termsInfo.get(value).descriptorInfo.put(ConstantParameters.rt_kwd, rts);
@@ -2463,11 +2464,11 @@ public class DBMergeThesauri {
         return;
     }
 
-    public Hashtable<String, Vector<String>> ReadThesaurusHierarchies(UserInfoClass refSessionUserInfo,
+    public HashMap<String, ArrayList<String>> ReadThesaurusHierarchies(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
 
         if (thesaurusName1 == null) { // supporting copy operation
-            return new Hashtable<String, Vector<String>>();
+            return new HashMap<String, ArrayList<String>>();
         }
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
@@ -2487,7 +2488,7 @@ public class DBMergeThesauri {
         int set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
         Q.reset_set(set_hierarchies);
 
-        Vector<String> hierarchyNames = new Vector<String>();
+        ArrayList<String> hierarchyNames = new ArrayList<String>();
         hierarchyNames.addAll(dbGen.get_Node_Names_Of_Set(set_hierarchies, true, Q, sis_session));
         Q.free_set(set_hierarchies);
 
@@ -2500,11 +2501,11 @@ public class DBMergeThesauri {
         int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
         Q.reset_set(set_facets);
 
-        Hashtable<String, Vector<String>> thesaurus_hierarchy_Facets_Relations = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> thesaurus_hierarchy_Facets_Relations = new HashMap<String, ArrayList<String>>();
 
         for (int i = 0; i < hierarchyNames.size(); i++) {
             StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNames.get(i)));
-            Vector<String> hierarchyFacets = new Vector<String>();
+            ArrayList<String> hierarchyFacets = new ArrayList<String>();
             Q.reset_name_scope();
             if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
                 int set_hierarchy_classes = Q.get_superclasses(0);
@@ -2536,7 +2537,7 @@ public class DBMergeThesauri {
             set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
             Q.reset_set(set_hierarchies);
 
-            Vector<String> hierarchyNamesOfThes2 = new Vector<String>();
+            ArrayList<String> hierarchyNamesOfThes2 = new ArrayList<String>();
             hierarchyNamesOfThes2.addAll(dbGen.get_Node_Names_Of_Set(set_hierarchies, true, Q, sis_session));
             Q.free_set(set_hierarchies);
 
@@ -2550,11 +2551,11 @@ public class DBMergeThesauri {
 
             Q.reset_set(set_facets);
 
-            Hashtable<String, Vector<String>> thesaurus_hierarchy_Facets_RelationsOfThes2 = new Hashtable<String, Vector<String>>();
+            HashMap<String, ArrayList<String>> thesaurus_hierarchy_Facets_RelationsOfThes2 = new HashMap<String, ArrayList<String>>();
 
             for (int i = 0; i < hierarchyNamesOfThes2.size(); i++) {
                 StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNamesOfThes2.get(i)));
-                Vector<String> hierarchyFacets = new Vector<String>();
+                ArrayList<String> hierarchyFacets = new ArrayList<String>();
                 Q.reset_name_scope();
                 if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
                     int set_hierarchy_classes = Q.get_superclasses(0);
@@ -2574,14 +2575,14 @@ public class DBMergeThesauri {
             Q.free_set(set_facets);
 
             //merge the two thesauri
-            Enumeration<String> secondThesHiers = thesaurus_hierarchy_Facets_RelationsOfThes2.keys();
-            while (secondThesHiers.hasMoreElements()) {
-                String targetHier = secondThesHiers.nextElement();
-                Vector<String> targetHierFacets = thesaurus_hierarchy_Facets_RelationsOfThes2.get(targetHier);
+            Iterator<String> secondThesHiers = thesaurus_hierarchy_Facets_RelationsOfThes2.keySet().iterator();
+            while (secondThesHiers.hasNext()) {
+                String targetHier = secondThesHiers.next();
+                ArrayList<String> targetHierFacets = thesaurus_hierarchy_Facets_RelationsOfThes2.get(targetHier);
 
                 if (thesaurus_hierarchy_Facets_Relations.containsKey(targetHier)) {
 
-                    Vector<String> existingFacets = thesaurus_hierarchy_Facets_Relations.get(targetHier);
+                    ArrayList<String> existingFacets = thesaurus_hierarchy_Facets_Relations.get(targetHier);
 
                     for (int k = 0; k < targetHierFacets.size(); k++) {
                         String checkFacet = targetHierFacets.get(k);
@@ -2599,25 +2600,25 @@ public class DBMergeThesauri {
         return thesaurus_hierarchy_Facets_Relations;
     }
 
-    public Hashtable<String, Vector<String>> ReadNextLevelSetTermsAndBts(QClass Q, IntegerObject sis_session, DBGeneral dbGen,
+    public HashMap<String, ArrayList<String>> ReadNextLevelSetTermsAndBts(QClass Q, IntegerObject sis_session, DBGeneral dbGen,
             int set_next_level_terms, StringObject btFromClassbj, StringObject btLinkObj) {
 
-        Hashtable<String, Vector<String>> nextLevelSet_Terms_and_Bts = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> nextLevelSet_Terms_and_Bts = new HashMap<String, ArrayList<String>>();
 
         //StringObject cls = new StringObject();
         //StringObject label = new StringObject();
         //CMValue cmv = new CMValue();
         Q.reset_name_scope();
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_next_level_terms, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
                 String termName = dbGen.removePrefix(row.get_v1_cls());
                 String btName = dbGen.removePrefix(row.get_v3_cmv().getString());
 
-                Vector<String> otherBts = nextLevelSet_Terms_and_Bts.get(termName);
+                ArrayList<String> otherBts = nextLevelSet_Terms_and_Bts.get(termName);
                 if (otherBts == null) {
-                    otherBts = new Vector<String>();
+                    otherBts = new ArrayList<String>();
                     otherBts.add(btName);
                     nextLevelSet_Terms_and_Bts.put(termName, otherBts);
                 } else {
@@ -2631,9 +2632,9 @@ public class DBMergeThesauri {
          String termName = dbGen.removePrefix(cls.getValue());
          String btName = dbGen.removePrefix(cmv.getString());
 
-         Vector<String> otherBts = nextLevelSet_Terms_and_Bts.get(termName);
+         ArrayList<String> otherBts = nextLevelSet_Terms_and_Bts.get(termName);
          if (otherBts == null) {
-         otherBts = new Vector<String>();
+         otherBts = new ArrayList<String>();
          otherBts.add(btName);
          nextLevelSet_Terms_and_Bts.put(termName, otherBts);
          } else {
@@ -2655,8 +2656,8 @@ public class DBMergeThesauri {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfThes1 = new Vector<Hashtable<String, Vector<String>>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfThes2 = new Vector<Hashtable<String, Vector<String>>>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfThes1 = new ArrayList<HashMap<String, ArrayList<String>>>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfThes2 = new ArrayList<HashMap<String, ArrayList<String>>>();
 
         StringObject topTermObj = new StringObject();
         StringObject btFromClassObj = new StringObject();
@@ -2785,7 +2786,7 @@ public class DBMergeThesauri {
             String pathToErrorsXML,
             String sourceThesaurus,
             OutputStreamWriter logFileWriter, StringObject resultObj,
-            Vector<Hashtable<String, Vector<String>>> allLevelsOfThes) {
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfThes) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -2860,23 +2861,23 @@ public class DBMergeThesauri {
     public boolean CreateTermsLevelByLevel(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML,
             String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, 
-            Vector<Hashtable<String, Vector<String>>> allLevelsOfThes1, Vector<Hashtable<String, Vector<String>>> allLevelsOfThes2, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfThes1, ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfThes2, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
 
-        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes1SortItems = null;
-        Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes2SortItems = null;
+        ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfThes1SortItems = null;
+        ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfThes2SortItems = null;
         if(allLevelsOfThes1!=null){
-            allLevelsOfThes1SortItems = new Vector<Hashtable<SortItem, Vector<SortItem>>> (); 
+            allLevelsOfThes1SortItems = new ArrayList<HashMap<SortItem, ArrayList<SortItem>>> (); 
             
             
-            for(Hashtable<String, Vector<String>> item : allLevelsOfThes1){
+            for(HashMap<String, ArrayList<String>> item : allLevelsOfThes1){
                 
-                Hashtable<SortItem, Vector<SortItem>> levelSortItems = new Hashtable<SortItem,Vector<SortItem>>();
+                HashMap<SortItem, ArrayList<SortItem>> levelSortItems = new HashMap<SortItem,ArrayList<SortItem>>();
                 
-                Enumeration<String> itemKeysEnum = item.keys();
-                while(itemKeysEnum.hasMoreElements()){
-                    String target = itemKeysEnum.nextElement();
-                    Vector<String> targetTermBts = item.get(target);
-                    Vector<SortItem> targetTermBtSortItems = new Vector<SortItem>();
+                Iterator<String> itemKeysEnum = item.keySet().iterator();
+                while(itemKeysEnum.hasNext()){
+                    String target = itemKeysEnum.next();
+                    ArrayList<String> targetTermBts = item.get(target);
+                    ArrayList<SortItem> targetTermBtSortItems = new ArrayList<SortItem>();
                     for(String str : targetTermBts){
                         targetTermBtSortItems.add(new SortItem(str,-1,Utilities.getTransliterationString(str, false),-1));
                     }
@@ -2889,18 +2890,18 @@ public class DBMergeThesauri {
             }
         }
         if(allLevelsOfThes2!=null){
-            allLevelsOfThes2SortItems = new Vector<Hashtable<SortItem, Vector<SortItem>>> (); 
+            allLevelsOfThes2SortItems = new ArrayList<HashMap<SortItem, ArrayList<SortItem>>> (); 
             
             
-            for(Hashtable<String, Vector<String>> item : allLevelsOfThes2){
+            for(HashMap<String, ArrayList<String>> item : allLevelsOfThes2){
                 
-                Hashtable<SortItem, Vector<SortItem>> levelSortItems = new Hashtable<SortItem,Vector<SortItem>>();
+                HashMap<SortItem, ArrayList<SortItem>> levelSortItems = new HashMap<SortItem,ArrayList<SortItem>>();
                 
-                Enumeration<String> itemKeysEnum = item.keys();
-                while(itemKeysEnum.hasMoreElements()){
-                    String target = itemKeysEnum.nextElement();
-                    Vector<String> targetTermBts = item.get(target);
-                    Vector<SortItem> targetTermBtSortItems = new Vector<SortItem>();
+                Iterator<String> itemKeysEnum = item.keySet().iterator();
+                while(itemKeysEnum.hasNext()){
+                    String target = itemKeysEnum.next();
+                    ArrayList<String> targetTermBts = item.get(target);
+                    ArrayList<SortItem> targetTermBtSortItems = new ArrayList<SortItem>();
                     for(String str : targetTermBts){
                         targetTermBtSortItems.add(new SortItem(str,-1,Utilities.getTransliterationString(str, false),-1));
                     }
@@ -2920,8 +2921,8 @@ public class DBMergeThesauri {
                                                       QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML,
                                                       String thesaurusName1, String thesaurusName2, String mergedThesaurusName, 
                                                       OutputStreamWriter logFileWriter, StringObject resultObj, 
-                                                      Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes1, 
-                                                      Vector<Hashtable<SortItem, Vector<SortItem>>> allLevelsOfThes2, 
+                                                      ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfThes1, 
+                                                      ArrayList<HashMap<SortItem, ArrayList<SortItem>>> allLevelsOfThes2, 
                                                       boolean resolveError, 
                                                       int ConsistencyCheckPolicy) 
             throws IOException {
@@ -2976,8 +2977,8 @@ public class DBMergeThesauri {
 
             if (allLevelsOfThes1.size() > i) {
 
-                Enumeration<SortItem> pairsEnumMerged = allLevelsOfThes1.get(i).keys();
-                while (pairsEnumMerged.hasMoreElements()) {
+                Iterator<SortItem> pairsEnumMerged = allLevelsOfThes1.get(i).keySet().iterator();
+                while (pairsEnumMerged.hasNext()) {
 
                     if (termsPerLevel % restartInterval == 0) {
                         if (common_utils != null) {
@@ -2988,7 +2989,7 @@ public class DBMergeThesauri {
                     }
                     termsPerLevel++;
 
-                    SortItem termSortItem = pairsEnumMerged.nextElement();
+                    SortItem termSortItem = pairsEnumMerged.next();
 
                     Q.free_all_sets();
 
@@ -3004,7 +3005,7 @@ public class DBMergeThesauri {
                      int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
                      if (byteArray.length > maxTermChars) {
                      lengthOK = false;
-                     Vector<String> errorArgs = new Vector<String>();
+                     ArrayList<String> errorArgs = new ArrayList<String>();
                      if (resolveError) {
                      StringObject warningMsg = new StringObject();
 
@@ -3051,9 +3052,9 @@ public class DBMergeThesauri {
                     
 
                     Q.reset_name_scope();
-                    Vector<String> allBts = new Vector<String>();
-                    Vector<String> additionalBTs = new Vector<String>();
-                    Vector<SortItem> additionalBTsSortItems = allLevelsOfThes1.get(i).get(termSortItem);
+                    ArrayList<String> allBts = new ArrayList<String>();
+                    ArrayList<String> additionalBTs = new ArrayList<String>();
+                    ArrayList<SortItem> additionalBTsSortItems = allLevelsOfThes1.get(i).get(termSortItem);
                     
                     if(additionalBTsSortItems!=null){
                         for(SortItem btitem : additionalBTsSortItems){
@@ -3136,8 +3137,8 @@ public class DBMergeThesauri {
 
             if (allLevelsOfThes2 != null && allLevelsOfThes2.size() > i) {
 
-                Enumeration<SortItem> pairsEnumMerged = allLevelsOfThes2.get(i).keys();
-                while (pairsEnumMerged.hasMoreElements()) {
+                Iterator<SortItem> pairsEnumMerged = allLevelsOfThes2.get(i).keySet().iterator();
+                while (pairsEnumMerged.hasNext()) {
 
                     if (termsPerLevel % restartInterval == 0) {
                         if (common_utils != null) {
@@ -3148,7 +3149,7 @@ public class DBMergeThesauri {
                     }
                     termsPerLevel++;
                     //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+" i = " + i + " termsPerLevel = " + termsPerLevel);
-                    SortItem termSortItem = pairsEnumMerged.nextElement();
+                    SortItem termSortItem = pairsEnumMerged.next();
 
                     Q.free_all_sets();
 
@@ -3161,9 +3162,9 @@ public class DBMergeThesauri {
                         exists = true;
                     }
                     Q.reset_name_scope();
-                    Vector<String> allBts = new Vector<String>();
-                    Vector<String> additionalBTs = new Vector<String>();
-                    Vector<SortItem> additionalBTSortItems = allLevelsOfThes2.get(i).get(termSortItem);
+                    ArrayList<String> allBts = new ArrayList<String>();
+                    ArrayList<String> additionalBTs = new ArrayList<String>();
+                    ArrayList<SortItem> additionalBTSortItems = allLevelsOfThes2.get(i).get(termSortItem);
                     
                     if(additionalBTSortItems!=null){
                         for(SortItem btSortItem : additionalBTSortItems){
@@ -3172,7 +3173,7 @@ public class DBMergeThesauri {
                     }
 
                     //StringObject resultMessageObj_2 = new StringObject();
-                    //Vector<String> errorArgs = new Vector<String>();
+                    //ArrayList<String> errorArgs = new ArrayList<String>();
 
                     if (exists) {
 
@@ -3253,8 +3254,8 @@ public class DBMergeThesauri {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
-        Hashtable<String, Vector<String>> allTermRts = new Hashtable<String, Vector<String>>();
-        Vector<String> rtsToThemSelves = new Vector<String>();
+        HashMap<String, ArrayList<String>> allTermRts = new HashMap<String, ArrayList<String>>();
+        ArrayList<String> rtsToThemSelves = new ArrayList<String>();
 
         StringObject rtFromClassObj = new StringObject();
         StringObject rtLinkObj = new StringObject();
@@ -3293,7 +3294,7 @@ public class DBMergeThesauri {
         //CMValue cmv = new CMValue();
         Q.reset_name_scope();
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_rt_links, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
 
@@ -3311,19 +3312,19 @@ public class DBMergeThesauri {
                     continue; //ignore from reading
                 }
 
-                Vector<String> otherRts1 = allTermRts.get(term1Name);
-                Vector<String> otherRts2 = allTermRts.get(term2Name);
+                ArrayList<String> otherRts1 = allTermRts.get(term1Name);
+                ArrayList<String> otherRts2 = allTermRts.get(term2Name);
 
                 if (otherRts1 == null) {
 
                     //check if this relation has already been declared in second term RTs
                     if (otherRts2 == null) {
-                        otherRts1 = new Vector<String>();
+                        otherRts1 = new ArrayList<String>();
                         otherRts1.add(term2Name);
                         allTermRts.put(term1Name, otherRts1);
                     } else {
                         if (otherRts2.contains(term1Name) == false) {
-                            otherRts1 = new Vector<String>();
+                            otherRts1 = new ArrayList<String>();
                             otherRts1.add(term2Name);
                             allTermRts.put(term1Name, otherRts1);
                         }
@@ -3360,19 +3361,19 @@ public class DBMergeThesauri {
          continue; //ignore from reading
          }
 
-         Vector<String> otherRts1 = allTermRts.get(term1Name);
-         Vector<String> otherRts2 = allTermRts.get(term2Name);
+         ArrayList<String> otherRts1 = allTermRts.get(term1Name);
+         ArrayList<String> otherRts2 = allTermRts.get(term2Name);
 
          if (otherRts1 == null) {
 
          //check if this relation has already been declared in second term RTs
          if (otherRts2 == null) {
-         otherRts1 = new Vector<String>();
+         otherRts1 = new ArrayList<String>();
          otherRts1.add(term2Name);
          allTermRts.put(term1Name, otherRts1);
          } else {
          if (otherRts2.contains(term1Name) == false) {
-         otherRts1 = new Vector<String>();
+         otherRts1 = new ArrayList<String>();
          otherRts1.add(term2Name);
          allTermRts.put(term1Name, otherRts1);
          }
@@ -3448,19 +3449,19 @@ public class DBMergeThesauri {
                         continue; //ignore from reading
                     }
 
-                    Vector<String> otherRts1 = allTermRts.get(term1Name);
-                    Vector<String> otherRts2 = allTermRts.get(term2Name);
+                    ArrayList<String> otherRts1 = allTermRts.get(term1Name);
+                    ArrayList<String> otherRts2 = allTermRts.get(term2Name);
 
                     if (otherRts1 == null) {
 
                         //check if this relation has already been declared in second term RTs
                         if (otherRts2 == null) {
-                            otherRts1 = new Vector<String>();
+                            otherRts1 = new ArrayList<String>();
                             otherRts1.add(term2Name);
                             allTermRts.put(term1Name, otherRts1);
                         } else {
                             if (otherRts2.contains(term1Name) == false) {
-                                otherRts1 = new Vector<String>();
+                                otherRts1 = new ArrayList<String>();
                                 otherRts1.add(term2Name);
                                 allTermRts.put(term1Name, otherRts1);
                             }
@@ -3496,19 +3497,19 @@ public class DBMergeThesauri {
              continue; //ignore from reading
              }
 
-             Vector<String> otherRts1 = allTermRts.get(term1Name);
-             Vector<String> otherRts2 = allTermRts.get(term2Name);
+             ArrayList<String> otherRts1 = allTermRts.get(term1Name);
+             ArrayList<String> otherRts2 = allTermRts.get(term2Name);
 
              if (otherRts1 == null) {
 
              //check if this relation has already been declared in second term RTs
              if (otherRts2 == null) {
-             otherRts1 = new Vector<String>();
+             otherRts1 = new ArrayList<String>();
              otherRts1.add(term2Name);
              allTermRts.put(term1Name, otherRts1);
              } else {
              if (otherRts2.contains(term1Name) == false) {
-             otherRts1 = new Vector<String>();
+             otherRts1 = new ArrayList<String>();
              otherRts1.add(term2Name);
              allTermRts.put(term1Name, otherRts1);
              }
@@ -3541,7 +3542,7 @@ public class DBMergeThesauri {
 
     public boolean CreateRTs(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML,
-            String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, Hashtable<String, Vector<String>> allTermRts, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
+            String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj, HashMap<String, ArrayList<String>> allTermRts, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
 
         UsersClass wtmsUsers = new UsersClass();
         DBGeneral dbGen = new DBGeneral();
@@ -3552,14 +3553,14 @@ public class DBMergeThesauri {
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
         int rtRelations = 1;
-        Enumeration<String> pairsEnumMerged = allTermRts.keys();
+        
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING RTS in " + mergedThesaurusName);
 
         rtRelations = 0;
         int howmany = allTermRts.size();
-        pairsEnumMerged = allTermRts.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        Iterator<String> pairsEnumMerged = allTermRts.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
 
             Q.free_all_sets();
 
@@ -3572,9 +3573,9 @@ public class DBMergeThesauri {
             }
             rtRelations++;
 
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
 
-            Vector<String> allRTs = new Vector<String>();
+            ArrayList<String> allRTs = new ArrayList<String>();
             allRTs.addAll(allTermRts.get(term));
 
             if (allRTs.size() == 0) {
@@ -3614,14 +3615,14 @@ public class DBMergeThesauri {
         StringObject THESstatusUnderConstruction = new StringObject();
         StringObject THESstatusForApproval = new StringObject();
         StringObject THESstatusApproved = new StringObject();
-        Vector<StringObject> allStatuses = new Vector<StringObject>();
+        ArrayList<StringObject> allStatuses = new ArrayList<StringObject>();
 
-        Hashtable<String, String> thesaurus1_statuses = new Hashtable<String, String>();
-        Hashtable<String, String> thesaurus2_statuses = new Hashtable<String, String>();
-        Hashtable<String, Long> merged_thesaurus_status_classIds = new Hashtable<String, Long>();
+        HashMap<String, String> thesaurus1_statuses = new HashMap<String, String>();
+        HashMap<String, String> thesaurus2_statuses = new HashMap<String, String>();
+        HashMap<String, Long> merged_thesaurus_status_classIds = new HashMap<String, Long>();
 
         //READING FROM THES1 
-        //ALSO READ IDS OF STATUS CLASSES IN NEW MERGED THESAURUS --> KEEP THESE IDS IN HASHTABLE merged_thesaurus_status_classIds
+        //ALSO READ IDS OF STATUS CLASSES IN NEW MERGED THESAURUS --> KEEP THESE IDS IN HashMap merged_thesaurus_status_classIds
         /*UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
          wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
          */
@@ -3647,7 +3648,7 @@ public class DBMergeThesauri {
             Q.set_current_node(allStatuses.get(i));
             int set_all_such_terms = Q.get_instances(0);
             Q.reset_set(set_all_such_terms);
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if (Q.bulk_return_nodes(set_all_such_terms, retVals) != QClass.APIFail) {
                 for (Return_Nodes_Row row : retVals) {
                     String UIName = dbGen.removePrefix(row.get_v1_cls_logicalname());
@@ -3689,7 +3690,7 @@ public class DBMergeThesauri {
                 Q.set_current_node(allStatuses.get(i));
                 int set_all_such_terms = Q.get_instances(0);
                 Q.reset_set(set_all_such_terms);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if (Q.bulk_return_nodes(set_all_such_terms, retVals) != QClass.APIFail) {
                     for (Return_Nodes_Row row : retVals) {
                         String UIName = dbGen.removePrefix(row.get_v1_cls_logicalname());
@@ -3715,8 +3716,8 @@ public class DBMergeThesauri {
     public boolean CreateStatuses(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String mergedThesaurusName, OutputStreamWriter logFileWriter, StringObject resultObj,
-            Hashtable<String, String> thesaurus1_statuses, Hashtable<String, String> thesaurus2_statuses,
-            Hashtable<String, Long> merged_thesaurus_status_classIds) throws IOException {
+            HashMap<String, String> thesaurus1_statuses, HashMap<String, String> thesaurus2_statuses,
+            HashMap<String, Long> merged_thesaurus_status_classIds) throws IOException {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
@@ -3726,9 +3727,9 @@ public class DBMergeThesauri {
 
         String minorPriorityStatusKey = "";
         int minorPriority = 1000;
-        Enumeration<String> statusEnum = merged_thesaurus_status_classIds.keys();
-        while (statusEnum.hasMoreElements()) {
-            String checkStatus = statusEnum.nextElement();
+        Iterator<String> statusEnum = merged_thesaurus_status_classIds.keySet().iterator();
+        while (statusEnum.hasNext()) {
+            String checkStatus = statusEnum.next();
             int tempMinor = this.getStatusPriority(checkStatus, mergedThesaurusName);
             if (tempMinor < minorPriority) {
                 minorPriority = tempMinor;
@@ -3744,8 +3745,8 @@ public class DBMergeThesauri {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCreating Statuses to terms in thesaurus : " + mergedThesaurusName + ".");
         logFileWriter.flush();
         String mergedTermPrefix = dbtr.getThesaurusPrefix_Descriptor(mergedThesaurusName, Q, sis_session.getValue());
-        Enumeration<String> pairsEnumMerged = thesaurus1_statuses.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        Iterator<String> pairsEnumMerged = thesaurus1_statuses.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
 
             if (counter % restartInterval == 0) {
                 if (common_utils != null) {
@@ -3755,9 +3756,9 @@ public class DBMergeThesauri {
             }
             counter++;
             //term was found in thesaurus1 with under statusClass : status
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
             String StatusThes1 = thesaurus1_statuses.get(term);
-            String StatusThes2 = thesaurus2_statuses.get(term);   // Both statuses kept in Hashtables refer to mergedThesaurus Status Classes
+            String StatusThes2 = thesaurus2_statuses.get(term);   // Both statuses kept in HashMaps refer to mergedThesaurus Status Classes
 
             if (StatusThes1 != null && merged_thesaurus_status_classIds.containsKey(StatusThes1) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln("Status: " + StatusThes1 + " not found. Changing to minor priority Status.");
@@ -3858,12 +3859,12 @@ public class DBMergeThesauri {
         }
 
         if (thesaurus2_statuses != null) {
-            Enumeration<String> pairsEnumMerged2 = thesaurus2_statuses.keys();
-            while (pairsEnumMerged2.hasMoreElements()) {
+            Iterator<String> pairsEnumMerged2 = thesaurus2_statuses.keySet().iterator();
+            while (pairsEnumMerged2.hasNext()) {
                 //term was found in thesaurus2 with under statusClass : status
-                String term = pairsEnumMerged2.nextElement();
+                String term = pairsEnumMerged2.next();
                 String StatusThes1 = thesaurus1_statuses.get(term);
-                String StatusThes2 = thesaurus2_statuses.get(term);   // Both statuses kept in Hashtables refer to mergedThesaurus Status Classes
+                String StatusThes2 = thesaurus2_statuses.get(term);   // Both statuses kept in HashMaps refer to mergedThesaurus Status Classes
 
                 Q.reset_name_scope();
                 long termIDL = Q.set_current_node(new StringObject(mergedTermPrefix.concat(term)));
@@ -3876,7 +3877,7 @@ public class DBMergeThesauri {
                 }
                 Q.reset_name_scope();
                 int ret = QClass.APISucc;
-                Vector<String> decodedValues = new Vector<String>();
+                ArrayList<String> decodedValues = new ArrayList<String>();
                 if (StatusThes1 == null && StatusThes2 != null) { // else decision has already been made
                     decodedValues.add(StatusThes2);
 
@@ -3912,9 +3913,9 @@ public class DBMergeThesauri {
         StringObject historicalnoteLinkObj = new StringObject();
         Utilities u = new Utilities();
 
-        Hashtable<String, String> scope_notes_HASH = new Hashtable<String, String>();
-        Hashtable<String, String> scope_notes_EN_HASH = new Hashtable<String, String>();
-        Hashtable<String, String> historical_notes_HASH = new Hashtable<String, String>();
+        HashMap<String, String> scope_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> scope_notes_EN_HASH = new HashMap<String, String>();
+        HashMap<String, String> historical_notes_HASH = new HashMap<String, String>();
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
@@ -3933,15 +3934,15 @@ public class DBMergeThesauri {
         int set_terms = dbGen.get_Instances_Set(TermClasses, Q, sis_session);
         Q.reset_set(set_terms);
 
-        Vector<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
+        ArrayList<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
 
         Q.free_set(set_terms);
         int commentCounter = 0;
         for (int i = 0; i < termNames.size(); i++) {
             Q.reset_name_scope();
-            Vector<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
-            Vector<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
-            Vector<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
+            ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
+            ArrayList<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
+            ArrayList<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
 
             if (scopeNote != null && scopeNote.size() > 0 && scopeNote.get(0).length() > 0) {
                 commentCounter++;
@@ -3990,9 +3991,9 @@ public class DBMergeThesauri {
             //commentCounter = 0;
             for (int i = 0; i < termNames.size(); i++) {
                 Q.reset_name_scope();
-                Vector<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
-                Vector<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
-                Vector<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
+                ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
+                ArrayList<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
+                ArrayList<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
 
                 if (scopeNote != null && scopeNote.size() > 0 && scopeNote.get(0).length() > 0) {
                     commentCounter++;
@@ -4069,9 +4070,9 @@ public class DBMergeThesauri {
     public boolean CreateCommentCategories(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             String mergedThesaurusName,
-            Hashtable<String, String> scope_notes_HASH,
-            Hashtable<String, String> scope_notes_EN_HASH,
-            Hashtable<String, String> historical_notes_HASH,
+            HashMap<String, String> scope_notes_HASH,
+            HashMap<String, String> scope_notes_EN_HASH,
+            HashMap<String, String> historical_notes_HASH,
             OutputStreamWriter logFileWriter, String pathToErrorsXML, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
@@ -4094,8 +4095,8 @@ public class DBMergeThesauri {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefixPerson = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue());
         String user = prefixPerson.concat(SessionUserInfo.name);
-        Enumeration<String> pairsEnumMerged = scope_notes_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        Iterator<String> pairsEnumMerged = scope_notes_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
             if (commentCounter % restartInterval == 0) {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Comment (SN) counter: " + commentCounter + " of " + howmanyComments + "   ");
@@ -4104,9 +4105,9 @@ public class DBMergeThesauri {
             }
             commentCounter++;
 
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
 
-            Vector<String> sns = new Vector<String>();
+            ArrayList<String> sns = new ArrayList<String>();
             sns.add(scope_notes_HASH.get(term));
 
             if (sns.size() > 0) {
@@ -4127,8 +4128,8 @@ public class DBMergeThesauri {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING TRANSLATION SCOPE_NOTES in " + mergedThesaurusName + " Time: " + Utilities.GetNow());
 
-        pairsEnumMerged = scope_notes_EN_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        pairsEnumMerged = scope_notes_EN_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
 
             if (commentCounter % restartInterval == 0) {
                 if (common_utils != null) {
@@ -4137,9 +4138,9 @@ public class DBMergeThesauri {
                 }
             }
             commentCounter++;
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
 
-            Vector<String> snsEN = new Vector<String>();
+            ArrayList<String> snsEN = new ArrayList<String>();
             snsEN.add(scope_notes_EN_HASH.get(term));
 
             if (snsEN.size() > 0) {
@@ -4161,8 +4162,8 @@ public class DBMergeThesauri {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING HISTORICAL_NOTES in " + mergedThesaurusName + ". Time: " + Utilities.GetNow());
 
-        pairsEnumMerged = historical_notes_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        pairsEnumMerged = historical_notes_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
             if (commentCounter % restartInterval == 0) {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Comment (HN) counter: " + commentCounter + " of " + howmanyComments + "   ");
@@ -4171,8 +4172,8 @@ public class DBMergeThesauri {
             }
             commentCounter++;
 
-            String term = pairsEnumMerged.nextElement();
-            Vector<String> hns = new Vector<String>();
+            String term = pairsEnumMerged.next();
+            ArrayList<String> hns = new ArrayList<String>();
             hns.add(historical_notes_HASH.get(term));
 
             if (hns.size() > 0) {
@@ -4204,10 +4205,10 @@ public class DBMergeThesauri {
         Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
 
-        Hashtable<String, Vector<String>> term_Editor_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> term_Date_Links_THES1_HASH = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> term_Editor_Links_THES2_HASH = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> term_Date_Links_THES2_HASH = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> term_Editor_Links_THES1_HASH = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> term_Date_Links_THES1_HASH = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> term_Editor_Links_THES2_HASH = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> term_Date_Links_THES2_HASH = new HashMap<String, ArrayList<String>>();
 
         StringObject editorFromClassObj = new StringObject();
         StringObject editorLinkObj = new StringObject();
@@ -4257,16 +4258,16 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_all_links, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
 
                 String termName = dbGen.removePrefix(row.get_v1_cls());
                 String editorValue = dbGen.removePrefix(row.get_v3_cmv().getString());
-                Vector<String> otherVals = term_Editor_Links_THES1_HASH.get(termName);
+                ArrayList<String> otherVals = term_Editor_Links_THES1_HASH.get(termName);
 
                 if (otherVals == null) {
-                    otherVals = new Vector<String>();
+                    otherVals = new ArrayList<String>();
                     otherVals.add(editorValue);
                     term_Editor_Links_THES1_HASH.put(termName, otherVals);
                 } else {
@@ -4282,10 +4283,10 @@ public class DBMergeThesauri {
 
          String termName = dbGen.removePrefix(cls.getValue());
          String editorValue = dbGen.removePrefix(cmv.getString());
-         Vector<String> otherVals = term_Editor_Links_THES1_HASH.get(termName);
+         ArrayList<String> otherVals = term_Editor_Links_THES1_HASH.get(termName);
 
          if (otherVals == null) {
-         otherVals = new Vector<String>();
+         otherVals = new ArrayList<String>();
          otherVals.add(editorValue);
          term_Editor_Links_THES1_HASH.put(termName, otherVals);
          } else {
@@ -4325,10 +4326,10 @@ public class DBMergeThesauri {
             for (Return_Link_Row row : retVals) {
                 String termName = dbGen.removePrefix(row.get_v1_cls());
                 String dateValue = row.get_v3_cmv().getString();//Dates have no prefix
-                Vector<String> otherVals = term_Date_Links_THES1_HASH.get(termName);
+                ArrayList<String> otherVals = term_Date_Links_THES1_HASH.get(termName);
 
                 if (otherVals == null) {
-                    otherVals = new Vector<String>();
+                    otherVals = new ArrayList<String>();
                     otherVals.add(dateValue);
                     term_Date_Links_THES1_HASH.put(termName, otherVals);
                 } else {
@@ -4343,10 +4344,10 @@ public class DBMergeThesauri {
 
          String termName = dbGen.removePrefix(cls.getValue());
          String dateValue = cmv.getString();//Dates have no prefix
-         Vector<String> otherVals = term_Date_Links_THES1_HASH.get(termName);
+         ArrayList<String> otherVals = term_Date_Links_THES1_HASH.get(termName);
 
          if (otherVals == null) {
-         otherVals = new Vector<String>();
+         otherVals = new ArrayList<String>();
          otherVals.add(dateValue);
          term_Date_Links_THES1_HASH.put(termName, otherVals);
          } else {
@@ -4398,10 +4399,10 @@ public class DBMergeThesauri {
 
                     String termName = dbGen.removePrefix(row.get_v1_cls());
                     String editorValue = dbGen.removePrefix(row.get_v3_cmv().getString());
-                    Vector<String> otherVals = term_Editor_Links_THES2_HASH.get(termName);
+                    ArrayList<String> otherVals = term_Editor_Links_THES2_HASH.get(termName);
 
                     if (otherVals == null) {
-                        otherVals = new Vector<String>();
+                        otherVals = new ArrayList<String>();
                         otherVals.add(editorValue);
                         term_Editor_Links_THES2_HASH.put(termName, otherVals);
                     } else {
@@ -4416,10 +4417,10 @@ public class DBMergeThesauri {
 
              String termName = dbGen.removePrefix(cls.getValue());
              String editorValue = dbGen.removePrefix(cmv.getString());
-             Vector<String> otherVals = term_Editor_Links_THES2_HASH.get(termName);
+             ArrayList<String> otherVals = term_Editor_Links_THES2_HASH.get(termName);
 
              if (otherVals == null) {
-             otherVals = new Vector<String>();
+             otherVals = new ArrayList<String>();
              otherVals.add(editorValue);
              term_Editor_Links_THES2_HASH.put(termName, otherVals);
              } else {
@@ -4459,10 +4460,10 @@ public class DBMergeThesauri {
                 for (Return_Link_Row row : retVals) {
                     String termName = dbGen.removePrefix(row.get_v1_cls());
                     String dateValue = row.get_v3_cmv().getString();//Dates have no prefix
-                    Vector<String> otherVals = term_Date_Links_THES2_HASH.get(termName);
+                    ArrayList<String> otherVals = term_Date_Links_THES2_HASH.get(termName);
 
                     if (otherVals == null) {
-                        otherVals = new Vector<String>();
+                        otherVals = new ArrayList<String>();
                         otherVals.add(dateValue);
                         term_Date_Links_THES2_HASH.put(termName, otherVals);
                     } else {
@@ -4478,10 +4479,10 @@ public class DBMergeThesauri {
 
              String termName = dbGen.removePrefix(cls.getValue());
              String dateValue = cmv.getString();//Dates have no prefix
-             Vector<String> otherVals = term_Date_Links_THES2_HASH.get(termName);
+             ArrayList<String> otherVals = term_Date_Links_THES2_HASH.get(termName);
 
              if (otherVals == null) {
-             otherVals = new Vector<String>();
+             otherVals = new ArrayList<String>();
              otherVals.add(dateValue);
              term_Date_Links_THES2_HASH.put(termName, otherVals);
              } else {
@@ -4505,8 +4506,8 @@ public class DBMergeThesauri {
     }
 
     public boolean CreateDatesAndEditors(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter,
-            Hashtable<String, Vector<String>> term_Editor_Links_THES1_HASH, Hashtable<String, Vector<String>> term_Date_Links_THES1_HASH,
-            Hashtable<String, Vector<String>> term_Editor_Links_THES2_HASH, Hashtable<String, Vector<String>> term_Date_Links_THES2_HASH,
+            HashMap<String, ArrayList<String>> term_Editor_Links_THES1_HASH, HashMap<String, ArrayList<String>> term_Date_Links_THES1_HASH,
+            HashMap<String, ArrayList<String>> term_Editor_Links_THES2_HASH, HashMap<String, ArrayList<String>> term_Date_Links_THES2_HASH,
             String editorKeyWordStr, StringObject resultObj) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
@@ -4538,8 +4539,8 @@ public class DBMergeThesauri {
         int termsModified = 0;
         int totalSize = term_Date_Links_THES1_HASH.size() + term_Editor_Links_THES1_HASH.size();
 
-        Enumeration<String> pairsEnumMerged = term_Date_Links_THES1_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        Iterator<String> pairsEnumMerged = term_Date_Links_THES1_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
             if (termsModified % restartInterval == 0) {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + dateKeywordStr + " (date) counter: " + termsModified + " of " + totalSize + "  ");
@@ -4548,13 +4549,13 @@ public class DBMergeThesauri {
             }
             termsModified++;
 
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
             StringObject targetTermObj = new StringObject(prefixTerm.concat(term));
 
-            Vector<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
-            Vector<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
-            //Vector<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
-            //Vector<String> datesThes2   = term_Date_Links_THES2_HASH.get(term);
+            ArrayList<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
+            ArrayList<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
+            //ArrayList<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
+            //ArrayList<String> datesThes2   = term_Date_Links_THES2_HASH.get(term);
 
             //Here datesThes1 could be compared in order to decide which thesaurus values to keep. 
             //In this case dates should only be of one value thus no vector needed just string
@@ -4588,8 +4589,8 @@ public class DBMergeThesauri {
         //</editor-fold>
 
         //<editor-fold desc="copy editors for term from thes1 with no DATE defined in thes 1">
-        pairsEnumMerged = term_Editor_Links_THES1_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        pairsEnumMerged = term_Editor_Links_THES1_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
             if (termsModified % restartInterval == 0) {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + dateKeywordStr + " (editor) counter: " + termsModified + " of " + totalSize + "  ");
@@ -4597,12 +4598,12 @@ public class DBMergeThesauri {
                 }
             }
             termsModified++;
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
             StringObject targetTermObj = new StringObject(prefixTerm.concat(term));
-            Vector<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
-            Vector<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
-            //Vector<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
-            //Vector<String> datesThes2   = term_Date_Links_THES2_HASH.get(term);
+            ArrayList<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
+            ArrayList<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
+            //ArrayList<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
+            //ArrayList<String> datesThes2   = term_Date_Links_THES2_HASH.get(term);
 
             if (datesThes1 != null) {
                 continue;//copird before
@@ -4624,8 +4625,8 @@ public class DBMergeThesauri {
         //<editor-fold desc="copy dates and relevant editors for terms of thes 2. Done together because it may later be used to compare dates and write pairs editor/date.">
         if (thesaurusName2 != null) {
 
-            pairsEnumMerged = term_Date_Links_THES2_HASH.keys();
-            while (pairsEnumMerged.hasMoreElements()) {
+            pairsEnumMerged = term_Date_Links_THES2_HASH.keySet().iterator();
+            while (pairsEnumMerged.hasNext()) {
                 if (termsModified % restartInterval == 0) {
                     if (common_utils != null) {
 
@@ -4633,13 +4634,13 @@ public class DBMergeThesauri {
                     }
                 }
                 termsModified++;
-                String term = pairsEnumMerged.nextElement();
+                String term = pairsEnumMerged.next();
                 StringObject targetTermObj = new StringObject(prefixTerm.concat(term));
 
-                Vector<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
-                Vector<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
-                Vector<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
-                Vector<String> datesThes2 = term_Date_Links_THES2_HASH.get(term);
+                ArrayList<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
+                ArrayList<String> datesThes1 = term_Date_Links_THES1_HASH.get(term);
+                ArrayList<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
+                ArrayList<String> datesThes2 = term_Date_Links_THES2_HASH.get(term);
 
                 if (editorsThes2 != null && editorsThes2.size() > 0) {
 
@@ -4676,8 +4677,8 @@ public class DBMergeThesauri {
 
         termsModified = 0;
         //<editor-fold desc="copy editors for term from thes 2 with no date defined in thes 2 and not already defined as editors from thes1.">
-        pairsEnumMerged = term_Editor_Links_THES2_HASH.keys();
-        while (pairsEnumMerged.hasMoreElements()) {
+        pairsEnumMerged = term_Editor_Links_THES2_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
             if (termsModified % restartInterval == 0) {
                 if (common_utils != null) {
                     //Utils.StaticClass.webAppSystemOutPrintln("Restarting Server");
@@ -4685,13 +4686,13 @@ public class DBMergeThesauri {
                 }
             }
             termsModified++;
-            String term = pairsEnumMerged.nextElement();
+            String term = pairsEnumMerged.next();
             StringObject targetTermObj = new StringObject(prefixTerm.concat(term));
 
-            Vector<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
-            //Vector<String> datesThes1   = term_Date_Links_THES1_HASH.get(term);
-            Vector<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
-            Vector<String> datesThes2 = term_Date_Links_THES2_HASH.get(term);
+            ArrayList<String> editorsThes1 = term_Editor_Links_THES1_HASH.get(term);
+            //ArrayList<String> datesThes1   = term_Date_Links_THES1_HASH.get(term);
+            ArrayList<String> editorsThes2 = term_Editor_Links_THES2_HASH.get(term);
+            ArrayList<String> datesThes2 = term_Date_Links_THES2_HASH.get(term);
 
             if (datesThes2 != null) {
                 continue;//copird before
@@ -4718,7 +4719,7 @@ public class DBMergeThesauri {
     }
     //SHOULD NOT BE USED FOR DATES --> NOT HAVING PREFIXES (DATES AND EDITORS ARE HANDLED BY DIFFERENT FUNCTION)
 
-    public boolean CopySimpleLinks(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, String keyWordStr, Vector<String> skipNodes, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
+    public boolean CopySimpleLinks(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String thesaurusName1, String thesaurusName2, String mergedThesaurusName, OutputStreamWriter logFileWriter, String keyWordStr, ArrayList<String> skipNodes, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
         //Copy Links to EnglishWords, Taxonomic Codes, Sources
 
         DBGeneral dbGen = new DBGeneral();
@@ -4731,7 +4732,7 @@ public class DBMergeThesauri {
         //StringObject label = new StringObject();
         //CMValue cmv = new CMValue();
 
-        Hashtable<String, Vector<String>> term_Links_HASH = new Hashtable<String, Vector<String>>();
+        HashMap<String, ArrayList<String>> term_Links_HASH = new HashMap<String, ArrayList<String>>();
 
         //READ FIRST THESAURUS LINKS.
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -4764,19 +4765,19 @@ public class DBMergeThesauri {
 
         Q.reset_name_scope();
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if (Q.bulk_return_link(set_all_links, retVals) != QClass.APIFail) {
             for (Return_Link_Row row : retVals) {
 
                 String termName = dbGen.removePrefix(row.get_v1_cls());
                 String linkValue = dbGen.removePrefix(row.get_v3_cmv().getString());
-                Vector<String> otherVals = term_Links_HASH.get(termName);
+                ArrayList<String> otherVals = term_Links_HASH.get(termName);
                 if (skipNodes != null && skipNodes.contains(linkValue)) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName1 + ".");
                     continue; // skip
                 }
                 if (otherVals == null) {
-                    otherVals = new Vector<String>();
+                    otherVals = new ArrayList<String>();
                     otherVals.add(linkValue);
                     term_Links_HASH.put(termName, otherVals);
                 } else {
@@ -4791,13 +4792,13 @@ public class DBMergeThesauri {
 
          String termName = dbGen.removePrefix(cls.getValue());
          String linkValue = dbGen.removePrefix(cmv.getString());
-         Vector<String> otherVals = term_Links_HASH.get(termName);
+         ArrayList<String> otherVals = term_Links_HASH.get(termName);
          if (skipNodes != null && skipNodes.contains(linkValue)) {
          Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName1 + ".");
          continue; // skip
          }
          if (otherVals == null) {
-         otherVals = new Vector<String>();
+         otherVals = new ArrayList<String>();
          otherVals.add(linkValue);
          term_Links_HASH.put(termName, otherVals);
          } else {
@@ -4845,14 +4846,14 @@ public class DBMergeThesauri {
                 for (Return_Link_Row row : retVals) {
                     String termName = dbGen.removePrefix(row.get_v1_cls());
                     String linkValue = dbGen.removePrefix(row.get_v3_cmv().getString());
-                    Vector<String> otherVals = term_Links_HASH.get(termName);
+                    ArrayList<String> otherVals = term_Links_HASH.get(termName);
                     if (skipNodes != null && skipNodes.contains(linkValue)) {
 
                         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName2 + ".");
                         continue; // skip
                     }
                     if (otherVals == null) {
-                        otherVals = new Vector<String>();
+                        otherVals = new ArrayList<String>();
                         otherVals.add(linkValue);
                         term_Links_HASH.put(termName, otherVals);
                     } else {
@@ -4867,14 +4868,14 @@ public class DBMergeThesauri {
 
              String termName = dbGen.removePrefix(cls.getValue());
              String linkValue = dbGen.removePrefix(cmv.getString());
-             Vector<String> otherVals = term_Links_HASH.get(termName);
+             ArrayList<String> otherVals = term_Links_HASH.get(termName);
              if (skipNodes != null && skipNodes.contains(linkValue)) {
 
              Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Skipping copying of " + LinkObj.getValue() + " relation: " + linkValue + " for term: " + termName + " of thesaurus: " + thesaurusName2 + ".");
              continue; // skip
              }
              if (otherVals == null) {
-             otherVals = new Vector<String>();
+             otherVals = new ArrayList<String>();
              otherVals.add(linkValue);
              term_Links_HASH.put(termName, otherVals);
              } else {
@@ -4890,7 +4891,7 @@ public class DBMergeThesauri {
         return CreateSimpleLinks(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, pathToErrorsXML, mergedThesaurusName, logFileWriter, keyWordStr, skipNodes, resultObj, term_Links_HASH, true, ConsistencyCheckPolicy);
     }
 
-    public boolean CreateSimpleLinks(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String mergedThesaurusName, OutputStreamWriter logFileWriter, String keyWordStr, Vector<String> skipNodes, StringObject resultObj, Hashtable<String, Vector<String>> term_Links_HASH, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
+    public boolean CreateSimpleLinks(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String pathToErrorsXML, String mergedThesaurusName, OutputStreamWriter logFileWriter, String keyWordStr, ArrayList<String> skipNodes, StringObject resultObj, HashMap<String, ArrayList<String>> term_Links_HASH, boolean resolveError, int ConsistencyCheckPolicy) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         UsersClass wtmsUsers = new UsersClass();
@@ -4920,9 +4921,9 @@ public class DBMergeThesauri {
 
         linkRelations = 0;
         int howmany = term_Links_HASH.size();
-        Enumeration<String> pairsEnumMerged = term_Links_HASH.keys();
+        Iterator<String> pairsEnumMerged = term_Links_HASH.keySet().iterator();
 
-        while (pairsEnumMerged.hasMoreElements()) {
+        while (pairsEnumMerged.hasNext()) {
 
             if (linkRelations % restartInterval == 0) {
                 if (common_utils != null) {
@@ -4933,9 +4934,9 @@ public class DBMergeThesauri {
             }
             linkRelations++;
 
-            String term = pairsEnumMerged.nextElement();
-            Vector<String> linkValues = new Vector<String>();
-            Vector<String> tempVals = new Vector<String>();
+            String term = pairsEnumMerged.next();
+            ArrayList<String> linkValues = new ArrayList<String>();
+            ArrayList<String> tempVals = new ArrayList<String>();
             tempVals.addAll(term_Links_HASH.get(term));
             for (String tmp : tempVals) {
                 if (linkValues.contains(tmp) == false) {
@@ -4997,8 +4998,8 @@ public class DBMergeThesauri {
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
-        Vector<SortItem> defaultClassName = new Vector<SortItem>();
-        defaultClassName.addAll(dbGen.get_Node_SortItems_Of_Set(set_classes, true, Q, sis_session));
+        ArrayList<SortItem> defaultClassName = new ArrayList<SortItem>();
+        defaultClassName.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_classes, true, Q, sis_session));
         Q.free_set(set_classes);
         Q.free_set(set_facets);
 
@@ -5019,18 +5020,18 @@ public class DBMergeThesauri {
 
     }
 
-    private Vector<String> CollectErrorProneUFTranslations(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2, OutputStreamWriter logFileWriter) throws IOException {
+    private ArrayList<String> CollectErrorProneUFTranslations(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2, OutputStreamWriter logFileWriter) throws IOException {
         /*
          * case 1: ens of thes 1 <-> uk_ufs of thes1
          * case 2: ens of thes 2 <-> uk_ufs of thes2
          * case 3: ens of thes 1 <-> uk_ufs of thes2
          * case 4: ens of thes 2 <-> uk_ufs of thes1
          */
-        Vector<String> results = new Vector<String>();
-        Vector<String> ensThes1 = new Vector<String>();
-        Vector<String> uk_ufsThes1 = new Vector<String>();
-        Vector<String> ensThes2 = new Vector<String>();
-        Vector<String> uk_ufsThes2 = new Vector<String>();
+        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> ensThes1 = new ArrayList<String>();
+        ArrayList<String> uk_ufsThes1 = new ArrayList<String>();
+        ArrayList<String> ensThes2 = new ArrayList<String>();
+        ArrayList<String> uk_ufsThes2 = new ArrayList<String>();
 
         Utilities u = new Utilities();
         UsersClass wtmsUsers = new UsersClass();
@@ -5090,7 +5091,7 @@ public class DBMergeThesauri {
             int set_WrongUFTranslationsOfThes1 = Q.get_from_value(set_WrongUFTranslationssOfThes1_labels);
             Q.reset_set(set_WrongUFTranslationsOfThes1);
 
-            Vector<String> referencesToNode = new Vector<String>();
+            ArrayList<String> referencesToNode = new ArrayList<String>();
             referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFTranslationsOfThes1, true, Q, sis_session));
             Q.free_set(set_WrongUFTranslationsOfThes1);
             Q.free_set(set_WrongUFTranslationssOfThes1_labels);
@@ -5140,7 +5141,7 @@ public class DBMergeThesauri {
             Q.set_intersect(set_uk_ufs, set_ens);
             Q.reset_set(set_uk_ufs);
 
-            Vector<String> results2 = new Vector<String>();
+            ArrayList<String> results2 = new ArrayList<String>();
             results2.addAll(dbGen.get_Node_Names_Of_Set(set_uk_ufs, true, Q, sis_session));
 
             //case : 2
@@ -5155,7 +5156,7 @@ public class DBMergeThesauri {
                 int set_WrongUFTranslationsOfThes2 = Q.get_from_value(set_WrongUFTranslationsOfThes2_labels);
                 Q.reset_set(set_WrongUFTranslationsOfThes2);
 
-                Vector<String> referencesToNode = new Vector<String>();
+                ArrayList<String> referencesToNode = new ArrayList<String>();
                 referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFTranslationsOfThes2, true, Q, sis_session));
                 Q.free_set(set_WrongUFTranslationsOfThes2);
                 Q.free_set(set_WrongUFTranslationsOfThes2_labels);
@@ -5194,7 +5195,7 @@ public class DBMergeThesauri {
                     int set_WrongUFTranslationsOfThes2 = Q.get_from_value(set_WrongUFTranslationsOfThes2_labels);
                     Q.reset_set(set_WrongUFTranslationsOfThes2);
 
-                    Vector<String> referencesToNode = new Vector<String>();
+                    ArrayList<String> referencesToNode = new ArrayList<String>();
                     referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFTranslationsOfThes2, true, Q, sis_session));
                     Q.free_set(set_WrongUFTranslationsOfThes2);
                     Q.free_set(set_WrongUFTranslationsOfThes2_labels);
@@ -5234,7 +5235,7 @@ public class DBMergeThesauri {
                     int set_WrongUFTranslationsOfThes1 = Q.get_from_value(set_WrongUFTranslationsOfThes1_labels);
                     Q.reset_set(set_WrongUFTranslationsOfThes1);
 
-                    Vector<String> referencesToNode = new Vector<String>();
+                    ArrayList<String> referencesToNode = new ArrayList<String>();
                     referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFTranslationsOfThes1, true, Q, sis_session));
                     Q.free_set(set_WrongUFTranslationsOfThes1);
                     Q.free_set(set_WrongUFTranslationsOfThes1_labels);
@@ -5259,7 +5260,7 @@ public class DBMergeThesauri {
         return results;
     }
 
-    private Vector<String> CollectErrorProneUfs(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2, OutputStreamWriter logFileWriter) throws IOException {
+    private ArrayList<String> CollectErrorProneUfs(UserInfoClass refSessionUserInfo, QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2, OutputStreamWriter logFileWriter) throws IOException {
 
         /*
          * case 1: terms of thes 1 <-> ufs of thes1
@@ -5267,11 +5268,11 @@ public class DBMergeThesauri {
          * case 3: terms of thes 1 <-> ufs of thes2
          * case 4: terms of thes 2 <-> ufs of thes1
          */
-        Vector<String> results = new Vector<String>();
-        Vector<String> termsThes1 = new Vector<String>();
-        Vector<String> ufsThes1 = new Vector<String>();
-        Vector<String> termsThes2 = new Vector<String>();
-        Vector<String> ufsThes2 = new Vector<String>();
+        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> termsThes1 = new ArrayList<String>();
+        ArrayList<String> ufsThes1 = new ArrayList<String>();
+        ArrayList<String> termsThes2 = new ArrayList<String>();
+        ArrayList<String> ufsThes2 = new ArrayList<String>();
 
         UsersClass wtmsUsers = new UsersClass();
         DBGeneral dbGen = new DBGeneral();
@@ -5325,7 +5326,7 @@ public class DBMergeThesauri {
             int set_WrongUFsOfThes1 = Q.get_from_value(set_WrongUFsOfThes1_labels);
             Q.reset_set(set_WrongUFsOfThes1);
 
-            Vector<String> referencesToNode = new Vector<String>();
+            ArrayList<String> referencesToNode = new ArrayList<String>();
             referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFsOfThes1, true, Q, sis_session));
             Q.free_set(set_WrongUFsOfThes1);
             Q.free_set(set_WrongUFsOfThes1_labels);
@@ -5371,7 +5372,7 @@ public class DBMergeThesauri {
             Q.set_intersect(set_report_errors, set_terms);
             Q.reset_set(set_report_errors);
 
-            Vector<String> results2 = new Vector<String>();
+            ArrayList<String> results2 = new ArrayList<String>();
             results2.addAll(dbGen.get_Node_Names_Of_Set(set_report_errors, true, Q, sis_session));
 
             //case : 2
@@ -5387,7 +5388,7 @@ public class DBMergeThesauri {
                 int set_WrongUFsOfThes2 = Q.get_from_value(set_WrongUFsOfThes2_labels);
                 Q.reset_set(set_WrongUFsOfThes2);
 
-                Vector<String> referencesToNode = new Vector<String>();
+                ArrayList<String> referencesToNode = new ArrayList<String>();
                 referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFsOfThes2, true, Q, sis_session));
                 Q.free_set(set_WrongUFsOfThes2);
                 Q.free_set(set_WrongUFsOfThes2_labels);
@@ -5428,7 +5429,7 @@ public class DBMergeThesauri {
                     int set_WrongUFsOfThes2 = Q.get_from_value(set_WrongUFsOfThes2_labels);
                     Q.reset_set(set_WrongUFsOfThes2);
 
-                    Vector<String> referencesToNode = new Vector<String>();
+                    ArrayList<String> referencesToNode = new ArrayList<String>();
                     referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFsOfThes2, true, Q, sis_session));
                     Q.free_set(set_WrongUFsOfThes2);
                     Q.free_set(set_WrongUFsOfThes2_labels);
@@ -5469,7 +5470,7 @@ public class DBMergeThesauri {
                     int set_WrongUFsOfThes1 = Q.get_from_value(set_WrongUFsOfThes1_labels);
                     Q.reset_set(set_WrongUFsOfThes1);
 
-                    Vector<String> referencesToNode = new Vector<String>();
+                    ArrayList<String> referencesToNode = new ArrayList<String>();
                     referencesToNode.addAll(dbGen.get_Node_Names_Of_Set(set_WrongUFsOfThes1, true, Q, sis_session));
                     Q.free_set(set_WrongUFsOfThes1);
                     Q.free_set(set_WrongUFsOfThes1_labels);
@@ -5499,11 +5500,11 @@ public class DBMergeThesauri {
 
 
     
-    public Hashtable<CMValue, Vector<CMValue>> ReadThesaurusHierarchiesInCMValues(UserInfoClass refSessionUserInfo,
+    public HashMap<SortItem, ArrayList<SortItem>> ReadThesaurusHierarchiesInSortItems(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {
 
         if (thesaurusName1 == null) { // supporting copy operation
-            return new Hashtable<CMValue, Vector<CMValue>>();
+            return new HashMap<SortItem, ArrayList<SortItem>>();
         }
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
@@ -5523,8 +5524,17 @@ public class DBMergeThesauri {
         int set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
         Q.reset_set(set_hierarchies);
 
-        Vector<CMValue> hierarchyNames = new Vector<CMValue>();
-        hierarchyNames.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchies, true, Q, sis_session));
+        ArrayList<SortItem> hierarchyNames = new ArrayList<SortItem>();
+        
+        // in order to get the the top terms (that contain the reference Id) one should follow the belongs_to_%thesaurus%_hierarchy link
+        if(Parameters.OnlyTopTermsHoldReferenceId){
+            
+            StringObject belongsToHierarchyClass = new StringObject();
+            StringObject belongsToHierarchyLink = new StringObject();
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierarchyClass, belongsToHierarchyLink, Q, sis_session);
+            set_hierarchies = Q.get_from_node_by_category(set_hierarchies, belongsToHierarchyClass, belongsToHierarchyLink);            
+        }
+        hierarchyNames.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_hierarchies, true, Q, sis_session));
         Q.free_set(set_hierarchies);
 
         //Create a set with all facets used as a filter to the get all classes call taht will follow
@@ -5536,11 +5546,12 @@ public class DBMergeThesauri {
         int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
         Q.reset_set(set_facets);
 
-        Hashtable<CMValue, Vector<CMValue>> thesaurus_hierarchy_Facets_Relations = new Hashtable<CMValue, Vector<CMValue>>();
+        HashMap<SortItem, ArrayList<SortItem>> thesaurus_hierarchy_Facets_Relations = new HashMap<SortItem, ArrayList<SortItem>>();
 
-        for (int i = 0; i < hierarchyNames.size(); i++) {
-            StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNames.get(i).getString()));
-            Vector<CMValue> hierarchyFacets = new Vector<CMValue>();
+        //System.out.println("set_facets count: " + Q.set_get_card(set_facets));
+        for (SortItem hierarchySortItem :  hierarchyNames) {
+            StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchySortItem.getLogName()));
+            ArrayList<SortItem> hierarchyFacets = new ArrayList<SortItem>();
             Q.reset_name_scope();
             if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
                 int set_hierarchy_classes = Q.get_superclasses(0);
@@ -5548,11 +5559,11 @@ public class DBMergeThesauri {
                 Q.reset_set(set_hierarchy_classes);
                 Q.set_intersect(set_hierarchy_classes, set_facets);
                 Q.reset_set(set_hierarchy_classes);
-                hierarchyFacets.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchy_classes, true, Q, sis_session));
+                hierarchyFacets.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_hierarchy_classes, true, Q, sis_session));
                 Q.free_set(set_hierarchy_classes);
             }
 
-            thesaurus_hierarchy_Facets_Relations.put(hierarchyNames.get(i), hierarchyFacets);
+            thesaurus_hierarchy_Facets_Relations.put(hierarchySortItem, hierarchyFacets);
         }
         //thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
 
@@ -5560,6 +5571,8 @@ public class DBMergeThesauri {
 
         if (thesaurusName2 != null && thesaurusName2.length() > 0 && thesaurusName2.equals(thesaurusName1) == false) {
 
+            throw new UnsupportedOperationException("Merging is not yes supported - need to log URI changes");
+            /*
             wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName2);
 
             prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
@@ -5572,8 +5585,17 @@ public class DBMergeThesauri {
             set_hierarchies = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
             Q.reset_set(set_hierarchies);
 
-            Vector<CMValue> hierarchyNamesOfThes2 = new Vector<CMValue>();
-            hierarchyNamesOfThes2.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchies, true, Q, sis_session));
+            ArrayList<SortItem> hierarchyNamesOfThes2 = new ArrayList<SortItem>();
+            
+            // in order to get the the top terms (that contain the reference Id) one should follow the belongs_to_%thesaurus%_hierarchy link
+            if(Parameters.OnlyTopTermsHoldReferenceId){
+
+                StringObject belongsToHierarchyClass = new StringObject();
+                StringObject belongsToHierarchyLink = new StringObject();
+                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierarchyClass, belongsToHierarchyLink, Q, sis_session);
+                set_hierarchies = Q.get_from_node_by_category(set_hierarchies, belongsToHierarchyClass, belongsToHierarchyLink);            
+            }
+            hierarchyNamesOfThes2.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_hierarchies, true, Q, sis_session));
             Q.free_set(set_hierarchies);
 
             //Create a set with all facets used as a filter to the get all classes call taht will follow
@@ -5586,11 +5608,11 @@ public class DBMergeThesauri {
 
             Q.reset_set(set_facets);
 
-            Hashtable<CMValue, Vector<CMValue>> thesaurus_hierarchy_Facets_RelationsOfThes2 = new Hashtable<CMValue, Vector<CMValue>>();
+            HashMap<SortItem, ArrayList<SortItem>> thesaurus_hierarchy_Facets_RelationsOfThes2 = new HashMap<SortItem, ArrayList<SortItem>>();
 
-            for (int i = 0; i < hierarchyNamesOfThes2.size(); i++) {
-                StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyNamesOfThes2.get(i).getString()));
-                Vector<CMValue> hierarchyFacets = new Vector<CMValue>();
+            for (SortItem hierarchyObj2 : hierarchyNamesOfThes2) {
+                StringObject hierarchyObj = new StringObject(prefix_class.concat(hierarchyObj2.getLogName()));
+                ArrayList<SortItem> hierarchyFacets = new ArrayList<SortItem>();
                 Q.reset_name_scope();
                 if (Q.set_current_node(hierarchyObj) != QClass.APIFail) {
                     int set_hierarchy_classes = Q.get_superclasses(0);
@@ -5598,29 +5620,28 @@ public class DBMergeThesauri {
                     Q.reset_set(set_hierarchy_classes);
                     Q.set_intersect(set_hierarchy_classes, set_facets);
                     Q.reset_set(set_hierarchy_classes);
-                    hierarchyFacets.addAll(dbGen.get_Node_Cmvalues_Of_Set(set_hierarchy_classes, true, Q, sis_session));
+                    hierarchyFacets.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_hierarchy_classes, true, Q, sis_session));
 
                     Q.free_set(set_hierarchy_classes);
                 }
 
-                thesaurus_hierarchy_Facets_RelationsOfThes2.put(hierarchyNamesOfThes2.get(i), hierarchyFacets);
+                thesaurus_hierarchy_Facets_RelationsOfThes2.put(hierarchyObj2, hierarchyFacets);
             }
             //thesaurus_facets.addAll(dbGen.get_Node_Names_Of_Set(set_facets, true, Q, sis_session));
 
             Q.free_set(set_facets);
 
             //merge the two thesauri
-            Enumeration<CMValue> secondThesHiers = thesaurus_hierarchy_Facets_RelationsOfThes2.keys();
+            Enumeration<SortItem> secondThesHiers = thesaurus_hierarchy_Facets_RelationsOfThes2.keys();
             while (secondThesHiers.hasMoreElements()) {
-                CMValue targetHier = secondThesHiers.nextElement();
-                Vector<CMValue> targetHierFacets = thesaurus_hierarchy_Facets_RelationsOfThes2.get(targetHier);
+                SortItem targetHier = secondThesHiers.nextElement();
+                ArrayList<SortItem> targetHierFacets = thesaurus_hierarchy_Facets_RelationsOfThes2.get(targetHier);
 
                 if (thesaurus_hierarchy_Facets_Relations.containsKey(targetHier)) {
 
-                    Vector<CMValue> existingFacets = thesaurus_hierarchy_Facets_Relations.get(targetHier);
+                    ArrayList<SortItem> existingFacets = thesaurus_hierarchy_Facets_Relations.get(targetHier);
 
-                    for (int k = 0; k < targetHierFacets.size(); k++) {
-                        CMValue checkFacet = targetHierFacets.get(k);
+                    for (SortItem  checkFacet : targetHierFacets) {
                         if (existingFacets.contains(checkFacet) == false) {
                             existingFacets.add(checkFacet);
                         }
@@ -5631,6 +5652,7 @@ public class DBMergeThesauri {
                     thesaurus_hierarchy_Facets_Relations.put(targetHier, targetHierFacets);
                 }
             }
+            */
         }
         return thesaurus_hierarchy_Facets_Relations;
     }

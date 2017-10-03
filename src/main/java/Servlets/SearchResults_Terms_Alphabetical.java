@@ -158,7 +158,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             searchCriteria.value.toArray(inputValue);
             
             //Output required for alphabetical
-            Vector<String> output = new Vector<String>();
+            ArrayList<String> output = new ArrayList<String>();
             output.add(ConstantParameters.id_kwd);
             output.add(ConstantParameters.tc_kwd);
             output.add(ConstantParameters.translation_kwd);
@@ -192,8 +192,8 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             // timer begin
             long startTime = Utilities.startTimer();    
             
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo = new Hashtable<String, NodeInfoSortItemContainer>();              
-            Vector<Long> resultNodesIdsL = new Vector<Long>();
+            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<String, NodeInfoSortItemContainer>();              
+            ArrayList<Long> resultNodesIdsL = new ArrayList<Long>();
                 
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator,Q,TA,sis_session);
             
@@ -222,14 +222,14 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 
                 //Storage Structures
                 
-                Vector<String> allTerms = new Vector<String>();                
+                ArrayList<String> allTerms = new ArrayList<String>();                
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
                 dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIdsL);
                 dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_global_descriptor_results, termsInfo, allTerms , resultNodesIdsL);
                 
 
                 //Collections.sort(allTerms, new StringLocaleComparator(targetLocale));         
-                Vector<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
+                ArrayList<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
                 Collections.sort(resultsTermsInSortItems,transliterationComparator);
                 allTerms.clear();
                 allTerms.addAll(Utilities.getStringVectorFromSortItemVector(resultsTermsInSortItems));
@@ -258,13 +258,13 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             }
             
             
-            Vector<SortItem> allTerms = new Vector<SortItem>();
-            Vector<String> resultsTerms = new Vector<String>();
+            ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
+            ArrayList<String> resultsTerms = new ArrayList<String>();
             StringBuffer xml = new StringBuffer();
             StringBuffer xmlResults = new StringBuffer();
             
             Q.reset_set(set_global_descriptor_results);
-            Vector<Return_Full_Nodes_Row> retVals = new Vector<Return_Full_Nodes_Row>();
+            ArrayList<Return_Full_Nodes_Row> retVals = new ArrayList<Return_Full_Nodes_Row>();
             if(Q.bulk_return_full_nodes(set_global_descriptor_results, retVals)!=QClass.APIFail){
                 for(Return_Full_Nodes_Row row: retVals){
                     
@@ -301,7 +301,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_paging_results, termsInfo, resultsTerms , resultNodesIdsL);
             
             //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));     
-            Vector<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
+            ArrayList<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
             Collections.sort(resultsTermsInSortItems,transliterationComparator);
             resultsTerms.clear();
             resultsTerms.addAll(Utilities.getStringVectorFromSortItemVector(resultsTermsInSortItems));

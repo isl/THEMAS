@@ -33,8 +33,8 @@
  */
 package XMLHandling;
 
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -52,14 +52,14 @@ public class AAT_SubjectClass {
     public String SubjectId = "";
 
     public AAT_SubjectTermClass SubjectPreferredTermName = new AAT_SubjectTermClass();
-    public Vector<AAT_SubjectTermClass> nonPreferredTermNames = new Vector<AAT_SubjectTermClass>();
+    public ArrayList<AAT_SubjectTermClass> nonPreferredTermNames = new ArrayList<AAT_SubjectTermClass>();
 
     //public String PreferredParentSubjectId = "";
-    public Vector<String> parentSubjectIds = new Vector<String>();
-    public Vector<String> associatedSubjectIds = new Vector<String>();
-    public Vector<AAT_SubjectTermClass> descriptiveNotes = new Vector<AAT_SubjectTermClass>();
+    public ArrayList<String> parentSubjectIds = new ArrayList<String>();
+    public ArrayList<String> associatedSubjectIds = new ArrayList<String>();
+    public ArrayList<AAT_SubjectTermClass> descriptiveNotes = new ArrayList<AAT_SubjectTermClass>();
 
-    public Vector<AAT_RevisionClass> contributors = new Vector<AAT_RevisionClass>();
+    public ArrayList<AAT_RevisionClass> contributors = new ArrayList<AAT_RevisionClass>();
 
     public AAT_SubjectClass(){
         this.SubjectKind = AAT_Subject_Kind_Enum.UNDEFINED;
