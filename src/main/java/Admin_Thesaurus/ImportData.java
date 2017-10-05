@@ -134,6 +134,8 @@ public class ImportData extends ApplicationBasicServlet {
             String importSchemaName = ConstantParameters.xmlschematype_THEMAS;
             String importThesaurusName = request.getParameter("Import_Thesaurus_NewName_NAME");
             String importMethodChoice = request.getParameter("ImportThesaurusMode");//thesaurusImport or bulkImport
+            String initDbValue = request.getParameter("InitDB"); // "on" or null //thesaurusImport or bulkImport
+            
             String importHierarchyName = u.getDecodedParameterValue(request.getParameter("Import_Thesaurus_HierarchyName"));
             String pathToErrorsXML = Utilities.getXml_For_ConsistencyChecks();
             String language = context.getInitParameter("LocaleLanguage");
@@ -197,13 +199,13 @@ public class ImportData extends ApplicationBasicServlet {
                 importThesaurusName = importThesaurusName.replaceAll(" ", "_");
                 importThesaurusName = importThesaurusName.toUpperCase();
 
-                if (thesauriNames.contains(importThesaurusName)) {
+                if (thesauriNames.contains(importThesaurusName) && initDbValue==null) {
                     
                     resultObj.setValue(u.translateFromMessagesXML("root/ImportData/importThesaurusNameFailure", new String[] {importThesaurusName}));
                     //resultObj.setValue("Thesaurus '" + importThesaurusName + "' already exists in database. Please choose a different name for the Thesaurus.");
 
-                    ArrayList<String> allHierarchies = new ArrayList<String>();
-                    ArrayList<String> allGuideTerms = new ArrayList<String>();
+                    ArrayList<String> allHierarchies = new ArrayList<>();
+                    ArrayList<String> allGuideTerms = new ArrayList<>();
                     dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
 
                     //end query and close connection
@@ -297,7 +299,12 @@ public class ImportData extends ApplicationBasicServlet {
 
             if (importMethodChoice.equals("thesaurusImport")) {
 
-                if (dbImport.thesaurusImportActions(SessionUserInfo, common_utils,
+                boolean initDB = false;
+                if(initDbValue!=null){
+                    initDB = true;
+                }//thesaurusImport or bulkImport
+
+                if (dbImport.thesaurusImportActions(SessionUserInfo, common_utils,initDB,
                         config, targetLocale, pathToErrorsXML,
                         xmlFilePath, importSchemaName, importThesaurusName, "backup_before_import_data_to_thes_" + importThesaurusName, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                     abortActions(request, sessionInstance, context, targetLocale, common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj, out);

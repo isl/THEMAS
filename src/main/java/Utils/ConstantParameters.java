@@ -370,4 +370,12 @@ public class ConstantParameters {
     //output option supported for specific servlets in order to provide the output as xml stream
     public static final String XMLSTREAM = "XMLSTREAM";
     
+    public static final String searchOperatorEquals = "=";
+    public static final String searchOperatorTransliterationEquals = "transliteration=";
+    public static final String searchOperatorNotTransliterationEquals = "!transliteration=";
+    public static final String searchOperatorTransliterationContains = "transliteration~";
+    public static final String searchOperatorNotTransliterationContains = "!transliteration~";
+    public static final String searchOperatorContains = "~";
+    public static final String searchOperatorNotContains = "!~";
+    
 }

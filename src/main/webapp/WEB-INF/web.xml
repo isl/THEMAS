@@ -191,8 +191,15 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <param-name>TermModificationChecks</param-name>
         <param-value>1:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
     </context-param>
+    <!--<context-param>
+        replaced by transliterations search which is performed by default
+        this value refers to the ToneAndCaseIUnsenitivity of the Neo4j-sisapi
+        and may only be activated in case SEARCH_MODE_CASE_INSENSITIVE is set to true 
+        <param-name>SEARCH_MODE_TONE_INSENSITIVE</param-name>
+        <param-value>false</param-value>        
+    </context-param>-->
     <context-param>
-        <param-name>SEARCH_MODE_CASE_TONE_INSENSITIVE</param-name>
+        <param-name>SEARCH_MODE_CASE_INSENSITIVE</param-name>
         <param-value>true</param-value>
     </context-param>
     <context-param>

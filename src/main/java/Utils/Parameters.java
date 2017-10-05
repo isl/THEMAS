@@ -96,7 +96,9 @@ public class Parameters {
     
     public static ArrayList<Integer> TermModificationChecks;
     
-    public static boolean SEARCH_MODE_CASE_TONE_INSENSITIVE = false; // true in case the system's searches are done in tone and case insensitive mode
+    //split in 2 
+    //public static boolean SEARCH_MODE_TONE_INSENSITIVE = false;
+    public static boolean SEARCH_MODE_CASE_INSENSITIVE = false; // true in case the system's searches are done in tone and case insensitive mode
     public static boolean ENABLE_AUTOMATIC_BACKUPS = true; // turning to false at first successfull login is reached.
     public static int AUTOMATIC_BACKUPS_START_HOUR;
     public static int AUTOMATIC_BACKUPS_START_MIN;
@@ -341,7 +343,8 @@ public class Parameters {
 
             CLASS_SET_INCLUDE = xpath.evaluate("web-app/context-param[param-name='CLASS_SET_INCLUDE']/param-value[1]", document);
 
-            SEARCH_MODE_CASE_TONE_INSENSITIVE = xpath.evaluate("web-app/context-param[param-name='SEARCH_MODE_CASE_TONE_INSENSITIVE']/param-value[1]", document).equals("true");
+            //SEARCH_MODE_TONE_INSENSITIVE = xpath.evaluate("web-app/context-param[param-name='SEARCH_MODE_TONE_INSENSITIVE']/param-value[1]", document).equals("true");
+            SEARCH_MODE_CASE_INSENSITIVE = xpath.evaluate("web-app/context-param[param-name='SEARCH_MODE_CASE_INSENSITIVE']/param-value[1]", document).equals("true");
 
             String automaticBackupsStartTimeStr = xpath.evaluate("web-app/context-param[param-name='Automatic_Backups_Next_Day_Start_Time']/param-value[1]", document);
             String[] automaticBackupsStartTimeParts = automaticBackupsStartTimeStr.split(DELIMITER1);

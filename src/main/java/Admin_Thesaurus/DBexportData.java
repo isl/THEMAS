@@ -34,36 +34,34 @@
 package Admin_Thesaurus;
 
 
-
-
-import DB_Admin.CommonUtilsDBadmin;
-import Utils.NodeInfoSortItemContainer;
-import DB_Classes.DBGeneral;
-import DB_Classes.DBThesaurusReferences;
-import Users.UserInfoClass;
-import Utils.ConstantParameters;
-import Utils.Utilities;
-import Utils.Parameters;
-
-import Utils.SortItem;
-
-import Utils.NodeInfoStringContainer;
-
-
-import XMLHandling.WriteFileData;
 import java.io.IOException;
-import javax.servlet.http.*;
-import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Enumeration;
 import java.util.stream.Collectors;
+
+
+import DB_Classes.DBGeneral;
+import DB_Classes.DBThesaurusReferences;
+
+import Users.UserInfoClass;
+import Utils.ConstantParameters;
+import Utils.Utilities;
+import Utils.Parameters;
+import Utils.SortItem;
+import Utils.NodeInfoSortItemContainer;
+import Utils.NodeInfoStringContainer;
+
+import XMLHandling.WriteFileData;
+
+import neo4j_sisapi.IntegerObject;
+import neo4j_sisapi.QClass;
+import neo4j_sisapi.Return_Nodes_Row;
+import neo4j_sisapi.StringObject;
+import neo4j_sisapi.tmsapi.TMSAPIClass;
 
 /**
  *

@@ -111,7 +111,13 @@ function Import_DataButtonPressed(importMode){
              //if(confirm('Είστε σίγουρος για την εισαγωγή θησαυρού στην βάση;\nΗ λειτουργία αυτή θα σταματήσει προσωρινά κάθε επικοινωνία με την βάση.')){
                 DisplayPleaseWaitScreen(true);
                 //alert('ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected);
-                submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection);
+                var intiDBCheckBox = document.getElementById('importThesarusInitDb');
+                if(intiDBCheckBox && intiDBCheckBox.checked){
+                    submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection+'&InitDB=true');
+                }
+                else{
+                    submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection);
+                }
             }
             else{
                 submitFormTo('Import_DataForm' , 'Admin_Thesaurus?DIV=ImportExport_Data_DIV');  

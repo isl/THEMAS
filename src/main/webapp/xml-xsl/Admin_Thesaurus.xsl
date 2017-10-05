@@ -153,6 +153,7 @@
                 </xsl:choose>
                 <xsl:call-template name="ImportExportData">
                     <xsl:with-param name="specificlocale" select="$locale/primarycontentarea/thesauri/importexport"/>
+                    <xsl:with-param name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
                     <xsl:with-param name="lang" select="$lang"/>
                 </xsl:call-template>
             </div>
@@ -359,6 +360,7 @@
     <!--IMPORT - EXPORT DATA-->
     <xsl:template name="ImportExportData">
         <xsl:param name="specificlocale" />
+        <xsl:param name="THEMASUserInfo_userGroup"/>
         <xsl:param name="lang"/>
         <fieldset>
             <legend>
@@ -386,6 +388,12 @@
                                     <xsl:value-of select="$specificlocale/importbutton/option[@lang=$lang]"/>
                                 </xsl:attribute>
                             </input>
+                            <xsl:if test="$THEMASUserInfo_userGroup = 'ADMINISTRATOR' ">
+                                <xsl:text> </xsl:text>
+                                
+                                <xsl:value-of select="$specificlocale/initdb/option[@lang=$lang]"/>
+                                <input type="checkbox" name="InitDB" id="importThesarusInitDb"/>
+                            </xsl:if>
                         </td>
                     </tr>
                     <!--<tr>

@@ -67,8 +67,10 @@
     <user>
         <name>ExternalReader</name> 
         <password/>
-        <thesaurus group="EXTERNALREADER">AATDEMO</thesaurus>
+        
         <thesaurus group="EXTERNALREADER">ANCIENT</thesaurus>        
+        <thesaurus group="EXTERNALREADER">DEMOAAT</thesaurus>
+        <thesaurus group="EXTERNALREADER">TESTDATA</thesaurus>
         <description>External Read only user for thesaurus THEMASDEMO (no login required - all non published terms included)</description>
     </user>
 </WebAppUsers>

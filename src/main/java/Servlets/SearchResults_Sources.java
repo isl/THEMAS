@@ -246,7 +246,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,true);
             //-------------------- paging info And criteria retrieval-------------------------- 
             long startTime = Utilities.startTimer();
 

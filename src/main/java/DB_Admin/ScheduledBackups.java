@@ -33,7 +33,6 @@
  */
 package DB_Admin;
 
-import Admin_Thesaurus.DBMergeThesauri;
 import Admin_Thesaurus.DBexportData;
 import Admin_Thesaurus.DBImportData;
 import DB_Classes.DBGeneral;
@@ -61,7 +60,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.TimerTask;
 import java.util.ArrayList;
-import java.util.Properties;
 //import javax.mail.*;
 //import javax.mail.internet.*;
 
@@ -460,7 +458,7 @@ public class ScheduledBackups extends TimerTask {
 
             try {
                 //connection opens in here. Check result and if ok commit actions if not ok abort actions
-                if (dbImport.thesaurusImportActions(SessionUserInfo,common_utils, config, targetLocale, pathToErrorsXML, XMLFileToImport,
+                if (dbImport.thesaurusImportActions(SessionUserInfo,common_utils,false, config, targetLocale, pathToErrorsXML, XMLFileToImport,
                         ConstantParameters.xmlschematype_THEMAS, importThesaurus, "backup_before_import_data_to_thes_" + importThesaurus, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                     //abort transaction and close connection
                     //Q.free_all_sets();

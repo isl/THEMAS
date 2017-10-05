@@ -399,7 +399,7 @@ public class OfflineToolsClass {
 
                     logFileWriter.append("<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>\r\n");
 
-                    if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
+                    if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, false, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                         Utils.StaticClass.webAppSystemOutPrintln("Failure");
                         abortActions( common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj);
                         return;

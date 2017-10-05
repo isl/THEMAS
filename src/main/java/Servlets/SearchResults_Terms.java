@@ -307,6 +307,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             searchCriteria.operator.toArray(ops);
             searchCriteria.value.toArray(inputValue);
 
+            
             ArrayList<String> output = new ArrayList<String>();
             output.addAll(searchCriteria.output);
             if (output.contains(ConstantParameters.id_kwd) == false) { //id will always be requested
@@ -321,7 +322,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             }
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,false);
 
             //--------------------end of paging info And criteria retrieval--------------------------
 

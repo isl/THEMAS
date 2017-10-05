@@ -144,7 +144,7 @@ public class SearchCriteria {
                     // INPUTs: name - TR - RT - UF
 
                     //String[] inputsArray = {"name", "translations", ConstantParameters.rt_kwd, "uf"};
-                    String operator = "~";
+                    String operator = ConstantParameters.searchOperatorContains;
                     for (int i=0; i < quickSearchInputStrs.length; i++) {
                         sc.input.add(quickSearchInputStrs[i]);
                         sc.operator.add(operator);
@@ -632,14 +632,18 @@ public class SearchCriteria {
                 
                 Query += " "+inputStr_UI+" ";
                 
-                if(operator.get(i).matches("="))
+                if(operator.get(i).matches(ConstantParameters.searchOperatorEquals)){
                     Query += " = = ";
-                else
+                }
+                else{
                 if(operator.get(i).matches("!"))
+                {
                     Query += " != ";
-                else
+                }
+                else{
                      Query += " "+ operator.get(i) +" ";
-                
+                }
+                }
                 
                 Query += " " + value.get(i) + " ";
                 

@@ -2648,7 +2648,13 @@ public class DBGeneral {
         //Q.set_put_prm(ptrn_set, prm);
         //int ans_set = Q.get_matched(tmp_set, ptrn_set);
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
-        int ans_set = Q.get_matched_ToneAndCaseInsensitive(tmp_set, prefix.concat(value), Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+        int ans_set = -1;// Q.get_matched_ToneAndCaseInsensitive(tmp_set, prefix.concat(value), Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+            ans_set = Q.get_matched_CaseInsensitive(tmp_set, prefix.concat(value), true);            
+        }
+        else{
+            ans_set = Q.get_matched_ToneAndCaseInsensitive(tmp_set, prefix.concat(value), false);
+        }
 
         Q.reset_set(ans_set);
 
@@ -3598,7 +3604,7 @@ public class DBGeneral {
 
         // optimization of special search cases
         // 1. terms without comment
-        if (operator.equals("=") && searchVal.equals("")) {
+        if (operator.equals(ConstantParameters.searchOperatorEquals) && searchVal.equals("")) {
             Q.set_difference(set_terms, set_terms_with_comment);
             Q.free_set(set_terms_with_comment);
             return set_terms;
@@ -3610,23 +3616,23 @@ public class DBGeneral {
         }
         // special handling for searching modes: ~ and !~
         int SearchMode = -1;
-        if (operator.equals("~") && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
+        if (operator.equals(ConstantParameters.searchOperatorContains) && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_CONTAINS;
-        } else if (operator.equals("~") && searchVal.endsWith("*")) { // starts with
+        } else if (operator.equals(ConstantParameters.searchOperatorContains) && searchVal.endsWith("*")) { // starts with
             // remove special character "*"
             searchVal = searchVal.substring(0, searchVal.length() - 1);
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_STARTS_WITH;
-        } else if (operator.equals("~") && searchVal.startsWith("*")) { // ends with
+        } else if (operator.equals(ConstantParameters.searchOperatorContains) && searchVal.startsWith("*")) { // ends with
             // remove special character "*"
             searchVal = searchVal.substring(1);
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_ENDS_WITH;
-        } else if (operator.equals("!~") && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
+        } else if (operator.equals(ConstantParameters.searchOperatorNotContains) && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_CONTAINS;
-        } else if (operator.equals("!~") && searchVal.endsWith("*")) { // not starts with
+        } else if (operator.equals(ConstantParameters.searchOperatorNotContains) && searchVal.endsWith("*")) { // not starts with
             // remove special character "*"
             searchVal = searchVal.substring(0, searchVal.length() - 1);
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_STARTS_WITH;
-        } else if (operator.equals("!~") && searchVal.startsWith("*")) { // not ends with
+        } else if (operator.equals(ConstantParameters.searchOperatorNotContains) && searchVal.startsWith("*")) { // not ends with
             // remove special character "*"
             searchVal = searchVal.substring(1);
             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_ENDS_WITH;
@@ -3660,7 +3666,7 @@ public class DBGeneral {
 
             // check the current comment depending on the search operator
             boolean termBelongsToResults = false;
-            if (operator.equals("=")) { // equals with (g.e. The biotopes located in areas where agriculure is practiced)
+            if (operator.equals(ConstantParameters.searchOperatorEquals)) { // equals with (g.e. The biotopes located in areas where agriculure is practiced)
                 if (termCommentStr.equals(searchVal)) {
                     termBelongsToResults = true;
                 }
@@ -3929,15 +3935,15 @@ public class DBGeneral {
         all_statuses.put(Parameters.Status_For_Reinspection, statusForReinspectionObj);
         all_statuses.put(Parameters.Status_Approved, statusApprovedObj);
 
-        ArrayList<StringObject> filtered_Status_Vec = new ArrayList<StringObject>();
+        ArrayList<StringObject> filtered_Status_Vec = new ArrayList<>();
         
-        Iterator keysEnum = all_statuses.keySet().iterator();
-        String targetKey = new String();
+        Iterator<String> keysEnum = all_statuses.keySet().iterator();
+        String targetKey;
         while (keysEnum.hasNext()) {
 
-            targetKey = (String) keysEnum.next();
+            targetKey = keysEnum.next();
 
-            if (operator.equals("=")) {
+            if (operator.equals(ConstantParameters.searchOperatorEquals)) {
                 if (targetKey.compareTo(searchVal) != 0) {
                     continue;
                 }
@@ -3945,7 +3951,7 @@ public class DBGeneral {
                 filtered_Status_Vec.add(all_statuses.get(targetKey));
                 //}
 
-            } else if (operator.equals("~")) {
+            } else if (operator.equals(ConstantParameters.searchOperatorContains)) {
 
                 if (searchVal.startsWith("*", 0)) {
                     searchVal = searchVal.substring(1, searchVal.length());
@@ -3963,7 +3969,7 @@ public class DBGeneral {
                     filtered_Status_Vec.add(all_statuses.get(targetKey));
                 }
 
-            } else if (operator.equals("!~")) {
+            } else if (operator.equals(ConstantParameters.searchOperatorNotContains)) {
 
                 if (searchVal.startsWith("*", 0)) {
                     searchVal = searchVal.substring(1, searchVal.length());
@@ -3978,7 +3984,7 @@ public class DBGeneral {
 
         }
 
-        if (filtered_Status_Vec.size() == 0) {
+        if (filtered_Status_Vec.isEmpty()) {
             Q.reset_set(set_results);
             return set_results;
         }
@@ -4006,7 +4012,7 @@ public class DBGeneral {
         int set_results = -1;
         Q.reset_name_scope();
 
-        if (operator.equals("=")) {
+        if (operator.equals(ConstantParameters.searchOperatorEquals)) {
 
             if (searchVal != null && searchVal.trim().length() > 0) {
                 for (int i = 0; i < prefixes.length; i++) {
@@ -4056,22 +4062,67 @@ public class DBGeneral {
                 }
             }
         }
-        else if (operator.equals("transliteration~")) {
+        else if (operator.equals(ConstantParameters.searchOperatorTransliterationEquals)){
             Q.reset_set(set_target);
-            set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false));
+            set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
             Q.reset_set(set_results);
         }
-        else if (operator.equals("~")) {
+        else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationEquals)) {
+
             Q.reset_set(set_target);
-            //set_results = WTA.get_matched_ToneAndCaseInsensitive( set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-            set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+
+            int set_exclude = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
+            
+            Q.reset_set(set_target);
+            set_results = Q.set_get_new();
+            Q.set_copy(set_results, set_target);
+
+            Q.reset_set(set_results);
+            Q.reset_set(set_exclude);
+            Q.set_difference(set_results, set_exclude);
+            Q.reset_set(set_results);
+
+            Q.free_set(set_exclude);            
+        }
+        else if (operator.equals(ConstantParameters.searchOperatorTransliterationContains)){
+            Q.reset_set(set_target);
+            set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),false);
+            Q.reset_set(set_results);
+        }
+        else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
+            
+            Q.reset_set(set_target);
+
+            int set_exclude = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),false);
+            
+            Q.reset_set(set_target);
+            set_results = Q.set_get_new();
+            Q.set_copy(set_results, set_target);
+
+            Q.reset_set(set_results);
+            Q.reset_set(set_exclude);
+            Q.set_difference(set_results, set_exclude);
+            Q.reset_set(set_results);
+
+            Q.free_set(set_exclude);
+        }
+        else if (operator.equals(ConstantParameters.searchOperatorContains)) {
+            Q.reset_set(set_target);
+            
+            //set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+            //set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+            if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, true);                
+            }
+            else{
+                set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
+            }
             Q.reset_set(set_results);
         } else if (operator.equals("!")) {
 
             int set_exclude_facets = -1;
 
-            for (int i = 0; i < prefixes.length; i++) {
-                String prefix = prefixes[i];
+            for (String prefix  : prefixes) {
                 if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
                     set_exclude_facets = Q.set_get_new();
                     Q.set_put(set_exclude_facets);
@@ -4088,14 +4139,20 @@ public class DBGeneral {
             Q.reset_set(set_results);
 
             Q.free_set(set_exclude_facets);
-        } else if (operator.equals("!~")) {
+        } else if (operator.equals(ConstantParameters.searchOperatorNotContains)) {
 
-            int set_exclude_facets = -1;
+            int set_exclude_facets;
 
             Q.reset_set(set_target);
             //set_exclude_facets = WTA.get_matched_ToneAndCaseInsensitive( set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-            set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+            //set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
 
+            if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                set_exclude_facets = Q.get_matched_CaseInsensitive(set_target, searchVal, true);                
+            }
+            else{
+                set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
+            }
             Q.reset_set(set_target);
             set_results = Q.set_get_new();
             Q.set_copy(set_results, set_target);
@@ -5408,7 +5465,7 @@ public class DBGeneral {
                 //<editor-fold defaultstate="collapsed" desc="Case Of Source Name criteria">
                 if (input[i].equalsIgnoreCase("name")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (operators[i].equals(ConstantParameters.searchOperatorEquals)) {
 
                         if (searchVal != null && searchVal.trim().length() > 0) {
                             if (Q.set_current_node(new StringObject(prefixSource.concat(searchVal))) != QClass.APIFail) {
@@ -5418,8 +5475,8 @@ public class DBGeneral {
                             }
                         }
 
-                    } else if (operators[i].toString().equals("~")) {
-
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains">
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
                         //int ptrn_set = Q.set_get_new();
@@ -5431,12 +5488,29 @@ public class DBGeneral {
                         Q.free_set(set_partial_source_results);
 
                         //set_partial_source_results = Q.get_matched(set_s, ptrn_set);
-                        set_partial_source_results = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-
+                        //set_partial_source_results = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_partial_source_results = Q.get_matched_CaseInsensitive(set_s, searchVal, true);                            
+                        }
+                        else{
+                            set_partial_source_results = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, false);
+                        }
                         Q.reset_set(set_partial_source_results);
                         //Q.free_set(ptrn_set);
+                        // </editor-fold>
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorTransliterationContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Transliteration Contains">
+                        Q.reset_set(set_s);
+                        Q.free_set(set_partial_source_results);
 
-                    } else if (operators[i].toString().equals("!")) {
+                        set_partial_source_results = Q.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal,false),false);
+                        
+                        Q.reset_set(set_partial_source_results);
+                        //Q.free_set(ptrn_set);
+                        //</editor-fold>
+
+                    } else if (operators[i].equals("!")) {
 
                         int set_exclude_sources = Q.set_get_new();
 
@@ -5455,7 +5529,7 @@ public class DBGeneral {
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains) || operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
 
                         //int set_exclude_sources = Q.set_get_new();
                         //CMValue prm_val = new CMValue();
@@ -5467,7 +5541,13 @@ public class DBGeneral {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_exclude_hierarchies = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //int set_exclude_sources = Q.get_matched(set_s, ptrn_set);
-                        int set_exclude_sources = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        int set_exclude_sources = -1;//Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_exclude_sources = Q.get_matched_CaseInsensitive(set_s, searchVal, true);
+                        }
+                        else{
+                            set_exclude_sources = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, false);
+                        }
 
                         Q.reset_set(set_exclude_sources);
                         //Q.free_set(ptrn_set);
@@ -5482,6 +5562,30 @@ public class DBGeneral {
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
                     }
+                    /*
+                    else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
+                        
+                        Transliteration is only stored in Facets/Hierarchies/TopTerms/Terms/Sources                    
+                        
+                        
+                        Q.reset_set(set_s);
+                        
+                        int set_exclude_sources = Q.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal,false),false);
+                        Q.reset_set(set_exclude_sources);
+                        //Q.free_set(ptrn_set);
+
+                        Q.reset_set(set_s);
+                        Q.reset_set(set_partial_source_results);
+                        Q.set_copy(set_partial_source_results, set_s);
+
+                        Q.reset_set(set_partial_source_results);
+                        Q.reset_set(set_exclude_sources);
+                        Q.set_difference(set_partial_source_results, set_exclude_sources);
+                        Q.reset_set(set_partial_source_results);
+                        Q.free_set(set_exclude_sources);
+
+                    }
+                    */
                 }
                 //</editor-fold>
 
@@ -5529,7 +5633,7 @@ public class DBGeneral {
                     int set_sources_with_source_note = Q.get_from_value(set_all_source_note_nodes);
                     Q.reset_set(set_sources_with_source_note);
 
-                    if (operators[i].equals("=") && searchVal.equals("")) {
+                    if (operators[i].equals(ConstantParameters.searchOperatorEquals) && searchVal.equals("")) {
                         // optimization of special search cases
                         // 1. sources without source_note
 
@@ -5557,23 +5661,23 @@ public class DBGeneral {
 
                         //special handling for searching modes: ~ and !~
                         int SearchMode = -1;
-                        if (operators[i].equals("~") && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
+                        if (operators[i].equals(ConstantParameters.searchOperatorContains) && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_CONTAINS;
-                        } else if (operators[i].equals("~") && searchVal.endsWith("*")) { // starts with
+                        } else if (operators[i].equals(ConstantParameters.searchOperatorContains) && searchVal.endsWith("*")) { // starts with
                             // remove special character "*"
                             searchVal = searchVal.substring(0, searchVal.length() - 1);
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_STARTS_WITH;
-                        } else if (operators[i].equals("~") && searchVal.startsWith("*")) { // ends with
+                        } else if (operators[i].equals(ConstantParameters.searchOperatorContains) && searchVal.startsWith("*")) { // ends with
                             // remove special character "*"
                             searchVal = searchVal.substring(1);
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_ENDS_WITH;
-                        } else if (operators[i].equals("!~") && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
+                        } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains) && searchVal.startsWith("*") == false && searchVal.endsWith("*") == false) { // contains
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_CONTAINS;
-                        } else if (operators[i].equals("!~") && searchVal.endsWith("*")) { // not starts with
+                        } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains) && searchVal.endsWith("*")) { // not starts with
                             // remove special character "*"
                             searchVal = searchVal.substring(0, searchVal.length() - 1);
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_STARTS_WITH;
-                        } else if (operators[i].equals("!~") && searchVal.startsWith("*")) { // not ends with
+                        } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains) && searchVal.startsWith("*")) { // not ends with
                             // remove special character "*"
                             searchVal = searchVal.substring(1);
                             SearchMode = ConstantParameters.SEARCH_COMMENTS_MODE_NOT_ENDS_WITH;
@@ -5609,7 +5713,7 @@ public class DBGeneral {
 
                             // check the current source_note depending on the search operator
                             boolean sourceBelongsToResults = false;
-                            if (operators[i].equals("=")) { // equals with 
+                            if (operators[i].equals(ConstantParameters.searchOperatorEquals)) { // equals with 
                                 if (source_noteStr.equals(searchVal)) {
                                     sourceBelongsToResults = true;
                                 }

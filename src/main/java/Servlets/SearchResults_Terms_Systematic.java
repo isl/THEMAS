@@ -183,7 +183,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             }
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,false);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             //open connection and start Query

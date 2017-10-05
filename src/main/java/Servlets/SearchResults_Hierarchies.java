@@ -202,11 +202,10 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,false);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             StringBuffer xml = new StringBuffer();
-
             
             long startTime = Utilities.startTimer();
 
@@ -385,9 +384,9 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                 }
 
                 //Case Of Hierarchy Name criteria
-                if (input[i].toString().equalsIgnoreCase("name")) {
+                if (input[i].equalsIgnoreCase("name")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (operators[i].equals(ConstantParameters.searchOperatorEquals)) {
 
                         if (searchVal != null && searchVal.trim().length() > 0) {
                             if (Q.set_current_node( new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
@@ -405,7 +404,8 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                                 Q.reset_set( set_partial_hierarchy_results);
                             }
                         }
-                    } else if (operators[i].toString().equals("~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains">
 
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
@@ -417,15 +417,27 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_partial_hierarchy_results = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //set_partial_hierarchy_results = Q.get_matched( set_h, ptrn_set);
-                        set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        //set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_partial_hierarchy_results = Q.get_matched_CaseInsensitive(set_h, searchVal, true);                            
+                        }
+                        else{
+                            set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive(set_h, searchVal, false);
+                        }
 
                         Q.reset_set( set_partial_hierarchy_results);
+                        // </editor-fold>
 
-                    } else if (operators[i].toString().equals("!")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorTransliterationContains)) {
+                        Q.reset_set(set_h);
+                        set_partial_hierarchy_results = Q.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        Q.reset_set(set_partial_hierarchy_results);
+                    }
+                    else if (operators[i].equals("!")) {
 
                         int set_exclude_hierarchies = Q.set_get_new();
 
-                        if (Q.set_current_node( new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                        if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
                             /*
                             CMValue prm_val = new CMValue();
                             prm_val.assign_string(searchVal);
@@ -450,7 +462,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.reset_set( set_exclude_hierarchies);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //int set_exclude_hierarchies = Q.set_get_new();
 
@@ -464,7 +476,15 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_exclude_hierarchies = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //set_exclude_hierarchies = Q.get_matched( set_h, ptrn_set);
-                        int set_exclude_hierarchies = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        int set_exclude_hierarchies;
+                        //Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_exclude_hierarchies = Q.get_matched_CaseInsensitive(set_h, searchVal, true);                            
+                        }
+                        else{
+                            set_exclude_hierarchies = Q.get_matched_ToneAndCaseInsensitive(set_h, searchVal, false);
+                        }
                         Q.reset_set( set_exclude_hierarchies);
 
                         Q.reset_set( set_h);
@@ -477,10 +497,24 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.reset_set( set_exclude_hierarchies);
                     }
+                    else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
+
+                        Q.reset_set(set_h);
+                        int set_exclude_hierarchies = Q.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        
+                        Q.reset_set(set_h);
+                        Q.reset_set(set_partial_hierarchy_results);
+                        Q.set_copy(set_partial_hierarchy_results, set_h);
+
+                        Q.reset_set(set_partial_hierarchy_results);
+                        Q.reset_set(set_exclude_hierarchies);
+                        Q.set_difference(set_partial_hierarchy_results, set_exclude_hierarchies);
+                        Q.reset_set(set_partial_hierarchy_results);
+                    }
                 } //Case Of letter_code's value criteria // NOT USED BECAUSE OF CRITERIA HIERARCHIES XSL 
                 else if (input[i].toString().equalsIgnoreCase("letter_code")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (operators[i].toString().equals(ConstantParameters.searchOperatorEquals)) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -570,12 +604,11 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
 
 
-                    } else if (operators[i].toString().equals("~")) {
-
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains letter code">
                         //get all hierarchies that have letter codes
-                        int linkFromSet = Q.set_get_new();
                         Q.reset_set( set_h);
-                        linkFromSet = Q.get_inher_link_from( set_h);
+                        int linkFromSet  = Q.get_inher_link_from( set_h);
                         Q.reset_set( linkFromSet);
 
                         //select only those that have one letter code value equal to searchVal
@@ -657,9 +690,8 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Union of these 2 partial results (hierarchyletter codes and inherieted letter codes)
                         Q.set_union( set_partial_hierarchy_results, additional_hiers_set);
                         Q.reset_set( set_partial_hierarchy_results);
-
-
-                    } else if (operators[i].toString().equals("!")) {
+                        // </editor-fold>
+                    } else if (operators[i].equals("!")) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -762,7 +794,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.free_set( set_exclude_facets);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();

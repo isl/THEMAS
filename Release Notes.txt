@@ -25,6 +25,20 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
 This file is part of the THEMAS system.
 
+THEMAS 1.2
+=============================================================================
+- Update to java 8 / neo4j 3.2.5 / Neo4j-sisapi 1.2
+- Each Term/TopTerm or Facet created is assigned a reference Id unique per thesaurus
+  and a transliteration of the logicalname according to configurations in config.xml.
+  This transliteration will be used for custom sorting and case&tone incensitive search.
+  (Transliteration request occurred as a result of the Ancient Theaters Project to support
+  ancient greek punctuation)
+- Each XML exported contains the referenceId added to each term
+- SKOS export now uses this reference Id instead of a random number or the first taxonomical code
+- XMLStream mode was added so that External Readers (if having access) can retrieve 
+  thesaurus data in XML format with a simple http request  
+- Contains search uses the transliteration field whenever referring to Terms/Hierarchies/Facets
+
 -----------------------------------------------------------------------------
 THEMAS 1.0 Release Notes
 -----------------------------------------------------------------------------

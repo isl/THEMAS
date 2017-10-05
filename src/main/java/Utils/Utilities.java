@@ -1700,21 +1700,67 @@ public class Utilities {
     This is done so as the user don't have to type this special character
     CALLED BY: SearchResults_Terms, SearchResults_Hierarchies and SearchResults_Facets servlets
     ----------------------------------------------------------------------*/
-    public void InformSearchOperatorsAndValuesWithSpecialCharacters(String[] searchOperators, String[] searchInputValues) {
+    public void InformSearchOperatorsAndValuesWithSpecialCharacters(String[] input,String[] searchOperators, String[] searchInputValues, boolean nameRefersToSource) {
         int len = searchOperators.length;
         for (int i = 0; i < len; i++) {
             if (searchOperators[i].compareTo("~*") == 0) { // starts with
-                searchOperators[i] = "~";
+                searchOperators[i] = ConstantParameters.searchOperatorContains;
                 searchInputValues[i] = searchInputValues[i] + "*";
             } else if (searchOperators[i].compareTo("*~") == 0) { // ends with
-                searchOperators[i] = "~";
+                searchOperators[i] = ConstantParameters.searchOperatorContains;
                 searchInputValues[i] = "*" + searchInputValues[i];
             } else if (searchOperators[i].compareTo("!~*") == 0) { // not starts with
-                searchOperators[i] = "!~";
+                searchOperators[i] = ConstantParameters.searchOperatorNotContains;
                 searchInputValues[i] = searchInputValues[i] + "*";
             } else if (searchOperators[i].compareTo("!*~") == 0) { // not ends with
-                searchOperators[i] = "!~";
+                searchOperators[i] = ConstantParameters.searchOperatorNotContains;
                 searchInputValues[i] = "*" + searchInputValues[i];
+            }
+            else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorContains)==0){
+                String relevantInput = input[i];
+                ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
+                if(!nameRefersToSource){
+                    keywordsThatShouldBeSearchedWithTransliteration.add("name");
+                }
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rnt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
+                if(nameRefersToSource){
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
+                }
+                
+                if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
+                    searchOperators[i] = ConstantParameters.searchOperatorTransliterationContains;
+                }
+            }
+            else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorNotContains)==0){
+                String relevantInput = input[i];
+                ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
+                if(!nameRefersToSource){
+                    keywordsThatShouldBeSearchedWithTransliteration.add("name");
+                }
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rnt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
+                if(nameRefersToSource){
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
+                }
+                
+                if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
+                    searchOperators[i] = ConstantParameters.searchOperatorNotTransliterationContains;
+                }
             }
         }
     }

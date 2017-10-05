@@ -232,7 +232,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
 
             StringObject resultObj = new StringObject("");
-            if(status.size()==0){
+            if(status.isEmpty()){
                 DBImportData dbImport = new DBImportData();
                 dbImport.specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
 

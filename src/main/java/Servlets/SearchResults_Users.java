@@ -147,7 +147,8 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            //no need to inform search operators
+            //u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,true);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             StringBuffer xml = new StringBuffer();

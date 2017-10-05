@@ -1408,7 +1408,7 @@ public class DBImportData {
         dbAdminUtils.UnlockSystemForAdministrativeJobs();
     }
 
-    public boolean thesaurusImportActions(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
+    public boolean thesaurusImportActions(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,boolean initializeDb,
             ConfigDBadmin config, Locale targetLocale, String pathToErrorsXML, String xmlFilePath,
             String xmlSchemaType, String importThesaurusName,
             String backUpDescription, StringObject DBbackupFileNameCreated,
@@ -1468,8 +1468,8 @@ public class DBImportData {
 
 
         
-        ArrayList<String> xmlFacetsInStrs = new ArrayList<String>();
-        if(xmlFacetSortItems!=null){
+        ArrayList<String> xmlFacetsInStrs = new ArrayList<>();
+        if(!xmlFacetSortItems.isEmpty()){
             xmlFacetsInStrs.addAll(xmlFacetSortItems.keySet());
         }
             
@@ -1521,7 +1521,30 @@ public class DBImportData {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creation of new thesaurus: " + importThesaurusName + ". Time: " + Utilities.GetNow());
 
+        
         Utils.StaticClass.closeDb();
+        
+        DBAdminUtilities dbAdminUtils = new DBAdminUtilities();
+        if(initializeDb){
+            
+            
+            dbAdminUtils.LockSystemForAdministrativeJobs(config);
+            // initialize DB if chekbox was selected or DB is not initialized
+            StringObject InitializeDBResultMessage = new StringObject("");
+
+            // initialize DB if chekbox was selected or DB is not initiali
+            Boolean DBInitializationSucceded = true;
+            
+            boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, importThesaurusName, InitializeDBResultMessage, DBInitializationSucceded);
+            if (DBCanBeInitialized == true) {
+                DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage);                
+            }
+            if(DBInitializationSucceded ==false){
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Initialization of database failed during import operation of thesaurus: " + importThesaurusName + " failed.");
+                return false;
+            }
+        }
+        
         //Step5 thesaurus creation
         boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(dbGen, config, common_utils, importThesaurusName, importThesaurusName, thesaurusVector, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
         if (CreateThesaurusSucceded == false) {
@@ -1597,10 +1620,14 @@ public class DBImportData {
             }
             else{
                 Q.TEST_abort_transaction();
-            }
-            return returnVal;
+            }            
+        }
+        if(returnVal && initializeDb){
+            dbAdminUtils.UnlockSystemForAdministrativeJobs();
         }
         
+        
+        return returnVal;
     }
     
     

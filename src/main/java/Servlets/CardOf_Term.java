@@ -56,7 +56,6 @@ import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Collections;
 import java.util.HashMap;
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 /**
@@ -181,6 +180,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.facet_kwd);
+                output.add(ConstantParameters.rbt_kwd);
+                output.add(ConstantParameters.rnt_kwd);
             }
             //should be visible
             output.add(ConstantParameters.system_referenceUri_kwd);

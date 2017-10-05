@@ -214,7 +214,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input, ops, inputValue,false);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             StringBuffer xml = new StringBuffer();
@@ -378,7 +378,8 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             Q.reset_set(set_global_facet_results);
         } else {
             for (int i = 0; i < input.length; i++) {
-
+                String currentInput = input[i];
+                String currentOperator = operators[i];
                 Q.reset_set(set_f);
                 int set_partial_facet_results = Q.set_get_new();
                 String searchVal = inputValues[i];
@@ -386,11 +387,11 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                 Q.reset_name_scope();
 
                 //Case Of Facet "term" criteria
-                if (input[i].toString().equalsIgnoreCase("term")) {
+                if (currentInput.equalsIgnoreCase("term")) {
                     // get the terms with the given criteria
                     String[] term_field = {"name"};
                     String[] term_operator = new String[1];
-                    term_operator[0] = operators[i];
+                    term_operator[0] = currentOperator;
                     String[] term_inputValue = new String[1];
                     term_inputValue[0] = searchVal;
                     int descriptor_results_set = dbG.getSearchTermResultSet(SessionUserInfo, term_field, term_operator, term_inputValue, globalOperator, Q, TA, sis_session);
@@ -407,9 +408,9 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                 }
 
                 //Case Of Facet Name criteria
-                if (input[i].toString().equalsIgnoreCase("name")) {
+                if (currentInput.equalsIgnoreCase("name")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (currentOperator.equals(ConstantParameters.searchOperatorEquals)) {
 
                         if (searchVal != null && searchVal.trim().length() > 0) {
                             if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
@@ -430,8 +431,15 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
 
                             }
                         }
-                    } else if (operators[i].toString().equals("~")) {
+                    } 
+                    else if (currentOperator.equals(ConstantParameters.searchOperatorTransliterationContains)) {
+                        Q.reset_set(set_f);
+                        set_partial_facet_results = Q.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
+                        Q.reset_set(set_partial_facet_results);
 
+                    }
+                    else if (currentOperator.equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains">
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
                         //int ptrn_set = Q.set_get_new();
@@ -441,10 +449,17 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_partial_facet_results = Q.get_matched_case_insensitive( set_f, ptrn_set,1);
                         //set_partial_facet_results = Q.get_matched( set_f, ptrn_set);
-                        set_partial_facet_results = Q.get_matched_ToneAndCaseInsensitive(set_f, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_partial_facet_results = Q.get_matched_CaseInsensitive(set_f, searchVal, true);                            
+                        }
+                        else{
+                            set_partial_facet_results = Q.get_matched_ToneAndCaseInsensitive(set_f, searchVal, false);
+                        }
+                        
+                        
                         Q.reset_set(set_partial_facet_results);
-
-                    } else if (operators[i].toString().equals("!")) {
+                        //</editor-fold>
+                    } else if (currentOperator.equals("!")) {
 
                         int set_exclude_facets = Q.set_get_new();
 
@@ -473,7 +488,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.set_difference(set_partial_facet_results, set_exclude_facets);
                         Q.reset_set(set_partial_facet_results);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (currentOperator.equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //int set_exclude_facets = Q.set_get_new();
                         //CMValue prm_val = new CMValue();
@@ -485,7 +500,13 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_exclude_facets = Q.get_matched_case_insensitive( set_f, ptrn_set,1);
                         //set_exclude_facets = Q.get_matched( set_f, ptrn_set);
-                        int set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_f, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        int set_exclude_facets = -1;
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_exclude_facets = Q.get_matched_CaseInsensitive(set_f, searchVal, true);                            
+                        }
+                        else{
+                            set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_f, searchVal, false);
+                        }
 
                         Q.reset_set(set_f);
                         Q.reset_set(set_partial_facet_results);
@@ -497,10 +518,25 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.reset_set(set_partial_facet_results);
 
                     }
-                } //Case Of letter_code's value criteria //NOT USED BEACUSE OF CRITERIA FACETS XSL
-                else if (input[i].toString().equalsIgnoreCase("letter_code")) {
+                    else if (currentOperator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
 
-                    if (operators[i].toString().equals("=")) {
+                        Q.reset_set(set_f);
+                        int set_exclude_facets = Q.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
+                        
+                        Q.reset_set(set_f);
+                        Q.reset_set(set_partial_facet_results);
+                        Q.set_copy(set_partial_facet_results, set_f);
+
+                        Q.reset_set(set_partial_facet_results);
+                        Q.reset_set(set_exclude_facets);
+                        Q.set_difference(set_partial_facet_results, set_exclude_facets);
+                        Q.reset_set(set_partial_facet_results);
+
+                    }
+                } //Case Of letter_code's value criteria //NOT USED BEACUSE OF CRITERIA FACETS XSL
+                else if (currentInput.equalsIgnoreCase("letter_code")) {
+
+                    if (currentOperator.equals(ConstantParameters.searchOperatorEquals)) {
 
                         //get all facets that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -511,7 +547,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
+                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link_id(linkFromSet, retVals) != QClass.APIFail) {
                             for (Return_Link_Id_Row row : retVals) {
                                 String temp = row.get_v4_cmv().getString();
@@ -547,18 +583,18 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         set_partial_facet_results = Q.get_from_value(filteredSet);
                         Q.reset_set(set_partial_facet_results);
 
-                    } else if (operators[i].toString().equals("~")) {
+                    } else if (currentOperator.equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains letter code">
 
                         //get all facets that have letter codes
-                        int linkFromSet = Q.set_get_new();
                         Q.reset_set(set_f);
-                        linkFromSet = Q.get_link_from_by_category(set_f, new StringObject("Facet"), new StringObject("letter_code"));
+                        int linkFromSet = Q.get_link_from_by_category(set_f, new StringObject("Facet"), new StringObject("letter_code"));
                         Q.reset_set(set_partial_facet_results);
 
                         //select only those that have one letter code value containing searchVal
                         int filteredSet = Q.set_get_new();
 
-                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
+                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link_id(linkFromSet, retVals) != QClass.APIFail) {
                             for (Return_Link_Id_Row row : retVals) {
                                 String temp = row.get_v4_cmv().getString();
@@ -594,8 +630,8 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //get facet nodes that correspond to the filtered letter code values
                         set_partial_facet_results = Q.get_from_value(filteredSet);
                         Q.reset_set(set_partial_facet_results);
-
-                    } else if (operators[i].toString().equals("!")) {
+                        //</editor-fold>
+                    } else if (currentOperator.equals("!")) {
 
                         //get all facets that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -606,7 +642,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
+                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link_id(linkFromSet, retVals) != QClass.APIFail) {
                             for (Return_Link_Id_Row row : retVals) {
                                 String temp = row.get_v4_cmv().getString();
@@ -643,9 +679,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         //in an exclude list. This is done because one facet may have multiple letter codes 
                         //but if one letter code equals to searchVal and all the others don't then the whole
                         //Facet must be excluded.
-                        int set_exclude_facets = Q.set_get_new();
-
-                        set_exclude_facets = Q.get_from_value(filteredSet);
+                        int set_exclude_facets = Q.get_from_value(filteredSet);
 
                         //this loop's partial results are calculated from the set difference between all facets and exluded facets
                         Q.reset_set(set_f);
@@ -656,28 +690,25 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.set_difference(set_partial_facet_results, set_exclude_facets);
                         Q.reset_set(set_partial_facet_results);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (currentOperator.equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //get all facets that have letter codes
-                        int linkFromSet = Q.set_get_new();
                         Q.reset_set(set_f);
-                        linkFromSet = Q.get_link_from_by_category(set_f, new StringObject("Facet"), new StringObject("letter_code"));
+                        int linkFromSet = Q.get_link_from_by_category(set_f, new StringObject("Facet"), new StringObject("letter_code"));
                         Q.reset_set(set_partial_facet_results);
 
                         int filteredSet = Q.set_get_new();
 
-                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
+                        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<>();
                         if (Q.bulk_return_link_id(linkFromSet, retVals) != QClass.APIFail) {
-                            for (Return_Link_Id_Row row : retVals) {
+                            retVals.forEach((row) -> {
                                 String temp = row.get_v4_cmv().getString();
                                 if (temp.contains(searchVal)) {
-
                                     if (Q.set_current_node_id(row.get_v3_sysid()) != QClass.APIFail) {
-
                                         Q.set_put(filteredSet);
                                     }
                                 }
-                            }
+                            });
                         }
                         /*
                          StringObject c_name = new StringObject();
@@ -755,7 +786,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
         DBFilters dbf = new DBFilters();
         set_global_facet_results = dbf.FilterFacetResults(SessionUserInfo, set_global_facet_results, Q, sis_session);
 
-        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
         if (Q.bulk_return_nodes(set_global_facet_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 globalFacetResults.add(new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(), row.get_v3_cls_transliteration(), row.get_v2_long_referenceId()));
