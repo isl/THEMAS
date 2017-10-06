@@ -322,7 +322,7 @@
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getDeleteResult('EditActions_Facet','edit_facet_delete', '','')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]" />
+                            <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
                         </xsl:attribute>
                     </input>
                     &#160;

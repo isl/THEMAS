@@ -66,6 +66,7 @@
     
     <xsl:template name="PopUp_Or_EditCard_Of_Term">
         <xsl:param name="showClose"/>
+        <xsl:variable name="showCreatorInAlphabeticalDisplay" select="//data/@displayCreatorInAlphabetical"/>
         <xsl:variable name="termName" select="//data/terms/term[1]/descriptor"/>
         <xsl:variable name="termcardlocale" select="document('../../translations/translations.xml')/locale/popupcards/term"/>
         <xsl:variable name="lang" select="//page/@language"/>
@@ -155,6 +156,7 @@
                             <td valign="top" width="448" style="padding-right:20px; padding-left:20px;  ">
                                 <xsl:call-template name="alphabetical-display">
                                     <xsl:with-param name="prefferedWidth" select="'440'"/>
+                                    <xsl:with-param name="showCreator" select="$showCreatorInAlphabeticalDisplay"/>
                                 </xsl:call-template>
                             </td>
                             <xsl:if test="//THEMASUserInfo/userGroup != 'READER'">

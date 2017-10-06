@@ -115,10 +115,6 @@
     </BehaviorConfigs>
     
     <CreatorInAlphabeticalTerm>
-    <!-- If <DisplayCreator>true</DisplayCreator> add the following line in labels.xml -->
-    <!--
-        <message id="CREATED_BY" name_el="Δημ/ός" name_en="Creator" legend_descr_el="Δημιουργός του Όρου" legend_descr_en="Creator of Term" order="20"/> 
-    -->
         <DisplayCreator>false</DisplayCreator>  
     </CreatorInAlphabeticalTerm>
     

@@ -353,11 +353,7 @@ This file is part of the THEMAS system.
             </input>
         </fieldset>
         <table width="100%">
-            <tr>
-                <td>
-                    <br/>
-                </td>
-            </tr>
+            
             <tr>
                 <td id="resultOf_Edit">
                     <br/>
@@ -367,7 +363,7 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" >
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/moverefs/moveAndDeletebtntext/option[@lang=$lang]"/>
                         </xsl:attribute>
                         <xsl:attribute name="onclick">
                             <xsl:text>getServletResult('EditActions_Source','edit_source_refs','','selectedIndexOnly');</xsl:text>
@@ -506,11 +502,7 @@ This file is part of the THEMAS system.
             </input>
         </fieldset>
         <table width="100%">
-            <tr>
-                <td>
-                    <br/>
-                </td>
-            </tr>
+            
             <tr>
                 <td id="resultOf_Edit">
                     <br/>
@@ -520,7 +512,7 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getDeleteResult('EditActions_Source','edit_source_delete', '','')">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
                         </xsl:attribute>
                     </input>
                     &#160;

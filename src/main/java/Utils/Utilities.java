@@ -287,15 +287,13 @@ public class Utilities {
 
 
         
-        xmlResults.append("<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
+        xmlResults.append("<data thesaurus=\"").append(selectedThesaurus.toUpperCase()).append("\" translationsSeperator=\"").append(Parameters.TRANSLATION_SEPERATOR).append("\" displayCreatorInAlphabetical=\"").append(Parameters.CreatorInAlphabeticalTermDisplay).append("\">");
         if(!skipOutput){
             xmlResults.append("<output>");
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
-                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
-                    continue;
-                } else {
+                if (category.compareTo(ConstantParameters.id_kwd) != 0) {
                     xmlResults.append("<" + category + "/>");
                 }
             }
@@ -333,7 +331,7 @@ public class Utilities {
             long refIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
             String transliteration = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getLogNameTransliteration();
             
-            xmlResults.append("<descriptor"+(skipIds?"":(" id=\"" + targetSysIdL + "\"")));
+            xmlResults.append("<descriptor").append(skipIds?"":(" id=\"" + targetSysIdL + "\""));
             
             if(refIdL>0){
                 xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
@@ -2455,7 +2453,8 @@ public class Utilities {
         }
         
         try {
-            appendVal = "<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+            
+            appendVal = "<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\" displayCreatorInAlphabetical=\""+Parameters.CreatorInAlphabeticalTermDisplay+"\">";
             if(!streamOutput){
                 //not of interest in xmlstream
                 appendVal+="<output>";

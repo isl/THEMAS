@@ -57,6 +57,7 @@
         <xsl:value-of select="//title"/>
     </xsl:variable>
     <xsl:variable name="trSeperator" select="//data/@translationsSeperator"/>
+    <xsl:variable name="showCreatorInAlphabeticalDisplay" select="//data/@displayCreatorInAlphabetical"/>
     <xsl:variable name="onMouseOverColor">
             <!-- #D9EDFC -->
             <xsl:text>#D9EDFC</xsl:text>
@@ -74,6 +75,7 @@
               FUNCTION: displays the data given in Alphabetical format for the tags <term>
     _____________________________________________________________________________ -->
     <xsl:template match="/page">
+        
         <html>
             <head>
                 <title>
@@ -473,7 +475,8 @@
                                 <xsl:with-param name="tagDisplayNameId">USE</xsl:with-param>
                                 <xsl:with-param name="addAnchors">true</xsl:with-param>
                                 <xsl:with-param name="displayFormat">bold</xsl:with-param>
-                            </xsl:call-template>                            
+                            </xsl:call-template>    
+                            <xsl:if test="$showCreatorInAlphabeticalDisplay='true'">
                             <!-- __________________ <created_by> ______________ -->
                             <xsl:call-template name="DisplayTargetTag">
                                 <xsl:with-param name="tagNode" select="created_by"/>
@@ -481,6 +484,7 @@
                                 <xsl:with-param name="addAnchors">false</xsl:with-param>
                                 <xsl:with-param name="displayFormat">normal</xsl:with-param>
                             </xsl:call-template>
+                            </xsl:if>                       
                             <!-- __________________ FOR EACH <term> or <ufterm> (END) ____________________ -->
                             <br/>
                              </td>

@@ -42,6 +42,7 @@
     <xsl:variable name="lang2" select="//page/@language"/>
     <xsl:variable name="nameLang" select="concat('name_',$lang2)"/>
     <xsl:variable name="legendDescrLang" select="concat('legend_descr_',$lang2)"/>
+    <xsl:variable name="showCreatorInAlphabeticalDisplay" select="//data/@displayCreatorInAlphabetical"/>
 
     
     <xsl:variable name="alphabeticalresultslocale" select="document('../translations/translations.xml')/locale/primarycontentarea/terms/alphabeticalresults"/>
@@ -77,6 +78,7 @@
             <xsl:call-template name="alphabetical-display">
                 <xsl:with-param name="prefferedWidth">100%</xsl:with-param>
                 <xsl:with-param name="onHover">enable</xsl:with-param>
+                <xsl:with-param name="showCreator" select="$showCreatorInAlphabeticalDisplay"/>
             </xsl:call-template>
            </td>
                </tr>
@@ -109,7 +111,9 @@
         <!---->
     <xsl:template name="alphabetical-display">
         <xsl:param name="prefferedWidth"/>
+        <xsl:param name="showCreator"/>
         <xsl:param name="onHover"/>
+        
         
         <xsl:variable name="trsSeperator" select="//data/@translationsSeperator"/>
        <!-- __________________ FOR EACH <term> or <ufterm> (BEGIN) ____________________ -->
@@ -537,15 +541,16 @@
                 <xsl:with-param name="prefferedWidth" select="$prefferedWidth"/>
                 <xsl:with-param name="popUpCardMode" select="'none'"/>
             </xsl:call-template>
-            
-            <xsl:call-template name="DisplayTargetTag">
-                <xsl:with-param name="tagNode" select="created_by"/>
-                <xsl:with-param name="tagDisplayNameId" select="'CREATED_BY'"/>
-                <xsl:with-param name="addAnchors" select="'false'"/>
-                <xsl:with-param name="displayFormat" select="'normal'"/>
-                <xsl:with-param name="prefferedWidth" select="$prefferedWidth"/>
-                <xsl:with-param name="popUpCardMode" select="'CREATED_BY'"/>
-            </xsl:call-template>
+            <xsl:if test="$showCreator ='true'">
+                <xsl:call-template name="DisplayTargetTag">
+                    <xsl:with-param name="tagNode" select="created_by"/>
+                    <xsl:with-param name="tagDisplayNameId" select="'CREATED_BY'"/>
+                    <xsl:with-param name="addAnchors" select="'false'"/>
+                    <xsl:with-param name="displayFormat" select="'normal'"/>
+                    <xsl:with-param name="prefferedWidth" select="$prefferedWidth"/>
+                    <xsl:with-param name="popUpCardMode" select="'CREATED_BY'"/>
+                </xsl:call-template>
+            </xsl:if>
             <!-- __________________ FOR EACH <term> or <ufterm> (END) ____________________ -->
             <br/>
                                     </td>

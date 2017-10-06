@@ -56,9 +56,9 @@
 		<message id="Source" name_el="Πηγή" name_en="Source" name_fr="Source" name_it="Source" name_ar="Source"  legend_descr_el="Πηγή" legend_descr_en="Source" legend_descr_fr="Source" legend_descr_it="Fonte" legend_descr_ar="Source" order="17"/>
 		<!--<message id="Source_el" name_el="Πηγή (ελλ.)" name_en="Source (el)" name_fr="Source (el)" name_it="Source (el)" name_ar="Source"  legend_descr_el="Πηγή (ελληνικού όρου)" legend_descr_en="Source (Greek term)" legend_descr_fr="Source du terme grec et anglais" legend_descr_it="Fonte di greco e inglese termine" legend_descr_ar="Source of Greek and English term" order="18"/>-->
 		<message id="Source_tr" name_el="Πηγή (Μετ.)" name_en="Source (Tra.)" name_fr="Source (Tra.)" name_it="Source (Tra.)" name_ar="Source (Tra.)"  legend_descr_el="Πηγή Μεταφράσεων" legend_descr_en="Source of Translations" legend_descr_fr="Source du Traductions terme" legend_descr_it="Fonte di Traduzioni termine" legend_descr_ar="Source of Translation terms" order="19"/>
-                
+                <message id="CREATED_BY" name_el="Δημ/ός" name_en="Creator" legend_descr_el="Δημιουργός του Όρου" legend_descr_en="Creator of Term" order="20"/> 
 <!-- General Labels  -->		
-
+            
 		<message id="thesaurus" name_el="Θησαυρός Όρων" name_en="Catalogue of Monument Types" name_fr="Catalogue des types de Monuments" name_it="Catalogue of Monument Types"  name_ar="Catalogue of Monument Types" />
 		<message id="closeLegend" name_el="κλείσιμο" name_en="close" name_fr="fermer" name_it="close" name_ar="close"/>
 		<message id="legendText" name_el="Υπόμνημα" name_en="Legend" name_fr="Légende"  name_it="Legend"  name_ar="Legend"  />

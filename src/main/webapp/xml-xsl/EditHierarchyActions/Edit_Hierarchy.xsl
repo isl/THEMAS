@@ -507,11 +507,6 @@
 		</input>
           </fieldset>
           <table width="100%">
-                <tr>
-                    <td>
-                        <br/>
-                    </td>
-                </tr>
                 
                 <tr>
                     <td id="resultOf_Edit">
@@ -524,7 +519,7 @@
                     <td valign="bottom" align="right">
                         <input type="button" class="button" onclick="getDeleteResult('EditActions_Hierarchy','edit_hierarchy_delete', '','')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                                <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
                             </xsl:attribute>
                         </input>
                         &#160;

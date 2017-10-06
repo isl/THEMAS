@@ -6123,9 +6123,9 @@ public class DBGeneral {
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
 
-        ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<String>();
+        ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<>();
         Q.reset_set(set_results);
-        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
         if (Q.bulk_return_nodes(set_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 
