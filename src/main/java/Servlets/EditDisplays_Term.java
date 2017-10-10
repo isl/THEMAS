@@ -140,9 +140,10 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             
             Q.reset_name_scope();
             String results = "";
+            ArrayList<String> currentValues = new ArrayList<>();
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
             if(targetField.compareTo(ConstantParameters.term_create_kwd)==0){
-                
+                currentValues.add(Parameters.UnclassifiedTermsLogicalname);
                 xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
@@ -172,14 +173,27 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 String[] output = new String[2];
                 output[0] = "name";
                 output[1] = targetField;
-                results = u.getTermResultsInXml(SessionUserInfo,targetTerm, output,Q,TA,sis_session,targetLocale);
-                xml.append(results);
+                ArrayList<String> skipCurrentValuesInXMLKeywords = new ArrayList<>();
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.bt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.nt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.rt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.term_create_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.primary_found_in_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.translations_found_in_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.uf_kwd);
+                if(skipCurrentValuesInXMLKeywords.contains(targetField)){
+                    currentValues.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, targetField, Q, TA, sis_session));
+                }
+                else{
+                    results = u.getTermResultsInXml(SessionUserInfo,targetTerm, output,Q,TA,sis_session,targetLocale);
+                    xml.append(results);
+                }
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
             
             if(targetField.compareTo(ConstantParameters.delete_term_kwd)!=0){
-                u.getAvailableValues(SessionUserInfo,targetField,Q, sis_session,xml,targetLocale);
+                u.getAvailableValues(SessionUserInfo,currentValues, targetField,Q, sis_session,xml,targetLocale);
 
                 if(targetField.compareTo(ConstantParameters.translation_kwd)==0 
                         || targetField.compareTo(ConstantParameters.uf_translations_kwd)==0

@@ -143,6 +143,18 @@ body{
     border-left-style: none;
        
 }
+/* Select 2 plugin configuration for moving remove label to the right (multiple select)
+/*
+.select2-selection__choice__remove {
+  float: right;
+  margin-left: 2px;
+}
+*/
+
+input.hiddenInput{
+    visibility: hidden;
+    height: 1px;        
+}
 
 fieldset {
     text-align:left;
@@ -314,7 +326,7 @@ div.popUpCard{ /*characterizes the centralDiv placeholder*/
     padding:10px; 
     background-color: #FFFFFF; 
     border:1px #999999 solid;
-    max-height:400px;
+    max-height:420px;
     width:822px;/*controls the width of popUp card. Max height is defined in #promp*/     
     overflow:auto;    
 }
@@ -327,7 +339,7 @@ div.popUpEditCardLarge {
     padding:10px; 
     background-color: #FFFFFF; 
     border:1px #999999 solid;
-    max-height:380px;
+    max-height:400px;
     width:835px;/*controls the width of popUp card. Max height is defined in #promp*/     
     overflow:auto;     
 }
@@ -790,4 +802,8 @@ border-color: lightyellow;
 .translationstablecolumn{
     width:160px;
     text-align: center;
+}
+
+td.chosenContainerClass{
+    height:150px;
 }

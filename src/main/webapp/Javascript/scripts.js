@@ -643,6 +643,8 @@ function showEditFieldCard(objectName, targetObjectField, servlet) {
                
                 promptbox.style.visibility = 'visible';
                 promptbox.focus();
+                
+                updateSelectDropDowns();
             }
         }
     }

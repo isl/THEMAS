@@ -277,7 +277,7 @@ _____________________________________________________________________________ --
                 </tr>
                 
             </table>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
             </input>
         
@@ -383,11 +383,11 @@ _____________________________________________________________________________ --
                                 <xsl:if test=" . != '' ">
                                 <xsl:value-of select="$specificlocale/createmerge/inthesaurus/option[@lang=$lang]"/>
                                 <xsl:value-of select="."/>
-                                <input name="selectThesaurus" size="2" type="text" style="visibility:hidden; height:5px;">
+                                <input name="selectThesaurus" size="2" type="text" class="hiddenInput">
                                     <xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
                                 </input>
                             </xsl:if>
-                            <input name="selectUserGroup" size="2" type="text" style="visibility:hidden; height:5px;"><xsl:attribute name="value"><xsl:value-of select="./@group"/></xsl:attribute></input>
+                            <input name="selectUserGroup" size="2" type="text" class="hiddenInput"><xsl:attribute name="value"><xsl:value-of select="./@group"/></xsl:attribute></input>
                             <br/>
                         </xsl:for-each>
                     </td>
@@ -584,10 +584,10 @@ _____________________________________________________________________________ --
                 
             </table>
             
-            <input id="targetUserID" type="text" name="targetUser" style="visibility:hidden;">
+            <input id="targetUserID" type="text" name="targetUser" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
             </input>
             
@@ -725,7 +725,7 @@ _______________________________________________________________________________-
                     
                 </table>
                 
-                <input type="text" name="targetEditField" style="visibility:hidden;">
+                <input type="text" name="targetEditField"  class="hiddenInput">
                     <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
                 </input>
             </fieldset>
@@ -786,7 +786,7 @@ _______________________________________________________________________________-
                                 
 					<!-- _________________________________ HIDDEN row in case there is none user for this thesaurus _________________________________ -->
 					<xsl:if test="count(//ThesaurusUsers_Groups/user) = 0">
-						<tr align="center" id="userGroupCouple" name="userGroupCoupleName" style="visibility:hidden;">
+						<tr align="center" id="userGroupCouple" name="userGroupCoupleName" class="hiddenInput">
 							<!-- Χρήστης -->
                                                         <td></td>
 							<td style="width:150px;">
@@ -910,10 +910,10 @@ _______________________________________________________________________________-
 					<td/>
 				</tr>
 			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
+			<input type="text" name="targetUser" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
 			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
+			<input type="text" name="targetEditField" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
 			</input>
 		</fieldset>
@@ -991,10 +991,10 @@ _______________________________________________________________________________-
 					</td>
 				</tr>
 			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
+			<input type="text" name="targetUser" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
 			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
+			<input type="text" name="targetEditField" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
 			</input>
 		</fieldset>
@@ -1062,10 +1062,10 @@ _______________________________________________________________________________-
 					</td>
 				</tr>
 			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
+			<input type="text" name="targetUser" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
 			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
+			<input type="text" name="targetEditField" class="hiddenInput">
 				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
 			</input>
 		</fieldset>

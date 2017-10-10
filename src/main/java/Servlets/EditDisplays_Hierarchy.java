@@ -118,20 +118,20 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             }
 
 
-            if(targetField.compareTo("hierarchy_create")==0){
+            if(targetField.compareTo("hierarchy_create")==0 || targetField.compareTo("hierarchy_facets")==0){
                 
                 availableFacets.addAll(dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q, sis_session, targetLocale));
             }
-            else if(targetField.compareTo("hierarchy_facets")==0){
-                ArrayList<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
+            if(targetField.compareTo("hierarchy_facets")==0){
+                //ArrayList<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
                 
                 currentFacets.addAll(dbGen.getSelectedFacets(SessionUserInfo.selectedThesaurus,targetHierarchy, Q, sis_session, targetLocale));
-                
+                /*
                 for (int i = 0; i < tempAvailableFacets.size(); i++) {
                     if (!currentFacets.contains(tempAvailableFacets.get(i))) {
                         availableFacets.add(tempAvailableFacets.get(i));
                     }
-                }
+                }*/
             }
             
             //end query and close connection
@@ -144,7 +144,7 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
-                    xml.append("<name>");
+                    xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
                     xml.append(availableFacets.get(i));
                     xml.append("</name>");
                 }
@@ -157,7 +157,7 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             else if(targetField.compareTo("hierarchy_facets")==0){
                 
                 xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
-                
+                /*
                 xml.append("<currentFacets>");
                 for(int i=0 ; i<currentFacets.size();i++){
                     xml.append("<name>");
@@ -166,10 +166,10 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 }
 
                 xml.append("</currentFacets>");
-                
+                */
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
-                    xml.append("<name>");
+                    xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
                     xml.append(availableFacets.get(i));
                     xml.append("</name>");
                 }

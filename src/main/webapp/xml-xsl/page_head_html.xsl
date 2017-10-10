@@ -47,8 +47,12 @@
             </title>
             
             <!-- CSS files -->
+            <link rel="stylesheet" type="text/css" href="third-party-javascript/chosen/chosen.css"/>
+            <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />-->
             <link rel="stylesheet" type="text/css" href="CSS/page.css"/>
             <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css"/>
+            
+            
 			
             <!-- JavaScript files -->
             <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js"/>
@@ -66,6 +70,11 @@
             <script language="JavaScript" type="text/javascript" src="Javascript/Admin_Thesaurus.js"/>
             <script language="JavaScript" type="text/javascript" src="Javascript/translations.js"/>                       
             <script language="JavaScript" type="text/javascript" src="third-party-javascript/ckeditor/ckeditor.js"/>
+            <!-- chosen requirement jquery/1.12.4 
+            <script language="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.js"></script>-->
+            <script  language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+            <script language="JavaScript" type="text/javascript" src="third-party-javascript/chosen/chosen.jquery.min.js"></script>
+            <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>-->
             
             <!-- JavaScript global variables (any javascript file has access to them by simple reference to their names) -->
             <script language="JavaScript" type="text/javascript">       

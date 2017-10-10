@@ -655,14 +655,28 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
 
         //if(servletName != 'Create_Modify_Hierarchy' && servletName !='EditActions_Term'){
         if(selectsSelectionMode=='selectedIndexOnly'){
-            if(selects[i].name!= '' && selects[i].selectedIndex >=0 && selects[i].style.visibility != 'hidden')
+            if(selects[i].name!== '' && selects[i].selectedIndex >=0 && selects[i].style.visibility != 'hidden')
                 fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[selects[i].selectedIndex].value)) + "&";
         }
         else{
-            if(selects[i].name!= '')
-                for(var k =0; k<selects[i].options.length; k++ ){
-                    fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+            if(selects[i].name!== ''){
+                
+                if(selects[i].multiple){
+                    //introduced in order to include only selected options of select
+                    //(chosen plugin)
+                
+                    for(var k =0; k<selects[i].options.length; k++ ){
+                        if(selects[i].options[k].selected){
+                            fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+                        }
+                    }
+                } 
+                else{
+                    for(var k =0; k<selects[i].options.length; k++ ){
+                        fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+                    }
                 }
+            }
 
         }
     }

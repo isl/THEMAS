@@ -51,8 +51,7 @@
             <head>
                 <meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
                 <script language="JavaScript">
-                    <xsl:attribute name="src">Javascript/tabs.js
-                    </xsl:attribute>
+                    <xsl:attribute name="src">Javascript/tabs.js</xsl:attribute>
                 </script>
                 <title>Edit_Facet.xsl</title>
             </head>
@@ -146,12 +145,12 @@
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetFacet" style="visibility:hidden;">
+            <input type="text" name="targetFacet" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetFacet"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetEditField"/>
                 </xsl:attribute>
@@ -255,13 +254,13 @@
                     </tr>
                 </table>
                     
-                <input type="text" name="targetFacet" style="visibility:hidden;">
+                <input type="text" name="targetFacet" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="//targetFacet"/>
                     </xsl:attribute>
                 </input>
 
-                <input type="text" name="targetEditField" style="visibility:hidden;">
+                <input type="text" name="targetEditField" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="$targetEditField"/>
                     </xsl:attribute>
@@ -296,12 +295,12 @@
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetFacet" style="visibility:hidden;">
+            <input type="text" name="targetFacet" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetFacet"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>

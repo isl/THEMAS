@@ -333,6 +333,7 @@
             <legend>
                 <xsl:value-of select="$admintranslationslocale/fieldsetlabel/option[@lang=$lang]"/>
             </legend>
+            
             <br/>
             <table width="100%">
                 <tr>
@@ -348,12 +349,12 @@
                         </b>
                         <xsl:text>&#160;</xsl:text>
                         <input type="text" id="ConfigTranslationsCategoriesThesaurus_Admin_Id" name="ConfigTranslationsCategoriesThesaurus_Admin" size="20">
-                            <xsl:if test="count(page/Translations[@ofthes!=''])>0">
+                            <xsl:if test="count(page/Translations[@thesaurus!=''])>0">
                                 <!--<xsl:attribute name="disabled">
                                     <xsl:text>disabled</xsl:text>
                                 </xsl:attribute>-->
                                 <xsl:attribute name="value">
-                                    <xsl:value-of select="page/Translations/@ofthes"/>
+                                    <xsl:value-of select="page/Translations/@thesaurus"/>
                                 </xsl:attribute>
                             </xsl:if>
                         </input>
@@ -376,20 +377,20 @@
                 <tr>
                     <td>
                         <div id="previewtranslationsarea">
-                            <xsl:if test="count(page/Translations[@ofthes!=''])>0">
+                            <xsl:if test="count(page/Translations[@thesaurus!=''])>0">
 
                                 <b>
                                     <xsl:value-of select="$admintranslationslocale/selectedthesaurus/option[@lang=$lang]"/>
                                 </b>
                                 <xsl:text>&#160;</xsl:text>
-                                <xsl:value-of select="page/Translations/@ofthes"/>
+                                <xsl:value-of select="page/Translations/@thesaurus"/>
                                 <input type="hidden" name="targetThesaurus">
-                                    <xsl:if test="count(page/Translations[@ofthes!=''])>0">
+                                    <xsl:if test="count(page/Translations[@thesaurus!=''])>0">
                                         <!--<xsl:attribute name="disabled">
                                             <xsl:text>disabled</xsl:text>
                                         </xsl:attribute>-->
                                         <xsl:attribute name="value">
-                                            <xsl:value-of select="page/Translations/@ofthes"/>
+                                            <xsl:value-of select="page/Translations/@thesaurus"/>
                                         </xsl:attribute>
                                     </xsl:if>
                                 </input>

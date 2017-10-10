@@ -315,6 +315,13 @@
                     </td>
                 </tr>
                 <tr valign="top">
+                    <td bgcolor="#F2F2F2" colspan="3" align="center">
+                        <xsl:value-of select="$specificlocale/create/selectedterms/option[@lang=$lang]"/>
+                    </td>
+                    
+                </tr>
+                <!--
+                <tr valign="top"  style="display:none;">
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/create/selectedterms/option[@lang=$lang]"/>
                     </td>
@@ -335,13 +342,46 @@
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/create/existingterms/option[@lang=$lang]"/>
                     </td>
-                </tr>
+                </tr>-->
                 <tr valign="top">
+                    <td colspan="3"  class="chosenContainerClass">
+                        <select id="newValue_Id" name="bt" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                <!--<xsl:for-each select="//current/term/bt/name">
+                                    <xsl:sort select="."/> leave sorting as it was
+                                    <option selected="selected">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>-->
+                                 <xsl:for-each select="//availableTerms/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
+                    </td>
+                </tr>
+                
+            
+            <!--
+                <tr valign="top" style="display:none;">
                     <td>
-                        <select id="newValue_Id" onmouseover="refreshCreateNew();" onchange="refreshCreateNew();" onmouseout="refreshCreateNew();" onfocus="refreshCreateNew();" onblur="refreshCreateNew();" name="bt" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','true');">
-                            <!--ondblclick="copyOption(edit_Avail_Hier_FacetID,edit_Sel_Hier_FacetID);"    >-->
+                        <select id="newValue_Id1" onmouseover="refreshCreateNew();" onchange="refreshCreateNew();"
+                                onmouseout="refreshCreateNew();" onfocus="refreshCreateNew();" onblur="refreshCreateNew();"
+                                name="bt1" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','true');">
                             <xsl:for-each select="//current/term/bt/name">
-                                <!--<xsl:sort select="."/> leave sorting as it was-->
+                                
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -354,7 +394,6 @@
                     <td>
                         <select id="available_values_id" onfocus="refreshCreateNew();" onblur="refreshCreateNew();" size="10" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableTerms/name">
-                                <!-- <xsl:sort select="."/>  leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -364,15 +403,15 @@
                             </xsl:for-each>
                         </select>
                     </td>
-                </tr>
+                </tr>-->
             </table>
 		
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetEditField"/>
                 </xsl:attribute>
@@ -551,12 +590,12 @@
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -704,9 +743,10 @@
             
             <table border="0" width="100%" align="center">
                 <tr valign="top">
-                    <td bgcolor="#F2F2F2" align="center" width="45%">
+                    <td bgcolor="#F2F2F2" align="center" clospan="3">
                         <xsl:value-of select="$specificlocale/bt/selectedterms/option[@lang=$lang]"/>
                     </td>
+                    <!--
                     <td rowspan="2" width="10%" valign="middle" align="center">
                         <input type="button" onclick="addOption('available_values_id','newValue_Id');">
                             <xsl:attribute name="value">
@@ -723,13 +763,42 @@
                     </td>
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/bt/existingterms/option[@lang=$lang]"/>
+                    </td>-->
+                </tr>
+                <tr valign="top">
+                    <td colspan="3" class="chosenContainerClass">
+                        <select id="newValue_Id" name="bt" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                <!--<xsl:for-each select="//current/term/bt/name">
+                                    <xsl:sort select="."/> leave sorting as it was
+                                    <option selected="selected">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>-->
+                                 <xsl:for-each select="//availableTerms/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
                     </td>
                 </tr>
+                <!--
                 <tr valign="top">
                     <td>
                         <select id="newValue_Id" name="bt" size="12" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','true');">
                             <xsl:for-each select="//current/term/bt/name">
-                                <!--<xsl:sort select="."/> leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -742,7 +811,6 @@
                     <td>
                         <select id="available_values_id" size="12" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableTerms/name">
-                                <!--<xsl:sort select="."/> leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -752,15 +820,15 @@
                             </xsl:for-each>
                         </select>
                     </td>
-                </tr>
+                </tr>-->
             </table>
 		
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -852,12 +920,12 @@
                     </tr>
                 </xsl:for-each>
             </table>
-            <input type="text" name="targetTerm" id="tagetTerm-GuideTermId" style="visibility:hidden;">
+            <input type="text" name="targetTerm" id="tagetTerm-GuideTermId" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" id="targetEditField-GuideTermId" style="visibility:hidden;">
+            <input type="text" name="targetEditField" id="targetEditField-GuideTermId" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -906,9 +974,10 @@
             <br/>
             <table border="0" width="100%" align="center">
                 <tr valign="top">
-                    <td bgcolor="#F2F2F2" align="center" width="45%">
+                    <td bgcolor="#F2F2F2" align="center" colspan="3">
                         <xsl:value-of select="$specificlocale/rt/relatedterms/option[@lang=$lang]"/>
                     </td>
+                    <!--
                     <td rowspan="2" width="10%" valign="middle" align="center">
                         <input type="button" onclick="addOption('available_values_id','newValue_Id');">
                             <xsl:attribute name="value">
@@ -925,13 +994,33 @@
                     </td>
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/rt/existingterms/option[@lang=$lang]"/>
-                    </td>
+                    </td>-->
                 </tr>
                 <tr valign="top">
+                    <td colspan="3" class="chosenContainerClass">
+                        <select id="newValue_Id" name="rt" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                 <xsl:for-each select="//availableTerms/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
+                    </td>
+                </tr>
+                <!--<tr valign="top">
                     <td>
                         <select id="newValue_Id" name="rt" size="12" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
                             <xsl:for-each select="//current/term/rt/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
+                                
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -944,7 +1033,6 @@
                     <td>
                         <select id="available_values_id" size="12" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableTerms/name">
-                                <!-- <xsl:sort select="."/>  leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -954,15 +1042,15 @@
                             </xsl:for-each>
                         </select>
                     </td>
-                </tr>
+                </tr>-->
             </table>
 		
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1106,20 +1194,20 @@
             </table>
 
 
-            <input type="text" id="translationSeperator" name="translationSeperator" style="visibility:hidden;" >
+            <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput" >
                 <xsl:attribute name="value">
                     <xsl:value-of select="//Translations/@translationSeperator"/>
                     <xsl:text> </xsl:text>
                 </xsl:attribute>
             </input>
             
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
             
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1169,10 +1257,10 @@
 		
             <table border="0" width="100%" align="center">
                 <tr valign="top">
-                    <td bgcolor="#F2F2F2" align="center" width="45%">
+                    <td bgcolor="#F2F2F2" align="center" colspan="3">
                         <xsl:value-of select="$specificlocale/uf/ufterms/option[@lang=$lang]"/>
                     </td>
-                    <td rowspan="2" width="10%" valign="middle" align="center">
+                    <!--<td rowspan="2" width="10%" valign="middle" align="center">
                         <input type="button" onclick="addOption('available_values_id','newValue_Id');">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="$specificlocale/generaladdbutton/option[@lang=$lang]"/>
@@ -1188,13 +1276,33 @@
                     </td>
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/uf/existingufterms/option[@lang=$lang]"/>
+                    </td>-->
+                </tr>
+                 <tr valign="top">
+                    <td colspan="3" class="chosenContainerClass">
+                        <select id="newValue_Id" name="uf" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                 <xsl:for-each select="//availableUfs/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <td>
-                        <select id="newValue_Id" name="uf" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
+                    <td colspan="3">
+                        <!--<select id="newValue_Id" name="uf" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
                             <xsl:for-each select="//current/term/uf/name">
-                                <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                <xsl:sort select="."/>  leave sorting as it was
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1203,15 +1311,15 @@
                                 </option>
                             </xsl:for-each>
                         </select>
+                        <br/>-->
                         <br/>
-                        <br/>
-                        <input type="text" style="width:300px;" id="additionalInput"/>&#160;&#160;
-                        <input type="button" class="button" value="+" onclick="addNewValue('newValue_Id', 'additionalInput')"/>
+                        <input type="text" style="width:500px;" id="additionalInput"/>&#160;&#160;
+                        <input type="button" class="button" value="+" onclick="addNewValueInChosen('newValue_Id', 'additionalInput')"/>
                     </td>
-                    <td>
+                    <!--<td>
                         <select id="available_values_id" size="12" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableUfs/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
+                                <xsl:sort select="."/> leave sorting as it was
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1221,14 +1329,15 @@
                             </xsl:for-each>
                         </select>
                     </td>
+                    -->
                 </tr>
             </table>
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1374,19 +1483,19 @@
                 </tr>
             </table>
 
-            <input type="text" id="translationSeperator" name="translationSeperator" style="visibility:hidden;" >
+            <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//Translations/@translationSeperator"/>
                     <xsl:text> </xsl:text>
                 </xsl:attribute>
             </input>
             
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1435,9 +1544,10 @@
             <br/>
             <table border="0" width="100%" align="center">
                 <tr valign="top">
-                    <td bgcolor="#F2F2F2" align="center" width="45%">
+                    <td bgcolor="#F2F2F2" align="center" colspan="3">
                         <xsl:value-of select="$specificlocale/primarysource/selected/option[@lang=$lang]"/>
                     </td>
+                    <!--
                     <td rowspan="2" width="10%" valign="middle" align="center">
                         <input type="button" onclick="addOption('available_values_id','newValue_Id');">
                             <xsl:attribute name="value">
@@ -1454,13 +1564,32 @@
                     </td>
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/primarysource/existing/option[@lang=$lang]"/>
+                    </td>-->
+                </tr>
+                <tr valign="top">
+                    <td colspan="3"  class="chosenContainerClass">
+                        <select id="newValue_Id" name="primary_found_in" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                 <xsl:for-each select="//availableSources/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <td>
-                        <select id="newValue_Id" name="primary_found_in" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
+                    <td colspan="3">
+                        <!--<select id="newValue_Id" name="primary_found_in" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
                             <xsl:for-each select="//current/term/primary_found_in/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1470,14 +1599,14 @@
                             </xsl:for-each>
                         </select>
                         <br/>
-                        <br/>
-                        <input type="text" style="width:300px;" id="additionalInput"/>&#160;&#160;
-                        <input type="button" class="button" value="+" onclick="addNewValue('newValue_Id', 'additionalInput')"/>
+                        <br/>-->
+                        <input type="text" style="width:500px;" id="additionalInput"/>&#160;&#160;
+                        <input type="button" class="button" value="+" onclick="addNewValueInChosen('newValue_Id', 'additionalInput')"/>
                     </td>
+                    <!--
                     <td>
                         <select id="available_values_id" size="12" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableSources/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1486,16 +1615,16 @@
                                 </option>
                             </xsl:for-each>
                         </select>
-                    </td>
+                    </td>-->
                 </tr>
             </table>
 		
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1544,9 +1673,10 @@
             <br/>
             <table border="0" width="100%" align="center">
                 <tr valign="top">
-                    <td bgcolor="#F2F2F2" align="center" width="45%">
+                    <td bgcolor="#F2F2F2" align="center" colspna="3">
                         <xsl:value-of select="$specificlocale/trsource/selected/option[@lang=$lang]"/>
                     </td>
+                    <!--
                     <td rowspan="2"  valign="middle" align="center">
                         <input type="button" onclick="addOption('available_values_id','newValue_Id');">
                             <xsl:attribute name="value">
@@ -1565,13 +1695,34 @@
                     </td>
                     <td bgcolor="#F2F2F2" align="center" width="45%">
                         <xsl:value-of select="$specificlocale/trsource/existing/option[@lang=$lang]"/>
+                    </td>-->
+                </tr>
+                <tr valign="top">
+                    <td colspan="3"  class="chosenContainerClass">
+                        <select id="newValue_Id" name="translations_found_in" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                 <xsl:for-each select="//availableSources/name">
+                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                    <option>
+                                        <xsl:if test="./@selected='yes'">
+                                            <xsl:attribute name="selected">
+                                                <xsl:text>selected</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:if>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                        </select>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <td>
+                    <td colspan="3">
+                        <!--
                         <select id="newValue_Id" name="translations_found_in" size="10" style="width:100%;" ondblclick="removeSelectedOption('newValue_Id','false');">
                             <xsl:for-each select="//current/term/translations_found_in/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
+                                
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1581,14 +1732,13 @@
                             </xsl:for-each>
                         </select>
                         <br/>
-                        <br/>
-                        <input type="text" style="width:300px;" id="additionalInput"/>&#160;&#160;
-                        <input type="button" class="button" value="+" onclick="addNewValue('newValue_Id', 'additionalInput')"/>
+                        <br/>-->
+                        <input type="text" style="width:500px;" id="additionalInput"/>&#160;&#160;
+                        <input type="button" class="button" value="+" onclick="addNewValueInChosen('newValue_Id', 'additionalInput')"/>
                     </td>
-                    <td>
+                    <!--<td>
                         <select id="available_values_id" size="12" style="width:100%;" ondblclick="addOption('available_values_id','newValue_Id');">
                             <xsl:for-each select="//availableSources/name">
-                                <!-- <xsl:sort select="."/> leave sorting as it was-->
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="."/>
@@ -1597,16 +1747,16 @@
                                 </option>
                             </xsl:for-each>
                         </select>
-                    </td>
+                    </td>-->
                 </tr>
             </table>
 		
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1688,12 +1838,12 @@
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -1755,12 +1905,12 @@
                 </tr>
                 <tr>
                     <td align="right">
-                        <input type="text" name="targetTerm" style="visibility:hidden;">
+                        <input type="text" name="targetTerm" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="//targetTerm"/>
                             </xsl:attribute>
                         </input>
-                        <input type="text" name="targetEditField" style="visibility:hidden;">
+                        <input type="text" name="targetEditField" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="$targetEditField"/>
                             </xsl:attribute>
@@ -1893,7 +2043,7 @@
                         </select>
                         &#160;
                         <input type="button" class="button" value="+" onclick="addTranslationScopeNote('trsnstable', 'language_identifier_field')"/>
-                        <input type="text" id="translationSeperator" name="translationSeperator" style="visibility:hidden;" >
+                        <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="//Translations/@translationSeperator"/>
                                 <xsl:text></xsl:text>
@@ -1902,12 +2052,12 @@
                     </td>
                     <td align="right" width="190px;">
                         
-                        <input type="text" name="targetTerm" style="visibility:hidden;">
+                        <input type="text" name="targetTerm" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="//targetTerm"/>
                             </xsl:attribute>
                         </input>
-                        <input type="text" name="targetEditField" style="visibility:hidden;">
+                        <input type="text" name="targetEditField" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="$targetEditField"/>
                             </xsl:attribute>
@@ -1978,12 +2128,12 @@
                 </tr>
                 <tr>
                     <td align="right">
-                        <input type="text" name="targetTerm" style="visibility:hidden;">
+                        <input type="text" name="targetTerm" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="//targetTerm"/>
                             </xsl:attribute>
                         </input>
-                        <input type="text" name="targetEditField" style="visibility:hidden;">
+                        <input type="text" name="targetEditField" class="hiddenInput">
                             <xsl:attribute name="value">
                                 <xsl:value-of select="$targetEditField"/>
                             </xsl:attribute>
@@ -2052,12 +2202,12 @@
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetTerm" style="visibility:hidden;">
+            <input type="text" name="targetTerm" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetTerm"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -2197,17 +2347,17 @@
                 </table>
             </div>
             
-            <input id="clear" value="first" style="visibility: hidden;"/>
+            <input id="clear" value="first" style="visibility: hidden; height:1px;"/>
             
             <table id="myTable2" align="center">
                 <tbody id="myTbody2">
-                    <tr style="visibility: hidden;">
+                    <tr style="visibility: hidden;  height:1px;">
                     </tr>
                 </tbody>
             </table>
             
-            <input width="20" type="text" name="Newname" style="visibility: hidden;"/>
-            <input width="20" type="text" name="NewnameForServlet" style="visibility: hidden;" disabled="disabled" class="disabledbutton" />
+            <input width="20" type="text" name="Newname" style="visibility: hidden;  height:1px;"/>
+            <input width="20" type="text" name="NewnameForServlet" style="visibility: hidden;  height:1px;" disabled="disabled" class="disabledbutton" />
             
         </fieldset>
         

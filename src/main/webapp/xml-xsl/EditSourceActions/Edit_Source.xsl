@@ -53,8 +53,7 @@ This file is part of the THEMAS system.
                 
                 <meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
                 <script language="JavaScript">
-                    <xsl:attribute name="src">Javascript/tabs.js
-                    </xsl:attribute>
+                    <xsl:attribute name="src">Javascript/tabs.js</xsl:attribute>
                 </script>
                 <title>Edit_Source.xsl</title>                
             </head>
@@ -143,12 +142,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetSource"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetEditField"/>
                 </xsl:attribute>
@@ -247,12 +246,12 @@ This file is part of the THEMAS system.
                         </td>
                     </tr>
                 </table>
-                <input type="text" name="targetSource" style="visibility:hidden;">
+                <input type="text" name="targetSource" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="//targetSource"/>
                     </xsl:attribute>
                 </input>
-                <input type="text" name="targetEditField" style="visibility:hidden;">
+                <input type="text" name="targetEditField" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="$targetEditField"/>
                     </xsl:attribute>
@@ -341,12 +340,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//source/name"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -409,12 +408,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//source/name"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -490,12 +489,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetSource"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>

@@ -1958,7 +1958,6 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewInfo with output = {"name", ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd,  "uk_alt", "uf_translations", ConstantParameters.dn_kwd, "comment", "et"}
     ----------------------------------------------------------------------*/
-
     public String getTermResultsInXml(UserInfoClass SessionUserInfo, String term, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale) {
         DBGeneral dbGen = new DBGeneral();
 
@@ -1969,46 +1968,6 @@ public class Utilities {
         StringBuffer sb = new StringBuffer();
         sb.append("<current translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
         sb.append("<term>");
-
-        // karam - add the information about the term if it is to be deleted
-        // (delete icon was pressed from Search results TAB)
-        /*sb.append("<for_deletion>");
-        if (for_deletion != null) {
-        sb.append("true");
-        }
-        sb.append("</for_deletion>");
-         */
-        // karam - add the information about the term if it is a new or a released descriptor
-        /*sb.append("<is_released>");
-        // looking for Descriptor prefix (EL`)
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        String prefix = dbtr.getThesaurusPrefix_Descriptor(Q,sis_session.getValue());
-        // convert target Descriptor to DB encoding with prefix
-        StringObject targetDescriptorObj = new StringObject(prefix.concat(term));
-        boolean isReleased = dbGen.IsReleasedDescriptor(targetDescriptorObj,Q,sis_session);
-        if (isReleased == true) {
-        sb.append("true");
-        } else {
-        sb.append("false");
-        }
-        sb.append("</is_released>");
-        // karam - in case of released descriptor, add the information about the term if it is obsolete or not
-        sb.append("<is_obsolete>");
-        if (isReleased == true) {
-        // looking for EKTObsoleteDescriptor
-        StringObject thesObsoleteDescriptor = new StringObject();
-        dbtr.getThesaurusClass_ObsoleteDescriptor(Q,sis_session.getValue(),thesObsoleteDescriptor);
-        boolean isObsolete = dbGen.NodeBelongsToClass(targetDescriptorObj, thesObsoleteDescriptor, false,Q,sis_session);
-        if (isObsolete == true) {
-        sb.append("true");
-        } else {
-        sb.append("false");
-        }
-        }
-        sb.append("</is_obsolete>");
-         */
-        // for each value of output : e.g. some of  {"name", "translations",  ConstantParameters.dn_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, "uf_translations", "alt",
-        //"uk_alt",  "gt",  "et", "created", "created_by", "modified",  "modified_by", "scope_note"}*/
 
         for (int j = 0; j < output.length; j++) {
 
@@ -2229,11 +2188,14 @@ public class Utilities {
         return sb.toString();
     }
 
-    public void getAvailableValues(UserInfoClass SessionUserInfo, String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
+    public void getAvailableValues(UserInfoClass SessionUserInfo, ArrayList<String> currentValues, String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
 
-        if (output.matches(ConstantParameters.bt_kwd) || output.matches(ConstantParameters.nt_kwd) || output.matches(ConstantParameters.rt_kwd) || output.matches(ConstantParameters.term_create_kwd)) {
+        if (output.matches(ConstantParameters.bt_kwd) || 
+                output.matches(ConstantParameters.nt_kwd) || 
+                output.matches(ConstantParameters.rt_kwd) ||
+                output.matches(ConstantParameters.term_create_kwd)) {
             int index = Parameters.CLASS_SET.indexOf("TERM");
 
             String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
@@ -2242,40 +2204,48 @@ public class Utilities {
             Q.reset_name_scope();
             int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
             Q.reset_set(set_terms);
-            ArrayList<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
+            ArrayList<SortItem> termNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_terms, true, Q, sis_session);
             Q.free_set(set_terms);
 
-            Collections.sort(termNames, new StringLocaleComparator(targetLocale));
+            Collections.sort(termNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
             xml.append("<availableTerms>");
-            for (int i = 0; i < termNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(termNames.get(i)));
+            for (SortItem termName : termNames) {
+                xml.append("<name selected=\""+(currentValues.contains(termName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(termName.getLogName()));
                 xml.append("</name>");
             }
             xml.append("</availableTerms>");
 
         }
 
-        if (output.matches(ConstantParameters.primary_found_in_kwd) || output.matches(ConstantParameters.translations_found_in_kwd)) {
+        if (output.matches(ConstantParameters.primary_found_in_kwd) ||
+                output.matches(ConstantParameters.translations_found_in_kwd)) {
 
             Q.reset_name_scope();
             Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
             int set_sources = Q.get_all_instances(0);
             Q.reset_set(set_sources);
-            ArrayList<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
+            ArrayList<SortItem> sourceNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_sources, true, Q, sis_session);
             Q.free_set(set_sources);
-            Collections.sort(sourceNames, new StringLocaleComparator(targetLocale));
+            
+            for (SortItem sourceName :  sourceNames) {
+                if(sourceName.log_name_transliteration==null || sourceName.log_name_transliteration.isEmpty()){
+                    sourceName.log_name_transliteration = Utilities.getTransliterationString(sourceName.getLogName(), false);
+                }
+            }
+            Collections.sort(sourceNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            
             xml.append("<availableSources>");
-            for (int i = 0; i < sourceNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(sourceNames.get(i)));
+            for (SortItem sourceName :  sourceNames) {
+                xml.append("<name selected=\""+(currentValues.contains(sourceName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(sourceName.getLogName()));
                 xml.append("</name>");
             }
             xml.append("</availableSources>");
         }
 
         if (output.matches(ConstantParameters.translation_kwd)) {
-
+            //no option for selecting already defined values
             /*
             Q.reset_name_scope();
             StringObject toTranslationsFromClass = new StringObject();
@@ -2312,7 +2282,7 @@ public class Utilities {
         }
 
         if (output.matches(ConstantParameters.uf_translations_kwd)) {
-
+            //no option for selecting already defined values
             /*
             Q.reset_name_scope();
             StringObject ufTranslationsFromClass = new StringObject();
@@ -2366,13 +2336,20 @@ public class Utilities {
             Q.set_current_node(UsedForTermClass);
             int set_ufs = Q.get_all_instances(0);
             Q.reset_set(set_ufs);
-            ArrayList<String> ufNames = dbGen.get_Node_Names_Of_Set(set_ufs, true, Q, sis_session);
+            ArrayList<SortItem> ufNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_ufs, true, Q, sis_session);
             Q.free_set(set_ufs);
-            Collections.sort(ufNames, new StringLocaleComparator(targetLocale));
+            
+            for (SortItem ufName :  ufNames) {
+                if(ufName.log_name_transliteration==null || ufName.log_name_transliteration.isEmpty()){
+                    ufName.log_name_transliteration = Utilities.getTransliterationString(ufName.getLogName(), false);
+                }
+            }
+            Collections.sort(ufNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            
             xml.append("<availableUfs>");
-            for (int i = 0; i < ufNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(ufNames.get(i)));
+            for (SortItem ufName :  ufNames) {
+                xml.append("<name selected=\""+(currentValues.contains(ufName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(ufName.getLogName()));
                 xml.append("</name>");
             }
             xml.append("</availableUfs>");
