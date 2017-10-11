@@ -88,10 +88,11 @@ ul.chosen-results{
 ================================================================
 
 	 
--- In case Neo4j-sisapi-1.2.jar, commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
+-- In case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
    dependencies cannot be resolved, you can find copies of these jars in libs folder 
    
    Neo4j-sisapi-1.2.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.2)
+   but a copy may be downloaded from attached files in (https://github.com/isl/Neo4j-sisapi/releases/tag/v1.2)
   
 - create project references to these libraries
 
