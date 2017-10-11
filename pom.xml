@@ -115,12 +115,16 @@
                     </goals>
                     <configuration>
                       <tasks>
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/LogFiles" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/MonitorAutomaticBackups" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/SVGproducer/SVG_temporary_files" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays/Save_Results_temporary_files" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/Uploads" />
-                        <mkdir dir="${project.build.directory}/${project.build.finalName}/WEB-INF/SystemLogs" />    
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/third-party-javascript/chosen" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/third-party-javascript/ckeditor" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/third-party-javascript/mktree" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/third-party-javascript/wztooltip" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/LogFiles" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/MonitorAutomaticBackups" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/SVGproducer/SVG_temporary_files" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays/Save_Results_temporary_files" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/Uploads" />
+                          <mkdir dir="${project.build.directory}/${project.build.finalName}/WEB-INF/SystemLogs" />    
                       </tasks>                      
                     </configuration>
                   </execution>

@@ -1,5 +1,0 @@
-- Add a configurable list of replacements that will be used for the 
-  transliteration generation out of each term Logicalname
-		
-- Add uri reference ids to Terms/Hierarchies/Facets
-		

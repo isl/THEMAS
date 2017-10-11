@@ -31,7 +31,7 @@ based system for creating and managing multi-
 faceted multilingual thesauri with Greek or English language 
 serving as the dominant language and a configurable number 
 of reference translation languages. [Neo4j open source graph database] (http://neo4j.com/ "Neo4j") 
-is used in the backend for data storage, [Neo4j-sisapi v1.0] (https://github.com/isl/Neo4j-sisapi/tree/v1.0 "Neo4j-sisapi") 
+is used in the backend for data storage, [Neo4j-sisapi v1.2] (https://github.com/isl/Neo4j-sisapi/tree/v1.2 "Neo4j-sisapi") 
 for the interaction with the database and TELOS 
 representation language stuctures are used as reference for 
 the thesauri structure.

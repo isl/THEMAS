@@ -30,8 +30,8 @@ This file is part of the THEMAS system.
 How to compile
 -----------------------------------------------------------------------------
 Create a java web application project (JEE 7 Web)
-until now we used java jdk1.7.0_51 64 bit
-and Apache Tomcat 8.0.23
+until now we used java jdk1.8.0_131 64 bit
+and Apache Tomcat 8.0.32
 
 - Use the sources included in the /Sources/WebApplication/ 
   folder of this repository
@@ -43,6 +43,7 @@ and Apache Tomcat 8.0.23
   -- web\Save_Results_Displays\Save_Results_temporary_files
   -- web\SVGproducer\SVG_temporary_files
   -- web\third-party-javascript
+  -- web\third-party-javascript\chosen
   -- web\third-party-javascript\mktree
   -- web\third-party-javascript\wztooltip
   -- web\third-party-javascript\ckeditor
@@ -52,24 +53,45 @@ and Apache Tomcat 8.0.23
 
 - Download the third party javascript files or use the copies provided at 
   libs\Javascript folder and place them in:
-   
+  
+  -- web/third-party-javascript/chosen and   
   -- web/third-party-javascript/mktree and 
   -- web/third-party-javascript/wztooltip and
   -- web/third-party-javascript/ckeditor  respectively
-     
+
+  
+================================================================
 - Configure wz_tooltip.js:
+================================================================
      var ttBorderColor = "#000000";
      var ttFontColor   = "#898B5E";
      var ttWidth       = 250;
+================================================================	 
 
-- Get all the jar files included in THEMAS-Dependencies-LicensesUsed.txt
-  -- For neo4j jar files you can just obtain the zip file of 
-     Neo4j Community edition version 2.2.5 or perhaps later 
-     and get the jar files from it's lib folder
-     
-  -- Neo4j-sisapi-1.0.jar, commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
-     copies can be found in libs folder 
-     Neo4j-sisapi-1.0.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.0)
+
+
+================================================================
+- Customize chozen plugin by adding at the end of chosen.css
+================================================================
+/* customize chosen appearence for multiple selection */
+.chosen-container-multi .chosen-choices li.search-choice{
+    background-image: none;
+    border:none;
+}
+/*limit chosen results size */
+div.chosen-drop{
+    height:180px;
+}
+ul.chosen-results{
+    height:180px;
+}
+================================================================
+
+	 
+-- In case Neo4j-sisapi-1.2.jar, commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
+   dependencies cannot be resolved, you can find copies of these jars in libs folder 
+   
+   Neo4j-sisapi-1.2.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.2)
   
 - create project references to these libraries
 
