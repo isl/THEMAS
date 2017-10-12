@@ -97,7 +97,7 @@
                                 <xsl:value-of select="$locale/primarycontentarea/statistics/tabs/tab2/option[@lang=$lang]"/>
                             </a>
                         </td>
-						<!-- _________________ TAB: Στατιστικά Μικροθησαυρών _________________ -->
+						<!-- _________________ TAB: Facet Statistics  _________________ -->
                         <td id="StatisticsOfFacets_ΤΑΒ" style="width:18%;">
                             <a onFocus="if(this.blur)this.blur()" id="StatisticsOfFacets_LINK">
                                 <xsl:attribute name="href">
@@ -184,14 +184,14 @@
                     <xsl:with-param name="lang" select="$lang"/>
                 </xsl:call-template>
             </div>
-			<!-- _________________ DIV: Στατιστικά Ιεραρχιών _________________ -->
+			<!-- _________________ DIV: Hierarchy Statistics _________________ -->
             <div id="StatisticsOfHierarchies_DIV" class="tab-body">
                 <xsl:call-template name="StatisticsOfHierarchies">
                     <xsl:with-param name="specificlocale" select="$locale/primarycontentarea/statistics/hierstats"/>
                     <xsl:with-param name="lang" select="$lang"/>
                 </xsl:call-template>
             </div>
-			<!-- _________________ DIV: Στατιστικά Μικροθησαυρών _________________ -->
+			<!-- _________________ DIV: Facet Statistics _________________ -->
             <div id="StatisticsOfFacets_DIV" class="tab-body">
                 <xsl:call-template name="StatisticsOfFacets">
                     <xsl:with-param name="specificlocale" select="$locale/primarycontentarea/statistics/facetstats"/>
@@ -629,7 +629,7 @@
                 <xsl:value-of select="$THEMASUserInfo_selectedThesaurus"/>
             </legend>
             <br/>
-			<!-- Συνολικός αριθμός μικροθησαυρών -->
+			<!-- Total Facet Number -->
             <xsl:value-of select="$specificlocale/saveall/prompt/option[@lang=$lang]"/>
             <a>
                 <xsl:attribute name="href">
@@ -655,7 +655,7 @@
             </a>
             <br/>
             <br/>
-            <!-- Αριθμός ιεραρχιών, όρων και ΑΟ ανά μικροθησαυρό -->
+            <!-- Number of Hierarchies, Terms and translations per Facet -->
             <fieldset>
                 <legend>
                     <xsl:value-of select="$specificlocale/description/option[@lang=$lang]"/>

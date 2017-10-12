@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+ -->
+<TMS_DB_ADMIN_TRANSLATIONS>
+	<!-- BASIC FORM -->
+        <BASIC_FORM_TITLE>
+            <option lang="en">TMS DB administration tool</option>
+            <option lang="el">Εργαλείο διαχείρισης βάσης δεδομένων TMS</option>
+        </BASIC_FORM_TITLE>
+        <File>
+            <option lang="en">File</option>
+            <option lang="el">Αρχείο</option>
+        </File>        
+        <Create_data_base_backup>
+            <option lang="en">Create data base backup...</option>
+            <option lang="el">Δημιουργία αντιγράφου ασφαλείας...</option>
+        </Create_data_base_backup>        
+        <Restore_data_base_backup>
+            <option lang="en">Restore data base backup...</option>
+            <option lang="el">Επαναφορά αντιγράφου ασφαλείας...</option>
+        </Restore_data_base_backup>        
+        <Fix_data_base>
+            <option lang="en">Fix data base</option>
+            <option lang="el">Επιδιόρθωση βάσης δεδομένων</option>
+        </Fix_data_base>        
+        <Exit>
+            <option lang="en">Exit</option>
+            <option lang="el">Έξοδος</option>
+        </Exit>        
+        <Options>
+            <option lang="en">Options</option>
+            <option lang="el">Επιλογές</option>
+        </Options>        
+        <Language>
+            <option lang="en">Language</option>
+            <option lang="el">Γλώσσα</option>
+        </Language>                
+        <English>
+            <option lang="en">English</option>
+            <option lang="el">Αγγλικά</option>
+        </English>                
+        <Greek>
+            <option lang="en">Greek</option>
+            <option lang="el">Ελληνικά</option>
+        </Greek>                
+        <Help>
+            <option lang="en">Help</option>
+            <option lang="el">Βοήθεια</option>
+        </Help>                
+        <Table_of_contents>
+            <option lang="en">Table of contents...</option>
+            <option lang="el">Πίνακας περιεχομένων...</option>
+        </Table_of_contents>                        
+        <About>
+            <option lang="en">About...</option>
+            <option lang="el">Σχετικά...</option>
+        </About>                
+        
+        <!-- CREATE DB BACKUP FORM -->
+        <Input>
+            <option lang="en">Input</option>
+            <option lang="el">Εισαγωγή</option>
+        </Input>
+        <Description_optional>
+            <option lang="en">Description (optional):</option>
+            <option lang="el">Περιγραφή (προαιρετική):</option>
+        </Description_optional>
+        <Go>
+            <option lang="en">Go</option>
+            <option lang="el">Συνέχεια</option>
+        </Go>
+        <Cancel>
+            <option lang="en">Cancel</option>
+            <option lang="el">Ακύρωση</option>
+        </Cancel>
+        
+        <!-- RESTORE DB BACKUP FORM -->
+        <Data_Base_Backups>
+            <option lang="en">Data Base Backup Files</option>
+            <option lang="el">Αντίγραφα Ασφαλείας Βάσης Δεδομένων</option>
+        </Data_Base_Backups>
+        <CancelButton>
+            <option lang="en">Cancel</option>
+            <option lang="el">Άκυρο</option>
+        </CancelButton>
+        <DeleteButton>
+            <option lang="en">Delete</option>
+            <option lang="el">Διαγραφή</option>
+        </DeleteButton>
+        <RestoreButton>
+            <option lang="en">Restore</option>
+            <option lang="el">Επαναφορά</option>
+        </RestoreButton>
+        
+        <!-- ABOUT INFO -->
+        <About1>
+            <option lang="en">COPYRIGHT (c) 2015 by Institute of Computer Science Version 1.0</option>
+            <option lang="el">COPYRIGHT (c) 2015 Ινστιτούτο Πληροφορικής Έκδοση 1.0</option>
+        </About1>
+        <About2>
+            <option lang="en">Foundation for Research and Technology - Hellas</option>
+            <option lang="el">Ίδρυμα Τεχνολογίας και Έρευνας</option>
+        </About2>
+        <About3>
+            <option lang="en">POBox 1385, Heraklio Crete, GR-711 10 GREECE</option>
+            <option lang="el">Ταχ. θυρ. 1385, 711 10 Ηράκλειο Κρήτη, ΕΛΛΑΔΑ </option>
+        </About3>
+        
+        <!-- MESSAGES -->
+        <Message>
+            <option lang="en">Message</option>
+            <option lang="el">Μήνυμα</option>
+        </Message>        
+        <CreateDBbackupSuccess>
+            <option lang="en">Backup file created:</option>
+            <option lang="el">Δημιουργήθηκε το αντίγραφο ασφαλείας:</option>
+        </CreateDBbackupSuccess>
+        <RestoreDBbackupSuccess>
+            <option lang="en">Finish of restoring backup file:</option>
+            <option lang="el">Ολοκλήρωση επαναφοράς του αντιγράφου ασφαλείας:</option>
+        </RestoreDBbackupSuccess>
+        <FixDBSuccess>
+            <option lang="en">Data base is fixed</option>
+            <option lang="el">Η βάση δεδομένων επιδιορθώθηκε</option>
+        </FixDBSuccess>
+        <CreateThesaurusSuccess>
+            <option lang="en">Thesaurus is created</option>
+            <option lang="el">Ο θησαυρός δημιουργήθηκε.</option>
+        </CreateThesaurusSuccess>        
+        <InitializeDBSuccess>
+            <option lang="en">Data Base is initialized.</option>
+            <option lang="el">Η βάση δεδομένων αρχικοποιήθηκε.</option>
+        </InitializeDBSuccess>                
+        
+        <!-- ERROR MESSAGES -->
+        <Error>
+            <option lang="en">Error</option>
+            <option lang="el">Λάθος</option>
+        </Error>                
+        <Message>
+            <option lang="en">Message</option>
+            <option lang="el">Μήνυμα</option>
+        </Message>                
+        <Confirm>
+            <option lang="en">Confirm</option>
+            <option lang="el">Επιβεβαίωση</option>
+        </Confirm>                
+        <Warning>
+            <option lang="en">Warning</option>
+            <option lang="el">Προειδοποίηση</option>
+        </Warning>                        
+        <Error_ServerRunning>
+            <option lang="en">is running. It must be closed first. Would you like to close it now?</option>
+            <option lang="el">εκτελείται. Πρέπει να κλείσει για να μπορέσει να εκτελεσθεί αυτή η λειτουργία. Κλέισιμο τώρα;</option>
+        </Error_ServerRunning>
+        <fileNameContainsInvalidCharacters>
+            <option lang="en">The description of the data base backup cannot contain any of the following characters:</option>
+            <option lang="el">Η περιγραφή του αντιγράφου ασφαλείας δεν επιτρέπεται να περιέχει κανέναν από τους παρακάτω χαρακτήρες:</option>
+        </fileNameContainsInvalidCharacters>    
+        <ThesaurusContainsInvalidCharacters>
+            <option lang="en">The given thesaurus cannot be created because its name contains invalid characetrs.</option>
+            <option lang="el">Ο θησαυρός δεν μπορεί να δημιουργηθεί γιατί περιέχει άκυρους χαρακτήρες.</option>
+        </ThesaurusContainsInvalidCharacters>    
+        <InvalidConfigValue>
+            <option lang="en">Invalid configuration value</option>
+            <option lang="el">Άκυρη τιμή παραμετροποίησης</option>
+        </InvalidConfigValue>  
+        <CannotCreateDirectory>
+            <option lang="en">Cannot create directory</option>
+            <option lang="el">Αποτυχία κατά τη δημιουργία του φακέλου</option>
+        </CannotCreateDirectory>          
+        <StartServerFailure>
+            <option lang="en">Failed to start Neo4j:</option>
+            <option lang="el">Αποτυχία εκκίνησης του Neo4j:</option>
+        </StartServerFailure>        
+        <StopServerFailure>
+            <option lang="en">Failed to stop Neo4j:</option>
+            <option lang="el">Αποτυχία τερματισμού του Neo4j:</option>
+        </StopServerFailure>        
+        <StartExportFailure>
+            <option lang="en">Failed to start Neo4j export:</option>
+            <option lang="el">Αποτυχία εκκίνησης του Neo4j export:</option>
+        </StartExportFailure>        
+        <StartTelosFailure>
+            <option lang="en">Failed to start Neo4j tsv parser:</option>
+            <option lang="el">Αποτυχία εκκίνησης του Neo4j tsv parser:</option>
+        </StartTelosFailure>                
+        <EmptyDataBaseFolder1>
+            <option lang="en">Given data base folder:</option>
+            <option lang="el">Ο δεδομένος φάκελος βάσης δεδομένων:</option>
+        </EmptyDataBaseFolder1>        
+        <EmptyDataBaseFolder2>
+            <option lang="en">is empty. There is nothing to fix.</option>
+            <option lang="el">είναι άδειος. Δεν υπάρχει τίποτα για επιδιόρθωση.</option>
+        </EmptyDataBaseFolder2>        
+        <ClearDBFolderFailure>
+            <option lang="en">Failed to clear data base folder:</option>
+            <option lang="el">Αποτυχία καθαρισμού του φακέλου της βάσης δεδομένων:</option>
+        </ClearDBFolderFailure>        
+        <SelectAFileFirst>
+            <option lang="en">Select a file first.</option>
+            <option lang="el">Επιλέξτε πρώτα ένα αρχείο.</option>
+        </SelectAFileFirst>        
+        <ConfirmFileDelete>
+            <option lang="en">Are you sure you want to delete backup file:</option>
+            <option lang="el">Διαγραφή του αντιγράφου ασφαλείας:</option>
+        </ConfirmFileDelete>        
+        <QuestionMark>
+            <option lang="en">?</option>
+            <option lang="el">;</option>
+        </QuestionMark>        
+        <ConfirmFileDeleteTitle>
+            <option lang="en">Confirm File Delete</option>
+            <option lang="el">Επιβεβαίωση Διαγραφής Αντιγράφου Ασφαλείας</option>
+        </ConfirmFileDeleteTitle>                
+        <ConfirmRestoreDBfile1>
+            <option lang="en">Are you sure you want to restore backup file:</option>
+            <option lang="el">Επαναφορά αντιγράφου ασφαλείας:</option>
+        </ConfirmRestoreDBfile1>                        
+        <ConfirmRestoreDBfile2>
+            <option lang="en">and overwrite existing data base?</option>
+            <option lang="el">και επανεγγραφή της υπάρχουσας βάσης δεδομένων;</option>
+        </ConfirmRestoreDBfile2>                                
+        <ConfirmRestoreDBfileTitle>
+            <option lang="en">Confirm Backup File Restore</option>
+            <option lang="el">Επιβεβαίωση Επαναφοράς Αντιγράφου Ασφαλείας</option>
+        </ConfirmRestoreDBfileTitle>                       
+        <GivenDBpath>
+            <option lang="en">Given data base path:</option>
+            <option lang="el">Το δεδομένο μονοπάτι της βάσης δεδομένων:</option>
+        </GivenDBpath>        
+        <CorrectConfigFile>
+            <option lang="en">Please correct config.xml file</option>
+            <option lang="el">Διορθώστε το αρχείο config.xml</option>
+        </CorrectConfigFile>                
+        <DoesNotExist>
+            <option lang="en">does no exist.</option>
+            <option lang="el">δεν υπάρχει.</option>
+        </DoesNotExist>        
+        <ErrorMachineName1>
+            <option lang="en">Error machine name: </option>
+            <option lang="el">Λάθος όνομα μηχανήματος:</option>
+        </ErrorMachineName1>        
+        <ErrorMachineName2>
+            <option lang="en">It must be:</option>
+            <option lang="el">Πρέπει να είναι:</option>
+        </ErrorMachineName2>        
+        <Error_currentLanguage>
+            <option lang="en">Error current language value (0 for english or 1 for greek).</option>
+            <option lang="el">Λάθος τιμή γλώσσας (0 για αγγλικά ή 1 για ελληνικά).</option>
+        </Error_currentLanguage>        
+        <GivenNeo4jServerFullPath>
+            <option lang="en">Given Neo4j database path:</option>
+            <option lang="el">Το δεδομένο μονοπάτι της Neo4j βάσης:</option>
+        </GivenNeo4jServerFullPath>        
+        <GivenPath>
+            <option lang="en">Given path:</option>
+            <option lang="el">Το δεδομένο μονοπάτι:</option>
+        </GivenPath>        
+        <GivenFile>
+            <option lang="en">Given file:</option>
+            <option lang="el">Το δεδομένο αρχείο:</option>
+        </GivenFile>                
+        <Neo4jExportOutputTelosFileNameExtension>
+            <option lang="en">The extension of Neo4jExportOutputFileName must be .tsv</option>
+            <option lang="el">Η κατάληξη του Neo4jExportOutputTelosFileName πρέπει να είναι .tsv</option>
+        </Neo4jExportOutputTelosFileNameExtension>        
+        <MustContainTheString>
+            <option lang="en">must contain the string:</option>
+            <option lang="el">πρέπει να περιέχει την  τιμή:</option>
+        </MustContainTheString>        
+        <Error_Neo4jParseTimes>
+            <option lang="en">Error value for Neo4j tsv parser. Parsing times (it must be at least 1).</option>
+            <option lang="el">Λάθος τιμή για το πλήθος των σαρώσεων με τον Neo4j tsv parser (πρέπει να είναι τουλάχιστον 1).</option>
+        </Error_Neo4jParseTimes>        
+        <SuggestBackupFirst>
+            <option lang="en">It is suggested to create a data base backup before fixing it. Continue with fixing data base?</option>
+            <option lang="el">Προτείνεται η δημιουργία ενός αντιγράφου ασφαλείας της βάσης πριν την επιδιόρθωσή της. Συνέχεια επιδιόρθωσης της βάσης;</option>
+        </SuggestBackupFirst>        
+        <ExportFailed>
+            <option lang="en">Neo4j export failed</option>
+            <option lang="el">Το Neo4j export απέτυχε</option>
+        </ExportFailed>        
+        <TelosFailed>
+            <option lang="en">Neo4j tsv parser finished with some errors. Neo4j Neo4j tsv parser:</option>
+            <option lang="el">Το Neo4j tsv parser ολοκληρώθηκε με κάποια λάθη. Έξοδος του Neo4j tsv parser:</option>
+        </TelosFailed>        
+        <DBRestoration>
+            <option lang="en">The data base is restored back its previous state.</option>
+            <option lang="el">Η βάση δεδομένων επανήλθε στην προηγούμενη κατάστασή της.</option>
+        </DBRestoration>                
+        <ThesaurusExists>
+            <option lang="en">The thesaurus name you entered, already exists.</option>
+            <option lang="el">Το όνομα του θησαυρού που δώσατε, υπάρχει ήδη στη βάση δεδομένων.</option>
+        </ThesaurusExists>                        
+        <OneCharacterMessage>
+            <option lang="en">The thesaurus name you entered must have more than one character.</option>
+            <option lang="el">Το όνομα του θησαυρού που δώσατε πρέπει να έχει παραπάνω από έναν χαρακτήρες.</option>
+        </OneCharacterMessage>                                
+          <xxx>
+            <option lang="en">xxx</option>
+            <option lang="el">xxx</option>
+        </xxx>        
+  
+  
+        
+        
+        
+</TMS_DB_ADMIN_TRANSLATIONS>
