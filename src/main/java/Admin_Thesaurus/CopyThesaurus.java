@@ -104,9 +104,9 @@ public class CopyThesaurus extends ApplicationBasicServlet {
 
             String sourceThesaurusName = request.getParameter("sourceThesaurus");
             String targetThesaurusName = request.getParameter("Copy_Thesaurus_NewName_NAME");
-            String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
+            String pathToErrorsXML = Utilities.getXml_For_ConsistencyChecks();
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
-            String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
+            String pathToSaveScriptingAndLocale = Utilities.getXml_For_SaveAll_Locale_And_Scripting();
             String XSL = context.getRealPath("/"+webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
             String logPath = context.getRealPath("/"+ConstantParameters.LogFilesFolderName);
             String WebAppUsersFileName = request.getSession().getServletContext().getRealPath("/"+UsersClass.WebAppUsersXMLFilePath);

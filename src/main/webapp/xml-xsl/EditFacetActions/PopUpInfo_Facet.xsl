@@ -213,7 +213,7 @@
                             </td>
                         </tr>
                         <tr valign="middle">
-                            <td>
+                            <td style="text-align:right; vertical-align: top;">
                                 <br/>
                                 <span class="headerThes_normal">
                                     <b>
@@ -253,10 +253,28 @@
                                             <xsl:value-of select="$facetcardlocale/graphicalimage/title/option[@lang=$lang]"/>
                                         </xsl:attribute>
                                     </img>
-                                    <span class="headerThes_normal" >
+                                    <span class="headerThes_normal" style="vertical-align:top;">
                                         <xsl:value-of select="$facetcardlocale/graphicalimage/title/option[@lang=$lang]"/>
                                     </span>
                                     
+                                </a>
+                                <br/>
+                                 <a href="#">
+                                     <xsl:attribute name="onClick">
+                                        <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','facethierarchical','true');</xsl:text>
+                                    </xsl:attribute>
+                                    <img width="16" height="16" border="0" >
+                                        <xsl:attribute name="src">
+                                            <xsl:value-of select="$facetcardlocale/hierarchical/src/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                        <xsl:attribute name="title">
+                                            <xsl:value-of select="$facetcardlocale/hierarchical/title/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                        
+                                    </img>
+                                    <span class="headerThes_normal" style="vertical-align:top;">
+                                        <xsl:value-of select="$facetcardlocale/hierarchical/title/option[@lang=$lang]"/>
+                                    </span>
                                 </a>
                             </td>
                         </tr>

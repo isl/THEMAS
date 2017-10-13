@@ -31,6 +31,22 @@
  This file is part of the THEMAS system.
 
 
+THEMAS version 1.2 (2017 10 13)
+-----------------------------------------------------
+- Update to Neo4j 3.2.5 Java 8 and Neo4j-sisapi 1.2
+- Added Thesaurus Reference Id and Transliteration of Logicalname for Facets/TopTerms/Terms
+  (these extra properties are not visible in the UI but are included in the export
+   format. Contains Search operator when searching for Facet/Hierarchy/Term names 
+   searches in the transliteration property instead of the LogicalName
+- Thesaurus and Facet Hierarchical and Tree View
+- XML Stream support for specific read-only Servlets in order to be able to retrieve
+  the relevant XML response of a search result a term or facet card etc.
+- External reader role added (In contrast with reader ExternalReader sees all terms including non published)
+- Type ahead mechanism added in order to assist the selection in large lists (e.g. bts at term creation etc.)
+- Thesauri Management Tab was changed to be only available to administrators until the copy/merge/delete functionalities are corrected
+- Bug fixes
+
+
 THEMAS version 1.1 (2015 10 27)
 -----------------------------------------------------
 -Bug Fixes (corrected messages, removed hard coded messages, removePrefix bugfix etc.)

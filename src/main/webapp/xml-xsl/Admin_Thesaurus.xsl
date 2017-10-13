@@ -93,23 +93,29 @@
                         </td>
                         <!--</xsl:if>
                         <xsl:if test="$THEMASUserInfo_userGroup != 'THESAURUS_TEAM' ">-->
-                        <td id="CreateThesaurus_TAB">
-                            <a href="Admin_Thesaurus?DIV=CreateThesaurus_DIV" onFocus="if(this.blur)this.blur()" id="CreateThesaurus_LINK">
-                                <xsl:choose>
-                                    <xsl:when test="$tabup='CreateThesaurus_DIV'">
-                                        <xsl:attribute name="class">
-                                            <xsl:text>active</xsl:text>
-                                        </xsl:attribute>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:attribute name="class">
-                                            <xsl:text>inactive</xsl:text>
-                                        </xsl:attribute>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                                <xsl:value-of select="$locale/primarycontentarea/thesauri/tabs/tab3/option[@lang=$lang]"/>
-                            </a>
-                        </td>
+                         <xsl:if test="$THEMASUserInfo_userGroup='ADMINISTRATOR'">
+                                    <td id="CreateThesaurus_TAB">
+
+
+
+                                        <a href="Admin_Thesaurus?DIV=CreateThesaurus_DIV" onFocus="if(this.blur)this.blur()" id="CreateThesaurus_LINK">
+                                            <xsl:choose>
+                                                <xsl:when test="$tabup='CreateThesaurus_DIV'">
+                                                    <xsl:attribute name="class">
+                                                        <xsl:text>active</xsl:text>
+                                                    </xsl:attribute>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:attribute name="class">
+                                                        <xsl:text>inactive</xsl:text>
+                                                    </xsl:attribute>
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                            <xsl:value-of select="$locale/primarycontentarea/thesauri/tabs/tab3/option[@lang=$lang]"/>
+                                        </a>
+                                    </td>
+                         </xsl:if>
+                    
                         <td id="EditGuideTerms_TAB">
                             <a href="Admin_Thesaurus?DIV=EditGuideTerms_DIV" onFocus="if(this.blur)this.blur()" id="EditGuideTerms_LINK">
                                 <xsl:choose>
@@ -127,7 +133,10 @@
                                 <xsl:value-of select="$locale/primarycontentarea/thesauri/tabs/tab4/option[@lang=$lang]"/>
                             </a>
                         </td>
-                        
+                        <!-- related to the check above about the manage thesauri tab -->
+                        <xsl:if test="$THEMASUserInfo_userGroup!='ADMINISTRATOR'">
+                            <td><a class="inactive" >&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</a>  </td>
+                        </xsl:if>
                         <td><a class="inactive" >&#160;</a>  </td>
                         <!--<td><a class="inactive" >&#160;</a>  </td>-->
                         
@@ -178,6 +187,7 @@
             </div>
             <div id="CreateThesaurus_DIV" class="tab-body" >
                 <xsl:choose>
+                    
                     <xsl:when test="$tabup='CreateThesaurus_DIV'">
                         <xsl:attribute name="style">
                             <xsl:text>visibility:visible;</xsl:text>

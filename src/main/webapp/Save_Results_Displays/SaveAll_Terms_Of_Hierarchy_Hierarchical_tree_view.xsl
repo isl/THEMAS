@@ -79,12 +79,11 @@
                    <script type="text/javascript"><xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/></script>
                    
                    <style rel="stylesheet" type="text/css">
-                       ul.mktree  li.liBullet  .bullet {background: none; }  
-                       
+                       ul.mktree  li.liBullet  .bullet {background: none; }                         
                    </style>
                    </head>
                    
-                   <body style="background-color: #FFFFFF;">
+                   <body style="background-color: #FFFFFF; font-size: 12px; font-family: verdana, arial, helvetica, sans-serif;">
                        <table width="100%">
                            
                            <tr>

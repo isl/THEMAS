@@ -33,7 +33,6 @@
  */
 package DB_Admin;
 
-import DB_Classes.DBGeneral;
 import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;

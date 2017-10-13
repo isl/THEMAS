@@ -385,7 +385,7 @@ public class DBImportData {
     
     public boolean writeThesaurusData(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            ArrayList<String> xmlFacets, ArrayList<String> guideTerms, HashMap<String, String> XMLsources,
+            ArrayList<SortItem> xmlFacetsInSortItems, ArrayList<String> guideTerms, HashMap<String, String> XMLsources,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             HashMap<String, ArrayList<String>> hierarchyFacets,
             HashMap<String, NodeInfoStringContainer> termsInfo,
@@ -450,7 +450,7 @@ public class DBImportData {
         }
         
         // Step9 Create Facets specified by XML
-        if (dbMerge.CreateFacets(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj) == false) {
+        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacetsInSortItems, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 
@@ -725,11 +725,11 @@ public class DBImportData {
 
         processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
 
-
+        ArrayList<SortItem> xmlFacetSortItems = Utilities.getSortItemVectorFromStringVector(xmlFacets,false);
         try {
             if (writeThesaurusData(SessionUserInfo, common_utils,
                     Q, TA, sis_session, tms_session,
-                    xmlFacets, guideTerms, XMLsources, XMLguideTermsRelations,
+                    xmlFacetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
                     hierarchyFacets, termsInfo, userSelectedTranslationWords,
                     userSelectedTranslationIdentifiers, translationCategories,
                     topTerms, descriptorRts, descriptorUfs,
@@ -1007,24 +1007,23 @@ public class DBImportData {
              * Step8 Guide Terms Addition Patch
              */
             //Structures to fill
-            ArrayList<SortItem> xmlFacetSortItems = new ArrayList<SortItem>();
-            HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
+            ArrayList<SortItem> xmlFacetSortItems = new ArrayList<>();
+            HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<>();
 
-            ArrayList<String> guideTerms = new ArrayList<String>();
-            HashMap<String, String> XMLsources = new HashMap<String, String>();
-            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
+            ArrayList<String> guideTerms = new ArrayList<>();
+            HashMap<String, String> XMLsources = new HashMap<>();
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
 
-            ArrayList<String> topTerms = new ArrayList<String>();
-            HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
-            HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
-            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
+            ArrayList<String> topTerms = new ArrayList<>();
+            HashMap<String, ArrayList<String>> descriptorRts = new HashMap<>();
+            HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<>();
+            ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<>();
 
-            HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
-            ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
-            ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
-            HashMap<String, String> translationCategories = new HashMap<String, String>();
+            HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<>();
+            ArrayList<String> userSelectedTranslationWords = new ArrayList<>();
+            ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<>();
+            HashMap<String, String> translationCategories = new HashMap<>();
 
-            ArrayList<String> thesaurusVector = new ArrayList<String>();
             StringObject CreateThesaurusResultMessage = new StringObject("");
 
             SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, targetThesaurusName);
@@ -1043,12 +1042,13 @@ public class DBImportData {
             //read facets
             xmlFacetSortItems.addAll(dbMerge.ReadThesaurusFacetsInSortItems(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null));
 
+            /*
             ArrayList<String> xmlFacets = Utilities.getStringVectorFromSortItemVector(xmlFacetSortItems);
             
             if (xmlFacets.contains(defaultFacetSortItem.getLogName()) == false) {
                 xmlFacets.add(defaultFacetSortItem.getLogName());
                 xmlFacetSortItems.add(defaultFacetSortItem);
-            }
+            }*/
 
             //read hierarchies
             hierarchyFacets = dbMerge.ReadThesaurusHierarchies(refSessionUserInfo, Q, sis_session, sourceThesaurusName, null);
@@ -1085,7 +1085,7 @@ public class DBImportData {
 
             ok = writeThesaurusData(SessionUserInfo, common_utils,
                     Q, TA, sis_session, tms_session,
-                    xmlFacets, guideTerms, XMLsources, XMLguideTermsRelations,
+                    xmlFacetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
                     hierarchyFacets, termsInfo, userSelectedTranslationWords,
                     userSelectedTranslationIdentifiers, translationCategories,
                     topTerms, descriptorRts, descriptorUfs,
