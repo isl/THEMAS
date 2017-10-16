@@ -634,7 +634,10 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         } finally {
             out.close();
-            if (answerType == null || answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+            if(answerType!=null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                if(session!=null) {session.invalidate();}
+            }
+            else {
                 sessionInstance.writeBackToSession(session);
             }
         }

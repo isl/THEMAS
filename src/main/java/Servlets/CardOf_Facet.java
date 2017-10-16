@@ -243,7 +243,10 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             if(!skipClose){
                 out.close();
             }
-            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                if(session!=null) {session.invalidate();}
+            }
+            else{
                 sessionInstance.writeBackToSession(session);
             }
         }

@@ -295,7 +295,13 @@
                 <table cellspacing="0" cellpadding="0" border="0">
                     <xsl:attribute name="width">
                         <xsl:value-of select="$prefferedWidth"/>
-                    </xsl:attribute>							<!-- __________________for each BT of target BEGIN______________ -->
+                    </xsl:attribute>		
+                    <xsl:if test="count(./bt[text()!='']) > 0">
+                        <tr class="rowThesEmptyLine">
+                            <td colspan="2"/>
+                        </tr>
+                    </xsl:if>
+                    <!-- __________________for each BT of target BEGIN______________ -->
                     <xsl:for-each select="bt">
                         <tr class="rowThes">
                             <td class="typeColThes" valign="top">
@@ -394,6 +400,11 @@
                     <xsl:attribute name="width">
                         <xsl:value-of select="$prefferedWidth"/>
                     </xsl:attribute>
+                    <xsl:if test="count(./nt[text()!='']) > 0">
+                        <tr class="rowThesEmptyLine">
+                            <td colspan="2"/>
+                        </tr>
+                    </xsl:if>
                     <!-- __________________for each NT of target BEGIN______________ -->
                     <xsl:for-each select="nt">
                         <xsl:variable name="currentGuideTerm" select="./@linkClass"/>
@@ -581,6 +592,11 @@
                 <xsl:attribute name="width">
                     <xsl:value-of select="$prefferedWidth"/>
                 </xsl:attribute>
+                <xsl:if test="count($tagNode) > 0">
+                    <tr class="rowThesEmptyLine">
+                        <td colspan="2"/>
+                    </tr>
+                </xsl:if>
                 <tr class="rowThes">
                     <td class="typeColThes" valign="top">
                         <span class="typeThes">

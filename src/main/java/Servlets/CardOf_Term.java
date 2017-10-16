@@ -180,8 +180,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.facet_kwd);
-                output.add(ConstantParameters.rbt_kwd);
-                output.add(ConstantParameters.rnt_kwd);
+                //output.add(ConstantParameters.rbt_kwd);
+                //output.add(ConstantParameters.rnt_kwd);
             }
             //should be visible
             output.add(ConstantParameters.system_referenceUri_kwd);
@@ -317,7 +317,11 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(!skipClose){
                 out.close();
             }
-            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+            
+            if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                if(session!=null) {session.invalidate();}
+            }
+            else {                
                 sessionInstance.writeBackToSession(session);
             }
         }
@@ -335,6 +339,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
         }
         else if (outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+            
             out.append(xml.toString());
         }
         else{

@@ -87,6 +87,7 @@
                     body { font-size:12px; font-family:  verdana, arial, helvetica, sans-serif;}
                     table {margin:0; padding:0;}
                     tr.rowThes {padding:0; }
+                    tr.rowThesEmptyLine {padding:0; height:5px; }
                     a {text-decoration:none; color:black;}
                     a.aHeaderAnchorThes { text-decoration:none; color:black;}
                     span.headerThes { font-size: 12px; font-weight:bold;font-family:  verdana, arial, helvetica, sans-serif;}
@@ -287,6 +288,11 @@
                             <!-- __________________if BTs of target exist______________ -->
                             <xsl:if test="bt[text()!='']">
                                 <table width="800" cellspacing="0" cellpadding="0" border="0">
+                                    <xsl:if test="count(bt[text()!='']) > 0">
+                                        <tr class="rowThesEmptyLine">
+                                            <td colspan="2"/>
+                                        </tr>
+                                    </xsl:if>
                                     <!-- __________________for each BT of target BEGIN______________ -->
                                     <xsl:for-each select="bt">
 
@@ -361,6 +367,11 @@
                             <!-- __________________if NTs of target exist______________ -->
                             <xsl:if test="nt[text()!='']">
                                 <table width="800" cellspacing="0" cellpadding="0" border="0">
+                                    <xsl:if test="count(nt[text()!='']) > 0">
+                                        <tr class="rowThesEmptyLine">
+                                            <td colspan="2"/>
+                                        </tr>
+                                    </xsl:if>
                                     <!-- __________________for each NT of target BEGIN______________ -->
                                     <xsl:for-each select="nt">
                                         <xsl:variable name="currentGuideTerm" select="./@linkClass"/>
@@ -513,7 +524,13 @@
         <xsl:param name="displayFormat"/>
         <!-- in case there is at least one tagNode -->
         <xsl:if test="$tagNode">
+            
             <table width="800" cellspacing="0" cellpadding="0">
+                <xsl:if test="count($tagNode) > 0">
+                    <tr class="rowThesEmptyLine">
+                        <td colspan="2"/>
+                    </tr>
+                </xsl:if>
                 <tr class="rowThes">
                     <td class="typeColThes" valign="top">
                         <span class="typeThes">

@@ -39,6 +39,7 @@ h3.titleThes {font-size:12px; font-weight:bold;}
 hr.hrThes {width:300px;text-align:left; color:grey;padding:0px;margin-top:10px;display:none;}
 
 tr.rowThes {padding:0; }
+tr.rowThesEmptyLine {padding:0; height:5px; }
 
 a {text-decoration:none; color:black;}
 

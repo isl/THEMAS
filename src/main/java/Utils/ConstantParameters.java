@@ -368,6 +368,10 @@ public class ConstantParameters {
     //public static final int MAX_COMMENT_SIZE = 19000;
 
     //output option supported for specific servlets in order to provide the output as xml stream
+    //be carefull at the end of each servlet that supports it, not to update current session
+    //because this request usually will have been submitted from a different application.
+    //Also there is no meaning in keeping alive this session after the XMLStream has been produced
+    //so it will be good practice to invalidate the session.
     public static final String XMLSTREAM = "XMLSTREAM";
     
     public static final String searchOperatorEquals = "=";

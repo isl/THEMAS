@@ -771,8 +771,14 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in servlet " + getServletName() + ". Message:" + e.getMessage());
             Utils.StaticClass.handleException(e);
         } finally {
-            if (outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
-                out.close();
+            if (outputMode != null) {
+                
+                if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                    if(session!=null) {session.invalidate();}
+                }
+                else {
+                    out.close();
+                }
             }
             
             if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {

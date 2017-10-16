@@ -499,7 +499,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         } finally {
             out.close();
-            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                if(session!=null) {session.invalidate();}
+            }
+            else{
                 sessionInstance.writeBackToSession(session);
             }
         }

@@ -325,8 +325,10 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         } finally {
             out.close();
-            //in case of XMLStream do not update the session
-            if (outputMode == null || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) != 0) {
+            if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
+                if(session!=null) {session.invalidate();}
+            }
+            else{
                 sessionInstance.writeBackToSession(session);
             }
         }
