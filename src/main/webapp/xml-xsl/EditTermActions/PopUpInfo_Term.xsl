@@ -306,7 +306,7 @@
                                                         </span>
                                                     </td>
                                                     <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
+                                                        <span class="headerThes_normal showDecorations">
                                                             <xsl:value-of disable-output-escaping="yes" select="."/>
                                                         </span>
                                                         <br/>

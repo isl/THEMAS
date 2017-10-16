@@ -172,7 +172,7 @@
                                 </td>
                                 <td>
                                     <br/>
-                                    <span class="headerThes_normal"><xsl:value-of disable-output-escaping="yes" select="$currentSource/source_note"/></span>
+                                    <span class="headerThes_normal showDecorations"><xsl:value-of disable-output-escaping="yes" select="$currentSource/source_note"/></span>
                                 </td>
                             </tr>
                         </xsl:if>

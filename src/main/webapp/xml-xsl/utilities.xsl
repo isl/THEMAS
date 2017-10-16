@@ -30,8 +30,8 @@
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 
 <!--
     Document   : Utilities.xsl
@@ -43,7 +43,7 @@
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
 
-<xsl:template name="replace-string">
+    <xsl:template name="replace-string">
         <xsl:param name="text"/>
         <xsl:param name="replace"/>
         <xsl:param name="with"/>
@@ -64,55 +64,64 @@
         </xsl:choose>
     </xsl:template>
 
-<xsl:template name="drawTranslationTd">
-    <xsl:param name="nodeSet"/>
-    <xsl:param name="translationSeparator"/>
+    <xsl:template name="drawTranslationTd">
+        <xsl:param name="nodeSet"/>
+        <xsl:param name="translationSeparator"/>
     
-    
-    <xsl:variable name="howmanyFields" select="count($nodeSet[text()!=''])"/>
-    <td>
-            <xsl:choose>
-                <xsl:when test="$howmanyFields=0">-</xsl:when>
-                <xsl:otherwise>
+        <xsl:variable name="howmanyFields" select="count($nodeSet[text()!=''])"/>
+        <xsl:choose>
+            <xsl:when test="$howmanyFields=0">
+                <td>-</td>
+            </xsl:when>    
+            <xsl:otherwise>
+                <td>
                     <xsl:for-each select="$nodeSet[text()!='']/node()">
-                        <a>
-                            <xsl:value-of select="../@linkClass"/>
-                            <xsl:value-of select="$translationSeparator"/>
-                            <xsl:text> </xsl:text>
-                            <xsl:choose>
-                                <xsl:when test="local-name(..)='translations_scope_note'">
-                                    <xsl:value-of disable-output-escaping="yes" select="."/>
-                                </xsl:when>
-                                <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
-                            </xsl:choose>
-                        </a>
-
                         <xsl:choose>
-                            <xsl:when test="position()!= $howmanyFields">
-                                <xsl:if test="local-name(..)!='translations_scope_note'">
+                            <xsl:when test="local-name(..)='translations_scope_note'">
+                                <span class="showDecorations">
+                                    <xsl:value-of select="../@linkClass"/>
+                                    <xsl:value-of select="$translationSeparator"/>
+                                    <xsl:text> </xsl:text>
+
+                                    <xsl:value-of disable-output-escaping="yes" select="."/>
+                                    <br/>
+                                </span>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <a>
+                                    <xsl:value-of select="../@linkClass"/>
+                                    <xsl:value-of select="$translationSeparator"/>
+                                    <xsl:text> </xsl:text>
+                                    
+                                    <xsl:value-of select="."/>
+                                </a>
+                                
+                                <xsl:if test="position()!= $howmanyFields">
                                     <xsl:text>, </xsl:text>
                                 </xsl:if>
                                 <br/>
-                            </xsl:when>
+                            </xsl:otherwise>
                         </xsl:choose>
+                    
                     </xsl:for-each>
-                </xsl:otherwise>
+                </td>
+            </xsl:otherwise>
 
-           </xsl:choose>
-   </td>
-</xsl:template>
+        </xsl:choose>
+   
+    </xsl:template>
 
-<xsl:template name="drawAttributeTd">
+    <xsl:template name="drawAttributeTd">
         <xsl:param name="nodeSet"/>
         <xsl:param name="popUpCard"/>
         
-            <xsl:variable name="howmanyFields" select="count($nodeSet)"/>
+        <xsl:variable name="howmanyFields" select="count($nodeSet)"/>
 
-            <xsl:variable name="Slash">\</xsl:variable>
-            <xsl:variable name="SlashJS">\\</xsl:variable>
-            <xsl:variable name="Apos">'</xsl:variable>
-            <xsl:variable name="AposJS">\'</xsl:variable>
-            <!--<xsl:value-of select="$howmanyFields"/>-->
+        <xsl:variable name="Slash">\</xsl:variable>
+        <xsl:variable name="SlashJS">\\</xsl:variable>
+        <xsl:variable name="Apos">'</xsl:variable>
+        <xsl:variable name="AposJS">\'</xsl:variable>
+        <!--<xsl:value-of select="$howmanyFields"/>-->
         <td>
             <xsl:choose>
                 <xsl:when test="$howmanyFields=0">-</xsl:when>
@@ -224,14 +233,17 @@
                                         <xsl:value-of select="."/>                                        
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <a><xsl:value-of select="."/></a>
+                                        <a>
+                                            <xsl:value-of select="."/>
+                                        </a>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:otherwise>
                         </xsl:choose>
                         <xsl:choose>
                             <xsl:when test="position()!= $howmanyFields">
-                                <xsl:text>,</xsl:text><br/>
+                                <xsl:text>,</xsl:text>
+                                <br/>
                             </xsl:when>
                         </xsl:choose>
                     </xsl:for-each>

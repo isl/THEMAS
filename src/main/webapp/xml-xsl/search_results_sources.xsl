@@ -203,7 +203,9 @@
                             </xsl:when>-->
                             <xsl:otherwise>
                                 <td width="400" style="WORD-BREAK:BREAK-ALL;">
-                                    <xsl:value-of disable-output-escaping="yes" select="./source_note"/>
+                                    <span class="showDecorations">
+                                        <xsl:value-of disable-output-escaping="yes" select="./source_note"/>
+                                    </span>
                                 </td>
                             </xsl:otherwise>
                         </xsl:choose>                   

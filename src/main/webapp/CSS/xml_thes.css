@@ -42,6 +42,8 @@ tr.rowThes {padding:0; }
 tr.rowThesEmptyLine {padding:0; height:5px; }
 
 a {text-decoration:none; color:black;}
+.showDecorations a{color: #0000EE; text-decoration: underline; color: -webkit-link; color: -moz-hyperlinktext;}
+
 
 a.aHeaderAnchorThes { text-decoration:none; color:black;}
 

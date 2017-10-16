@@ -30,8 +30,8 @@
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -59,17 +59,17 @@
     <xsl:variable name="trSeperator" select="//data/@translationsSeperator"/>
     <xsl:variable name="showCreatorInAlphabeticalDisplay" select="//data/@displayCreatorInAlphabetical"/>
     <xsl:variable name="onMouseOverColor">
-            <!-- #D9EDFC -->
-            <xsl:text>#D9EDFC</xsl:text>
-        </xsl:variable>
-        <xsl:variable name="alternateRowsColor1">
-            <!-- #E2E2E2 -->
-            <xsl:text>#E2E2E2</xsl:text>
-        </xsl:variable>
-        <xsl:variable name="alternateRowsColor2">
-            <!-- #FFFFFF -->
-            <xsl:text>#FFFFFF</xsl:text>
-        </xsl:variable>
+        <!-- #D9EDFC -->
+        <xsl:text>#D9EDFC</xsl:text>
+    </xsl:variable>
+    <xsl:variable name="alternateRowsColor1">
+        <!-- #E2E2E2 -->
+        <xsl:text>#E2E2E2</xsl:text>
+    </xsl:variable>
+    <xsl:variable name="alternateRowsColor2">
+        <!-- #FFFFFF -->
+        <xsl:text>#FFFFFF</xsl:text>
+    </xsl:variable>
     <!-- _____________________________________________________________________________
               MAIN TEMPLATE
               FUNCTION: displays the data given in Alphabetical format for the tags <term>
@@ -89,6 +89,7 @@
                     tr.rowThes {padding:0; }
                     tr.rowThesEmptyLine {padding:0; height:5px; }
                     a {text-decoration:none; color:black;}
+                    .showDecorations a{color: #0000EE;  text-decoration: underline; color: -webkit-link; color: -moz-hyperlinktext;}
                     a.aHeaderAnchorThes { text-decoration:none; color:black;}
                     span.headerThes { font-size: 12px; font-weight:bold;font-family:  verdana, arial, helvetica, sans-serif;}
                     span.headerThes_normal { font-size: 12px; font-family:  verdana, arial, helvetica, sans-serif;}
@@ -134,7 +135,7 @@
                                 </xsl:attribute>
                                 <xsl:value-of select="$localecommon/saveas/option[@lang=$lang]"/>
                             </a>
-                                                        &#160;
+                            &#160;
                             <a href="#" class="SaveAsAndPrintLinks" onclick="print()">
                                 <xsl:value-of select="$localecommon/print/option[@lang=$lang]"/>
                             </a>
@@ -193,312 +194,312 @@
                                     <td>
                                       
                                    
-                            <table width="800" cellspacing="0" cellpadding="0">
+                                        <table width="800" cellspacing="0" cellpadding="0">
                                 
-                                <tr class="rowThes">
-                                    <td colspan="2">
-                                        <xsl:choose>
-                                            <!-- in case the target is <term>, display it as BOLD -->
-                                            <xsl:when test="name() = 'term' ">
-                                                <span class="headerThes">
-                                                    <a class="aHeaderAnchorThes" name="{descriptor/@id}">
-                                                        <xsl:value-of select="descriptor"/>
-                                                    </a>
-                                                </span>
-                                            </xsl:when>
-                                            <!-- in case the target is <ufterm>, display it as NORMAL -->
-                                            <xsl:otherwise>
-                                                <span class="headerThes_normal" >
-                                                    <a class="aHeaderAnchorThes" name="{ufname/@id}">
-                                                        <xsl:value-of select="ufname"/>
-                                                    </a>
-                                                </span>
-                                            </xsl:otherwise>
-                                        </xsl:choose>
-                                        <!-- taxonomic code -->
-                                        <xsl:if test="tc">
-                                            <xsl:for-each select="tc">
-                                                <span class="deweyHeaderThes">&#160;--&#160;(<xsl:value-of select="."/>)
-                                                </span>
-                                            </xsl:for-each>
+                                            <tr class="rowThes">
+                                                <td colspan="2">
+                                                    <xsl:choose>
+                                                        <!-- in case the target is <term>, display it as BOLD -->
+                                                        <xsl:when test="name() = 'term' ">
+                                                            <span class="headerThes">
+                                                                <a class="aHeaderAnchorThes" name="{descriptor/@id}">
+                                                                    <xsl:value-of select="descriptor"/>
+                                                                </a>
+                                                            </span>
+                                                        </xsl:when>
+                                                        <!-- in case the target is <ufterm>, display it as NORMAL -->
+                                                        <xsl:otherwise>
+                                                            <span class="headerThes_normal" >
+                                                                <a class="aHeaderAnchorThes" name="{ufname/@id}">
+                                                                    <xsl:value-of select="ufname"/>
+                                                                </a>
+                                                            </span>
+                                                        </xsl:otherwise>
+                                                    </xsl:choose>
+                                                    <!-- taxonomic code -->
+                                                    <xsl:if test="tc">
+                                                        <xsl:for-each select="tc">
+                                                            <span class="deweyHeaderThes">&#160;--&#160;(<xsl:value-of select="."/>)
+                                                            </span>
+                                                        </xsl:for-each>
+                                                    </xsl:if>
+                                                    <br/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- __________________ translations of target (<translations>) ______________ -->
+                                        <xsl:if test="count(./translations[text()!='']) !=0">
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="./translations"/>
+                                                <xsl:with-param name="tagDisplayNameId">TR</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">translations</xsl:with-param>
+                                            </xsl:call-template>
                                         </xsl:if>
+                                        <!-- __________________ ΔΣ of target (<scope_note> - ΔΣ) ______________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="scope_note"/>
+                                            <xsl:with-param name="tagDisplayNameId">SN</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                            <!--<xsl:with-param name="displayFormat">italics</xsl:with-param>-->
+                                            <xsl:with-param name="displayFormat">none</xsl:with-param>
+                                        </xsl:call-template>
+                                        <!-- __________________ SN of target (<translations_scope_note> - SN) ______________ -->
+                                        <xsl:if test="count(translations_scope_note[text()!='']) >0">
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="translations_scope_note"/>
+                                                <xsl:with-param name="tagDisplayNameId" select="'tr_SN'"/>
+                                                <xsl:with-param name="addAnchors" select="'false'"/>
+                                                <!--<xsl:with-param name="displayFormat">italics</xsl:with-param>-->
+                                                <xsl:with-param name="displayFormat">none</xsl:with-param>
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                        <!--<xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="translations_scope_note"/>
+                                                <xsl:with-param name="tagDisplayNameId">tr_SN</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">italics</xsl:with-param>
+                                        </xsl:call-template>-->
+                                        <!-- __________________ OK of target (<topterm> - OK) ____________________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="topterm"/>
+                                            <xsl:with-param name="tagDisplayNameId">TT</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">true</xsl:with-param>
+                                            <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                        </xsl:call-template>
+                                        <!-- __________________UFs pointing of target (XA - <uf>) ______________ -->
+                                        <xsl:if test="count(./uf[text()!='']) !=0">
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="uf"/>
+                                                <xsl:with-param name="tagDisplayNameId">UF</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">true</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                        <!-- __________________uf_translations pointing of target (UF - <uf_translations>) ______________ -->
+                                        <xsl:if test="count(./uf_translations[text()!='']) !=0">
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="./uf_translations"/>
+                                                <xsl:with-param name="tagDisplayNameId">UF (Tra.)</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">translations</xsl:with-param>
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                        <!-- __________________BTs of target (<bt> - ΠΟ1 + ΠΟ2) (π.χ. αγροτική ανάπτυξη) ______________ -->
+                                        <!-- __________________if BTs of target exist______________ -->
+                                        <xsl:if test="bt[text()!='']">
+                                            <table width="800" cellspacing="0" cellpadding="0" border="0">
+                                                <xsl:if test="count(bt[text()!='']) > 0">
+                                                    <tr class="rowThesEmptyLine">
+                                                        <td colspan="2"/>
+                                                    </tr>
+                                                </xsl:if>
+                                                <!-- __________________for each BT of target BEGIN______________ -->
+                                                <xsl:for-each select="bt">
+
+                                                    <tr class="rowThes">
+                                                        <td class="typeColThes" valign="top">
+                                                            <span class="typeThes">
+                                                                <xsl:value-of select="$localeThes/message[@id='BT1']/@*[name() = $nameLang]"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="valueColThes">
+                                                            <a>
+                                                                <xsl:if test="./@id">
+                                                                    <xsl:attribute name="href">
+                                                                        <xsl:value-of select="concat('#',./@id)"/>
+                                                                    </xsl:attribute>
+                                                                </xsl:if>
+                                                                <span class="valueThes">
+                                                                    <xsl:value-of select="."/>
+                                                                </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="rowThes">
+                                                        <td valign="top" colspan="2">
+                                                            <!-- 2nd level BTs -->
+                                                            <!-- define the xsl:variable "currentBT1sysid" with value the sysid of the current BT1 term -->
+                                                            <xsl:variable name="currentBT1sysid">
+                                                                <xsl:value-of select="./@id"/>
+                                                            </xsl:variable>
+                                                            <!-- get the BT term of xsl:variable "currentBT1sysid" -->
+                                                            <!-- <xsl:for-each select="//terms/term/descriptor[./@id=$currentBT1sysid]"> -->
+                                                            <table width="800" cellspacing="0" cellpadding="0" class="secondLevelTableThes" border="0">
+                                                                <!-- <xsl:for-each select="../bt">-->
+                                                                <!--    <xsl:for-each select="$allIds">
+                                                                    <xsl:value-of select="."/>
+                                                                    <xsl:value-of select=".."/>
+                                                                </xsl:for-each>
+                                                                -->
+                                                                <xsl:for-each select="$allIds[.=$currentBT1sysid]/../../bt">
+                                                                    <xsl:if test=".!=''">
+                                                                        <tr class="rowThes">
+                                                                            <td class="emptyFirstCellThes" valign="top"/>
+                                                                            <td class="typeColSecondThes" valign="top">
+                                                                                <span class="typeThes">
+                                                                                    <xsl:value-of select="$localeThes/message[@id='BT2']/@*[name() = $nameLang]"/>
+                                                                                </span>
+                                                                            </td>
+                                                                            <td class="valueColSecondThes">
+                                                                                <a>
+                                                                                    <xsl:if test="./@id">
+                                                                                        <xsl:attribute name="href">
+                                                                                            <xsl:value-of select="concat('#',./@id)"/>
+                                                                                        </xsl:attribute>
+                                                                                    </xsl:if>
+                                                                                    <span class="valueThes">
+                                                                                        <xsl:value-of select="."/>
+                                                                                    </span>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </xsl:if>
+                                                                </xsl:for-each>
+                                                            </table>
+                                                            <!--</xsl:for-each>-->
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                                <!-- __________________for each BT of target END______________ -->
+                                            </table>
+                                        </xsl:if>
+                                        <!-- __________________NTs of target (<bt> - EΟ1 + EΟ2) (π.χ. αγροτική παραγωγή - γεωργία) ______________ -->
+                                        <!-- __________________if NTs of target exist______________ -->
+                                        <xsl:if test="nt[text()!='']">
+                                            <table width="800" cellspacing="0" cellpadding="0" border="0">
+                                                <xsl:if test="count(nt[text()!='']) > 0">
+                                                    <tr class="rowThesEmptyLine">
+                                                        <td colspan="2"/>
+                                                    </tr>
+                                                </xsl:if>
+                                                <!-- __________________for each NT of target BEGIN______________ -->
+                                                <xsl:for-each select="nt">
+                                                    <xsl:variable name="currentGuideTerm" select="./@linkClass"/>
+                                                    <xsl:variable name="prevPos" select="position()-1"/>
+                                                    <tr class="rowThes">
+                                                        <td class="typeColThes" valign="bottom">
+                                                            <span class="typeThes">
+                                                                <xsl:value-of select="$localeThes/message[@id='NT1']/@*[name() = $nameLang]"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="valueColThes">
+                                                            <xsl:if test="(./@linkClass!='') and ((position()=1) or not(preceding-sibling::*/../nt[$prevPos]/@linkClass = ./@linkClass))">
+                                                                <span class="valueThes">
+                                                                    <b>
+                                                                        <i>
+                                                                            <xsl:text>&lt;</xsl:text>
+                                                                            <xsl:value-of select="./@linkClass"/>
+                                                                            <xsl:text>&gt;</xsl:text>
+                                                                        </i>
+                                                                    </b>
+                                                                </span>
+                                                                <br/>
+                                                            </xsl:if>
+                                                            <a>
+                                                                <xsl:if test="./@id">
+                                                                    <xsl:attribute name="href">
+                                                                        <xsl:value-of select="concat('#',./@id)"/>
+                                                                    </xsl:attribute>
+                                                                </xsl:if>
+                                                                <span class="valueThes">
+                                                                    <xsl:value-of select="."/>
+                                                                </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="rowThes">
+                                                        <td valign="top" colspan="2">
+                                                            <!-- 2nd level NTs (π.χ. αγροτική παραγωγή - γεωργία) -->
+                                                            <!-- define the xsl:variable "currentNT1sysid" with value the sysid of the current NT1 term -->
+                                                            <xsl:variable name="currentNT1sysid">
+                                                                <xsl:value-of select="./@id"/>
+                                                            </xsl:variable>
+                                                            <!-- get the NT term of xsl:variable "currentNT1sysid"
+                                                            <xsl:for-each select="//terms/term[./descriptor/@id=$currentNT1sysid]">-->
+                                                            <table width="800" cellspacing="0" cellpadding="0" class="secondLevelTableThes" border="0">
+                                                                <xsl:for-each select="$allIds[.=$currentNT1sysid]/../../nt">
+                                                                    <!--<xsl:for-each select="nt">-->
+                                                                    <xsl:if test=".!=''">
+                                                                        <tr class="rowThes">
+                                                                            <td class="emptyFirstCellThes" valign="top"/>
+                                                                            <td class="typeColSecondThes" valign="top">
+                                                                                <span class="typeThes">
+                                                                                    <xsl:value-of select="$localeThes/message[@id='NT2']/@*[name() = $nameLang]"/>
+                                                                                </span>
+                                                                            </td>
+                                                                            <td class="valueColSecondThes">
+                                                                                <a>
+                                                                                    <xsl:if test="./@id">
+                                                                                        <xsl:attribute name="href">
+                                                                                            <xsl:value-of select="concat('#',./@id)"/>
+                                                                                        </xsl:attribute>
+                                                                                    </xsl:if>
+                                                                                    <span class="valueThes">
+                                                                                        <xsl:value-of select="."/>
+                                                                                    </span>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </xsl:if>
+                                                                </xsl:for-each>
+                                                            </table>
+                                                            <!--</xsl:for-each>-->
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                                <!-- __________________for each NT of target END______________ -->
+                                            </table>
+                                        </xsl:if>
+                                        <!-- __________________ RTs of target (<rt> - ΣΟ) - BOTH directions ______________ -->
+                                        <xsl:if test="count(./rt[./text()!='']) !=0">
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="rt"/>
+                                                <xsl:with-param name="tagDisplayNameId">RT</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">true</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                        <!-- __________________Sources of target (<found_in> - Πηγή) ______________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="found_in"/>
+                                            <xsl:with-param name="tagDisplayNameId">Source</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                            <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                        </xsl:call-template>
+                                        <!-- __________________ Primary Sources of target (<primary_found_in> - Πηγή (ελλ.)) ______________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="primary_found_in"/>
+                                            <xsl:with-param name="tagDisplayNameId">Source</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                            <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                        </xsl:call-template>
+                                        <!-- __________________ Translation Sources of target (<translations_found_in> - Πηγή (αγγλ.)) ______________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="translations_found_in"/>
+                                            <xsl:with-param name="tagDisplayNameId">Source_tr</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                            <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                        </xsl:call-template>
+                                        <!-- __________________ <use> tags of target of type <ufterm> (ΧΡ) ______________ -->
+                                        <xsl:call-template name="DisplayTargetTag">
+                                            <xsl:with-param name="tagNode" select="use"/>
+                                            <xsl:with-param name="tagDisplayNameId">USE</xsl:with-param>
+                                            <xsl:with-param name="addAnchors">true</xsl:with-param>
+                                            <xsl:with-param name="displayFormat">bold</xsl:with-param>
+                                        </xsl:call-template>    
+                                        <xsl:if test="$showCreatorInAlphabeticalDisplay='true'">
+                                            <!-- __________________ <created_by> ______________ -->
+                                            <xsl:call-template name="DisplayTargetTag">
+                                                <xsl:with-param name="tagNode" select="created_by"/>
+                                                <xsl:with-param name="tagDisplayNameId">CREATED_BY</xsl:with-param>
+                                                <xsl:with-param name="addAnchors">false</xsl:with-param>
+                                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
+                                            </xsl:call-template>
+                                        </xsl:if>                       
+                                        <!-- __________________ FOR EACH <term> or <ufterm> (END) ____________________ -->
                                         <br/>
                                     </td>
-                                </tr>
-                            </table>
-                            <!-- __________________ translations of target (<translations>) ______________ -->
-                            <xsl:if test="count(./translations[text()!='']) !=0">
-                                <xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="./translations"/>
-                                    <xsl:with-param name="tagDisplayNameId">TR</xsl:with-param>
-                                    <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                    <xsl:with-param name="displayFormat">translations</xsl:with-param>
-                                </xsl:call-template>
-                            </xsl:if>
-                            <!-- __________________ ΔΣ of target (<scope_note> - ΔΣ) ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="scope_note"/>
-                                <xsl:with-param name="tagDisplayNameId">SN</xsl:with-param>
-                                <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                <!--<xsl:with-param name="displayFormat">italics</xsl:with-param>-->
-                                <xsl:with-param name="displayFormat">none</xsl:with-param>
-                            </xsl:call-template>
-                            <!-- __________________ SN of target (<translations_scope_note> - SN) ______________ -->
-                            <xsl:if test="count(translations_scope_note[text()!='']) >0">
-                                <xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="translations_scope_note"/>
-                                    <xsl:with-param name="tagDisplayNameId" select="'tr_SN'"/>
-                                    <xsl:with-param name="addAnchors" select="'false'"/>
-                                    <!--<xsl:with-param name="displayFormat">italics</xsl:with-param>-->
-                                <xsl:with-param name="displayFormat">none</xsl:with-param>
-                                </xsl:call-template>
-                            </xsl:if>
-                            <!--<xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="translations_scope_note"/>
-                                    <xsl:with-param name="tagDisplayNameId">tr_SN</xsl:with-param>
-                                    <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                    <xsl:with-param name="displayFormat">italics</xsl:with-param>
-                            </xsl:call-template>-->
-                            <!-- __________________ OK of target (<topterm> - OK) ____________________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="topterm"/>
-                                <xsl:with-param name="tagDisplayNameId">TT</xsl:with-param>
-                                <xsl:with-param name="addAnchors">true</xsl:with-param>
-                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                            </xsl:call-template>
-                            <!-- __________________UFs pointing of target (XA - <uf>) ______________ -->
-                            <xsl:if test="count(./uf[text()!='']) !=0">
-                                <xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="uf"/>
-                                    <xsl:with-param name="tagDisplayNameId">UF</xsl:with-param>
-                                    <xsl:with-param name="addAnchors">true</xsl:with-param>
-                                    <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                                </xsl:call-template>
-                            </xsl:if>
-                            <!-- __________________uf_translations pointing of target (UF - <uf_translations>) ______________ -->
-                            <xsl:if test="count(./uf_translations[text()!='']) !=0">
-                                <xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="./uf_translations"/>
-                                    <xsl:with-param name="tagDisplayNameId">UF (Tra.)</xsl:with-param>
-                                    <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                    <xsl:with-param name="displayFormat">translations</xsl:with-param>
-                                </xsl:call-template>
-                            </xsl:if>
-                            <!-- __________________BTs of target (<bt> - ΠΟ1 + ΠΟ2) (π.χ. αγροτική ανάπτυξη) ______________ -->
-                            <!-- __________________if BTs of target exist______________ -->
-                            <xsl:if test="bt[text()!='']">
-                                <table width="800" cellspacing="0" cellpadding="0" border="0">
-                                    <xsl:if test="count(bt[text()!='']) > 0">
-                                        <tr class="rowThesEmptyLine">
-                                            <td colspan="2"/>
-                                        </tr>
-                                    </xsl:if>
-                                    <!-- __________________for each BT of target BEGIN______________ -->
-                                    <xsl:for-each select="bt">
-
-                                        <tr class="rowThes">
-                                            <td class="typeColThes" valign="top">
-                                                <span class="typeThes">
-                                                    <xsl:value-of select="$localeThes/message[@id='BT1']/@*[name() = $nameLang]"/>
-                                                </span>
-                                            </td>
-                                            <td class="valueColThes">
-                                                <a>
-                                                    <xsl:if test="./@id">
-                                                        <xsl:attribute name="href">
-                                                            <xsl:value-of select="concat('#',./@id)"/>
-                                                        </xsl:attribute>
-                                                    </xsl:if>
-                                                    <span class="valueThes">
-                                                        <xsl:value-of select="."/>
-                                                    </span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr class="rowThes">
-                                            <td valign="top" colspan="2">
-                                                <!-- 2nd level BTs -->
-                                                <!-- define the xsl:variable "currentBT1sysid" with value the sysid of the current BT1 term -->
-                                                <xsl:variable name="currentBT1sysid">
-                                                    <xsl:value-of select="./@id"/>
-                                                </xsl:variable>
-                                                <!-- get the BT term of xsl:variable "currentBT1sysid" -->
-                                                <!-- <xsl:for-each select="//terms/term/descriptor[./@id=$currentBT1sysid]"> -->
-                                                <table width="800" cellspacing="0" cellpadding="0" class="secondLevelTableThes" border="0">
-                                                    <!-- <xsl:for-each select="../bt">-->
-                                                    <!--    <xsl:for-each select="$allIds">
-                                                        <xsl:value-of select="."/>
-                                                        <xsl:value-of select=".."/>
-                                                    </xsl:for-each>
-                                                    -->
-                                                    <xsl:for-each select="$allIds[.=$currentBT1sysid]/../../bt">
-                                                        <xsl:if test=".!=''">
-                                                            <tr class="rowThes">
-                                                                <td class="emptyFirstCellThes" valign="top"/>
-                                                                <td class="typeColSecondThes" valign="top">
-                                                                    <span class="typeThes">
-                                                                        <xsl:value-of select="$localeThes/message[@id='BT2']/@*[name() = $nameLang]"/>
-                                                                    </span>
-                                                                </td>
-                                                                <td class="valueColSecondThes">
-                                                                    <a>
-                                                                        <xsl:if test="./@id">
-                                                                            <xsl:attribute name="href">
-                                                                                <xsl:value-of select="concat('#',./@id)"/>
-                                                                            </xsl:attribute>
-                                                                        </xsl:if>
-                                                                        <span class="valueThes">
-                                                                            <xsl:value-of select="."/>
-                                                                        </span>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        </xsl:if>
-                                                    </xsl:for-each>
-                                                </table>
-                                                <!--</xsl:for-each>-->
-                                            </td>
-                                        </tr>
-                                    </xsl:for-each>
-                                    <!-- __________________for each BT of target END______________ -->
-                                </table>
-                            </xsl:if>
-                            <!-- __________________NTs of target (<bt> - EΟ1 + EΟ2) (π.χ. αγροτική παραγωγή - γεωργία) ______________ -->
-                            <!-- __________________if NTs of target exist______________ -->
-                            <xsl:if test="nt[text()!='']">
-                                <table width="800" cellspacing="0" cellpadding="0" border="0">
-                                    <xsl:if test="count(nt[text()!='']) > 0">
-                                        <tr class="rowThesEmptyLine">
-                                            <td colspan="2"/>
-                                        </tr>
-                                    </xsl:if>
-                                    <!-- __________________for each NT of target BEGIN______________ -->
-                                    <xsl:for-each select="nt">
-                                        <xsl:variable name="currentGuideTerm" select="./@linkClass"/>
-                                        <xsl:variable name="prevPos" select="position()-1"/>
-                                        <tr class="rowThes">
-                                            <td class="typeColThes" valign="bottom">
-                                                <span class="typeThes">
-                                                    <xsl:value-of select="$localeThes/message[@id='NT1']/@*[name() = $nameLang]"/>
-                                                </span>
-                                            </td>
-                                            <td class="valueColThes">
-                                                <xsl:if test="(./@linkClass!='') and ((position()=1) or not(preceding-sibling::*/../nt[$prevPos]/@linkClass = ./@linkClass))">
-                                                    <span class="valueThes">
-                                                        <b>
-                                                            <i>
-                                                                <xsl:text>&lt;</xsl:text>
-                                                                <xsl:value-of select="./@linkClass"/>
-                                                                <xsl:text>&gt;</xsl:text>
-                                                            </i>
-                                                        </b>
-                                                    </span>
-                                                    <br/>
-                                                </xsl:if>
-                                                <a>
-                                                    <xsl:if test="./@id">
-                                                        <xsl:attribute name="href">
-                                                            <xsl:value-of select="concat('#',./@id)"/>
-                                                        </xsl:attribute>
-                                                    </xsl:if>
-                                                    <span class="valueThes">
-                                                        <xsl:value-of select="."/>
-                                                    </span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr class="rowThes">
-                                            <td valign="top" colspan="2">
-                                                <!-- 2nd level NTs (π.χ. αγροτική παραγωγή - γεωργία) -->
-                                                <!-- define the xsl:variable "currentNT1sysid" with value the sysid of the current NT1 term -->
-                                                <xsl:variable name="currentNT1sysid">
-                                                    <xsl:value-of select="./@id"/>
-                                                </xsl:variable>
-                                                <!-- get the NT term of xsl:variable "currentNT1sysid"
-                                                <xsl:for-each select="//terms/term[./descriptor/@id=$currentNT1sysid]">-->
-                                                <table width="800" cellspacing="0" cellpadding="0" class="secondLevelTableThes" border="0">
-                                                    <xsl:for-each select="$allIds[.=$currentNT1sysid]/../../nt">
-                                                        <!--<xsl:for-each select="nt">-->
-                                                        <xsl:if test=".!=''">
-                                                            <tr class="rowThes">
-                                                                <td class="emptyFirstCellThes" valign="top"/>
-                                                                <td class="typeColSecondThes" valign="top">
-                                                                    <span class="typeThes">
-                                                                        <xsl:value-of select="$localeThes/message[@id='NT2']/@*[name() = $nameLang]"/>
-                                                                    </span>
-                                                                </td>
-                                                                <td class="valueColSecondThes">
-                                                                    <a>
-                                                                        <xsl:if test="./@id">
-                                                                            <xsl:attribute name="href">
-                                                                                <xsl:value-of select="concat('#',./@id)"/>
-                                                                            </xsl:attribute>
-                                                                        </xsl:if>
-                                                                        <span class="valueThes">
-                                                                            <xsl:value-of select="."/>
-                                                                        </span>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        </xsl:if>
-                                                    </xsl:for-each>
-                                                </table>
-                                                <!--</xsl:for-each>-->
-                                            </td>
-                                        </tr>
-                                    </xsl:for-each>
-                                    <!-- __________________for each NT of target END______________ -->
-                                </table>
-                            </xsl:if>
-                            <!-- __________________ RTs of target (<rt> - ΣΟ) - BOTH directions ______________ -->
-                            <xsl:if test="count(./rt[./text()!='']) !=0">
-                                <xsl:call-template name="DisplayTargetTag">
-                                    <xsl:with-param name="tagNode" select="rt"/>
-                                    <xsl:with-param name="tagDisplayNameId">RT</xsl:with-param>
-                                    <xsl:with-param name="addAnchors">true</xsl:with-param>
-                                    <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                                </xsl:call-template>
-                            </xsl:if>
-                            <!-- __________________Sources of target (<found_in> - Πηγή) ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="found_in"/>
-                                <xsl:with-param name="tagDisplayNameId">Source</xsl:with-param>
-                                <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                            </xsl:call-template>
-                            <!-- __________________ Primary Sources of target (<primary_found_in> - Πηγή (ελλ.)) ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="primary_found_in"/>
-                                <xsl:with-param name="tagDisplayNameId">Source</xsl:with-param>
-                                <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                            </xsl:call-template>
-                            <!-- __________________ Translation Sources of target (<translations_found_in> - Πηγή (αγγλ.)) ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="translations_found_in"/>
-                                <xsl:with-param name="tagDisplayNameId">Source_tr</xsl:with-param>
-                                <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                            </xsl:call-template>
-                            <!-- __________________ <use> tags of target of type <ufterm> (ΧΡ) ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="use"/>
-                                <xsl:with-param name="tagDisplayNameId">USE</xsl:with-param>
-                                <xsl:with-param name="addAnchors">true</xsl:with-param>
-                                <xsl:with-param name="displayFormat">bold</xsl:with-param>
-                            </xsl:call-template>    
-                            <xsl:if test="$showCreatorInAlphabeticalDisplay='true'">
-                            <!-- __________________ <created_by> ______________ -->
-                            <xsl:call-template name="DisplayTargetTag">
-                                <xsl:with-param name="tagNode" select="created_by"/>
-                                <xsl:with-param name="tagDisplayNameId">CREATED_BY</xsl:with-param>
-                                <xsl:with-param name="addAnchors">false</xsl:with-param>
-                                <xsl:with-param name="displayFormat">normal</xsl:with-param>
-                            </xsl:call-template>
-                            </xsl:if>                       
-                            <!-- __________________ FOR EACH <term> or <ufterm> (END) ____________________ -->
-                            <br/>
-                             </td>
                                 </tr>
                             </table>
                             
@@ -573,23 +574,32 @@
                                 </xsl:when>
                                 <!-- __________________ without anchor __________________ -->
                                 <xsl:otherwise>
-                                    <a>
+                                    
                                         <xsl:choose>          
-                                        <xsl:when  test="$tagDisplayNameId = 'SN'">
-                                            <!--<span width="400" style="WORD-BREAK:BREAK-ALL;">-->
-                                            <span>                                                
-                                                <xsl:value-of disable-output-escaping="yes" select="."/>
-                                            </span>
-                                        </xsl:when>                                        
-                                        <xsl:otherwise>                           
-                                        <xsl:call-template name="DisplayCurrentTagValue">
-                                            <xsl:with-param name="displayFormat">
-                                                <xsl:value-of select="$displayFormat"/>
-                                            </xsl:with-param>
-                                        </xsl:call-template>
-                                        </xsl:otherwise>
+                                            <xsl:when  test="$tagDisplayNameId = 'SN'">
+                                                <!--<span width="400" style="WORD-BREAK:BREAK-ALL;">-->
+                                                <span  class="showDecorations">                                                
+                                                    <xsl:value-of disable-output-escaping="yes" select="."/>
+                                                </span>
+                                            </xsl:when>     
+                                            <xsl:when  test="$tagDisplayNameId = 'tr_SN'">
+                                                <xsl:call-template name="DisplayCurrentTagValue">
+                                                    <xsl:with-param name="displayFormat">
+                                                        <xsl:value-of select="$displayFormat"/>
+                                                    </xsl:with-param>
+                                                </xsl:call-template>
+                                            </xsl:when>                                     
+                                            <xsl:otherwise>    
+                                                <a>                       
+                                                <xsl:call-template name="DisplayCurrentTagValue">
+                                                    <xsl:with-param name="displayFormat">
+                                                        <xsl:value-of select="$displayFormat"/>
+                                                    </xsl:with-param>
+                                                </xsl:call-template>
+                                                </a>
+                                            </xsl:otherwise>
                                         </xsl:choose> 
-                                    </a>
+                                    
                                 </xsl:otherwise>
                             </xsl:choose>
                             <br/>
@@ -607,9 +617,10 @@
     <xsl:template name="DisplayCurrentTagValue">
         <!-- parameters -->
         <xsl:param name="displayFormat"/>
-        <span class="valueThes">
-            <xsl:choose>
-                <xsl:when test="$displayFormat = 'italics' ">
+        
+        <xsl:choose>
+            <xsl:when test="$displayFormat = 'italics' ">
+                <span class="valueThes">
                     <i>
                         <xsl:if test="local-name(.) = 'translations_scope_note' ">
                             <xsl:value-of select="@linkClass"/>
@@ -625,35 +636,43 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </i>
-                </xsl:when>
-                <xsl:when test="$displayFormat = 'bold' ">
+                </span>
+            </xsl:when>
+            <xsl:when test="$displayFormat = 'bold' ">
+                <span class="valueThes">
                     <b>
                         <xsl:value-of select="."/>
                     </b>
-                </xsl:when>
-                <xsl:when test="$displayFormat = 'translations' ">
+                </span>
+            </xsl:when>
+            <xsl:when test="$displayFormat = 'translations' ">
+                <span class="valueThes">
                     <xsl:value-of select="@linkClass"/>
                     <xsl:value-of select="$trSeperator"/>
                     <xsl:text> </xsl:text>
                     <xsl:value-of select="."/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <!-- normal -->
-                    <xsl:if test="local-name(.)='translations_scope_note'">
-                        <xsl:value-of select="@linkClass"/>
-                        <xsl:value-of select="$trSeperator"/>
-                        <xsl:text> </xsl:text>
-                    </xsl:if>  
-                    <xsl:choose>
-                            <xsl:when test="local-name(.)='scope_note' or local-name(.)='translations_scope_note' or local-name(.)='historical_note' or local-name(.)='source_note'" >
-                                <xsl:value-of disable-output-escaping="yes" select="."/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                </xsl:otherwise>
-            </xsl:choose>
-        </span>
+                </span>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- normal -->
+                <xsl:if test="local-name(.)='translations_scope_note'">
+                    <xsl:value-of select="@linkClass"/>
+                    <xsl:value-of select="$trSeperator"/>
+                    <xsl:text> </xsl:text>
+                </xsl:if>  
+                <xsl:choose>
+                    <xsl:when test="local-name(.)='scope_note' or local-name(.)='translations_scope_note' or local-name(.)='historical_note' or local-name(.)='source_note'" >
+                        <span class="valueThes showDecorations"> 
+                            <xsl:value-of disable-output-escaping="yes" select="."/>
+                        </span>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <span class="valueThes"> 
+                            <xsl:value-of select="."/>
+                        </span>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>        
     </xsl:template>
 </xsl:stylesheet>
