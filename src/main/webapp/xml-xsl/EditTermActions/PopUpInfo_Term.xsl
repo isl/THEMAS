@@ -48,8 +48,8 @@
     <xsl:template match="/">
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css"/>
-                <link rel="stylesheet" type="text/css" href="CSS/page.css"/>
+                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css?v=@DeploymentTimestamp@"/>
+                <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
                 <title>PopUpInfo_Term.xsl</title>
             </head>
             <body>

@@ -55,7 +55,7 @@
         <html>
             <head>
                 <title>Edit_Term.xsl</title>
-                <link rel="stylesheet" type="text/css" href="CSS/page.css"/>
+                <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
             </head>
             <body>
                 <div class="popUpCard2">

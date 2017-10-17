@@ -49,7 +49,7 @@
             <!-- 
               Adding deployment timestamp via maven pom to each include css or javascript file
               so that web clients get the most updated version of each css or js file as long as 
-              this file has been updated also (via e.g. new deployment).     
+              this file has been updated also (via e.g. new deployment).   
             -->
                  
             
@@ -58,7 +58,7 @@
             
             <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
             <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css?v=@DeploymentTimestamp@"/>
-			
+            
             <!-- JavaScript files -->
             <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>
             <script language="JavaScript" type="text/javascript" src="Javascript/tabs.js?v=@DeploymentTimestamp@"/>

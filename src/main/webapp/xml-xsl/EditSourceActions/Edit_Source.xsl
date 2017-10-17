@@ -53,7 +53,7 @@ This file is part of the THEMAS system.
                 
                 <meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
                 <script language="JavaScript">
-                    <xsl:attribute name="src">Javascript/tabs.js</xsl:attribute>
+                    <xsl:attribute name="src">Javascript/tabs.js?v=@DeploymentTimestamp@</xsl:attribute>
                 </script>
                 <title>Edit_Source.xsl</title>                
             </head>

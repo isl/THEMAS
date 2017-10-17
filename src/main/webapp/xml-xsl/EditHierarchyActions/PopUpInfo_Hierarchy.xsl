@@ -50,9 +50,9 @@
     <xsl:template match="/">
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css"/>
-                <link rel="stylesheet" type="text/css" href="CSS/page.css"/>
-				<!--<xsl:attribute name="href"><xsl:value-of select="'CSS/xml_thes.css'"/></xsl:attribute>
+                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css?v=@DeploymentTimestamp@"/>
+                <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
+				<!--<xsl:attribute name="href"><xsl:value-of select="'CSS/xml_thes.css?v=@DeploymentTimestamp@'"/></xsl:attribute>
 			</link>-->
                 <title>PopUpInfo_Hierarchy.xsl</title>
             </head>

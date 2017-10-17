@@ -86,8 +86,8 @@
                      <title>
                        <xsl:value-of select="$pageTitle"/>
                    </title>
-                    <link rel="stylesheet" type="text/css" href="../../third-party-javascript/mktree/mktree.css"/>                    
-                    <script language="JavaScript" type="text/javascript" src="../../third-party-javascript/mktree/mktree.js"></script>
+                    <link rel="stylesheet" type="text/css" href="../../third-party-javascript/mktree/mktree.css?v=@DeploymentTimestamp@"/>                    
+                    <script language="JavaScript" type="text/javascript" src="../../third-party-javascript/mktree/mktree.js?v=@DeploymentTimestamp@"></script>
                     
                    <script type="text/javascript"><xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/></script>
                    

@@ -144,29 +144,65 @@
                   </execution>
                   
                   <execution>
+                    <!--   attention war file does not contain the timestamp -->
                     <id>update-deployment-timestamp</id>
                     <phase>package</phase>
                     <goals>
                       <goal>run</goal>
                     </goals>
                     <configuration>
-                        
-                        
-                        
                       <tasks>
-                          
-                            <replace dir="${project.build.directory}/${project.build.finalName}/xml-xsl" >
-                            <include name="page_head_html.xsl"/>
-                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}"/>
+                            <replace dir="${project.build.directory}/${project.build.finalName}/xml-xsl" encoding="UTF-8" >
+                                
+                                <!--<include name="page_head_html.xsl"/>
+                                <include name="Login.xsl"/>
+                                <include name="page_footer.xsl"/>-->
+                                <include name="**/*.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
                             </replace> 
-                            
-                            
-                                     
-
-                          
+                            <!--<replace dir="${project.build.directory}/${project.build.finalName}/xml-xsl/HiddenActions" >
+                                <include name="LoginAdmin.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}"/>
+                            </replace> -->
                       </tasks>                      
                     </configuration>
                   </execution>
+                  
+                  <!-- configuration in order to change in source file the timestamp
+                       build target and war and then reset source file
+                       
+                   Attention !!! In netbeans right click prject run copy static sources on save should not be checked -->
+                  <!--<execution>
+                    <id>update-source-timestamp</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                    <configuration>
+                      <tasks>
+                            <replace dir="src/main/webapp/xml-xsl" >
+                            <include name="page_head_html.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}"/>
+                            </replace> 
+                      </tasks>                      
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>reset-source-timestamp</id>
+                    
+                    <phase>package</phase>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                    <configuration>
+                      <tasks>
+                            <replace dir="src/main/webapp/xml-xsl" >
+                            <include name="page_head_html.xsl"/>
+                                <replacefilter token="${timestamp}" value="@DeploymentTimestamp@"/>
+                            </replace> 
+                      </tasks>                      
+                    </configuration>
+                  </execution>-->
                 </executions>
               </plugin>
               

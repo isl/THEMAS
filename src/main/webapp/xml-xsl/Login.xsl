@@ -63,13 +63,11 @@
                 <title>
                     <xsl:value-of select="$locale/header/title/option[@lang=$lang]"/>
                 </title>
-                <link rel="stylesheet" type="text/css" href="CSS/page.css" />
-                <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js"/>           
+                <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@" />
+                <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>           
                 <xsl:if test="$locale/header/favicon/text()!=''">
                     <link rel='shortcut icon' type='image/x-icon'>
-                        <xsl:attribute name="href">
-                            <xsl:value-of select="$locale/header/favicon/text()"/>
-                        </xsl:attribute>
+                        <xsl:attribute name="href"><xsl:value-of select="$locale/header/favicon/text()"/><xsl:text>?v=@DeploymentTimestamp@</xsl:text></xsl:attribute>
                     </link>
                 </xsl:if>     
             </head>

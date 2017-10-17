@@ -124,7 +124,7 @@
                     <i>
                     </i>
                     
-                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js"></script>
+                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=@DeploymentTimestamp@"></script>
                     <!--</b>-->
                 </td>
             </tr>
