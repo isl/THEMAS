@@ -19,6 +19,8 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd_HH_mm_ss</maven.build.timestamp.format>
     </properties>
     
     <dependencies>
@@ -52,6 +54,16 @@
     </dependencies>
 
     <build>
+        
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>THEMAS_build_version.txt</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             
             <plugin>
@@ -107,6 +119,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    
                   <execution>
                     <id>create-empty-directory</id>
                     <phase>process-classes</phase>
@@ -125,11 +138,38 @@
                           <mkdir dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays/Save_Results_temporary_files" />
                           <mkdir dir="${project.build.directory}/${project.build.finalName}/Uploads" />
                           <mkdir dir="${project.build.directory}/${project.build.finalName}/WEB-INF/SystemLogs" />    
+                          
+                      </tasks>                      
+                    </configuration>
+                  </execution>
+                  
+                  <execution>
+                    <id>update-deployment-timestamp</id>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        
+                        
+                        
+                      <tasks>
+                          
+                            <replace dir="${project.build.directory}/${project.build.finalName}/xml-xsl" >
+                            <include name="page_head_html.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}"/>
+                            </replace> 
+                            
+                            
+                                     
+
+                          
                       </tasks>                      
                     </configuration>
                   </execution>
                 </executions>
               </plugin>
+              
         </plugins>
     </build>
 </project>

@@ -46,33 +46,38 @@
                 <xsl:value-of select="$locale/header/title/option[@lang=$lang]"/>
             </title>
             
+            <!-- 
+              Adding deployment timestamp via maven pom to each include css or javascript file
+              so that web clients get the most updated version of each css or js file as long as 
+              this file has been updated also (via e.g. new deployment).     
+            -->
+                 
+            
             <!-- CSS files -->
-            <link rel="stylesheet" type="text/css" href="third-party-javascript/chosen/chosen.css"/>
+            <link rel="stylesheet" type="text/css" href="third-party-javascript/chosen/chosen.css?v=@DeploymentTimestamp@"/>
             
-            <link rel="stylesheet" type="text/css" href="CSS/page.css"/>
-            <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css"/>
-            
-            
+            <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
+            <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css?v=@DeploymentTimestamp@"/>
 			
             <!-- JavaScript files -->
-            <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/tabs.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/type_ahead.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/rename.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/criteria.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/graphicalView.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/DBadmin.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/Statistics.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/moveToHierarchy.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/THEMASUsers.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/xml_thes.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/htmlSelect_scripts.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/Admin_Thesaurus.js"/>
-            <script language="JavaScript" type="text/javascript" src="Javascript/translations.js"/>                       
-            <script language="JavaScript" type="text/javascript" src="third-party-javascript/ckeditor/ckeditor.js"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/tabs.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/type_ahead.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/rename.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/criteria.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/graphicalView.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/DBadmin.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/Statistics.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/moveToHierarchy.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/THEMASUsers.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/xml_thes.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/htmlSelect_scripts.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/Admin_Thesaurus.js?v=@DeploymentTimestamp@"/>
+            <script language="JavaScript" type="text/javascript" src="Javascript/translations.js?v=@DeploymentTimestamp@"/>                       
+            <script language="JavaScript" type="text/javascript" src="third-party-javascript/ckeditor/ckeditor.js?v=@DeploymentTimestamp@"/>
             <!-- chosen requirement jquery/1.12.4 -->
             <script  language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-            <script language="JavaScript" type="text/javascript" src="third-party-javascript/chosen/chosen.jquery.min.js"></script>
+            <script language="JavaScript" type="text/javascript" src="third-party-javascript/chosen/chosen.jquery.min.js?v=@DeploymentTimestamp@"></script>
             
             <!-- JavaScript global variables (any javascript file has access to them by simple reference to their names) -->
             <script language="JavaScript" type="text/javascript">       
