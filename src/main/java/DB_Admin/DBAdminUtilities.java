@@ -60,6 +60,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.*;
@@ -656,6 +657,7 @@ public class DBAdminUtilities {
         long startTime = Utilities.startTimer();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " STARTED ############");
 
+        
         int ret = 0;
         HttpSession session = request.getSession();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
@@ -663,6 +665,19 @@ public class DBAdminUtilities {
         int SISApiSession = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         UsersClass tmsUsers = new UsersClass();
+        
+        //DELETE GUIDE TERMS FROM THESAURUS
+        //1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms}
+        
+        //delete facets
+        //delete hierarchies
+        //delete terms residing in unclassified terms
+        
+        //remove target thesaurus translation categories
+        //search for the 12 groups defined in 
+        //http://athena.ics.forth.gr:9090/redmine/issues/185 and delete these nodes
+        //remember to exclude e.g. Language Words
+        
         // construct targetThesaurusObj StringObject with prefix        
         StringObject targetThesaurusObj = new StringObject("Thesaurus`" + targetThesaurus);
         // ATTENTION!!!: all queries must be done AFTER the call to tmsUsers.EditUserThesaurus()
@@ -696,12 +711,13 @@ public class DBAdminUtilities {
             return;
         }
 
-        //upda
+        // <editor-fold defaultstate="collapsed" desc="Retrieving target Thesaurus Classes.">
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         tmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, targetThesaurus);
         // ATTENTION!!!: all queries must be done AFTER the call to tmsUsers.EditUserThesaurus()
         // so as the selected thesaurus for deletion is set as selectedThesaurus of current SessionUserInfo
         // and the DB thesaurus references are associated with this thesaurus
+        
         // looking for AAAHierarchy
         StringObject thesHierarchy = new StringObject();
         dbtr.getThesaurusClass_Hierarchy(SessionUserInfo.selectedThesaurus, Q, SISApiSession, thesHierarchy);
@@ -733,6 +749,7 @@ public class DBAdminUtilities {
         SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
         int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
 
+        
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
@@ -753,8 +770,10 @@ public class DBAdminUtilities {
         String testFacet = orphansHierarchyFacet.getValue();
         //SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"DeleteThesaurus(" + targetThesaurus + ") and current SessionUserInfo selectedThesaurus = " + SessionUserInfo.selectedThesaurus);
-
-        //0 DELETE GUIDE TERMS FROM THESAURUS
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="DELETE GUIDE TERMS FROM THESAURUS">
+        
         DBEditGuideTerms editGuideTerms = new DBEditGuideTerms();
         ArrayList<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
@@ -764,7 +783,9 @@ public class DBAdminUtilities {
                 return;
             }
         }
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="DELETE Hierarchies FROM THESAURUS (except Unclassified?)">
         // 1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms} ---
         // a. get all hierarchies of thesaurus AAA (ALL instances of AAAHierarchy) EXCEPT{AAAClass`Unclassfied terms}
         Q.reset_name_scope();
@@ -902,6 +923,9 @@ public class DBAdminUtilities {
          }
          Q.begin_transaction();
          */
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete Orphan terms">
         Q.reset_name_scope();
         Q.set_current_node(orphansHierarchyObj);
         int orphanTermsSet = Q.get_all_instances(0);
@@ -938,7 +962,9 @@ public class DBAdminUtilities {
 
             step2ofDeletion(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, new StringObject(orphanTermToBeDeleted), orphanTermToBeDeletedUIWithoutPrefix, errorMsg);
         }
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Delete Facets">
         // 3. --- delete all facets of thesaurus AAA
         // get all facets of thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`UNCLASSIFIED TERMS})
         Q.reset_name_scope();
@@ -984,7 +1010,23 @@ public class DBAdminUtilities {
                 errorMsg.setValue("");
             }
         }
-
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete Translation Categories">
+        dbGen.synchronizeTranslationCategories(dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, SessionUserInfo.selectedThesaurus, null, false, true),
+                            new HashMap<String, String>(), new ArrayList<String>(), new ArrayList<String>(), SessionUserInfo.selectedThesaurus,
+                            errorMsg, Utilities.getXml_For_Messages(), Q, TA, sis_session,  tms_session);
+        // </editor-fold>
+        
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete the 12 group nodes related to the thesaurus">
+        //these groups are listed in  defined in http://athena.ics.forth.gr:9090/redmine/issues/185
+        //and include the Instance Thesaurus`AAA from class Thesaurus
+        
+        // </editor-fold>
+        
+        
+        
         // 4. --- Delete Instance Thesaurus`AAA from class Thesaurus 
         // a. delete ALL links pointed to/from target thesaurus
         Q.reset_name_scope();
@@ -1015,20 +1057,13 @@ public class DBAdminUtilities {
                 }
             }
         }
-        /*
-         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
-         while (Q.retur_link_id( linksSet, cls, fromid, link_sysid, cmv, flag) != QClass.APIFail) {
-         Identifier I_from = new Identifier(fromid.getValue());
-         Identifier I_link = new Identifier(link_sysid.getValue());
-         if (WTA.IS_UNNAMED(link_sysid.getValue()) != 0) { // unnamed attribute
-         ret = Q.Delete_Unnamed_Attribute( I_link);
-         } else { // named attribute
-         ret = Q.Delete_Named_Attribute( I_link, I_from);
-         }
-         }
-         */
         Q.free_set(linksSet);
 
+        
+        //CHECK deletion of translation categories
+        //Check deletion of the 12 node categories found in #185
+        //http://athena.ics.forth.gr:9090/redmine/issues/185
+        
         // b. Delete Instance Thesaurus`AAA from class Thesaurus
         ret = Q.CHECK_Delete_Instance(new Identifier(targetThesaurusObj.getValue()), new Identifier("Thesaurus"));
         if (ret == QClass.APIFail) {
@@ -1036,6 +1071,7 @@ public class DBAdminUtilities {
             return;
         }
 
+        
         // timer end
         float elapsedTimeSec = Utilities.stopTimer(startTime);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " SUCCEDED ############ (Time elapsed: " + elapsedTimeSec + " sec)");

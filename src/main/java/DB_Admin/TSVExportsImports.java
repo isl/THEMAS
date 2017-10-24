@@ -444,10 +444,47 @@ public class TSVExportsImports {
                 maxNeo4jId=1000;
             }
             maxNeo4jId ++;
+            /*
+            Delete relationships for all nodes that might have been defined before            
+            
+            
+            //Not correct patch also deleting data from other thesauri also
             
             try(Transaction tx =  graphDb.beginTx()){
-                    
                 
+                Iterator<Long> deleteNodes = nodeInfo.keySet().iterator();
+                while(deleteNodes.hasNext()){
+                    long nodeId = deleteNodes.next();
+                    if(nodeId<=maxGenericNeo4jId){
+                        continue;
+                    }
+                    HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
+                    
+                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
+                    if(logName.length()>0){
+                        
+                        graphDb.findNodes(Label.label(Configs.CommonLabelName), Configs.Neo4j_Key_For_Logicalname, logName).stream().forEach((n) -> {
+                            if(n!=null){
+                                System.out.println("deleting node: "+ logName);
+                                n.getRelationships().forEach((rel)->{
+                                rel.delete();
+                            });
+
+                            n.delete();
+                        }
+                        });
+                    
+                        
+                    }
+                    
+                    
+                }
+                
+                tx.success();
+            }
+            */
+                    
+            try(Transaction tx =  graphDb.beginTx()){
                 //create nodes
                 Iterator<Long> nodeIdentifiers = nodeInfo.keySet().iterator();
                 while(nodeIdentifiers.hasNext()){

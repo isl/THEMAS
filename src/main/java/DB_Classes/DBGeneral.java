@@ -1949,7 +1949,6 @@ public class DBGeneral {
             StringObject linkObj = new StringObject();
             getKeywordPair(SessionUserInfo.selectedThesaurus, output, fromClassObj, linkObj, Q, sis_session);
             return getLinkValue(SessionUserInfo.selectedThesaurus, term, fromClassObj.getValue(), linkObj.getValue(), Q, sis_session);
-
         }
     }
 
@@ -7597,8 +7596,11 @@ public class DBGeneral {
                     //     to    :  (ItalianWord) isA (to_IT) from (Term), (AAA_uf_translation) from (AAAHierarchyTerm)
                     // end
                     //
+                    
                     Q.reset_name_scope();
-                    Q.set_current_node(new StringObject(ConstantParameters.hierarchytermClass));
+                    //ERROR CORRECTED it was HierarchyTerm while it should be Term 
+                    Q.set_current_node(new StringObject(ConstantParameters.termClass));
+                    
                     long currentToLanguageCategoryIdL = Q.set_current_node(new StringObject(ConstantParameters.toTranslationCategoryPrefix.concat(languageId)));
                     Identifier currentToLanguageCategoryIdentifier = new Identifier(currentToLanguageCategoryIdL);
 
