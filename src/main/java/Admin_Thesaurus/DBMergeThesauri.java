@@ -5495,10 +5495,6 @@ public class DBMergeThesauri {
 
         return results;
     }
-	
-    
-
-
     
     public HashMap<SortItem, ArrayList<SortItem>> ReadThesaurusHierarchiesInSortItems(UserInfoClass refSessionUserInfo,
             QClass Q, IntegerObject sis_session, String thesaurusName1, String thesaurusName2) {

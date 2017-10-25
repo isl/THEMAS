@@ -31,9 +31,9 @@
  This file is part of the THEMAS system.
 
 
-THEMAS version 1.2 (2017 10 13)
+THEMAS version 1.2 (2017 10 25)
 -----------------------------------------------------
-- Update to Neo4j 3.2.5 Java 8 and Neo4j-sisapi 1.2
+- Update to Neo4j 3.2.5 Java 8 and Neo4j-sisapi 1.2.1
 - Added Thesaurus Reference Id and Transliteration of Logicalname for Facets/TopTerms/Terms
   (these extra properties are not visible in the UI but are included in the export
    format. Contains Search operator when searching for Facet/Hierarchy/Term names 
@@ -45,7 +45,9 @@ THEMAS version 1.2 (2017 10 13)
 - Type ahead mechanism added in order to assist the selection in large lists (e.g. bts at term creation etc.)
 - Thesauri Management Tab was changed to be only available to administrators until the copy/merge/delete functionalities are corrected
 - Bug fixes
-
+- Resolved Bug in Translations Synchronization
+- Resolved Thesaurus Deletion bug
+- Increased Thesaurus name max length and allowed _ and - chars
 
 THEMAS version 1.1 (2015 10 27)
 -----------------------------------------------------

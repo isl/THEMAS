@@ -1076,6 +1076,7 @@
         </USER_SET_WITH_DUBLICATE_VALUES>
     </resultOfShareThesaurus>            
     <DeleteThesaurus>
+        
         <DeleteThesaurusSucceded>
             <option lang="en">Deletion of Thesaurus '%s' succeeded.</option>
             <option lang="el">Η διαγραφή του θησαυρού '%s' ολοκληρώθηκε με επιτυχία.</option>
@@ -1307,6 +1308,10 @@
                 <option lang="en">Thesaurus '%s' does not exist in database.</option>
                 <option lang="el">Ο θησαυρός '%s' δεν βρέθηκε στην βάση.</option>
             </ThesaurusNotFound>
+            <GeneralMessageForDeleteThesaurusFailure>
+                <option lang="en">Deletion of Thesaurus '%s' failed. Please restore database to the automatically created backup.</option>
+                <option lang="el">Παρουσιάστηκε σφάλμα κατά την διαγραφή του θησαυρού '%s'. Παρακαλώ επαναφέρετε την βάση χρησιμοποιώντας το αντίγραφο ασφαλείας που δημιουργήθηκε αυτόματα.</option>
+            </GeneralMessageForDeleteThesaurusFailure>
         </DeleteThesaurus>
         <BackupRestore>
             <ZipFileNotFound>

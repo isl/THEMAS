@@ -60,8 +60,8 @@ translations[8][1]='Η αλλαγή των ρυθμίσεων του συστή�
 //--------------------------------------------------------------
 //file scripts.js function callAdminFixServlet
 //--------------------------------------------------------------
-translations[9][0]='The name of the selected thesaurus must conatin 1 to 10 characters.';
-translations[9][1]='Το όνομα του επιλεγμένου θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.';
+translations[9][0]='The name of the selected thesaurus must conatin 1 to 20 characters.';
+translations[9][1]='Το όνομα του επιλεγμένου θησαυρού πρέπει να περιέχει από 1 έως και 20 χαρακτήρες.';
 translations[10][0]='The name of the selected thesaurus must contain only capital latin characters and numbers.';
 translations[10][1]='Το όνομα του επιλεγμένου θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.';
 translations[11][0]='Thesaurus ';
@@ -160,7 +160,7 @@ translations[43][1]='Είστε σίγουρος για την επιδιόρθ�
 translations[44][0]='You have not chosen a .xml input file.';
 translations[44][1]='Δεν έχετε επιλέξει .xml αρχείο εισόδου.';
 translations[45][0]='Thesaurus name must contain 1 to 10 characters.';
-translations[45][1]='Το όνομα του θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.';
+translations[45][1]='Το όνομα του θησαυρού πρέπει να περιέχει από 1 έως και 20 χαρακτήρες.';
 translations[46][0]='Thesaurus name must only contain latin capital characters and numbers.';
 translations[46][1]='Το όνομα του θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.';
 translations[47][0]='Are you sure for the thesaurus insertion to the database?\nThis action will stop temporarily every database communication.';

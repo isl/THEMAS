@@ -39,6 +39,7 @@ import DB_Classes.DBCreate_Modify_Facet;
 import DB_Classes.DBThesaurusReferences;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBConnect_Term;
+import DB_Classes.DBCreate_Modify_Term;
 import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
@@ -47,6 +48,7 @@ import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
+import Utils.SortItem;
 
 import neo4j_sisapi.tmsapi.TMSAPIClass;
 import java.io.BufferedOutputStream;
@@ -1012,6 +1014,60 @@ public class DBAdminUtilities {
         }
         // </editor-fold>
         
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete the 12 group nodes related to the thesaurus">
+        //these groups are listed in  defined in http://athena.ics.forth.gr:9090/redmine/issues/185
+        //and include the Instance Thesaurus`AAA from class Thesaurus
+        
+        ArrayList<Long> excludeList = new ArrayList<>();
+        
+        //remove links from unclassified terms
+        DBCreate_Modify_Term modifyTerm = new DBCreate_Modify_Term();
+        
+        Utils.SortItem unclassifiedTermsSortItem = new Utils.SortItem(Parameters.UnclassifiedTermsLogicalname);
+        String xmlPath = Utilities.getXml_For_ConsistencyChecks();
+        int consistencyPolicy = ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.created_on_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.created_by_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.modified_by_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.modified_on_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translation_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.uf_translations_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.uf_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.primary_found_in_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translations_found_in_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.tc_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.scope_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translations_scope_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.historical_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
         // <editor-fold defaultstate="collapsed" desc="Delete Translation Categories">
         dbGen.synchronizeTranslationCategories(dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, SessionUserInfo.selectedThesaurus, null, false, true),
                             new HashMap<String, String>(), new ArrayList<String>(), new ArrayList<String>(), SessionUserInfo.selectedThesaurus,
@@ -1019,14 +1075,20 @@ public class DBAdminUtilities {
         // </editor-fold>
         
         
-        // <editor-fold defaultstate="collapsed" desc="Delete the 12 group nodes related to the thesaurus">
-        //these groups are listed in  defined in http://athena.ics.forth.gr:9090/redmine/issues/185
-        //and include the Instance Thesaurus`AAA from class Thesaurus
+        StringObject deleteThesErrorMsgCode = new StringObject();
+        if(!Q.DeleteEmptyThesaurusModel(targetThesaurus, excludeList,deleteThesErrorMsgCode)){
+            
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}));    
+            if(Parameters.DEBUG && deleteThesErrorMsgCode.getValue() !=null && deleteThesErrorMsgCode.getValue().length()>0){
+                errorMsg.setValue(errorMsg.getValue()+"\n"+deleteThesErrorMsgCode.getValue());
+                return;
+            }
+        }
         
         // </editor-fold>
         
         
-        
+        /*
         // 4. --- Delete Instance Thesaurus`AAA from class Thesaurus 
         // a. delete ALL links pointed to/from target thesaurus
         Q.reset_name_scope();
@@ -1071,7 +1133,7 @@ public class DBAdminUtilities {
             return;
         }
 
-        
+        */
         // timer end
         float elapsedTimeSec = Utilities.stopTimer(startTime);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " SUCCEDED ############ (Time elapsed: " + elapsedTimeSec + " sec)");

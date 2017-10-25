@@ -1024,7 +1024,7 @@ public class DBThesaurusReferences {
         StringObject label = new StringObject();
         CMValue cmv = new CMValue();
         Q.return_link( set, cls, label, cmv);
-        Q.free_set( set);
+        Q.free_set(set);
 
         String prefix = cmv.getString();
         return prefix;

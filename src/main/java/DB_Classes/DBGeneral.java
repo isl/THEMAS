@@ -6903,7 +6903,7 @@ public class DBGeneral {
         int ret = -1;
         boolean OneTransaction = true;
 
-        // <editor-fold defaultstate="collapsed" desc="Create Common Identifier Objects">
+        // <editor-fold defaultstate="collapsed" desc="Collect Identifiers">
         if (startTransactionAndConnection) {
 
             //open connection and start Transaction
@@ -6955,18 +6955,18 @@ public class DBGeneral {
         Q.set_current_node(new StringObject(ConstantParameters.termClass));
         long termTranslationIdL = Q.set_current_node(new StringObject(ConstantParameters.translationCategory));
         Identifier termTranslationIdentifier = new Identifier(termTranslationIdL);
-
+        
         Q.reset_name_scope();
         long termClassIdL = Q.set_current_node(new StringObject(ConstantParameters.termClass));
         Identifier TermIdentifier = new Identifier(termClassIdL);
-
+        
         //get an AAATerm identifier
         StringObject thesaurusTermStrObj = new StringObject();
         dbtr.getThesaurusClass_Term(Q, sis_session.getValue(), new StringObject(targetThesaurus), thesaurusTermStrObj);
         Q.reset_name_scope();
         long thesaurusTermIdL = Q.set_current_node(thesaurusTermStrObj);
         Identifier thesurusTermIdentifier = new Identifier(thesaurusTermIdL);
-
+        
         //get an Identifier for Individual->garbage_collected
         Q.reset_name_scope();
         Q.set_current_node(new StringObject(ConstantParameters.individualClass));
