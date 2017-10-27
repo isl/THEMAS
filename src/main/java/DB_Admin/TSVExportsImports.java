@@ -43,11 +43,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 import neo4j_sisapi.Configs;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
@@ -65,10 +65,11 @@ import org.neo4j.graphdb.Transaction;
  * @author Elias Tzortzakakis <tzortzak@ics.forth.gr>
  */
 public class TSVExportsImports {
-    private String GenericLabel = "Generic";
+    //private String GenericLabel = "Generic";
     //private String CommonLabel = "Common";
     
     private String LabelKey = "LABEL";
+    
     //private String Neo4j_Key_For_Type = "Type";
     //private String Neo4j_Key_For_Value = "Value";
     //public static String Neo4j_Key_For_Neo4j_Id = "Neo4j_Id";
@@ -197,7 +198,7 @@ public class TSVExportsImports {
             }
         }
         if(n.hasRelationship(Rels.ISA, Direction.OUTGOING)){
-            ArrayList<String> outputLines = new ArrayList<String>();
+            ArrayList<String> outputLines = new ArrayList<>();
             for(Relationship rel: n.getRelationships(Rels.ISA, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
                 String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
@@ -289,11 +290,11 @@ public class TSVExportsImports {
             
             String query = "";
             if(onlyGeneric){
-                query="Match (n:"+GenericLabel+") return n";
+                query="Match (n:"+Configs.GenericLabelName+") return n";
             }
             else{
                 if(skipGeneric){
-                    query="Match (n) WHERE NOT(\""+ GenericLabel+"\" in labels(n)) return n";
+                    query="Match (n) WHERE NOT(\""+ Configs.GenericLabelName+"\" in labels(n)) return n";
                 }
                 else{
                     query="Match (n) return n";
@@ -387,7 +388,7 @@ public class TSVExportsImports {
             
             
             try(Transaction tx = graphDb.beginTx()){
-                String query = "MATCH(n:"+GenericLabel+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
+                String query = "MATCH(n:"+Configs.GenericLabelName+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
                 Result res = graphDb.execute(query);
 
                 try{
@@ -497,7 +498,7 @@ public class TSVExportsImports {
 
                     
 
-                    String logicalName = "";
+                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
                     String type = "";
                     String value = "";
                     long neo4jId = -1;
@@ -506,22 +507,37 @@ public class TSVExportsImports {
                     if(strVals.containsKey(LabelKey)){
                         labels.addAll(strVals.get(LabelKey));                    
                     }
-
                     
-                   
-                    Node newNode = graphDb.createNode();
-                    for(String lbl: labels){
-                        Label label = Label.label(lbl);
-                        newNode.addLabel(label);
+                    Node newNode = null;
+                    boolean alreadyExisted = false;
+                    if(labels.contains(Configs.UniqueInDBLabelName)){
+                        Optional<Node> existing = graphDb.findNodes(Label.label(Configs.CommonLabelName), Configs.Neo4j_Key_For_Logicalname,logName).stream().findFirst();
+                        if(existing.isPresent()){
+                            alreadyExisted = true;
+                            newNode = existing.get();
+                        }                        
                     }
                     
-                    neo4jId = maxNeo4jId++;
-                    newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
-                    tsvToNeo4jIds.put(nodeId, neo4jId);
-
+                    if(!alreadyExisted){
+                        newNode = graphDb.createNode();
+                    }
+                    //graphDb.createNode();
+                    for(String lbl: labels){
+                        Label label = Label.label(lbl);
+                        if(!alreadyExisted || !newNode.hasLabel(label)){
+                            newNode.addLabel(label);
+                        }
+                    }
                     
-                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
-                    newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
+                    if(alreadyExisted){
+                        tsvToNeo4jIds.put(nodeId, (Long)newNode.getProperty(Configs.Neo4j_Key_For_Neo4j_Id));
+                    }
+                    else{
+                        neo4jId = maxNeo4jId++;
+                        newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
+                        tsvToNeo4jIds.put(nodeId, neo4jId);
+                        newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
+                    }
                     
                     //keep the same transliteration if recompute transliteration for all that do not have any value
                     if(recomputeTransliteration){
@@ -583,6 +599,7 @@ public class TSVExportsImports {
                     ArrayList<Long> isA = new ArrayList<Long>();
                     ArrayList<Long> relation = new ArrayList<Long>();
                     ArrayList<Long> instanceOf = new ArrayList<Long>();
+                    
                     if(strVals.containsKey(Rels.ISA.name())){
                         ArrayList<String> stringVals = strVals.get(Rels.ISA.name());
                         for(String str : stringVals){
@@ -613,20 +630,39 @@ public class TSVExportsImports {
                     
                     if(isA.size()>0){
                         ArrayList<Node> toNodes = getNodesByNeo4jIds(isA, graphDb);
+                        
+                        ArrayList<Long> existingOnes = new ArrayList<>();
+                        startNode.getRelationships(Rels.ISA, Direction.OUTGOING).forEach((r)->{
+                            existingOnes.add(r.getEndNodeId());
+                        });
                         for(Node toNode : toNodes){
-                            startNode.createRelationshipTo(toNode, Rels.ISA);
+                            if(!existingOnes.contains(toNode.getId())){
+                                startNode.createRelationshipTo(toNode, Rels.ISA);
+                            }
                         }
                     }
                     if(instanceOf.size()>0){
                         ArrayList<Node> toNodes = getNodesByNeo4jIds(instanceOf, graphDb);
+                        ArrayList<Long> existingOnes = new ArrayList<>();
+                        startNode.getRelationships(Rels.INSTANCEOF, Direction.OUTGOING).forEach((r)->{
+                            existingOnes.add(r.getEndNodeId());
+                        });
                         for(Node toNode : toNodes){
-                            startNode.createRelationshipTo(toNode, Rels.INSTANCEOF);
+                            if(!existingOnes.contains(toNode.getId())){
+                                startNode.createRelationshipTo(toNode, Rels.INSTANCEOF);
+                            }
                         }
                     }
                     if(relation.size()>0){
                         ArrayList<Node> toNodes = getNodesByNeo4jIds(relation, graphDb);
+                        ArrayList<Long> existingOnes = new ArrayList<>();
+                        startNode.getRelationships(Rels.RELATION, Direction.OUTGOING).forEach((r)->{
+                            existingOnes.add(r.getEndNodeId());
+                        });
                         for(Node toNode : toNodes){
-                            startNode.createRelationshipTo(toNode, Rels.RELATION);
+                            if(!existingOnes.contains(toNode.getId())){
+                                startNode.createRelationshipTo(toNode, Rels.RELATION);
+                            }
                         }
                     }
                 }

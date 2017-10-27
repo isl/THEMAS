@@ -243,6 +243,7 @@
 1032	INSTANCEOF	245		<!-- Label8000a5	INSTANCEOF	operation_id -->
 1032	RELATION	96		<!-- Label8000a5	RELATION	CHANGE_ATTRIBUTE -->
 1033	Logicalname	SIS_ZZZZZ_SISTerm
+1033	LABEL	UniqueInDB
 1033	LABEL	Common
 1033	LABEL	S_Class
 1033	LABEL	Type_Individual
@@ -572,6 +573,7 @@
 1074	ISA	1038		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	ISA	SIS_XXXXX_SISHierarchyClass -->
 1074	ISA	1073		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	ISA	SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ -->
 1075	Logicalname	SIS_ZZZZZ_SISLanguage
+1075	LABEL	UniqueInDB
 1075	LABEL	Common
 1075	LABEL	Token
 1075	LABEL	Type_Individual

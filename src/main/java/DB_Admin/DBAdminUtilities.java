@@ -1019,7 +1019,7 @@ public class DBAdminUtilities {
         //these groups are listed in  defined in http://athena.ics.forth.gr:9090/redmine/issues/185
         //and include the Instance Thesaurus`AAA from class Thesaurus
         
-        ArrayList<Long> excludeList = new ArrayList<>();
+        
         
         //remove links from unclassified terms
         DBCreate_Modify_Term modifyTerm = new DBCreate_Modify_Term();
@@ -1074,9 +1074,22 @@ public class DBAdminUtilities {
                             errorMsg, Utilities.getXml_For_Messages(), Q, TA, sis_session,  tms_session);
         // </editor-fold>
         
+        /*
+        ArrayList<Long> excludeList = new ArrayList<>();
+        Q.reset_name_scope();
+        long primaryTermId = Q.set_current_node(new StringObject(Parameters.PrimaryLang+"Term"));
+        if(primaryTermId>0){
+            excludeList.add(primaryTermId);
+        }
+        Q.reset_name_scope();
+        long primaryLangId = Q.set_current_node(new StringObject(Parameters.PrimaryLang+"Language"));
+        if(primaryLangId>0){
+            excludeList.add(primaryLangId);
+        }
+        */
         
         StringObject deleteThesErrorMsgCode = new StringObject();
-        if(!Q.DeleteEmptyThesaurusModel(targetThesaurus, excludeList,deleteThesErrorMsgCode)){
+        if(!Q.DeleteEmptyThesaurusModel(targetThesaurus,deleteThesErrorMsgCode)){
             
             errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}));    
             if(Parameters.DEBUG && deleteThesErrorMsgCode.getValue() !=null && deleteThesErrorMsgCode.getValue().length()>0){
