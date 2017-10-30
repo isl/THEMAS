@@ -51,6 +51,7 @@ import java.util.Optional;
 import neo4j_sisapi.Configs;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
+import neo4j_sisapi.TMSAPIClass;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -670,18 +671,21 @@ public class TSVExportsImports {
             }
             
             QClass Q = new neo4j_sisapi.QClass();
+            TMSAPIClass TA = new neo4j_sisapi.TMSAPIClass();
+            
             IntegerObject sis_session = new IntegerObject();
+            IntegerObject tms_session = new IntegerObject();
             
               
             ArrayList<String> thesauriVector = new ArrayList<String>();
              
             //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
             
-            Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService());
-            Q.TEST_open_connection();
-            Q.TEST_begin_query();
+            //Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService());
+            //Q.TEST_open_connection();
+            //Q.TEST_begin_query();
             DBGeneral dbGen = new DBGeneral();
-            
+            dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, "",true);
             thesauriVector = dbGen.GetExistingThesaurus(false, thesauriVector, Q, sis_session);
             
             //update MaxNeo4j_Id property in Telos_Object node
@@ -691,7 +695,8 @@ public class TSVExportsImports {
             }
           
             for(int i=0; i< thesauriVector.size(); i++){
-                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
+                TA.SetThesaurusName(thesauriVector.get(i));
+                if(TA.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
                     Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
                     return false;
                 }
@@ -700,7 +705,7 @@ public class TSVExportsImports {
             //end query and close connection
             Q.free_all_sets();
             Q.TEST_end_query();
-            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
         
         }
         catch(Exception ex){
@@ -879,11 +884,19 @@ public class TSVExportsImports {
             }
 
             QClass Q = new neo4j_sisapi.QClass();
+            TMSAPIClass TA = new neo4j_sisapi.TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
+            IntegerObject tms_session = new IntegerObject();
+            DBGeneral dbGen = new DBGeneral();
+            dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, "",true);
             
-            if(!Q.createDatabaseIndexesAndConstraints(graphDb)){
+            if(!TA.createThesaurusDatabaseIndexesAndConstraints(graphDb)){
                 return false;
             }
+            
+            Q.free_all_sets();
+            Q.TEST_end_query();
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
             
             Utils.StaticClass.closeDb();
             graphDb = Utils.StaticClass.getDBService();
@@ -955,12 +968,12 @@ public class TSVExportsImports {
              
             //retrieve all thesauri and update the max facet/hierarchy/termvalues. also update the source value
             
-            
+            /*
             Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService());
             Q.TEST_open_connection();
             Q.TEST_begin_query();
-            DBGeneral dbGen = new DBGeneral();
-            
+            */
+            dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, "",true);
             thesauriVector = dbGen.GetExistingThesaurus(false, thesauriVector, Q, sis_session);
 
             //update MaxNeo4j_Id property in Telos_Object node
@@ -970,16 +983,18 @@ public class TSVExportsImports {
             }
             
              for(int i=0; i< thesauriVector.size(); i++){
-                if(Q.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
-                    Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
-                    return false;
-                }
+                 TA.SetThesaurusName(thesauriVector.get(i));
+                 if(TA.resetCounter_For_ThesarusReferenceId(thesauriVector.get(i),-1)==QClass.APIFail){
+                     Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + thesauriVector.get(i));
+                     return false;
+                 }
             }
             
             //end query and close connection
+            
             Q.free_all_sets();
             Q.TEST_end_query();
-            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
         
            
             /*

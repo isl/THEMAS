@@ -51,7 +51,7 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.*;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -427,7 +427,7 @@ public class DBCreate_Modify_Hierarchy {
 
             
             // Check if reference uri exists
-            if(targetHierarchySortItem.getThesaurusReferenceId()>0 && Q.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetHierarchySortItem.getThesaurusReferenceId())){
+            if(targetHierarchySortItem.getThesaurusReferenceId()>0 && TA.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetHierarchySortItem.getThesaurusReferenceId())){
 
                 String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, targetHierarchySortItem.getThesaurusReferenceId()));
                 if(termUsingThisReferenceId.equals(targetHierarchySortItem.getLogName())==false)

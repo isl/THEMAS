@@ -50,7 +50,7 @@ import Utils.SortItemComparator;
 import java.io.IOException;
 import java.util.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
  DBGeneral
@@ -65,6 +65,7 @@ public class DBGeneral {
     public DBGeneral() {
 
     }
+
     /* getPrefixes()
      * Function used in order to pull all prefixes from thesaurus DB
      * Called by SearchResults_Terms_Alphabetical Servlet.
@@ -152,6 +153,7 @@ public class DBGeneral {
         return isReleased;
 
     }
+
     /*HLIAS---------------------------------------------------------------------
      IsReleasedFacet()
      -----------------------------------------------------------------------
@@ -225,6 +227,7 @@ public class DBGeneral {
         }
         return ConstantParameters.HIERARCHY_OF_KIND_RELEASED;
     }
+
     /*---------------------------------------------------------------------
      GetKindOfFacet()
      -----------------------------------------------------------------------
@@ -251,6 +254,7 @@ public class DBGeneral {
         }
         return ConstantParameters.FACET_OF_KIND_RELEASED;
     }
+
     /*---------------------------------------------------------------------
      IsReleasedDescriptor()
      -----------------------------------------------------------------------
@@ -954,7 +958,7 @@ public class DBGeneral {
      }
      */
 
-    /* Checks if the given rt belongs to the same hierarchy as the concept.
+ /* Checks if the given rt belongs to the same hierarchy as the concept.
      * Returns true it is, else it returns false.
      * If the rt doesn't exist, false is returned.
      
@@ -986,7 +990,7 @@ public class DBGeneral {
      }
      */
 
-    /*---------------------------------------------------------------------
+ /*---------------------------------------------------------------------
      isConcept()
      -----------------------------------------------------------------------
      FUNCTION: checks if the given term is a Descriptor or TopTerm
@@ -1320,8 +1324,7 @@ public class DBGeneral {
         }
         return (vec);
     }
-    
-    
+
     public ArrayList removeCmvVectorPrefix(ArrayList<CMValue> v) {
         String term_split[];
         ArrayList<CMValue> vec = new ArrayList<CMValue>();
@@ -1329,35 +1332,35 @@ public class DBGeneral {
 
         CMValue newCmv = new CMValue();
         for (int i = 0; i < v.size(); i++) {
-            
+
             CMValue itemI = v.get(i);
-            
+
             if (itemI.getString().contains("`")) {
                 result = itemI.getString().substring(itemI.getString().indexOf("`") + 1);
             } else {
                 result = itemI.getString();
             }
-            newCmv.assign_node(result,itemI.getSysid(),itemI.getTransliterationString(),itemI.getRefid());
+            newCmv.assign_node(result, itemI.getSysid(), itemI.getTransliterationString(), itemI.getRefid());
             vec.add(newCmv.getCmvCopy());
         }
         return (vec);
     }
-            
+
     public ArrayList<SortItem> removeSortItemArrayListPrefix(ArrayList<SortItem> v) {
         String term_split[];
         ArrayList<SortItem> vec = new ArrayList<SortItem>();
         String result;
 
         for (int i = 0; i < v.size(); i++) {
-            
+
             SortItem itemI = v.get(i);
-            
+
             if (itemI.getLogName().contains("`")) {
                 result = itemI.getLogName().substring(itemI.getLogName().indexOf("`") + 1);
             } else {
                 result = itemI.getLogName();
             }
-            vec.add(new SortItem(result, itemI.getSysId(),itemI.getLinkClass(),itemI.getLogNameTransliteration(),itemI.getThesaurusReferenceId()));
+            vec.add(new SortItem(result, itemI.getSysId(), itemI.getLinkClass(), itemI.getLogNameTransliteration(), itemI.getThesaurusReferenceId()));
         }
         return (vec);
     }
@@ -1403,7 +1406,8 @@ public class DBGeneral {
         } else if (cmv.getType() == CMValue.TYPE_INT) {
             IntegerObject intObj = new IntegerObject(cmv.getInt());
             CMVStringValue = intObj.toString();
-        } /*/else if (cmv.getType() == CMValue.TYPE_FLOAT) {
+        }
+        /*/else if (cmv.getType() == CMValue.TYPE_FLOAT) {
          Float floatObj = new Float(cmv.getFloat());
          CMVStringValue = floatObj.toString();
          } else if (cmv.getType() == CMValue.TYPE_TIME) {
@@ -1467,6 +1471,7 @@ public class DBGeneral {
 
         return linkValue;
     }
+
     /*---------------------------------------------------------------------
      getLinkValue()
      -----------------------------------------------------------------------
@@ -1816,6 +1821,7 @@ public class DBGeneral {
         return results;
 
     }
+
     /*---------------------------------------------------------------------
      getBT_NT()
      -----------------------------------------------------------------------
@@ -1826,12 +1832,12 @@ public class DBGeneral {
      ----------------------------------------------------------------------*/
 
     public ArrayList<String> getBT_NT(UserInfoClass SessionUserInfo, String descriptor, int direction, QClass Q, IntegerObject sis_session) {
-        
+
         ArrayList<String> resultVector = new ArrayList<String>();
-        
+
         ArrayList<SortItem> resultVectorInSortItems = getBT_NTInSortItems(SessionUserInfo, descriptor, direction, Q, sis_session);
-        if(resultVectorInSortItems!=null){
-            for(SortItem item : resultVectorInSortItems){
+        if (resultVectorInSortItems != null) {
+            for (SortItem item : resultVectorInSortItems) {
                 resultVector.add(item.getLogName());
             }
         }
@@ -1875,7 +1881,7 @@ public class DBGeneral {
                 String logname = removePrefix(row.get_v1_cls_logicalname());
                 String translit = row.get_v3_cls_transliteration();
                 long refId = row.get_v2_long_referenceId();
-                resultVector.add(new SortItem(logname,-1,translit,refId));
+                resultVector.add(new SortItem(logname, -1, translit, refId));
             }
         }
         //StringObject name = new StringObject();
@@ -1886,19 +1892,20 @@ public class DBGeneral {
         Q.free_set(set);
         return resultVector;
     }
-    
+
     public ArrayList<SortItem> returnResultsInSortItems(UserInfoClass SessionUserInfo, String term, String output, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         if (output.equals(ConstantParameters.bt_kwd)) {
             return getBT_NTInSortItems(SessionUserInfo, term, ConstantParameters.BT_DIRECTION, Q, sis_session);
         } else if (output.equals(ConstantParameters.nt_kwd)) {
             return getBT_NTInSortItems(SessionUserInfo, term, ConstantParameters.NT_DIRECTION, Q, sis_session);
-        }else if (output.equals(ConstantParameters.facet_kwd)) {
+        } else if (output.equals(ConstantParameters.facet_kwd)) {
             return get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, ConstantParameters.get_Term_Facets, Q, sis_session);
         } else if (output.equals(ConstantParameters.topterm_kwd)) {
             return get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, ConstantParameters.get_Term_Top_Terms, Q, sis_session);
         }
         return new ArrayList<SortItem>();
     }
+
     /*---------------------------------------------------------------------
      returnResults()
      -----------------------------------------------------------------------
@@ -2048,11 +2055,12 @@ public class DBGeneral {
             return abortVctr;
         }
     }
-    public ArrayList<SortItem> returnResults_FacetInSortItems(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale){
+
+    public ArrayList<SortItem> returnResults_FacetInSortItems(UserInfoClass SessionUserInfo, String facet, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         ArrayList<SortItem> returnVec = new ArrayList<SortItem>();
         if (output.equals("hierarchy")) {
             return getFacetHierarchiesInSortItems(SessionUserInfo, facet, Q, sis_session, targetLocale);
-        } 
+        }
         return returnVec;
     }
 
@@ -2150,7 +2158,7 @@ public class DBGeneral {
      return linkValue;
      }
      */
-    /*---------------------------------------------------------------------
+ /*---------------------------------------------------------------------
      getLinkValue_Facet()
      -----------------------------------------------------------------------
      INPUT: - String target: the target facet
@@ -2282,14 +2290,14 @@ public class DBGeneral {
     /* Checks if the given link is named or unnamed.
      * Returns true if it is named else it returns false.
      */
-    /*---------------------------------------------------------------------
+ /*---------------------------------------------------------------------
      isNamedLink()
      -----------------------------------------------------------------------
      INPUT: - int linkSysid: the sysid of the link to be checked
      OUTPUT: - true if it is named, false otherwise
      FUNCTION: checkes if the given link is named or unnamed.
      ----------------------------------------------------------------------*/
-    /*
+ /*
      public boolean isNamedLink(long linkSysid) {
      //TMSAPIClass TA = new TMSAPIClass();
      if(TA.IS_UNNAMED(linkSysid)==QClass.APISucc){
@@ -2307,7 +2315,7 @@ public class DBGeneral {
      }
      */
 
-    /*---------------------------------------------------------------------
+ /*---------------------------------------------------------------------
      equalStringArrays()
      -----------------------------------------------------------------------
      INPUT: two String arrays
@@ -2361,9 +2369,9 @@ public class DBGeneral {
      ----------------------------------------------------------------------*/
     public boolean DescriptorCanBeMovedToHierarchy(String selectedThesaurus, StringObject targetDescriptor, StringObject reasonOfFalse, QClass Q, IntegerObject sis_session) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-       
+
         Utilities u = new Utilities();
-       
+
         // check the case the given descriptor does not belong to DB
         if (check_exist(targetDescriptor.getValue(), Q, sis_session) == false) {
             //The given term does not exist in data base.
@@ -2480,7 +2488,7 @@ public class DBGeneral {
                 hierarchiesVector.add(classPrefix.concat(removePrefix(targetDescriptor.getValue())));
                 return hierarchiesVector;
             }
-            errorMsg = errorMsg.concat("<tr><td>" +u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{ removePrefix(targetDescriptor.getValue())}) + "</td></tr>");
+            errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{removePrefix(targetDescriptor.getValue())}) + "</td></tr>");
             //errorMsg = errorMsg.concat("<tr><td>Term: '" + removePrefix(targetDescriptor.getValue()) + "' is not classified under any hierarchy.</td></tr>");
             error.add(errorMsg);
             return error;
@@ -2579,7 +2587,7 @@ public class DBGeneral {
         }
         return false;
     }
-    
+
     /*---------------------------------------------------------------------
      check_exist()
      -----------------------------------------------------------------------
@@ -2604,7 +2612,7 @@ public class DBGeneral {
      * Else it returns the string er_buf.
      * Besides returning a string, the functions also aborts a transaction.
      */
-    /*---------------------------------------------------------------------
+ /*---------------------------------------------------------------------
      check_success()
      -----------------------------------------------------------------------
      INPUT: - int ret: TMSAPIClass.TMS_APISucc or TMSAPIClass.TMS_APIFail 
@@ -2648,10 +2656,9 @@ public class DBGeneral {
         //int ans_set = Q.get_matched(tmp_set, ptrn_set);
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         int ans_set = -1;// Q.get_matched_ToneAndCaseInsensitive(tmp_set, prefix.concat(value), Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
-            ans_set = Q.get_matched_CaseInsensitive(tmp_set, prefix.concat(value), true);            
-        }
-        else{
+        if (Parameters.SEARCH_MODE_CASE_INSENSITIVE) {
+            ans_set = Q.get_matched_CaseInsensitive(tmp_set, prefix.concat(value), true);
+        } else {
             ans_set = Q.get_matched_ToneAndCaseInsensitive(tmp_set, prefix.concat(value), false);
         }
 
@@ -2954,7 +2961,7 @@ public class DBGeneral {
      return v;
      }
      */
-    /*
+ /*
      public ArrayList<String> getMatchedByNT(String selectedThesaurus, String value,QClass Q, IntegerObject sis_session) {
      ArrayList<String> v = new ArrayList<String>();
      DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -3001,7 +3008,7 @@ public class DBGeneral {
      return v;
      }
      */
-    /*
+ /*
      //TODO: 8elei kapoia beltiwsh...
      public ArrayList<String> getMatchedByRT(UserInfoClass SessionUserInfo, String value,QClass Q, IntegerObject sis_session) {
      ArrayList<String> v = new ArrayList<String>();
@@ -3056,7 +3063,7 @@ public class DBGeneral {
      return k;
      }
      */
-    /*
+ /*
      public ArrayList<String> getMatched(String selectedThesaurus,String value, String l,QClass Q, IntegerObject sis_session) {
 
      ArrayList<String> v = new ArrayList<String>();
@@ -3216,7 +3223,7 @@ public class DBGeneral {
                     prefixes = new String[1];
                     prefixes[0] = prefix;
                     set_partial_descriptor_results = filterLinksByName(prefixes, set_d,
-                            operators[i].toString(), searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
+                            operators[i].toString(), searchVal, Q, sis_session, SessionUserInfo.selectedThesaurus);
                     Q.reset_set(set_partial_descriptor_results);
                 } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.translation_kwd)) {
 
@@ -3479,8 +3486,8 @@ public class DBGeneral {
         Q.reset_set(set_results);
 
         int cardr = Q.set_get_card(set_results);
-         //Get All terms for display
-            /* No need for this
+        //Get All terms for display
+        /* No need for this
          int set_terms = this.get_Instances_Set(DescriptorClasses);
          Q.reset_set( set_terms);
          
@@ -3508,7 +3515,7 @@ public class DBGeneral {
         Q.reset_set(set_f_nodes);
 
         //Filter Facet Names contained in set_f according to searchVal
-        int set_f_criteria_names = filterLinksByName(prefixes, set_f_nodes, operator, searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
+        int set_f_criteria_names = filterLinksByName(prefixes, set_f_nodes, operator, searchVal, Q, sis_session, SessionUserInfo.selectedThesaurus);
         Q.reset_set(set_f_criteria_names);
 
         int set_results = Q.get_all_instances(set_f_criteria_names);
@@ -3745,7 +3752,7 @@ public class DBGeneral {
             Q.reset_set(set_from_names);
 
             //Filter BT Names contained in set_bt_names according to searchVal
-            int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session,SessionUserInfo.selectedThesaurus);
+            int set_from_criteria_names = filterLinksByName(prefixes, set_from_names, operator, searchVal, Q, sis_session, SessionUserInfo.selectedThesaurus);
             Q.reset_set(set_from_criteria_names);
 
             //get all BT Labels from BT Names (From NT --> LABEL --> TO BT)
@@ -3935,7 +3942,7 @@ public class DBGeneral {
         all_statuses.put(Parameters.Status_Approved, statusApprovedObj);
 
         ArrayList<StringObject> filtered_Status_Vec = new ArrayList<>();
-        
+
         Iterator<String> keysEnum = all_statuses.keySet().iterator();
         String targetKey;
         while (keysEnum.hasNext()) {
@@ -4005,182 +4012,177 @@ public class DBGeneral {
         return set_results;
     }
 
-    public int filterLinksByName(String[] prefixes, int set_target, String operator, String searchVal, QClass Q, IntegerObject sis_session, String selectedThesaurus) {
-        
+    public int filterLinksByName(String[] prefixes, int set_target, String operator, String searchVal,
+            QClass Q, IntegerObject sis_session, String selectedThesaurus) {
+
         //int set_results = Q.set_get_new();
         int set_results = -1;
         Q.reset_name_scope();
+        TMSAPIClass TA = new TMSAPIClass();
+        TA.ALMOST_DONE_create_TMS_API_Session(Q, selectedThesaurus);
 
-        if (operator.equals(ConstantParameters.searchOperatorEquals)) {
+        try {
+            if (operator.equals(ConstantParameters.searchOperatorEquals)) {
 
-            if (searchVal != null && searchVal.trim().length() > 0) {
-                for (int i = 0; i < prefixes.length; i++) {
-                    String prefix = prefixes[i];
-                    if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
-                        set_results = Q.set_get_new();
-                        Q.set_put(set_results);
-                        Q.reset_set(set_results);
+                if (searchVal != null && searchVal.trim().length() > 0) {
+                    for (int i = 0; i < prefixes.length; i++) {
+                        String prefix = prefixes[i];
+                        if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                            set_results = Q.set_get_new();
+                            Q.set_put(set_results);
+                            Q.reset_set(set_results);
 
-                    }
-                }
-            }
-
-        } 
-        //else if (operator.equals("transliteration=")) {
-        //    Q.reset_set(set_target);
-        //    set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
-        //    Q.reset_set(set_results);
-        //}
-        else if (operator.equals("refid=")){
-            if (searchVal != null && searchVal.trim().length() > 0) {
-                
-                long refId =-1;
-                try{
-                    refId = Long.parseLong(searchVal);
-                }
-                catch(NumberFormatException ex){
-                    
-                }
-                
-                if(refId>0){
-                    if (Q.set_current_node_by_referenceId(refId, selectedThesaurus) != QClass.APIFail) {
-                     set_results = Q.set_get_new();
-                     Q.set_put(set_results);
-                     Q.reset_set(set_results);
-                    }
-                }
-                    
-                for (int i = 0; i < prefixes.length; i++) {
-                    String prefix = prefixes[i];
-                    if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
-                        set_results = Q.set_get_new();
-                        Q.set_put(set_results);
-                        Q.reset_set(set_results);
-
-                    }
-                }
-            }
-        }
-        else if (operator.equals(ConstantParameters.searchOperatorTransliterationEquals)){
-            Q.reset_set(set_target);
-            set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
-            Q.reset_set(set_results);
-        }
-        else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationEquals)) {
-
-            Q.reset_set(set_target);
-
-            int set_exclude = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
-            
-            Q.reset_set(set_target);
-            set_results = Q.set_get_new();
-            Q.set_copy(set_results, set_target);
-
-            Q.reset_set(set_results);
-            Q.reset_set(set_exclude);
-            Q.set_difference(set_results, set_exclude);
-            Q.reset_set(set_results);
-
-            Q.free_set(set_exclude);            
-        }
-        else if (operator.equals(ConstantParameters.searchOperatorTransliterationContains)){
-            Q.reset_set(set_target);
-            set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),false);
-            Q.reset_set(set_results);
-        }
-        else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
-            
-            Q.reset_set(set_target);
-
-            int set_exclude = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),false);
-            
-            Q.reset_set(set_target);
-            set_results = Q.set_get_new();
-            Q.set_copy(set_results, set_target);
-
-            Q.reset_set(set_results);
-            Q.reset_set(set_exclude);
-            Q.set_difference(set_results, set_exclude);
-            Q.reset_set(set_results);
-
-            Q.free_set(set_exclude);
-        }
-        else if (operator.equals(ConstantParameters.searchOperatorContains)) {
-            Q.reset_set(set_target);
-            
-            //set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-            //set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-            if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
-                set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, true);                
-            }
-            else{
-                set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
-            }
-            Q.reset_set(set_results);
-        } else if (operator.equals("!")) {
-
-            int set_exclude_facets = -1;
-
-            for (String prefix  : prefixes) {
-                if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
-                    set_exclude_facets = Q.set_get_new();
-                    Q.set_put(set_exclude_facets);
-                    Q.reset_set(set_exclude_facets);
-                }
-            }
-            Q.reset_set(set_target);
-            set_results = Q.set_get_new();
-            Q.set_copy(set_results, set_target);
-
-            Q.reset_set(set_results);
-            Q.reset_set(set_exclude_facets);
-            Q.set_difference(set_results, set_exclude_facets);
-            Q.reset_set(set_results);
-
-            Q.free_set(set_exclude_facets);
-        } else if (operator.equals(ConstantParameters.searchOperatorNotContains)) {
-
-            int set_exclude_facets;
-
-            Q.reset_set(set_target);
-            //set_exclude_facets = WTA.get_matched_ToneAndCaseInsensitive( set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-            //set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-
-            if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
-                set_exclude_facets = Q.get_matched_CaseInsensitive(set_target, searchVal, true);                
-            }
-            else{
-                set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
-            }
-            Q.reset_set(set_target);
-            set_results = Q.set_get_new();
-            Q.set_copy(set_results, set_target);
-
-            Q.reset_set(set_results);
-            Q.reset_set(set_exclude_facets);
-            Q.set_difference(set_results, set_exclude_facets);
-            Q.reset_set(set_results);
-
-            Q.free_set(set_exclude_facets);
-        } else if (operator.equals(">=") || operator.equals("<=")) {
-            Q.reset_set(set_target);
-            //StringObject l_name = new StringObject();
-            ArrayList<String> termsVector = new ArrayList<String>();
-            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
-            if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
-                for (Return_Nodes_Row row : retVals) {
-                    if (operator.equals(">=")) {
-                        if (row.get_v1_cls_logicalname().compareTo(searchVal) >= 0) {
-                            termsVector.add(row.get_v1_cls_logicalname());
-                        }
-                    } else {
-                        if (row.get_v1_cls_logicalname().compareTo(searchVal) <= 0) {
-                            termsVector.add(row.get_v1_cls_logicalname());
                         }
                     }
                 }
-            }
-            /*
+
+            } //else if (operator.equals("transliteration=")) {
+            //    Q.reset_set(set_target);
+            //    set_results = Q.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal,false),true);
+            //    Q.reset_set(set_results);
+            //}
+            else if (operator.equals("refid=")) {
+                if (searchVal != null && searchVal.trim().length() > 0) {
+
+                    long refId = -1;
+                    try {
+                        refId = Long.parseLong(searchVal);
+                    } catch (NumberFormatException ex) {
+
+                    }
+
+                    if (refId > 0) {
+                        if (TA.set_current_node_by_referenceId(refId, selectedThesaurus) != QClass.APIFail) {
+                            set_results = Q.set_get_new();
+                            Q.set_put(set_results);
+                            Q.reset_set(set_results);
+                        }
+                    }
+
+                    for (int i = 0; i < prefixes.length; i++) {
+                        String prefix = prefixes[i];
+                        if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                            set_results = Q.set_get_new();
+                            Q.set_put(set_results);
+                            Q.reset_set(set_results);
+
+                        }
+                    }
+                }
+            } else if (operator.equals(ConstantParameters.searchOperatorTransliterationEquals)) {
+                Q.reset_set(set_target);
+                set_results = TA.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal, false), true);
+                Q.reset_set(set_results);
+            } else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationEquals)) {
+
+                Q.reset_set(set_target);
+
+                int set_exclude = TA.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal, false), true);
+
+                Q.reset_set(set_target);
+                set_results = Q.set_get_new();
+                Q.set_copy(set_results, set_target);
+
+                Q.reset_set(set_results);
+                Q.reset_set(set_exclude);
+                Q.set_difference(set_results, set_exclude);
+                Q.reset_set(set_results);
+
+                Q.free_set(set_exclude);
+            } else if (operator.equals(ConstantParameters.searchOperatorTransliterationContains)) {
+                Q.reset_set(set_target);
+                set_results = TA.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal, false), false);
+                Q.reset_set(set_results);
+            } else if (operator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
+
+                Q.reset_set(set_target);
+
+                int set_exclude = TA.get_matched_OnTransliteration(set_target, Utilities.getTransliterationString(searchVal, false), false);
+
+                Q.reset_set(set_target);
+                set_results = Q.set_get_new();
+                Q.set_copy(set_results, set_target);
+
+                Q.reset_set(set_results);
+                Q.reset_set(set_exclude);
+                Q.set_difference(set_results, set_exclude);
+                Q.reset_set(set_results);
+
+                Q.free_set(set_exclude);
+            } else if (operator.equals(ConstantParameters.searchOperatorContains)) {
+                Q.reset_set(set_target);
+
+                //set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                //set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                if (Parameters.SEARCH_MODE_CASE_INSENSITIVE) {
+                    set_results = Q.get_matched_CaseInsensitive(set_target, searchVal, true);
+                } else {
+                    set_results = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
+                }
+                Q.reset_set(set_results);
+            } else if (operator.equals("!")) {
+
+                int set_exclude_facets = -1;
+
+                for (String prefix : prefixes) {
+                    if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                        set_exclude_facets = Q.set_get_new();
+                        Q.set_put(set_exclude_facets);
+                        Q.reset_set(set_exclude_facets);
+                    }
+                }
+                Q.reset_set(set_target);
+                set_results = Q.set_get_new();
+                Q.set_copy(set_results, set_target);
+
+                Q.reset_set(set_results);
+                Q.reset_set(set_exclude_facets);
+                Q.set_difference(set_results, set_exclude_facets);
+                Q.reset_set(set_results);
+
+                Q.free_set(set_exclude_facets);
+            } else if (operator.equals(ConstantParameters.searchOperatorNotContains)) {
+
+                int set_exclude_facets;
+
+                Q.reset_set(set_target);
+                //set_exclude_facets = WTA.get_matched_ToneAndCaseInsensitive( set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                //set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+
+                if (Parameters.SEARCH_MODE_CASE_INSENSITIVE) {
+                    set_exclude_facets = Q.get_matched_CaseInsensitive(set_target, searchVal, true);
+                } else {
+                    set_exclude_facets = Q.get_matched_ToneAndCaseInsensitive(set_target, searchVal, false);
+                }
+                Q.reset_set(set_target);
+                set_results = Q.set_get_new();
+                Q.set_copy(set_results, set_target);
+
+                Q.reset_set(set_results);
+                Q.reset_set(set_exclude_facets);
+                Q.set_difference(set_results, set_exclude_facets);
+                Q.reset_set(set_results);
+
+                Q.free_set(set_exclude_facets);
+            } else if (operator.equals(">=") || operator.equals("<=")) {
+                Q.reset_set(set_target);
+                //StringObject l_name = new StringObject();
+                ArrayList<String> termsVector = new ArrayList<String>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+                if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
+                    for (Return_Nodes_Row row : retVals) {
+                        if (operator.equals(">=")) {
+                            if (row.get_v1_cls_logicalname().compareTo(searchVal) >= 0) {
+                                termsVector.add(row.get_v1_cls_logicalname());
+                            }
+                        } else {
+                            if (row.get_v1_cls_logicalname().compareTo(searchVal) <= 0) {
+                                termsVector.add(row.get_v1_cls_logicalname());
+                            }
+                        }
+                    }
+                }
+                /*
              while ((Q.retur_nodes( set_target, l_name)) != QClass.APIFail) {
              if (operator.equals(">=")) {
              if (l_name.getValue().compareTo(searchVal) >= 0) {
@@ -4193,17 +4195,20 @@ public class DBGeneral {
              }                    
              }
              }*/
-            set_results = Q.set_get_new();
-            int termsVectorSize = termsVector.size();
-            for (int i = 0; i < termsVectorSize; i++) {
-                //Utils.StaticClass.webAppSystemOutPrintln("DATE = " + termsVector.get(i));
-                Q.reset_name_scope();
-                Q.set_current_node(new StringObject(termsVector.get(i)));
-                Q.set_put(set_results);
+                set_results = Q.set_get_new();
+                int termsVectorSize = termsVector.size();
+                for (int i = 0; i < termsVectorSize; i++) {
+                    //Utils.StaticClass.webAppSystemOutPrintln("DATE = " + termsVector.get(i));
+                    Q.reset_name_scope();
+                    Q.set_current_node(new StringObject(termsVector.get(i)));
+                    Q.set_put(set_results);
+                }
+                Q.reset_set(set_results);
             }
-            Q.reset_set(set_results);
-        }
 
+        } finally {
+            TA.ALMOST_DONE_release_TMS_API_Session();
+        }
         return set_results;
 
     }
@@ -4299,6 +4304,7 @@ public class DBGeneral {
         }
         return thesaurusVector;
     }
+
     /*
      public String getPrefix(String targetClass) {
      String prefix_source = "";
@@ -4413,22 +4419,22 @@ public class DBGeneral {
         ArrayList<SortItem> results = new ArrayList<SortItem>();
         return results;
     }
-    
+
     //facet_or_topterm: == get_Term_Facets   == 0   --> mode = facet
     //facet_or_topterm: ==get_Term_Top_Terms == 1 --> mode = topterm     
     public ArrayList<String> get_term_facets_or_topterms(UserInfoClass SessionUserInfo, String term, int facet_or_topterm, QClass Q, IntegerObject sis_session) {
 
         ArrayList<String> results = new ArrayList<String>();
-        
+
         ArrayList<SortItem> resultsInSortItem = get_term_facets_or_topterms_InSortItemVector(SessionUserInfo, term, facet_or_topterm, Q, sis_session);
-        if(resultsInSortItem!=null){
-            for(SortItem item : resultsInSortItem){
+        if (resultsInSortItem != null) {
+            for (SortItem item : resultsInSortItem) {
                 results.add(item.getLogName());
             }
         }
         return results;
     }
-    
+
     public ArrayList<CMValue> get_Node_Cmvalues_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
         ArrayList<CMValue> names = new ArrayList<CMValue>();
 
@@ -4439,8 +4445,8 @@ public class DBGeneral {
         CMValue newItem = new CMValue();
         ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
-            for (Return_Nodes_Row row : retVals) {                
-                newItem.assign_node(row.get_v1_cls_logicalname(),row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+            for (Return_Nodes_Row row : retVals) {
+                newItem.assign_node(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(), row.get_v3_cls_transliteration(), row.get_v2_long_referenceId());
                 names.add(newItem.getCmvCopy());
             }
         }
@@ -4458,7 +4464,6 @@ public class DBGeneral {
         return names;
     }
 
-    
     public ArrayList<SortItem> get_Node_Names_Of_Set_In_SortItems(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
         ArrayList<SortItem> names = new ArrayList<SortItem>();
 
@@ -4469,7 +4474,7 @@ public class DBGeneral {
         ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_target, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                SortItem newItem = new SortItem(row.get_v1_cls_logicalname(),row.get_Neo4j_NodeId(),"",row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+                SortItem newItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(), "", row.get_v3_cls_transliteration(), row.get_v2_long_referenceId());
                 names.add(newItem);
             }
         }
@@ -4486,7 +4491,6 @@ public class DBGeneral {
 
         return names;
     }
-
 
     public ArrayList<String> get_Node_Names_Of_Set(int set_target, boolean removePrefixes, QClass Q, IntegerObject sis_session) {
         ArrayList<String> names = new ArrayList<String>();
@@ -4528,7 +4532,7 @@ public class DBGeneral {
         /*Check if target node exists*/
         Q.reset_name_scope();
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/GeneralMessages/TermNotfoundInTheDatabase", new String[]{targetDescriptorObj.getValue() })));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/GeneralMessages/TermNotfoundInTheDatabase", new String[]{targetDescriptorObj.getValue()})));
             //resultMessage.setValue(resultMessage.getValue().concat("Term: " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
@@ -4589,7 +4593,7 @@ public class DBGeneral {
 
         /*Check if target node still exists*/
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist",new String[]{targetDescriptorObj.getValue()})));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{targetDescriptorObj.getValue()})));
             //resultMessage.setValue(resultMessage.getValue().concat("Term " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
@@ -4641,6 +4645,7 @@ public class DBGeneral {
         /*Nts colletion process Completed*/
         return true;
     }
+
     /*Function collect_Direct_Links_Of_Set()
      *Starting from "target_set" gets all links specified from "from" and "link" and the given "direction"
      *Results are stored in "set_result" which includes "target_set" if "includeTarget" is set to true.
@@ -5012,7 +5017,7 @@ public class DBGeneral {
         String description = "";
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Utilities u = new Utilities();
-        
+
         // looking for Descriptor EKTDescriptor->EKT_BT
         StringObject thesDescriptor = new StringObject();
         dbtr.getThesaurusClass_Descriptor(selectedThesaurus, Q, sis_session.getValue(), thesDescriptor);
@@ -5027,8 +5032,8 @@ public class DBGeneral {
         int BTlinksSet = Q.get_link_from_by_category(0, thesDescriptor, thesBT);
         Q.reset_set(BTlinksSet);
         int BTlinksSetCard = Q.set_get_card(BTlinksSet);
-        if (BTlinksSetCard >= 1) {            
-            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNTtermOfTerms", null);            
+        if (BTlinksSetCard >= 1) {
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNTtermOfTerms", null);
         }
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
@@ -5061,8 +5066,8 @@ public class DBGeneral {
         StringObject thesTopTerm = new StringObject();
         dbtr.getThesaurusClass_TopTerm(selectedThesaurus, Q, sis_session.getValue(), thesTopTerm);
         boolean isTopTerm = NodeBelongsToClass(targetTerm, thesTopTerm, false, Q, sis_session);
-        if (isTopTerm == true) {            
-            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsTopTerm", null);            
+        if (isTopTerm == true) {
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsTopTerm", null);
         }
         // 3. in case targetTerm belongs to EKTUsedForTerm with UF links pointing to it from terms x1, x2, ..., xn =>
         // "as non preferred term of terms: x1, x2, ..., xn"        
@@ -5070,8 +5075,8 @@ public class DBGeneral {
         StringObject thesUsedForTerm = new StringObject();
         dbtr.getThesaurusClass_UsedForTerm(selectedThesaurus, Q, sis_session.getValue(), thesUsedForTerm);
         boolean isUsedForTerm = NodeBelongsToClass(targetTerm, thesUsedForTerm, false, Q, sis_session);
-        if (isUsedForTerm == true) {            
-            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNonPreferredTerm", null);            
+        if (isUsedForTerm == true) {
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNonPreferredTerm", null);
         }
         // looking for EKTHierarchyTerm 
         StringObject thesHierarchyTerm = new StringObject();
@@ -5084,8 +5089,8 @@ public class DBGeneral {
         int UFlinksSet = Q.get_link_to_by_category(0, thesHierarchyTerm, thes_UF);
         Q.reset_set(UFlinksSet);
         int UFlinksSetCard = Q.set_get_card(UFlinksSet);
-        if (UFlinksSetCard >= 1) {            
-            description +="\r\n"+u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/OfTermOrTerms", null);            
+        if (UFlinksSetCard >= 1) {
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/OfTermOrTerms", null);
         }
         counter = 0;
         retVals.clear();
@@ -5201,7 +5206,7 @@ public class DBGeneral {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
-        
+
         Q.reset_name_scope();
         Q.set_current_node(hierObj);
         int set_super_classes = Q.get_superclasses(0);
@@ -5215,7 +5220,7 @@ public class DBGeneral {
 
         Q.set_intersect(set_super_classes, set_facets);
         Q.reset_set(set_super_classes);
-        
+
         results.addAll(get_Node_Names_Of_Set(set_super_classes, true, Q, sis_session));
         Q.free_set(set_super_classes);
         Q.free_set(set_facets);
@@ -5275,7 +5280,7 @@ public class DBGeneral {
     ArrayList<SortItem> getFacetHierarchiesInSortItems(UserInfoClass SessionUserInfo, String facet, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         ArrayList<SortItem> results = new ArrayList<SortItem>();
-        
+
         int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
         String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
         SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(HierarchyClasses);
@@ -5285,16 +5290,14 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(language, country);
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(facet));
 
         StringObject belongsToHierClass = new StringObject();
         StringObject belongsToHierarchyLink = new StringObject();
-        getKeywordPair(SessionUserInfo.selectedThesaurus,ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+        getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
 
-        
         Q.reset_name_scope();
         Q.set_current_node(hierObj);
         int set_sub_classes = Q.get_subclasses(0);
@@ -5312,18 +5315,15 @@ public class DBGeneral {
         DBFilters dbf = new DBFilters();
         set_sub_classes = dbf.FilterHierResults(SessionUserInfo, set_sub_classes, Q, sis_session);
 
-        if(Parameters.OnlyTopTermsHoldReferenceId){
+        if (Parameters.OnlyTopTermsHoldReferenceId) {
             //int card1 = Q.set_get_card(set_sub_classes);
-        
+
             int set_topterms = Q.get_from_node_by_category(set_sub_classes, belongsToHierClass, belongsToHierarchyLink);
 
             //int card = Q.set_get_card(set_topterms);
-
             //String s1 = ""+card1+" " + card2 + " " + card3;
-
             results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
-        }
-        else{
+        } else {
             results.addAll(get_Node_Names_Of_Set_In_SortItems(set_sub_classes, true, Q, sis_session));
         }
         Q.free_set(set_sub_classes);
@@ -5334,7 +5334,7 @@ public class DBGeneral {
         return results;
 
     }
-    
+
     //Nodes without dewey are read first. Such nodes should not exist though
     public void collectResultsTaxonomicCodes(String selectedThesaurus, QClass Q, IntegerObject sis_session, int targetSet, ArrayList<TaxonomicCodeItem> descriptors, String separator) {
 
@@ -5366,10 +5366,10 @@ public class DBGeneral {
             for (Return_Nodes_Row row : retVals) {
                 String tempName = row.get_v1_cls_logicalname();
                 String transliteration = row.get_v3_cls_transliteration();
-                if(transliteration==null || transliteration.length()==0){
+                if (transliteration == null || transliteration.length() == 0) {
                     transliteration = Utilities.getTransliterationString(tempName, true);
                 }
-                descriptors.add(new TaxonomicCodeItem(tempName,transliteration));
+                descriptors.add(new TaxonomicCodeItem(tempName, transliteration));
             }
         }
         /*while (Q.retur_full_nodes(noDeweySet, sysid, label, sclass) != QClass.APIFail) {
@@ -5396,8 +5396,8 @@ public class DBGeneral {
             for (Return_Link_Row row : retLVals) {
                 String tempName = row.get_v1_cls();
                 String tempCode = removePrefix(row.get_v3_cmv().getString());
-                String tempTranslit =  row.get_v4_clsTransliteration();
-                descriptors.add(new TaxonomicCodeItem(tempCode, tempName,tempTranslit));
+                String tempTranslit = row.get_v4_clsTransliteration();
+                descriptors.add(new TaxonomicCodeItem(tempCode, tempName, tempTranslit));
             }
         }
 
@@ -5427,7 +5427,6 @@ public class DBGeneral {
         Q.free_set(set_allhiers);
         allGuideTerms.addAll(collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session));
 
-        return;
     }
 
     public ArrayList<String> getAllSearchSources(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator, QClass Q,
@@ -5488,11 +5487,9 @@ public class DBGeneral {
 
                         //set_partial_source_results = Q.get_matched(set_s, ptrn_set);
                         //set_partial_source_results = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-                        
-                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
-                            set_partial_source_results = Q.get_matched_CaseInsensitive(set_s, searchVal, true);                            
-                        }
-                        else{
+                        if (Parameters.SEARCH_MODE_CASE_INSENSITIVE) {
+                            set_partial_source_results = Q.get_matched_CaseInsensitive(set_s, searchVal, true);
+                        } else {
                             set_partial_source_results = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, false);
                         }
                         Q.reset_set(set_partial_source_results);
@@ -5503,8 +5500,8 @@ public class DBGeneral {
                         Q.reset_set(set_s);
                         Q.free_set(set_partial_source_results);
 
-                        set_partial_source_results = Q.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal,false),false);
-                        
+                        set_partial_source_results = TA.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal, false), false);
+
                         Q.reset_set(set_partial_source_results);
                         //Q.free_set(ptrn_set);
                         //</editor-fold>
@@ -5541,10 +5538,9 @@ public class DBGeneral {
                         //set_exclude_hierarchies = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //int set_exclude_sources = Q.get_matched(set_s, ptrn_set);
                         int set_exclude_sources = -1;//Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
-                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                        if (Parameters.SEARCH_MODE_CASE_INSENSITIVE) {
                             set_exclude_sources = Q.get_matched_CaseInsensitive(set_s, searchVal, true);
-                        }
-                        else{
+                        } else {
                             set_exclude_sources = Q.get_matched_ToneAndCaseInsensitive(set_s, searchVal, false);
                         }
 
@@ -5584,7 +5580,7 @@ public class DBGeneral {
                         Q.free_set(set_exclude_sources);
 
                     }
-                    */
+                     */
                 }
                 //</editor-fold>
 
@@ -6087,8 +6083,8 @@ public class DBGeneral {
         boolean ntOutputSelected = output.contains(ConstantParameters.nt_kwd);
         boolean btOutputSelected = output.contains(ConstantParameters.bt_kwd);
         if (ntOutputSelected && !btOutputSelected) {
-                output.add(ConstantParameters.bt_kwd);
-            }
+            output.add(ConstantParameters.bt_kwd);
+        }
         if (btOutputSelected && !ntOutputSelected) {
             output.add(ConstantParameters.nt_kwd);
         }
@@ -6127,10 +6123,10 @@ public class DBGeneral {
         ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
         if (Q.bulk_return_nodes(set_results, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
-                
+
                 long targetTermIdL = row.get_Neo4j_NodeId();
                 resultNodesIds.add(targetTermIdL);
-                
+
                 String targetTerm = removePrefix(row.get_v1_cls_logicalname());
                 resultTermNamesWithPrefixes.add(row.get_v1_cls_logicalname());
 
@@ -6138,7 +6134,7 @@ public class DBGeneral {
                 String transliteration = row.get_v3_cls_transliteration();
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
+                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL, transliteration, referenceId));
                     //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
                     termsInfo.put(targetTerm, newContainer);
                     allTerms.add(targetTerm);
@@ -6174,19 +6170,18 @@ public class DBGeneral {
         collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds);
         collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds);
 
-        
-        if(output.contains(ConstantParameters.rnt_kwd)){
-            
+        if (output.contains(ConstantParameters.rnt_kwd)) {
+
             StringObject errorMsg = new StringObject("");
-            
-            for(int i=0; i< resultTermNamesWithPrefixes.size(); i++){
+
+            for (int i = 0; i < resultTermNamesWithPrefixes.size(); i++) {
                 String targetTerm = resultTermNamesWithPrefixes.get(i);
                 String termNameWithoutPrefix = removePrefix(targetTerm);
-                
+
                 int set_recursive_nts = Q.set_get_new();
-                this.collect_Recurcively_ALL_NTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg,false, Q, sis_session);
-                if(Q.set_get_card(set_recursive_nts)>0){
-                    
+                this.collect_Recurcively_ALL_NTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session);
+                if (Q.set_get_card(set_recursive_nts) > 0) {
+
                     retVals.clear();
                     ArrayList<SortItem> recNts = new ArrayList<SortItem>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
@@ -6195,27 +6190,26 @@ public class DBGeneral {
                             long targetTermIdL = row.get_Neo4j_NodeId();
                             long refId = row.get_v2_long_referenceId();
                             String transliteration = row.get_v3_cls_transliteration();
-                            recNts.add(new SortItem(removePrefix(row.get_v1_cls_logicalname()), targetTermIdL, "",transliteration,refId));                            
+                            recNts.add(new SortItem(removePrefix(row.get_v1_cls_logicalname()), targetTermIdL, "", transliteration, refId));
                         }
                     }
-                    
-                    
+
                     termsInfo.get(termNameWithoutPrefix).descriptorInfo.get(ConstantParameters.rnt_kwd).addAll(recNts);
                 }
             }
         }
-        if(output.contains(ConstantParameters.rbt_kwd)){
-            
+        if (output.contains(ConstantParameters.rbt_kwd)) {
+
             StringObject errorMsg = new StringObject("");
-            
-            for(int i=0; i< resultTermNamesWithPrefixes.size(); i++){
+
+            for (int i = 0; i < resultTermNamesWithPrefixes.size(); i++) {
                 String targetTerm = resultTermNamesWithPrefixes.get(i);
                 String termNameWithoutPrefix = removePrefix(targetTerm);
-                
+
                 int set_recursive_nts = Q.set_get_new();
-                this.collect_Recurcively_ALL_BTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg,false, Q, sis_session);
-                if(Q.set_get_card(set_recursive_nts)>0){
-                    
+                this.collect_Recurcively_ALL_BTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session);
+                if (Q.set_get_card(set_recursive_nts) > 0) {
+
                     retVals.clear();
                     ArrayList<SortItem> recBts = new ArrayList<SortItem>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
@@ -6225,17 +6219,14 @@ public class DBGeneral {
                             long refId = row.get_v2_long_referenceId();
                             String transliteration = row.get_v3_cls_transliteration();
 
-                            recBts.add(new SortItem(removePrefix(row.get_v1_cls_logicalname()), targetTermIdL, "",transliteration,refId));                            
+                            recBts.add(new SortItem(removePrefix(row.get_v1_cls_logicalname()), targetTermIdL, "", transliteration, refId));
                         }
                     }
-                    
-                    
+
                     termsInfo.get(termNameWithoutPrefix).descriptorInfo.get(ConstantParameters.rbt_kwd).addAll(recBts);
                 }
             }
-            
-            
-            
+
         }
         dbExport.ReadTermStatuses(SessionUserInfo.selectedThesaurus, Q, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermCommentCategories(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, output, allTerms, termsInfo, resultNodesIds);
@@ -6292,12 +6283,12 @@ public class DBGeneral {
                 long targetTermIdL = row.get_v2_clsid();
                 long targetTermRefIdL = row.get_v11_clsRefid();
                 String targetTermTransiteration = row.get_v10_clsTransliteration();
-                
+
                 String category = row.get_v5_categ();
                 String categoryKwd = keyWordsMappings.get(category);
 
                 String value = row.get_v8_cmv().getString();
-                long valueIdL = row.get_v8_cmv().getSysid();                
+                long valueIdL = row.get_v8_cmv().getSysid();
                 long valueRefIdL = row.get_v8_cmv().getRefid();
                 String valueTransliterationStr = row.get_v8_cmv().getTransliterationString();
                 // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
@@ -6336,7 +6327,7 @@ public class DBGeneral {
                     value = removePrefix(value);
                 }
 
-                SortItem valueSortItem = new SortItem(value, valueIdL, category,valueTransliterationStr,valueRefIdL);
+                SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
 
                 //the translation category will be as follows --> to_EN, to_IT etc
                 if (categoryKwd.compareTo(ConstantParameters.translation_kwd) == 0) {
@@ -6359,10 +6350,10 @@ public class DBGeneral {
                 if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
 
                     if (resultNodesIdsL.contains(valueIdL)) {
-                        
+
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category,valueTransliterationStr,valueRefIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category, valueTransliterationStr, valueRefIdL));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
@@ -6373,12 +6364,12 @@ public class DBGeneral {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, "",valueTransliterationStr,valueRefIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, "", valueTransliterationStr, valueRefIdL));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "",targetTermSortItem.getLogNameTransliteration(),targetTermSortItem.getThesaurusReferenceId()));
+                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "", targetTermSortItem.getLogNameTransliteration(), targetTermSortItem.getThesaurusReferenceId()));
                     }
                 }
             }
@@ -6519,7 +6510,7 @@ public class DBGeneral {
                 long targetTermIdL = row.get_v8_cmv().getSysid();
                 long targetTermRefIdL = row.get_v8_cmv().getRefid();
                 String targetTermTransiteration = row.get_v8_cmv().getTransliterationString();
-                
+
                 String category = row.get_v5_categ();
                 String categoryKwd = keyWordsMappings.get(category); // LINKS TO TERMS ARE EITHER BT LINKS OR RT LINKS
                 if (categoryKwd != null && categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
@@ -6529,7 +6520,7 @@ public class DBGeneral {
                 long valueIdL = row.get_v2_clsid();
                 long valueRefIdL = row.get_v11_clsRefid();
                 String valueTransliterationStr = row.get_v10_clsTransliteration();
-               // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
+                // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
                 //String valueId = String.valueOf(linkID.getValue());
                 //clsID = new IntegerObject();
                 //linkID = new IntegerObject();
@@ -6550,7 +6541,7 @@ public class DBGeneral {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
                 }
 
-                SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category,targetTermTransiteration,targetTermRefIdL);
+                SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);
                 /*
                  if (category.compareTo(ConstantParameters.modified_on_kwd) == 0 || category.compareTo(ConstantParameters.created_on_kwd) == 0) {
                  //no value change needed
@@ -6558,7 +6549,7 @@ public class DBGeneral {
                  value = dbGen.removePrefix(value);
                  }
                  */
-                SortItem valueSortItem = new SortItem(value, valueIdL, category,valueTransliterationStr,valueRefIdL);
+                SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
                 if (output.contains(categoryKwd)) {
                     termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
@@ -6572,7 +6563,7 @@ public class DBGeneral {
 
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category,valueTransliterationStr,valueRefIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category, valueTransliterationStr, valueRefIdL));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
@@ -6583,7 +6574,7 @@ public class DBGeneral {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category,valueTransliterationStr,valueRefIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + valueIdL, valueIdL, category, valueTransliterationStr, valueRefIdL));
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
@@ -6594,7 +6585,7 @@ public class DBGeneral {
                 }
             }
         }
-        
+
         /*
          while (Q.retur_full_link_id(set_to_links, cls, clsID, label, linkID, categ, fromcls, categID, cmv, uniq_categ) != QClass.APIFail) {
          //while (Q.retur_full_link(set_from_links, cls, label, categ, fromcls, cmv, uniq_categ, traversed) != QClass.APIFail) {
@@ -6678,7 +6669,6 @@ public class DBGeneral {
 
          }
          */
-
     }
 
     public ArrayList<String> collectGuideLinks(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
@@ -6955,18 +6945,18 @@ public class DBGeneral {
         Q.set_current_node(new StringObject(ConstantParameters.termClass));
         long termTranslationIdL = Q.set_current_node(new StringObject(ConstantParameters.translationCategory));
         Identifier termTranslationIdentifier = new Identifier(termTranslationIdL);
-        
+
         Q.reset_name_scope();
         long termClassIdL = Q.set_current_node(new StringObject(ConstantParameters.termClass));
         Identifier TermIdentifier = new Identifier(termClassIdL);
-        
+
         //get an AAATerm identifier
         StringObject thesaurusTermStrObj = new StringObject();
         dbtr.getThesaurusClass_Term(Q, sis_session.getValue(), new StringObject(targetThesaurus), thesaurusTermStrObj);
         Q.reset_name_scope();
         long thesaurusTermIdL = Q.set_current_node(thesaurusTermStrObj);
         Identifier thesurusTermIdentifier = new Identifier(thesaurusTermIdL);
-        
+
         //get an Identifier for Individual->garbage_collected
         Q.reset_name_scope();
         Q.set_current_node(new StringObject(ConstantParameters.individualClass));
@@ -7221,7 +7211,7 @@ public class DBGeneral {
             String languageId = LanguageWordsAndIds.get(languageWord);
 
             // <editor-fold defaultstate="collapsed" desc="Translations Section">
-             /*
+            /*
              *  RETELL Attribute (AAA_translation, to_IT)
              *      from  :  (AAATerm)
              *      to    :  (ItalianWord) in S_Class
@@ -7350,8 +7340,7 @@ public class DBGeneral {
         String tagetMessageFullXPath = targetMessageBasePath + "/option[@lang=\"" + Parameters.UILang + "\"]";
         resultObj.setValue(u.translate(tagetMessageFullXPath, args, pathToErrorXMLFile));
     }
-    */
-
+     */
     public boolean deleteTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             IntegerObject tms_session, String targetThesaurus, HashMap<String, String> LanguageWordsAndIds,
             boolean startTransactionAndConnection, StringObject resultMessageObj, String pathToTranslationsXML) {
@@ -7472,7 +7461,7 @@ public class DBGeneral {
             //create a string object and an identifer for the new Translation Category i.e. AAA_translation, to_IT
             StringObject thesaurusTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursTranslationCategorysubString).concat(languageId));
 
-            String[] errorArgs = {languageWord,languageId,thesaurusTranslationCategoryStrObj.getValue()};
+            String[] errorArgs = {languageWord, languageId, thesaurusTranslationCategoryStrObj.getValue()};
             String errorMessage1 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
@@ -7505,17 +7494,17 @@ public class DBGeneral {
                     Identifier currentToLanguageCategoryIdentifier = new Identifier(currentToLanguageCategoryIdL);
 
                     ret = Q.CHECK_Delete_IsA(thesaurusTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_IsA(thesaurusTranslationCategoryIdentifier, thesaurusTranslationIdentifier);;
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
+
                     //  RETELL (AAA_translation, to_IT)
                     //      from  :  (AAATerm)
                     //      to    :  (ItalianWord) in (garbage_collected),
@@ -7524,38 +7513,38 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, garbageCollectedIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, translationTypeIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_Instance(thesaurusTranslationCategoryIdentifier, thesaurusDescriptionIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
-                     //
+
+                    //
                     //  RETELL Attribute (AAA_translation, to_IT)
                     //      from  :  (AAATerm)
                     //      to    :  (ItalianWord) in S_Class
                     //  end
                     //
                     ret = Q.CHECK_Delete_Named_Attribute(thesaurusTranslationCategoryIdentifier, thesurusTermIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage1);
                         return false;
                     }
-                    
+
                 } else {
 
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs));                    
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs));
                     return false;
 
                 }
@@ -7568,8 +7557,8 @@ public class DBGeneral {
             // <editor-fold defaultstate="collapsed" desc="uf_translations section">
             //create a string object and an identifer for the new Translation Category i.e. AAA_uf_translation, to_IT
             StringObject thesaurusUFTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursUFTranslationCategorysubString).concat(languageId));
-            errorArgs[2]= thesaurusUFTranslationCategoryStrObj.getValue();
-            
+            errorArgs[2] = thesaurusUFTranslationCategoryStrObj.getValue();
+
             String errorMessage2 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
@@ -7596,26 +7585,25 @@ public class DBGeneral {
                     //     to    :  (ItalianWord) isA (to_IT) from (Term), (AAA_uf_translation) from (AAAHierarchyTerm)
                     // end
                     //
-                    
                     Q.reset_name_scope();
                     //ERROR CORRECTED it was HierarchyTerm while it should be Term 
                     Q.set_current_node(new StringObject(ConstantParameters.termClass));
-                    
+
                     long currentToLanguageCategoryIdL = Q.set_current_node(new StringObject(ConstantParameters.toTranslationCategoryPrefix.concat(languageId)));
                     Identifier currentToLanguageCategoryIdentifier = new Identifier(currentToLanguageCategoryIdL);
 
                     ret = Q.CHECK_Delete_IsA(thesaurusUFTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_IsA(thesaurusUFTranslationCategoryIdentifier, thesaurusUFTranslationIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-                    
+
                     //  RETELL (AAA_uf_translation, to_IT)
                     //      from  :  (AAAHierarchyTerm)
                     //      to    :  (ItalianWord) in (garbage_collected),
@@ -7624,31 +7612,31 @@ public class DBGeneral {
                     //  end
                     //
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, garbageCollectedIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, translationTypeIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-                    
+
                     ret = Q.CHECK_Delete_Instance(thesaurusUFTranslationCategoryIdentifier, thesaurusDescriptionIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
-                    
-                     //
+
+                    //
                     //  RETELL Attribute (AAA_uf_translation, to_IT)
                     //      from  :  (AAAHierarchyTerm)
                     //      to    :  (ItalianWord) in S_Class
                     //  end
                     //
                     ret = Q.CHECK_Delete_Named_Attribute(thesaurusUFTranslationCategoryIdentifier, thesurusHierarchyTermIdentifier);
-                    if(ret==QClass.APIFail){
+                    if (ret == QClass.APIFail) {
                         resultMessageObj.setValue(errorMessage2);
                         return false;
                     }
@@ -7741,12 +7729,12 @@ public class DBGeneral {
             if (otherLanguageReferences.contains(languageWord)) {
                 continue;
             }
-            
+
             StringObject toTranslationCategoryStrObj = new StringObject(ConstantParameters.toTranslationCategoryPrefix.concat(languageId));
-            
-            String[] errorArgs = {languageWord,languageId,toTranslationCategoryStrObj.getValue()};
+
+            String[] errorArgs = {languageWord, languageId, toTranslationCategoryStrObj.getValue()};
             String errorMessage = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
-            
+
             //get an identifier with id for the new language category i.e. to_IT
             Q.reset_name_scope();
             Q.set_current_node(new StringObject(ConstantParameters.termClass));
@@ -7765,7 +7753,7 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_IsA(toNewLanguageIdentifier, termTranslationIdentifier);
-                if (ret == QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(errorMessage);
                     return false;
                 }
@@ -7777,13 +7765,13 @@ public class DBGeneral {
                 //  end
                 //
                 ret = Q.CHECK_Delete_Instance(toNewLanguageIdentifier, systemControlledIdentifier);
-                if (ret == QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(errorMessage);
                     return false;
                 }
-                
+
                 ret = Q.CHECK_Delete_Instance(toNewLanguageIdentifier, translationTypeIdentifier);
-                if (ret == QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(errorMessage);
                     return false;
                 }
@@ -7796,7 +7784,7 @@ public class DBGeneral {
                 //
                 //Delete a word CMValue
                 ret = Q.CHECK_Delete_Named_Attribute(toNewLanguageIdentifier, TermIdentifier);
-                if (ret == QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(errorMessage);
                     return false;
                 }
@@ -7840,7 +7828,7 @@ public class DBGeneral {
                 continue;
             }
 
-            String[] errorArgs = {languageWord,languageId,ConstantParameters.hasPrefix};
+            String[] errorArgs = {languageWord, languageId, ConstantParameters.hasPrefix};
             String errorMsgStr = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
 
             //
@@ -7893,20 +7881,20 @@ public class DBGeneral {
                 ret = Q.reset_name_scope();
 
                 ret = Q.CHECK_Delete_Unnamed_Attribute(new Identifier(tid.getValue()));
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(errorMsgStr);
                     return false;
                 }
             } else {
-                String[] errorArgs2 = {languageWord,languageId,ConstantParameters.hasPrefix,languageWord};
+                String[] errorArgs2 = {languageWord, languageId, ConstantParameters.hasPrefix, languageWord};
                 if (instancesCardinallity != 0) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));
-                    
+
                 } else if (allLinksToNumber != 0) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
-                    
+
                 } else if (hasPrefixLinksFromNumber != allLinksFromNumber) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
                 }
                 return false;
             }
@@ -7944,8 +7932,6 @@ public class DBGeneral {
                 continue;
             }
 
-            
-            
             ret = Q.reset_name_scope();
             Q.set_current_node(new StringObject(languageWord.concat(ConstantParameters.wordClass)));
 
@@ -7981,8 +7967,8 @@ public class DBGeneral {
             //The prefix should also have no other links pointing to it
             if (instancesCardinallity == 0 && allLinksToNumber == 0 && allLinksFromNumber == 0 && remainingLinksToPrefix == 0) {
 
-                String[] errorArgs1 = {languageWord,languageId,languageWord,languageId};
-                
+                String[] errorArgs1 = {languageWord, languageId, languageWord, languageId};
+
                 //
                 // RETELL (IT`) in (Prefix)
                 // end
@@ -7993,21 +7979,20 @@ public class DBGeneral {
                 Identifier LanguagePrefixIdentifier = new Identifier(newLanguageIdentifierIdL);
 
                 ret = Q.CHECK_Delete_Instance(LanguagePrefixIdentifier, PrefixClassIdentifier);
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
-                
+
                 //
                 // RETELL Individual (IT`) in Token
                 // end
                 //
                 ret = Q.CHECK_Delete_Node(LanguagePrefixIdentifier);
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
-                
 
                 //update the Identifier object so that it references by sysid
                 Q.reset_name_scope();
@@ -8020,7 +8005,7 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_IsA(LanguageWordIdentifier, WordIdentifier);
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
@@ -8030,7 +8015,7 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_Instance(LanguageWordIdentifier, ThesaursNotionTypeIdentifier);
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
@@ -8040,18 +8025,18 @@ public class DBGeneral {
                 // end
                 //
                 ret = Q.CHECK_Delete_Node(LanguageWordIdentifier);
-                if(ret==QClass.APIFail){
+                if (ret == QClass.APIFail) {
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
                     return false;
                 }
             } else {
-                String[] errorArgs2 = {languageWord,languageId,languageWord};
+                String[] errorArgs2 = {languageWord, languageId, languageWord};
                 if (instancesCardinallity != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));                    
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));
                 } else if (allLinksToNumber != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
                 } else if (allLinksFromNumber != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));                    
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
                 } else if (remainingLinksToPrefix != 0) {
                     errorArgs2[2] = languageId;
                     resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingPrefixRelations", errorArgs2));
@@ -8252,10 +8237,10 @@ public class DBGeneral {
         }
         return ret;
     }
-    
-    public SortItem getSortItemFromCMValue(CMValue cmv, boolean removePrefix){
+
+    public SortItem getSortItemFromCMValue(CMValue cmv, boolean removePrefix) {
         SortItem retSortItem = new SortItem(cmv);
-        if(removePrefix){
+        if (removePrefix) {
             retSortItem.setLogName(removePrefix(retSortItem.getLogName()));
         }
         return retSortItem;

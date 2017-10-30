@@ -43,7 +43,7 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import org.neo4j.io.fs.FileUtils;
 
 /*-----------------------------------------------------

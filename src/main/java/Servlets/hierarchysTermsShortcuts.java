@@ -55,7 +55,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
 import java.util.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

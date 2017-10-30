@@ -39,7 +39,7 @@ import Utils.ConstantParameters;
 import Utils.Utilities;
 
 
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import neo4j_sisapi.*;

@@ -58,7 +58,7 @@ import javax.servlet.http.*;
 //import isl.dms.DMSException;
 //import isl.dms.xml.XMLTransform;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 //import org.apache.xalan.xslt.Process;
 
 /**

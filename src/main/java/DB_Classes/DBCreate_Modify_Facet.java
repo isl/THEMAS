@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.*;
 
 /**
@@ -262,7 +262,7 @@ public class DBCreate_Modify_Facet {
         int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         
         // Check if reference uri exists
-        if(targetFacetSortItem.getThesaurusReferenceId()>0 && Q.IsThesaurusReferenceIdAssigned(selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
+        if(targetFacetSortItem.getThesaurusReferenceId()>0 && TA.IsThesaurusReferenceIdAssigned(selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
             
             String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(selectedThesaurus, targetFacetSortItem.getThesaurusReferenceId()));
             if(termUsingThisReferenceId.equals(targetFacetSortItem.getLogName())==false)

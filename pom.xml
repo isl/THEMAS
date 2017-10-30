@@ -4,7 +4,7 @@
 
     <groupId>gr.forth.ics.isl</groupId>
     <artifactId>THEMAS</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.1</version>
     <name>THEMAS</name>
     <packaging>war</packaging>     
     <licenses>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>Neo4j-sisapi</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

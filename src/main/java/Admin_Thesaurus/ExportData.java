@@ -70,7 +70,7 @@ import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.xml.transform.dom.DOMSource;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

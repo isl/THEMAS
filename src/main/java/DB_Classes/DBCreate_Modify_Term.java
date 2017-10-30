@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.*;
 
 /**
@@ -110,9 +110,10 @@ public class DBCreate_Modify_Term {
         }
         
         // Check if reference uri exists
-        if(consistencyChecks.create_modify_check_28_alwaysOn(SessionUserInfo, Q, sis_session, newName, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false){
+        if(consistencyChecks.create_modify_check_28_alwaysOn(SessionUserInfo, Q, TA, sis_session, newName, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false){
             return;            
         }
+        
 
         CMValue termCmv = newName.getCMValue(newNameObj.getValue());
         

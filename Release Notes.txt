@@ -26,21 +26,37 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 =============================================================================
-THEMAS 1.2 Release Notes
+THEMAS 1.2.1 Release Notes
 =============================================================================
-- Update to Java 8 / Neo4j 3.2.5 / Neo4j-sisapi 1.2
+- Update to Java 8 / Neo4j 3.2.5 / Neo4j-sisapi 1.2.1
 - Each Term/TopTerm/Facet created is assigned a reference Id unique per thesaurus
   and a transliteration of the logicalname according to configurations in config.xml.
   This transliteration will be used for custom sorting and case&tone incensitive search.
   (Transliteration request occurred as a result of the need to support polytonic greek punctuation)
 - Each XML exported contains the referenceId added to each term
+- Thesaurus and Facet Hierarchical and Tree View
+- Searching with Contains operator uses the transliteration field whenever referring to Terms/Hierarchies/Facets
 - SKOS export now uses this reference Id instead of a random number or the first taxonomical code
-- XMLStream mode was added so that External Readers (if having access) can retrieve 
-  thesaurus data in XML format with a simple http request  
-- Contains search uses the transliteration field whenever referring to Terms/Hierarchies/Facets
-- resolved bug with starts with operator
-- Added "Chosen" javascript plugin to html select elements where user has to select from long lists (the bts, rts etc.)
+- External reader role added (In contrast with reader role 
+  ExternalReader sees all terms including non published)
+- XMLStream mode was added for specific read-only Servlets so that External Readers 
+  (if having access) can retrieve thesaurus data in XML format as a Service
+- Type ahead mechanism added in order to assist the selection in large lists (e.g. bts at term creation etc.)
+- Thesauri Management Tab was changed to be only available
+  to administrators until the copy/merge/delete functionalities are corrected
+- Increased Thesaurus name max length and allowed _ and - chars
+- Resolved Bug with starts with operator
+- Resolved Bug in Translations Synchronization
+- Resolved Thesaurus Deletion bug
+- Ubuntu support changes
 
+
+-----------------------------------------------------------------------------
+THEMAS version 1.1 (not officially released)
+-----------------------------------------------------------------------------
+- Bug Fixes (corrected messages, removed hard coded messages, removePrefix bugfix etc.)
+- Removed length control in term names scopenotes etc.
+- Added html editor for comment categories
 
 -----------------------------------------------------------------------------
 THEMAS 1.0 Release Notes

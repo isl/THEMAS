@@ -64,7 +64,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Collections;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

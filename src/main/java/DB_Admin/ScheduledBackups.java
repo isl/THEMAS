@@ -64,7 +64,7 @@ import java.util.ArrayList;
 //import javax.mail.internet.*;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import org.neo4j.io.fs.FileUtils;
 
 /**

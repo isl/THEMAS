@@ -57,7 +57,7 @@ import neo4j_sisapi.*;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.HashMap;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 /**
  *
  * @author tzortzak

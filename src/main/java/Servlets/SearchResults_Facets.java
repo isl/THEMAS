@@ -56,7 +56,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 //import org.apache.xalan.xslt.Process;
 /**
@@ -436,7 +436,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                     } 
                     else if (currentOperator.equals(ConstantParameters.searchOperatorTransliterationContains)) {
                         Q.reset_set(set_f);
-                        set_partial_facet_results = Q.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
+                        set_partial_facet_results = TA.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
                         Q.reset_set(set_partial_facet_results);
 
                     }
@@ -523,7 +523,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                     else if (currentOperator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
 
                         Q.reset_set(set_f);
-                        int set_exclude_facets = Q.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
+                        int set_exclude_facets = TA.get_matched_OnTransliteration(set_f, Utilities.getTransliterationString(searchVal,false),false);
                         
                         Q.reset_set(set_f);
                         Q.reset_set(set_partial_facet_results);

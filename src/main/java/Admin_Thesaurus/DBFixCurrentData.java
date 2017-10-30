@@ -44,7 +44,7 @@ import Utils.Parameters;
 import Utils.StringLocaleComparator;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.io.*;
 import java.util.*;
 import javax.servlet.ServletContext;

@@ -39,7 +39,7 @@ import Utils.Utilities;
 import java.util.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 
 /*---------------------------------------------------------------------

@@ -1958,7 +1958,7 @@ public class WriteFileData {
         else{
             retVal+=Servlets.CardOf_Term.class.getSimpleName();
         }
-        retVal+="?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+id+"&mode="+ConstantParameters.XMLSTREAM;
+        retVal+="?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+id+"&amp;mode="+ConstantParameters.XMLSTREAM;
         return retVal;
     }
 }

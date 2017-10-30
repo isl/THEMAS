@@ -45,7 +45,7 @@ import javax.servlet.http.*;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
                       AjaxDBQuery

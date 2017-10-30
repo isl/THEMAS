@@ -64,7 +64,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.StringObject;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

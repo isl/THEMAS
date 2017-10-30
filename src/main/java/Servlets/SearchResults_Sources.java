@@ -64,7 +64,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *

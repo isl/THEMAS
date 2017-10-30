@@ -56,7 +56,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -430,7 +430,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
                     } else if (operators[i].equals(ConstantParameters.searchOperatorTransliterationContains)) {
                         Q.reset_set(set_h);
-                        set_partial_hierarchy_results = Q.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        set_partial_hierarchy_results = TA.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
                         Q.reset_set(set_partial_hierarchy_results);
                     }
                     else if (operators[i].equals("!")) {
@@ -500,7 +500,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                     else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
 
                         Q.reset_set(set_h);
-                        int set_exclude_hierarchies = Q.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        int set_exclude_hierarchies = TA.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
                         
                         Q.reset_set(set_h);
                         Q.reset_set(set_partial_hierarchy_results);

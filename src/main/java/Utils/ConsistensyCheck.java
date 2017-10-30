@@ -1802,9 +1802,9 @@ public class ConsistensyCheck {
      * @param policy
      * @return 
      */
-    public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, IntegerObject sis_session,SortItem targetTermSortItem, ArrayList<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
+    public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, TMSAPIClass TA, IntegerObject sis_session,SortItem targetTermSortItem, ArrayList<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
         
-        boolean suchATermExists = Q.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetTermSortItem.getThesaurusReferenceId());
+        boolean suchATermExists = TA.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetTermSortItem.getThesaurusReferenceId());
         
         if(suchATermExists){
             

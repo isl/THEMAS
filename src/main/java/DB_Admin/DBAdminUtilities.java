@@ -50,7 +50,7 @@ import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import Utils.SortItem;
 
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -1089,7 +1089,7 @@ public class DBAdminUtilities {
         */
         
         StringObject deleteThesErrorMsgCode = new StringObject();
-        if(!Q.DeleteEmptyThesaurusModel(targetThesaurus,deleteThesErrorMsgCode)){
+        if(!TA.DeleteEmptyThesaurusModel(targetThesaurus,deleteThesErrorMsgCode)){
             
             errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}));    
             if(Parameters.DEBUG && deleteThesErrorMsgCode.getValue() !=null && deleteThesErrorMsgCode.getValue().length()>0){

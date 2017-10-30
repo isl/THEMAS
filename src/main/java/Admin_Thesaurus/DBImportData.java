@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import java.util.Locale;
 import java.io.OutputStreamWriter;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 import neo4j_sisapi.*;
 
@@ -302,7 +302,7 @@ public class DBImportData {
 
         long maxExistingRefId = findThesaurusMaxRefernceId(xmlFacets, termsInfo);
         if(maxExistingRefId>0){
-            if(Q.resetCounter_For_ThesarusReferenceId(importThesaurusName,maxExistingRefId)==QClass.APIFail){
+            if(TA.resetCounter_For_ThesarusReferenceId(importThesaurusName,maxExistingRefId)==QClass.APIFail){
                 Utils.StaticClass.webAppSystemOutPrintln("Setting Max Thesaurus reference Id Failed for thesaurus: " + importThesaurusName);
                 return false;
             }

@@ -55,7 +55,7 @@ import javax.servlet.http.*;
 import java.util.*;
 import java.io.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
 CreateThesaurus
