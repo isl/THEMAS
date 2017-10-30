@@ -181,7 +181,7 @@ public class ImportData extends ApplicationBasicServlet {
                 }
             }
 
-            if (initDbValue != null) {
+            if (initDbValue == null) {
                 QClass Q = new QClass();
                 TMSAPIClass TA = new TMSAPIClass();
                 IntegerObject sis_session = new IntegerObject();

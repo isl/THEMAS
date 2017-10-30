@@ -44,10 +44,11 @@ THEMAS 1.2.1 Release Notes
 - Type ahead mechanism added in order to assist the selection in large lists (e.g. bts at term creation etc.)
 - Thesauri Management Tab was changed to be only available
   to administrators until the copy/merge/delete functionalities are corrected
-- Increased Thesaurus name max length and allowed _ and - chars
+- Increased Thesaurus name max length to 20 and allowed _ and - chars
 - Resolved Bug with starts with operator
 - Resolved Bug in Translations Synchronization
 - Resolved Thesaurus Deletion bug
+- Resolved Thesaurus Import With Initialize DB bug
 - Ubuntu support changes
 
 
