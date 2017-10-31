@@ -112,6 +112,8 @@
                                     <xsl:text>javascript:this.T_ABOVE = false;this.T_OFFSETY='20';this.T_BGCOLOR='#FFFFFF';this.T_FONTSIZE='8pt';this.T_FONTFACE='verdana';</xsl:text>
                                     <xsl:text>return escape('&lt;b&gt;</xsl:text>
                                     <xsl:value-of select="$locale/footer/tooltipappnameandversion/option[@lang=$lang]"/>
+                                    <xsl:text> </xsl:text>
+                                    <xsl:value-of select="$locale/version/option[@lang=$lang]"/>
                                     <xsl:text> &lt;br/&gt;Copyright </xsl:text>
                                     <xsl:value-of select="$locale/footer/tooltipcreator/option[@lang=$lang]"/>
                                     <xsl:text>.&lt;/b&gt;');</xsl:text>

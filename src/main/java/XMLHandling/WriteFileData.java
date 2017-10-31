@@ -94,7 +94,8 @@ public class WriteFileData {
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
-        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null) + " -->\r\n");
+        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null) +" "+
+                u.translateFromTranslationsXML("locale/version", null) +" -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
@@ -109,7 +110,9 @@ public class WriteFileData {
 
             //logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
             //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
-            logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\">\r\n");
+            logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\""+
+                                      " exportDate=\"" + Utilities.GetNow() + "\""+
+                                      " schemaversion=\"" + u.translateFromTranslationsXML("locale/version", null) + "\">\r\n");
         }
 
         logFileWriter.flush();

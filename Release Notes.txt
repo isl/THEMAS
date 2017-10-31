@@ -26,6 +26,11 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 =============================================================================
+THEMAS new version Release Notes
+=============================================================================
+- XML version exported in XML export schema
+
+=============================================================================
 THEMAS 1.2.1 Release Notes
 =============================================================================
 - Update to Java 8 / Neo4j 3.2.5 / Neo4j-sisapi 1.2.1

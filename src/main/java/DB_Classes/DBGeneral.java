@@ -6255,12 +6255,14 @@ public class DBGeneral {
         }
 
         StringObject BTLinkObj = new StringObject();
+        StringObject RTLinkObj = new StringObject();
         HashMap<String, String> keyWordsMappings = new HashMap<String, String>();
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
         applyKeywordMappings(selectedThesaurus, Q, sis_session, outputTable, keyWordsMappings);
         dbtr.getThesaurusCategory_BT(selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
+        dbtr.getThesaurusCategory_RT(selectedThesaurus, Q, sis_session.getValue(), RTLinkObj);
 
         /*
          StringObject fromcls = new StringObject();
@@ -6308,6 +6310,10 @@ public class DBGeneral {
                 if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
                 }
+                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
+                    category = category.replaceFirst(RTLinkObj.getValue(), "");
+                }
+                
                 SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);
 
                 if (categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0
@@ -6484,12 +6490,14 @@ public class DBGeneral {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         StringObject BTLinkObj = new StringObject();
+        StringObject RTLinkObj = new StringObject();
         HashMap<String, String> keyWordsMappings = new HashMap<String, String>();
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
         applyKeywordMappings(selectedThesaurus, Q, sis_session, outputTable, keyWordsMappings);
         dbtr.getThesaurusCategory_BT(selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
+        dbtr.getThesaurusCategory_RT(selectedThesaurus, Q, sis_session.getValue(), RTLinkObj);
 
         /*
          StringObject fromcls = new StringObject();
@@ -6539,6 +6547,9 @@ public class DBGeneral {
                 }
                 if (categoryKwd.compareTo(ConstantParameters.nt_kwd) == 0) {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
+                }
+                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
+                    category = category.replaceFirst(RTLinkObj.getValue(), "");
                 }
 
                 SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);

@@ -2550,11 +2550,11 @@ public class Utilities {
                   */              
                                 
 
-                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>\r\n";
+                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>";
                 if(transliteration!=null && transliteration.length()>0){
-                    appendVal+="\t\t\t<" + ConstantParameters.system_transliteration_kwd+">";
+                    appendVal+="<" + ConstantParameters.system_transliteration_kwd+">";
                     appendVal+=Utilities.escapeXML(transliteration);
-                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">\r\n";
+                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">";
                 }
 
                 //out.append("<descriptor id=\"" + targetSysIdL + "\" >");
