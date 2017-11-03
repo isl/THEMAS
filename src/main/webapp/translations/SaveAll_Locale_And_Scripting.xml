@@ -103,8 +103,8 @@
                 <option lang="el">Υπό έγκριση</option>
             </underapproval>
             <forreinspection>
-                <option lang="en">Για αναθεώρηση</option>
-                <option lang="el">For Reinspection</option>
+                <option lang="en">For Reinspection</option>
+                <option lang="el">Για αναθεώρηση</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
@@ -219,8 +219,8 @@
                 <option lang="el">Υπό έγκριση</option>
             </underapproval>
             <forreinspection>
-                <option lang="en">Για αναθεώρηση</option>
-                <option lang="el">For Reinspection</option>
+                <option lang="en">For Reinspection</option>
+                <option lang="el">Για αναθεώρηση</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
