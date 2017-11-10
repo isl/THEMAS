@@ -63,6 +63,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.*;
@@ -364,7 +365,11 @@ public class DBAdminUtilities {
      CreateThesaurus()
      * DBbackupFileNameCreated: Used in order to store back Up file name. If not null its value will be used as a backup description
      -------------------------------------------------------*/
-    public boolean CreateThesaurus(CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, StringObject CreateThesaurusResultMessage, String backUpDescrition, StringObject DBbackupFileNameCreated) {
+    public boolean CreateThesaurus(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, 
+            String NewThesaurusNameDBformatted, 
+            StringObject CreateThesaurusResultMessage, 
+            String backUpDescrition, 
+            StringObject DBbackupFileNameCreated) {
         // check if server runs (close it before creating new thesaurus)
         /*
          boolean databaseIsRunning = common_utils.ProcessIsRunning(common_utils.MachineName, common_utils.DatabaseFullPath, common_utils.DatabaseName);
@@ -402,6 +407,80 @@ public class DBAdminUtilities {
             boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
             CreateThesaurusResultMessage.setValue("Can not create file : " + Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath() + "\r\n" + result.getValue());
             return false;
+        }
+        
+        Utils.StaticClass.closeDb();
+        
+        //create the default Facet and Hierarchy
+        DBGeneral dbGen = new DBGeneral();
+        
+        DBCreate_Modify_Facet creation_modificationOfFacet = new DBCreate_Modify_Facet();
+        DBCreate_Modify_Hierarchy creation_modificationOfHierarchy = new DBCreate_Modify_Hierarchy();
+        
+        QClass Q = new QClass(); 
+        TMSAPIClass TA = new TMSAPIClass();
+        IntegerObject sis_session = new IntegerObject();
+        IntegerObject tms_session = new IntegerObject();
+        
+        //open connection and start Transaction
+        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, NewThesaurusNameDBformatted, false)==QClass.APIFail)
+        {
+            
+            CreateThesaurusResultMessage.setValue("Cannot open connection");
+            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ creation of new thesaurus.");
+            return false;
+        }
+        
+        StringObject errorMsg = new StringObject();
+        
+        boolean succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(NewThesaurusNameDBformatted, Q, TA,  sis_session, tms_session,
+                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true);
+        
+        UsersClass wtmsUsers = new UsersClass();
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        
+        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, NewThesaurusNameDBformatted);
+        //just to give the under construction status that creates less issues
+        SessionUserInfo.thesaurusNames.add(NewThesaurusNameDBformatted);
+        SessionUserInfo.thesaurusGroups.add(Utils.ConstantParameters.Group_ThesaurusCommittee);
+        SessionUserInfo.userGroup = Utils.ConstantParameters.Group_ThesaurusCommittee;
+
+        if(succeded){
+            ArrayList<String> facets = new ArrayList<>();
+            facets.add(Parameters.UnclassifiedTermsFacetLogicalname);
+            succeded = creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, 
+                    Q, 
+                    TA,  
+                    sis_session,  
+                    tms_session,
+                    dbGen,  
+                    Parameters.UnclassifiedTermsLogicalname, 
+                    facets,
+                    "create", 
+                    null, 
+                    SessionUserInfo.name, 
+                    new Locale(Parameters.TargetLocaleLang, Parameters.TargetLocaleCountry)
+                    ,errorMsg
+                    ,true);
+        }
+        if(succeded){
+
+            //commit transaction and close connection
+            Q.free_all_sets();
+            Q.TEST_end_transaction();
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+
+            //out.println("Success");
+        }else{
+
+            //abort transaction and close connection
+            Q.free_all_sets();
+            Q.TEST_abort_transaction();
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+            CreateThesaurusResultMessage.setValue(errorMsg.getValue());
+            //out.println("Failure" + errorMsg.getValue());
+            return false;
+
         }
         /*
          // get the modification date of db folder contents before telos parsing

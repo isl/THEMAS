@@ -120,6 +120,9 @@ public class ConstantParameters {
     
     //Group_Reader --> i.e. READER. This user can see only the published part of the thesaurus without creation/modfication data
     public static final String Group_Reader = "READER";
+    public static final String Group_Library = "LIBRARY";
+    public static final String Group_ThesaurusTeam = "THESAURUS_TEAM";
+    public static final String Group_ThesaurusCommittee = "THESAURUS_COMMITTEE";
     
     //Group_External_Reader --> i.e. EXTERNALREADER. This user can see everything (apart from other user data) in a specific thesarus but cannot change anything 
     public static final String Group_External_Reader = "EXTERNALREADER";

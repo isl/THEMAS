@@ -169,7 +169,8 @@ public class CreateThesaurus extends ApplicationBasicServlet {
                 boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesaurusVector, NewThesaurusName, NewThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded);
                 if (GivenThesaurusCanBeCreated == true) {
 
-                    CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(common_utils, NewThesaurusNameDBformatted,CreateThesaurusResultMessage, "backup_before_creating_new_thesaurus", DBbackupFileNameCreated);
+                    
+                    CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(SessionUserInfo,common_utils, NewThesaurusNameDBformatted,CreateThesaurusResultMessage, "backup_before_creating_new_thesaurus", DBbackupFileNameCreated);
                     // after finishing the job and in case SIS server is not running, restart it
                     // ATTENTION!!! the following must be done so as to fix the SARUMAN bug
                     // where after the creation of the Thesaurus, the SIS server was NOT restarted!

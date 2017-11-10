@@ -663,13 +663,13 @@ public class DBConnect_Term {
         StringObject tcLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.tc_kwd, tcFromClassObj, tcLinkObj,Q,sis_session);
         
-        if (tc.size() == 0) {
+        if (tc.isEmpty()) {
         //if (sourcesList.compareTo("") == 0) {
             return errorMsg;
         }
         // fill a Vector with the Source values (with prefix and DB format)
         //String[] src_split = sourcesList.split("###");
-        ArrayList<StringObject> taxCodes = new ArrayList<StringObject>();
+        ArrayList<StringObject> taxCodes = new ArrayList<>();
         
         for (int i = 0; i < tc.size(); i++) {
             String tempTaxCode = tc.get(i);
@@ -736,6 +736,8 @@ public class DBConnect_Term {
         }
         return errorMsg;
     }
+    
+    
     
     /*---------------------------------------------------------------------
     connectSources()
@@ -954,7 +956,13 @@ public class DBConnect_Term {
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
 
-    public String AddComment(String selectedThesaurus,StringObject targetDescriptor, String commentString, int commentCategory,QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+    public String AddComment(String selectedThesaurus,
+            StringObject targetDescriptor, 
+            String commentString, 
+            int commentCategory,
+            QClass Q, 
+            TMSAPIClass TA, 
+            IntegerObject sis_session) {
 
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -968,16 +976,21 @@ public class DBConnect_Term {
         dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus,Q,sis_session.getValue(),thesThesaurusConcept);
 
         StringObject commentCategoryStrObj = new StringObject();
-        if (commentCategory == HYPERTEXT_CATEGORY_COMMENT) { 
-            dbtr.getThesaurusCategory_comment(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        } else if(commentCategory == HYPERTEXT_CATEGORY_SCOPENOTE){ 
-            dbtr.getThesaurusCategory_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        }
-        else if(commentCategory == HYPERTEXT_CATEGORY_HISTORICALNOTE){ 
-            dbtr.getThesaurusCategory_historical_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        }
-        else if(commentCategory == HYPERTEXT_CATEGORY_SCOPENOTE_TR){
-            dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+        switch (commentCategory) {
+            case HYPERTEXT_CATEGORY_COMMENT:
+                dbtr.getThesaurusCategory_comment(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case HYPERTEXT_CATEGORY_SCOPENOTE:
+                dbtr.getThesaurusCategory_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case HYPERTEXT_CATEGORY_HISTORICALNOTE:
+                dbtr.getThesaurusCategory_historical_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case HYPERTEXT_CATEGORY_SCOPENOTE_TR:
+                dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            default:
+                break;
         }
 
         
@@ -987,7 +1000,8 @@ public class DBConnect_Term {
         if(prevThes.getValue().equals(selectedThesaurus)==false){
             TA.SetThesaurusName(selectedThesaurus);
         }
-         int ret = TA.SetDescriptorComment(targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
+        
+        int ret = TA.SetDescriptorComment(targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
          //int ret = TA.SetDescriptorComment(TMSapiSession, targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
          //reset to previous thesaurus name if needed
         if(prevThes.getValue().equals(selectedThesaurus)==false){
@@ -1537,8 +1551,17 @@ public class DBConnect_Term {
         return errorMsg;
     }
     
-    public int delete_term_links_by_category(String selectedThesaurus, String targetDescriptor, 
-            int direction, String fromClass, String link, int KindOfDescriptor, QClass Q, TMSAPIClass TA, IntegerObject sis_session,DBGeneral dbGen,StringObject errorMsg) {
+    public int delete_term_links_by_category(String selectedThesaurus, 
+            String targetDescriptor, 
+            int direction, 
+            String fromClass, 
+            String link, 
+            int KindOfDescriptor, 
+            QClass Q, 
+            TMSAPIClass TA, 
+            IntegerObject sis_session,
+            DBGeneral dbGen,
+            StringObject errorMsg) {
 
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         int ret = TMSAPIClass.TMS_APISucc;
@@ -1735,18 +1758,6 @@ public class DBConnect_Term {
                             }
                         }
                     }
-                    /*
-                    while (Q.retur_full_nodes(selected_category_nodes, sysid, label, sclass) != QClass.APIFail) {
-
-                        //if(filterDelete){
-                        //String convertedName = dbGen.removePrefix(label.getValue()).trim() ;
-                        //if(escapeDeletion.contains(convertedName))
-                        //continue;                    
-                        //}
-                        if (!deleteIDs.contains(sysid.getValue())) {
-                            deleteIDs.add(sysid.getValue());
-                        }
-                    }*/
                 }
 
                 Q.free_set(selected_category_nodes);

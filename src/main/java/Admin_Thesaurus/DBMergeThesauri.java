@@ -77,7 +77,7 @@ public class DBMergeThesauri {
     public DBMergeThesauri() {
     }
 
-    public boolean CreateThesaurus(DBGeneral dbGen, ConfigDBadmin config, CommonUtilsDBadmin common_utils,
+    public boolean CreateThesaurus(UserInfoClass refSessionUserInfo, DBGeneral dbGen, ConfigDBadmin config, CommonUtilsDBadmin common_utils,
             String mergedThesaurusName, String mergedThesaurusNameDBformatted,
             ArrayList<String> thesauriNames, StringObject CreateThesaurusResultMessage,
             String backUpDescription, StringObject DBbackupFileNameCreated) {
@@ -116,6 +116,7 @@ public class DBMergeThesauri {
                 thesauriNames.clear();
             }
         }
+        
 
         // do the creation of the new thesaurus        
         Boolean CreateThesaurusSucceded = true;
@@ -123,7 +124,7 @@ public class DBMergeThesauri {
             // check if the given NewThesaurusName exists
             boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesauriNames, mergedThesaurusName, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded);
             if (GivenThesaurusCanBeCreated == true) {
-                CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(common_utils, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
+                CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(refSessionUserInfo, common_utils, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
                 // after finishing the job and in case SIS server is not running, restart it
                 // ATTENTION!!! the following must be done so as to fix the SARUMAN bug
                 // where after the creation of the Thesaurus, the SIS server was NOT restarted!

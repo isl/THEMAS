@@ -80,7 +80,7 @@ import org.w3c.dom.NodeList;
 public class UsersClass {
     public static final String WebAppUsersXMLFilePath = File.separator + "WEB-INF" + File.separator + "WebAppUSERS.xml";
     //administrator should be kept last 
-    public final String[] UsersGroups = {Utils.ConstantParameters.Group_Reader, "LIBRARY", "THESAURUS_TEAM", "THESAURUS_COMMITTEE",ConstantParameters.Group_External_Reader , ConstantParameters.Group_Administrator};
+    public final String[] UsersGroups = {Utils.ConstantParameters.Group_Reader, Utils.ConstantParameters.Group_Library, Utils.ConstantParameters.Group_ThesaurusTeam, Utils.ConstantParameters.Group_ThesaurusCommittee,ConstantParameters.Group_External_Reader , ConstantParameters.Group_Administrator};
     //public final String[] UsersGroupsGR = {"Χρήστης Αναγνώστης", "Χρήστης Βιβλιοθήκης", "Ομάδα Θησαυρού", "Επιτροπή Θησαυρού", "Εξωτερικός Αναγνώστης" , "Διαχειριστής"};
         
     /*---------------------------------------------------------------------
@@ -99,7 +99,7 @@ public class UsersClass {
         thesaurusV.add("BBB");
         ArrayList<String> groupV = new ArrayList<String>();
         groupV.add(Utils.ConstantParameters.Group_Reader);
-        groupV.add("LIBRARY");        
+        groupV.add(Utils.ConstantParameters.Group_Library);        
         int ret;
         HttpSession session = request.getSession();	
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
@@ -806,7 +806,7 @@ public class UsersClass {
         ArrayList<UserInfoClass> THEMASUserInfoList = ReadWebAppUsersXMLFile(THEMASUsersFileName);
         
         // check 1. Vector groupsV must contain at least 1 THESAURUS_COMMITTEE
-        if (groupsV.contains("THESAURUS_COMMITTEE") == false) {
+        if (groupsV.contains(Utils.ConstantParameters.Group_ThesaurusCommittee) == false) {
             return THESAURUS_WITHOUT_THESAURUS_COMMITTEE;
         }
         
@@ -1056,7 +1056,7 @@ public class UsersClass {
         for (int i = 0; i < GivenUserThesaurusNamesSize; i++) {
             // get the group for current thesaurus
             String groupOfCurrentThesaurus = (String)GivenUserThesaurusGroups.get(i);
-            if (groupOfCurrentThesaurus.equals("THESAURUS_COMMITTEE") == false) {
+            if (groupOfCurrentThesaurus.equals(Utils.ConstantParameters.Group_ThesaurusCommittee) == false) {
                 continue;
             }
             // get the thesaurus name where the given user is THESAURUS_COMMITTEE
@@ -1071,7 +1071,7 @@ public class UsersClass {
                 for (int k = 0; k < size; k++) {
                     String thesName = (String)thesNamesV.get(k);
                     String thesGroup = (String)thesGroupsV.get(k);
-                    if (thesName.equals(thesaurus_where_given_user_is_THESAURUS_COMMITTEE) == true && thesGroup.equals("THESAURUS_COMMITTEE") == true) {
+                    if (thesName.equals(thesaurus_where_given_user_is_THESAURUS_COMMITTEE) == true && thesGroup.equals(Utils.ConstantParameters.Group_ThesaurusCommittee) == true) {
                         countOf_THESAURUS_COMMITTEE_users_for_this_thesaurus++;
                     }
                 }

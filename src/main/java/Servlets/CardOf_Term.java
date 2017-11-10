@@ -245,10 +245,10 @@ public class CardOf_Term extends ApplicationBasicServlet {
             
             
             // in case of LIBRARY user group, mark term as (un)editable
-            //boolean UserOfGroupLIBRARY = (SessionUserInfo.userGroup.equals("LIBRARY") == true);            
+            //boolean UserOfGroupLIBRARY = (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) == true);            
             boolean termIsEditable = true;
-            if (SessionUserInfo.userGroup.equals("LIBRARY") || 
-                    (Parameters.ThesTeamEditOnlyCreatedByTerms && SessionUserInfo.userGroup.equals("THESAURUS_TEAM"))
+            if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) || 
+                    (Parameters.ThesTeamEditOnlyCreatedByTerms && SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam))
                     ) {
                 // get the logical name of the current LIBRARY user (Person`xxx)
                 StringObject userLogicalName = new StringObject();

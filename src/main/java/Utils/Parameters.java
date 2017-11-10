@@ -60,10 +60,15 @@ public class Parameters {
     public static boolean ShowTransliterationInAllXMLStream = false;
     public static boolean ShowReferenceURIalso = false;
     public static String UnclassifiedTermsLogicalname = "" ; 
+    public static String UnclassifiedTermsFacetLogicalname = "" ; 
     // SVG graphs configuration
     public static boolean DEBUG = false;
     public static String PrimaryLang =""; //Prefix Of main Language
     public static String UILang =""; // el/en
+    
+    public static String TargetLocaleLang = "";
+    public static String TargetLocaleCountry = "";//Prefix Of main Language
+    
     public static String SVG_temporary_filesPath;
     public static String SVG_navbar_enabled;
     public static String SVG_CategoriesDirections_for_traverse;
@@ -203,6 +208,8 @@ public class Parameters {
                 
                 UnclassifiedTermsLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsHierarchyName[1]", document);
                 
+                UnclassifiedTermsFacetLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsFacetName[1]", document);
+                
                 
                 String boolValStr_4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/@toLowerCase[1]", document);
                 if(boolValStr_4.toLowerCase().equals("true")||boolValStr_4.toLowerCase().equals("yes")){
@@ -211,6 +218,7 @@ public class Parameters {
                 else{
                     Parameters.TransliterationsToLowerCase = false;
                 }
+                
                 
                 NodeList TransltiterationGroups = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/ReplacementGroup", document,XPathConstants.NODESET);
                 if(TransltiterationGroups!=null){
@@ -261,6 +269,9 @@ public class Parameters {
             UILang = xpath.evaluate("web-app/context-param[param-name='UILanguage']/param-value[1]", document);
 
             
+            TargetLocaleLang = xpath.evaluate("web-app/context-param[param-name='LocaleLanguage']/param-value[1]", document);
+            TargetLocaleCountry = xpath.evaluate("web-app/context-param[param-name='LocaleCountry']/param-value[1]", document);
+            //TargetLocale = new Locale(targetLocaleLang, targetLocaleCountry);
             //separated web-app/display-name from static variable ApplicationName 
             //because web-app/display-name may also be used in e.g. tomcat manager for short description
             //ApplicationName = xpath.evaluate("web-app/display-name", document);

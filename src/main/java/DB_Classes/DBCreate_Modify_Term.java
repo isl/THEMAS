@@ -864,55 +864,6 @@ public class DBCreate_Modify_Term {
 
             ArrayList<String> valsToRemove = new ArrayList<String>();
 
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForUF(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/UF/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/UF/LongName", errorArgs, pathToMessagesXML);
-
-                            return;
-                        }
-                    }
-
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                
-            }
-*/
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
@@ -1279,70 +1230,10 @@ public class DBCreate_Modify_Term {
             //prepare values --> 12.35 --> transform to --> 012.35
             ArrayList<String> valsToRemove = new ArrayList<String>();
             String prefix_TC = dbtr.getThesaurusPrefix_TaxonomicCode(Q, sis_session.getValue());
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForTaxonomicalcode(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/TC/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.tc_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/TC/LongName", errorArgs, pathToMessagesXML);
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-            }
-            */
-
+            
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
-
-            /*
-            for(int i=0; i< decodedValues.size();i++){
-            TaxonomicCodeItem tempItem = new TaxonomicCodeItem(decodedValues.get(i),"");
-            ArrayList<String> codeParts = new ArrayList<String>();
-            codeParts.addAll(tempItem.codeParts);
-            String codeStr = "";
-            for(int j=0; j< codeParts.size(); j++){
-            codeStr = codeStr.concat(codeParts.get(j));
-            if(j< codeParts.size()-1){
-            codeStr = codeStr.concat(".");
-            }
-            }
-            decodedValues.set(i, codeStr);
-            }
-             */
 
             if (consistencyChecks.create_modify_check_11(errorMsg, pathToErrorsXML, decodedValues) == false) {
                 return;
@@ -1350,7 +1241,6 @@ public class DBCreate_Modify_Term {
             if (consistencyChecks.create_modify_check_12(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix_TC, prefix.concat(targetTermWithoutPrefix)) == false) {
                 return;
             }
-
 
             //prepare modified nodes
             ArrayList<String> modified_tcs = new ArrayList<String>();
@@ -1391,53 +1281,7 @@ public class DBCreate_Modify_Term {
 
             ArrayList<String> valsToRemove = new ArrayList<String>();
             ArrayList<String> scopeNote = new ArrayList<String>();
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/ScopeNote/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.scope_note_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/ScopeNote/LongName", errorArgs, pathToMessagesXML);
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-            }
-            */
-
+            
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }

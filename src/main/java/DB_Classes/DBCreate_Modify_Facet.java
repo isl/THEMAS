@@ -321,11 +321,9 @@ public class DBCreate_Modify_Facet {
         CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
         
         if (createORmodify.equals("create")) {
-            
-            
             errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages())));
-
-        } else // modify
+        } 
+        else // modify
         {
             if (deletionOperator != null) { // delete / (undo) abandon facet
 

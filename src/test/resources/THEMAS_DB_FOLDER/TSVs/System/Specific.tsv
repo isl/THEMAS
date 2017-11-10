@@ -50,12 +50,6 @@
 1003	LABEL	Token
 1003	LABEL	Type_Attribute
 1003	INSTANCEOF	318		<!-- Label800046	INSTANCEOF	version-number -->
-1004	Logicalname	Label800047
-1004	LABEL	Common
-1004	LABEL	Token
-1004	LABEL	Type_Attribute
-1004	INSTANCEOF	1143		<!-- Label800047	INSTANCEOF	belongs_to_SIS_xxxxx_SIS_hierarchy -->
-1004	RELATION	1074		<!-- Label800047	RELATION	SIS_XXXXX_SISClass`Ορφανοί όροι -->
 1005	Logicalname	Label800048
 1005	Type	STR
 1005	Value	rn
@@ -553,25 +547,6 @@
 1072	LABEL	S_Class
 1072	LABEL	Type_Individual
 1072	ISA	1065		<!-- SIS_XXXXX_SISStatusTermNotAccepted	ISA	SIS_XXXXX_SISStatusOfTerm -->
-1073	Logicalname	SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ
-1073	ThesaurusReferenceId	2
-1073	Transliteration	ορφανοι οροι
-1073	LABEL	Common
-1073	LABEL	S_Class
-1073	LABEL	Type_Individual
-1073	INSTANCEOF	1035		<!-- SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ	INSTANCEOF	SIS_XXXXX_SISThesaurusClass -->
-1073	INSTANCEOF	1036		<!-- SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ	INSTANCEOF	SIS_XXXXX_SISFacet -->
-1073	INSTANCEOF	1063		<!-- SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ	INSTANCEOF	SIS_XXXXX_SISNewThesaurusClass -->
-1073	ISA	1038		<!-- SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ	ISA	SIS_XXXXX_SISHierarchyClass -->
-1074	Logicalname	SIS_XXXXX_SISClass`Ορφανοί όροι
-1074	LABEL	Common
-1074	LABEL	S_Class
-1074	LABEL	Type_Individual
-1074	INSTANCEOF	1035		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISThesaurusClass -->
-1074	INSTANCEOF	1037		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISHierarchy -->
-1074	INSTANCEOF	1063		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISNewThesaurusClass -->
-1074	ISA	1038		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	ISA	SIS_XXXXX_SISHierarchyClass -->
-1074	ISA	1073		<!-- SIS_XXXXX_SISClass`Ορφανοί όροι	ISA	SIS_XXXXX_SISClass`ΟΡΦΑΝΟΙ ΟΡΟΙ -->
 1075	Logicalname	SIS_ZZZZZ_SISLanguage
 1075	LABEL	UniqueInDB
 1075	LABEL	Common
@@ -590,22 +565,12 @@
 1077	INSTANCEOF	23		<!-- SIS_XXXXX_SISClass`	INSTANCEOF	Prefix -->
 1078	Logicalname	Thesaurus`SIS_XXXXX_SIS
 1078	ThesaurusReferenceId	1
-1078	MaxThesaurusReferenceId	3	<!-- Unclassified Terms Hierarachy Top Term and Facet -->
+1078	MaxThesaurusReferenceId	1	<!-- Thesaurus node only -->
 1078	LABEL	Common
 1078	LABEL	Token
 1078	LABEL	Type_Individual
 1078	INSTANCEOF	31		<!-- Thesaurus`SIS_XXXXX_SIS	INSTANCEOF	Thesaurus -->
 1078	RELATION	1003		<!-- Thesaurus`SIS_XXXXX_SIS	RELATION	Label800046 -->
-1079	Logicalname	SIS_XXXXX_SISSIS_zzzzz_SIS`Ορφανοί όροι
-1079	ThesaurusReferenceId	3
-1079	Transliteration	ορφανοι οροι
-1079	LABEL	Common
-1079	LABEL	Token
-1079	LABEL	Type_Individual
-1079	INSTANCEOF	1051		<!-- SIS_XXXXX_SISSIS_zzzzz_SIS`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISTopTerm -->
-1079	INSTANCEOF	1062		<!-- SIS_XXXXX_SISSIS_zzzzz_SIS`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISNewDescriptor -->
-1079	INSTANCEOF	1074		<!-- SIS_XXXXX_SISSIS_zzzzz_SIS`Ορφανοί όροι	INSTANCEOF	SIS_XXXXX_SISClass`Ορφανοί όροι -->
-1079	RELATION	1004		<!-- SIS_XXXXX_SISSIS_zzzzz_SIS`Ορφανοί όροι	RELATION	Label800047 -->
 1080	Logicalname	SIS_xxxxx_SIS_Edit_Facet`Object_Set
 1080	LABEL	Common
 1080	LABEL	Token
@@ -1151,7 +1116,7 @@
 1146	INSTANCEOF	1145		<!-- SIS_xxxxx_SIS_scope_note	INSTANCEOF	SIS_XXXXX_SIS_description -->
 1146	INSTANCEOF	262		<!-- SIS_xxxxx_SIS_scope_note	INSTANCEOF	text_type -->
 1146	ISA	324		<!-- SIS_xxxxx_SIS_scope_note	ISA	scope_note -->
-1146	RELATION	25		<!-- SIS_xxxxx_SIS_scope_note	RELATION	hyperText -->
+1146	RELATION	3		<!-- SIS_xxxxx_SIS_scope_note	RELATION	Telos_String -->
 1147	Logicalname	SIS_xxxxx_SIS_translations_scope_note
 1147	LABEL	Common
 1147	LABEL	S_Class
@@ -1159,7 +1124,7 @@
 1147	INSTANCEOF	1145		<!-- SIS_xxxxx_SIS_translations_scope_note	INSTANCEOF	SIS_XXXXX_SIS_description -->
 1147	INSTANCEOF	262		<!-- SIS_xxxxx_SIS_translations_scope_note	INSTANCEOF	text_type -->
 1147	ISA	325		<!-- SIS_xxxxx_SIS_translations_scope_note	ISA	translations_scope_note -->
-1147	RELATION	25		<!-- SIS_xxxxx_SIS_translations_scope_note	RELATION	hyperText -->
+1147	RELATION	3		<!-- SIS_xxxxx_SIS_translations_scope_note	RELATION	Telos_String -->
 1148	Logicalname	SIS_xxxxx_SIS_historical_note
 1148	LABEL	Common
 1148	LABEL	S_Class
@@ -1167,7 +1132,7 @@
 1148	INSTANCEOF	1145		<!-- SIS_xxxxx_SIS_historical_note	INSTANCEOF	SIS_XXXXX_SIS_description -->
 1148	INSTANCEOF	262		<!-- SIS_xxxxx_SIS_historical_note	INSTANCEOF	text_type -->
 1148	ISA	327		<!-- SIS_xxxxx_SIS_historical_note	ISA	historical_note -->
-1148	RELATION	25		<!-- SIS_xxxxx_SIS_historical_note	RELATION	hyperText -->
+1148	RELATION	3		<!-- SIS_xxxxx_SIS_historical_note	RELATION	Telos_String -->
 1149	Logicalname	SIS_xxxxx_SIS_found_in
 1149	LABEL	Common
 1149	LABEL	S_Class
@@ -1302,7 +1267,7 @@
 1165	INSTANCEOF	1145		<!-- SIS_xxxxx_SIS_comment	INSTANCEOF	SIS_XXXXX_SIS_description -->
 1165	INSTANCEOF	262		<!-- SIS_xxxxx_SIS_comment	INSTANCEOF	text_type -->
 1165	ISA	326		<!-- SIS_xxxxx_SIS_comment	ISA	comment -->
-1165	RELATION	25		<!-- SIS_xxxxx_SIS_comment	RELATION	hyperText -->
+1165	RELATION	3		<!-- SIS_xxxxx_SIS_comment	RELATION	Telos_String -->
 1166	Logicalname	SIS_xxxxx_SIS_primary_found_in
 1166	LABEL	Common
 1166	LABEL	S_Class

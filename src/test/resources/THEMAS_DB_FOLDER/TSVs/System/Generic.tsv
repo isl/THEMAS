@@ -2877,7 +2877,7 @@
 324	LABEL	S_Class
 324	LABEL	Type_Attribute
 324	INSTANCEOF	262		<!-- scope_note	INSTANCEOF	text_type -->
-324	RELATION	25		<!-- scope_note	RELATION	hyperText -->
+324	RELATION	3		<!-- scope_note	RELATION	Telos_String-->
 325	Neo4j_Id	325
 325	Logicalname	translations_scope_note
 325	LABEL	Common
@@ -2885,7 +2885,7 @@
 325	LABEL	S_Class
 325	LABEL	Type_Attribute
 325	INSTANCEOF	262		<!-- translations_scope_note	INSTANCEOF	text_type -->
-325	RELATION	25		<!-- translations_scope_note	RELATION	hyperText -->
+325	RELATION	3		<!-- translations_scope_note	RELATION	Telos_String -->
 326	Neo4j_Id	326
 326	Logicalname	comment
 326	LABEL	Common
@@ -2893,7 +2893,7 @@
 326	LABEL	S_Class
 326	LABEL	Type_Attribute
 326	INSTANCEOF	262		<!-- comment	INSTANCEOF	text_type -->
-326	RELATION	25		<!-- comment	RELATION	hyperText -->
+326	RELATION	3		<!-- comment	RELATION	Telos_String -->
 327	Neo4j_Id	327
 327	Logicalname	historical_note
 327	LABEL	Common
@@ -2901,7 +2901,7 @@
 327	LABEL	S_Class
 327	LABEL	Type_Attribute
 327	INSTANCEOF	262		<!-- historical_note	INSTANCEOF	text_type -->
-327	RELATION	25		<!-- historical_note	RELATION	hyperText -->
+327	RELATION	3		<!-- historical_note	RELATION	Telos_String -->
 328	Neo4j_Id	328
 328	Logicalname	Queries
 328	LABEL	Common

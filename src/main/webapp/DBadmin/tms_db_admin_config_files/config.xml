@@ -54,12 +54,14 @@
       
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
+    <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
 
      <!-- 
     <PrimaryLanguage>English</PrimaryLanguage>
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
+    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
 	-->

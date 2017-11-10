@@ -563,7 +563,7 @@ public class DBImportData {
         //allHierarcies.addAll(dbGen.getDBAdminHierarchiesAndStatusesXML(sessionInstance, Q, sis_session));
         //Q.end_query();
 
-        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(dbGen, config, common_utils, targetThesaurusName, targetThesaurusName, thesauriNames,
+        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(SessionUserInfo, dbGen, config, common_utils, targetThesaurusName, targetThesaurusName, thesauriNames,
                 CopyThesaurusResultMessage,
                 "backup_before_merge_of_thes_" + thesaurusName1 + "_and_" + thesaurusName2 + "_to_" + targetThesaurusName,
                 DBbackupFileNameCreated);
@@ -958,7 +958,7 @@ public class DBImportData {
         //allHierarcies.addAll(dbGen.getDBAdminHierarchiesAndStatusesXML(sessionInstance, Q, sis_session));
         //Q.end_query();
 
-        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(dbGen, config, common_utils, targetThesaurusName, targetThesaurusName, thesauriNames,
+        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(SessionUserInfo, dbGen, config, common_utils, targetThesaurusName, targetThesaurusName, thesauriNames,
                 CopyThesaurusResultMessage,
                 "backup_before_copy_thes_" + sourceThesaurusName + "_to_" + targetThesaurusName,
                 DBbackupFileNameCreated);
@@ -1546,7 +1546,7 @@ public class DBImportData {
         }
         
         //Step5 thesaurus creation
-        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(dbGen, config, common_utils, importThesaurusName, importThesaurusName, thesaurusVector, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
+        boolean CreateThesaurusSucceded = dbMerge.CreateThesaurus(refSessionUserInfo, dbGen, config, common_utils, importThesaurusName, importThesaurusName, thesaurusVector, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
         if (CreateThesaurusSucceded == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Creation operation of new thesaurus: " + importThesaurusName + " failed.");
             return false;
