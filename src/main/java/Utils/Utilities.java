@@ -2950,6 +2950,8 @@ public class Utilities {
 
     public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
         String retVal ="";
+        retVal="/"+thesaurusName+"/"+kind.name()+"/"+referenceId;
+        /*
         switch(kind){
             case FACET:{
                 retVal = "/"+Servlets.CardOf_Facet.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
@@ -2970,7 +2972,7 @@ public class Utilities {
             default:{
                 break;
             }
-        }
+        }*/
         /*
         if(thesaurusName!=null && thesaurusName.length()>0){
             retVal += thesaurusName+"/";

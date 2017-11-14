@@ -567,7 +567,7 @@
                             <xsl:value-of select="$specificlocale/selectexportthesaurus/option[@lang=$lang]"/>
                         </td>
                         <td align="left">
-                            <select id="exportThesaurus_ID" name="exportThesaurus" style="width:160px;">
+                            <select id="exportThesaurus_ID" name="exportThesaurus" style="width:160px;" onchange="checkSkosConfiguration();">
                                 <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
                                     <xsl:sort select="."/>
                                     <option>
@@ -592,16 +592,20 @@
                             <xsl:value-of select="$specificlocale/selectexportxmlschematype/option[@lang=$lang]"/>
                         </td>
                         <td>
-                            <input type="radio" name="exportschematype" value="THEMAS" style="margin-left:0px;margin-right:5px;" checked="checked">
-                                <xsl:text>THEMAS</xsl:text>
-                            </input>
-                            <input type="radio" name="exportschematype" value="skos" style="margin-left:10px;margin-right:5px;">
+                           <div style="display:inline-block; vertical-align:middle;"> 
+                                <input type="radio" name="exportschematype" id="radioTHEMAS" value="THEMAS"  onclick="checkSkosConfiguration();" style="margin-left:0px;margin-right:5px;" checked="checked"/>
+                                <label for="radioTHEMAS" style="cursor:pointer;"><xsl:text>THEMAS</xsl:text></label>
+                           </div>
+                           <div style="display:inline-block; vertical-align:middle;"> 
+                            
+                            <input type="radio" name="exportschematype" id="radioSKOS" value="skos" onclick="checkSkosConfiguration();" style="margin-left:10px;margin-right:5px;"/>
+                            <label for="radioSKOS" style="cursor:pointer;">
                                 <xsl:text>Skos</xsl:text>
-                             </input>
+                            </label>                            
+                            
+                           </div>
                         </td>
-                        <td align="right">
-                       
-                        <!--<td align="right" colspan="3">-->
+                        <td>
                             <xsl:choose>
                                 <xsl:when test="//exportFile != ''">
                                     <input type="button" class="button">
@@ -629,6 +633,26 @@
                                 <xsl:otherwise></xsl:otherwise>
                             </xsl:choose>
                         </td>
+                    </tr>
+                    <tr width="95%" id="skosConceptSchemeConfigurationRowId" style="visibility:hidden;">
+                        <td>
+                           <label for="skosConceptSchemeId" style="cursor:pointer;">
+                                <xsl:text>SKOS Concept Scheme:</xsl:text>
+                            </label>
+                        </td>
+                        <td colspan="2">
+                           <input type="text" id="skosConceptSchemeId" name="skosConceptScheme" value="" style="margin-left:10px; width:400px;"/>                            
+                        </td>                       
+                    </tr>
+                    <tr width="95%" id="skosBaseNameSpaceConfigurationRowId" style="visibility:hidden;">
+                        <td>
+                           <label for="skosBaseNameSpaceId" style="cursor:pointer;">
+                                <xsl:text>SKOS Namespace:</xsl:text>
+                            </label>
+                        </td>
+                        <td colspan="2">
+                           <input type="text" id="skosBaseNameSpaceId" name="skosBaseNameSpace" value="" style="margin-left:10px; width:400px;"/>                            
+                        </td>                       
                     </tr>
                    
                 </table>

@@ -99,13 +99,29 @@ public class WriteFileData {
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
-                    + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\" "
-                    + "\r\n\txmlns:dc=\"http://purl.org/dc/elements/1.1/\">\r\n\r\n");
-            logFileWriter.append("\t<skos:ConceptScheme rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
+                    + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n"
+                    + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\r\n"
+                    + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n"
+                    + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\""
+                    +">\r\n\r\n");
+            
+            logFileWriter.append("\t<rdf:Description rdf:about=\""+ ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\">\r\n"+
+		"\t<skos:scopeNote xml:lang=\"en\"> grouping of concepts of the same inherent category</skos:scopeNote>\r\n"+
+		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\r\n"+
+                "\t</rdf:Description>\r\n\r\n");
+            
+            logFileWriter.append("\t<rdf:Description rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
+                    + "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\r\n"
                     + "\t\t<skos:prefLabel>" + Utilities.escapeXML(importThesaurusName) + "</skos:prefLabel>\r\n"
                     + "\t\t<dc:date>" + Utilities.GetNow() + "</dc:date>\r\n"
-                    + "\t</skos:ConceptScheme>\r\n");
+                    + "\t</rdf:Description>\r\n");
 
+            /*
+            	<rdf:Description rdf:about="https://vocabs.dariah.eu/bbt/Facet/">
+		<skos:scopeNote xml:lang="en"> grouping of concepts of the same inherent category</skos:scopeNote>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	</rdf:Description>
+            */
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
             //logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
@@ -352,12 +368,13 @@ public class WriteFileData {
                 Collections.sort(values,transliterationComparator);
                 
                 logFileWriter.append("\r\n\t<!-- Facet -->\r\n");
-                String appendVal = "\t<skos:Collection" ;
+                String appendVal = "\t<rdf:Description" ;
                 if(facetNameSortItem.getThesaurusReferenceId()>0){
                     appendVal += " rdf:about=\""+ getSkosUri(true,schemePrefix,facetNameSortItem.getThesaurusReferenceId()) +"\"";
                 }
                 appendVal+=">\r\n";
                 logFileWriter.append(appendVal);
+                logFileWriter.append("\t\t<rdf:type rdf:resource=\""+ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\"/>\r\n");
                 logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogName()));
                 logFileWriter.append("</skos:prefLabel>\r\n");
@@ -369,7 +386,7 @@ public class WriteFileData {
                 }
 
                 logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
-                logFileWriter.append("\t</skos:Collection>\r\n");
+                logFileWriter.append("\t</rdf:Description>\r\n");
             }
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
@@ -484,7 +501,9 @@ public class WriteFileData {
             } else {
                 logFileWriter.append("\r\n\t<!-- Concept -->\r\n");
             }
-            logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\r\n");
+            logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
+            logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
+            logFileWriter.append("\t\t<skos:notation>"+targetTermId+"</skos:notation>\r\n");
             logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetTermName));
             logFileWriter.append("</skos:prefLabel>\r\n");
@@ -803,18 +822,18 @@ public class WriteFileData {
             for (int j = 0; j < creators.size(); j++) {
                 String value = creators.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:creator>");
+                    logFileWriter.append("\t\t<dcterms:creator>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:creator>\r\n");
+                    logFileWriter.append("</dcterms:creator>\r\n");
                 }
             }
             Collections.sort(creationDates);
             for (int j = 0; j < creationDates.size(); j++) {
                 String value = creationDates.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:date>");
+                    logFileWriter.append("\t\t<dcterms:created>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:date>\r\n");
+                    logFileWriter.append("</dcterms:created>\r\n");
                 }
             }
 
@@ -822,18 +841,18 @@ public class WriteFileData {
             for (int j = 0; j < modificators.size(); j++) {
                 String value = modificators.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:contributor>");
+                    logFileWriter.append("\t\t<dcterms:contributor>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:contributor>\r\n");
+                    logFileWriter.append("</dcterms:contributor>\r\n");
                 }
             }
             Collections.sort(modificationDates);
             for (int j = 0; j < modificationDates.size(); j++) {
                 String value = modificationDates.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:date>");
+                    logFileWriter.append("\t\t<dcterms:modified>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:date>\r\n");
+                    logFileWriter.append("</dcterms:modified>\r\n");
                 }
             }
 
@@ -842,7 +861,7 @@ public class WriteFileData {
             } else {
                 logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             }
-            logFileWriter.append("\t</skos:Concept>\r\n");
+            logFileWriter.append("\t</rdf:Description>\r\n");
         }
     }
     
@@ -924,7 +943,10 @@ public class WriteFileData {
             } else {
                 logFileWriter.append("\r\n\t<!-- Concept -->\r\n");
             }
-            logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\r\n");
+            //logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\r\n");
+            logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
+            logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
+            logFileWriter.append("\t\t<skos:notation>"+targetSortItem.getThesaurusReferenceId()+"</skos:notation>\r\n");            
             logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetSortItem.getLogName()));
             logFileWriter.append("</skos:prefLabel>\r\n");
@@ -1263,18 +1285,18 @@ public class WriteFileData {
             for (int j = 0; j < creators.size(); j++) {
                 String value = creators.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:creator>");
+                    logFileWriter.append("\t\t<dcterms:creator>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:creator>\r\n");
+                    logFileWriter.append("</dcterms:creator>\r\n");
                 }
             }
             Collections.sort(creationDates);
             for (int j = 0; j < creationDates.size(); j++) {
                 String value = creationDates.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:date>");
+                    logFileWriter.append("\t\t<dcterms:created>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:date>\r\n");
+                    logFileWriter.append("</dcterms:created>\r\n");
                 }
             }
 
@@ -1282,18 +1304,18 @@ public class WriteFileData {
             for (int j = 0; j < modificators.size(); j++) {
                 String value = modificators.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:contributor>");
+                    logFileWriter.append("\t\t<dcterms:contributor>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:contributor>\r\n");
+                    logFileWriter.append("</dcterms:contributor>\r\n");
                 }
             }
             Collections.sort(modificationDates);
             for (int j = 0; j < modificationDates.size(); j++) {
                 String value = modificationDates.get(j);
                 if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dc:date>");
+                    logFileWriter.append("\t\t<dcterms:modified>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dc:date>\r\n");
+                    logFileWriter.append("</dcterms:modified >\r\n");
                 }
             }
 
@@ -1302,7 +1324,7 @@ public class WriteFileData {
             } else {
                 logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             }
-            logFileWriter.append("\t</skos:Concept>\r\n");
+            logFileWriter.append("\t</rdf:Description>\r\n");
         }
     }
 
@@ -1953,15 +1975,18 @@ public class WriteFileData {
         } // simple exception handling, please review it     }
     }
     
+    private String Skos_Facet = "Facet";
+    private String Skos_Concept = "Concept";
     private String getSkosUri(boolean isFacet, String prefix, long id){
         String retVal = prefix;
         if(isFacet){
-            retVal+=Servlets.CardOf_Facet.class.getSimpleName();
+            retVal+=Skos_Facet+"/";
         }
         else{
-            retVal+=Servlets.CardOf_Term.class.getSimpleName();
+            retVal+=Skos_Concept+"/";//retVal+=Servlets.CardOf_Term.class.getSimpleName();
         }
-        retVal+="?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+id+"&amp;mode="+ConstantParameters.XMLSTREAM;
+        //retVal+="?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+id+"&amp;mode="+ConstantParameters.XMLSTREAM;
+        retVal+=id;
         return retVal;
     }
 }

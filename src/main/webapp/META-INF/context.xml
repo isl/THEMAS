@@ -32,4 +32,10 @@
  
  This file is part of the THEMAS system.
  -->
-<Context antiJARLocking="true" path="/THEMAS"/>
+ <Context antiJARLocking="true" path="/THEMAS"/>
+<!--
+<Context antiJARLocking="true" path="/THEMAS">
+    <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+</Context>
+-->
+

@@ -775,3 +775,68 @@ function removeLanguageRow(table) {
         document.getElementById('removeLanguageImg').style.display='none';
     }
 }
+
+
+function checkSkosConfiguration(){
+    if($('#radioSKOS').is(':checked')) { 
+        $('#skosConceptSchemeConfigurationRowId').css('visibility', 'visible'); 
+        $('#skosBaseNameSpaceConfigurationRowId').css('visibility', 'visible'); 
+        
+        //var currentVal = $('#skosBaseNameSpaceId').val();
+        //if(!currentVal || currentVal===""){
+        $('#skosConceptSchemeId').val(computeSkosDefaultConceptScheme());
+        $('#skosBaseNameSpaceId').val(computeSkosDefaultBaseNameSpace());
+        //}
+    }else{  
+        $('#skosConceptSchemeConfigurationRowId').css('visibility', 'hidden'); 
+        $('#skosBaseNameSpaceConfigurationRowId').css('visibility', 'hidden'); 
+    }
+}
+
+function computeSkosDefaultConceptScheme(){
+    
+    
+    var retVal = window.location.origin;
+    var baseStr = window.location.pathname;
+    var parts = baseStr.split("/");
+    if(parts && parts.length>0)
+    {        
+        for(var partIndex=0;  partIndex < parts.length ; partIndex++){
+            var part = parts[partIndex];
+            if(part && part.length>0){
+                retVal +="/"+part;
+                break;
+            }
+        }        
+    }    
+    var selectedThes = $('#exportThesaurus_ID :selected').text();
+    if(selectedThes && selectedThes.length>0){
+        retVal+="#"+selectedThes;
+    }
+    
+    return retVal;
+}
+
+function computeSkosDefaultBaseNameSpace(){
+    var retVal = window.location.origin;
+    var baseStr = window.location.pathname;
+    var parts = baseStr.split("/");
+    if(parts && parts.length>0)
+    {        
+        for(var partIndex=0;  partIndex < parts.length ; partIndex++){
+            var part = parts[partIndex];
+            if(part && part.length>0){
+                retVal +="/"+part;
+                break;
+            }
+        }        
+    }    
+    var selectedThes = $('#exportThesaurus_ID :selected').text();
+    if(selectedThes && selectedThes.length>0){
+        retVal+="/"+selectedThes;
+    }
+    
+    return retVal;
+    
+    
+}

@@ -174,7 +174,9 @@ public class DBexportData {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
              //check if tcs are defined for skos case
+             /*
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
+                
                 ArrayList<String> termNames = new ArrayList<String>(termsInfo.keySet());
                 Collections.sort(termNames);
                 int howmanyWithoutTc = 0;
@@ -194,7 +196,7 @@ public class DBexportData {
                         targetInfo.descriptorInfo.put(ConstantParameters.tc_kwd, newTcs);
                     }
                 }
-            }
+            }*/
 
 
             try{
