@@ -674,13 +674,20 @@ public class DBAdminUtilities {
         StringObject scopenoteENLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenoteENFromClassObj, scopenoteENLinkObj, Q, sis_session);
 
-        StringObject commentFromClassObj = new StringObject();
-        StringObject commentLinkObj = new StringObject();
-        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
 
         StringObject historicalnoteFromClassObj = new StringObject();
         StringObject historicalnoteLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+        
+        
+        StringObject commentFromClassObj = new StringObject();
+        StringObject commentLinkObj = new StringObject();
+        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+        
+        
+        StringObject noteFromClassObj = new StringObject();
+        StringObject noteLinkObj = new StringObject();
+        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
         //DELETE ALL TERM RELATIONS EXCEPT BT RELATIONS
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         StringObject prevThes = new StringObject();
@@ -690,8 +697,9 @@ public class DBAdminUtilities {
         }
         TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteFromClassObj, scopenoteLinkObj);
         TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteENFromClassObj, scopenoteENLinkObj);
-        TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
         TA.DeleteDescriptorComment(targetDescriptorObj, historicalnoteFromClassObj, historicalnoteLinkObj);
+        TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
+        TA.DeleteDescriptorComment(targetDescriptorObj, noteFromClassObj, noteLinkObj);
 
         //reset to previous thesaurus name if needed
         if (prevThes.getValue().equals(selectedThesaurus) == false) {
@@ -1144,6 +1152,13 @@ public class DBAdminUtilities {
                    new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
         
         modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.historical_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.comment_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.note_kwd, 
                    new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
         
         

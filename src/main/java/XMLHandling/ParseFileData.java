@@ -1041,14 +1041,8 @@ public class ParseFileData {
     public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, String> languageSelections) {
 
-        String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
-            ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-            ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-            ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd,
-            ConstantParameters.system_referenceUri_kwd, ConstantParameters.system_transliteration_kwd
-        };
-
+        String[] output = Utilities.getSortedTermAllOutputArray();
+        
         Utilities u = new Utilities();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "readXMLTerms Started at " + Utilities.GetNow()); // JUST READ WHTAEVER YOU SEE
 
@@ -1645,11 +1639,25 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
                 DBGeneral dbGen = new DBGeneral();
 
-                String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd,
-                    ConstantParameters.tc_kwd, ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-                    ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-                    ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-                    ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
+                String[] output = {ConstantParameters.bt_kwd, 
+                    ConstantParameters.nt_kwd, 
+                    ConstantParameters.rt_kwd, 
+                    ConstantParameters.uf_kwd,
+                    ConstantParameters.tc_kwd, 
+                    ConstantParameters.translation_kwd, 
+                    ConstantParameters.status_kwd, 
+                    ConstantParameters.uf_translations_kwd,
+                    ConstantParameters.primary_found_in_kwd,
+                    ConstantParameters.translations_found_in_kwd, 
+                    ConstantParameters.created_by_kwd, 
+                    ConstantParameters.created_on_kwd, 
+                    ConstantParameters.modified_by_kwd,
+                    ConstantParameters.modified_on_kwd, 
+                    ConstantParameters.scope_note_kwd, 
+                    ConstantParameters.translations_scope_note_kwd,
+                    ConstantParameters.historical_note_kwd,
+                    ConstantParameters.comment_kwd,
+                    ConstantParameters.note_kwd
                 };
 
 

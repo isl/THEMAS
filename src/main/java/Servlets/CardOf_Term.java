@@ -187,8 +187,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             output.add(ConstantParameters.system_referenceUri_kwd);
             output.add(ConstantParameters.tc_kwd);
             output.add(ConstantParameters.translation_kwd);
-            output.add(ConstantParameters.scope_note_kwd);
-            output.add(ConstantParameters.translations_scope_note_kwd);
+            
             output.add(ConstantParameters.topterm_kwd);
             output.add(ConstantParameters.bt_kwd);
             output.add(ConstantParameters.nt_kwd);
@@ -201,7 +200,11 @@ public class CardOf_Term extends ApplicationBasicServlet {
             output.add(ConstantParameters.created_on_kwd);
             output.add(ConstantParameters.modified_by_kwd);
             output.add(ConstantParameters.modified_on_kwd);
+            output.add(ConstantParameters.scope_note_kwd);
+            output.add(ConstantParameters.translations_scope_note_kwd);
             output.add(ConstantParameters.historical_note_kwd);
+            output.add(ConstantParameters.comment_kwd);
+            output.add(ConstantParameters.note_kwd);
             output.add(ConstantParameters.status_kwd);
 
             //open connection

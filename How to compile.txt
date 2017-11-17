@@ -26,38 +26,45 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 
------------------------------------------------------------------------------
+================================================================
 How to compile
------------------------------------------------------------------------------
-Create a java web application project (JEE 7 Web)
-until now we used java jdk1.8.0_131 64 bit
-and Apache Tomcat 8.0.32
+================================================================
+The following instructions have been tested in the following enviroment
+OS: windows 10 64 bit
+IDE: Netbeans 8.2 IDE (All version for Windows)
+Java: jdk1.8.0_152 64 bit
+Server: Apache Tomcat 8.0.27 (coming with Netbeans 8.2)
+THEMAS: version used 1.2.1
 
-- Use the sources included in the /Sources/WebApplication/ 
+- Extract the zip file downloaded from github (https://github.com/isl/THEMAS/tree/v.1.2.1) 
+  to the desired development folder
+  
+- In Netbeans 8.2 select Open Project > Browse to the aforementions extracted folder  
+
+- Use the sources included in the /src/main/ 
   folder of this repository
   
 - Create the following empty folders in case they do not exist
-  -- web\help-files
-  -- web\LogFiles
-  -- web\MonitorAutomaticBackups
-  -- web\Save_Results_Displays\Save_Results_temporary_files
-  -- web\SVGproducer\SVG_temporary_files
-  -- web\third-party-javascript
-  -- web\third-party-javascript\chosen
-  -- web\third-party-javascript\mktree
-  -- web\third-party-javascript\wztooltip
-  -- web\third-party-javascript\ckeditor
-  -- web\Uploads
-  -- web\WEB-INF\SystemLogs
-
+  -- /src/main/webapp/help-files
+  -- /src/main/webapp/LogFiles
+  -- /src/main/webapp/MonitorAutomaticBackups
+  -- /src/main/webapp/Save_Results_Displays/Save_Results_temporary_files
+  -- /src/main/webapp/SVGproducer/SVG_temporary_files
+  -- /src/main/webapp/third-party-javascript
+  -- /src/main/webapp/third-party-javascript/chosen
+  -- /src/main/webapp/third-party-javascript/mktree
+  -- /src/main/webapp/third-party-javascript/wztooltip
+  -- /src/main/webapp/third-party-javascript/ckeditor
+  -- /src/main/webapp/Uploads
+  -- /src/main/webapp/WEB-INF/SystemLogs
 
 - Download the third party javascript files or use the copies provided at 
-  libs\Javascript folder and place them in:
+  /libs/Javascript folder and place them in:
   
-  -- web/third-party-javascript/chosen and   
-  -- web/third-party-javascript/mktree and 
-  -- web/third-party-javascript/wztooltip and
-  -- web/third-party-javascript/ckeditor  respectively
+  -- /src/main/webapp/third-party-javascript/chosen and   
+  -- /src/main/webapp/third-party-javascript/mktree and 
+  -- /src/main/webapp/third-party-javascript/wztooltip and
+  -- /src/main/webapp/third-party-javascript/ckeditor  respectively
 
   
 ================================================================
@@ -91,8 +98,8 @@ ul.chosen-results{
 -- In case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
    dependencies cannot be resolved, you can find copies of these jars in libs folder 
    
-   Neo4j-sisapi-1.2.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.2)
-   but a copy may be downloaded from attached files in (https://github.com/isl/Neo4j-sisapi/releases/tag/v1.2)
+   Neo4j-sisapi-1.2.1.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.2.1)
+   but a copy may be downloaded from attached files in (https://github.com/isl/Neo4j-sisapi/releases/tag/v1.2.1)
   
 - create project references to these libraries
 
@@ -100,15 +107,21 @@ ul.chosen-results{
 - Apply jvm option -Dfile.encoding=UTF8
 
 
+================================================================
 You must now be able to compile
+================================================================
 
 
+
+================================================================
+- Database Paths and configuration (config.xml)
+================================================================
 The neo4j database needs no installation. 
-Copy contents of /Sources/THEMAS_DB_FOLDER
+Copy contents of /src/test/resources/THEMAS_DB_FOLDER
 to any folder of your machine and refer to it 
-in file:
+in config.xml file:
 
-"/Sources/WebApplication/web/DBadmin/tms_db_admin_config_files/config.xml"
+"/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
 
 by changing the "Neo4j_DB_FOLDER_PATH" xml element text
 
@@ -118,42 +131,45 @@ In order to define as primary language the English language
 then you also need to make the folowing confugurations:
 
 In File:
-"/Sources/WebApplication/web/DBadmin/tms_db_admin_config_files/config.xml"
+"/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
 replace:
 
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
+    <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
-with 
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
 
-		<PrimaryLanguage>English</PrimaryLanguage>
+with:
+
+    <PrimaryLanguage>English</PrimaryLanguage>
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
+    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
     
-
+================================================================
 
 In order to change the UIlanguage to english (It is irrelevant to the 
 language used as primary in the database) you should edit file: 
-"Sources/WebApplication/web/WEB-INF/web.xml" 
+"/src/main/webapp/WEB-INF/web.xml" 
 and replace:
 
-		<context-param>
+	<context-param>
         <param-name>UILanguage</param-name>
         <param-value>el</param-value>
     </context-param>
     
 with:
 
-		<context-param>
+	<context-param>
         <param-name>UILanguage</param-name>
         <param-value>en</param-value>
     </context-param>
 
 
 
-Finally Edit File "Sources/WebApplication/web/WEB-INF/classes/logging.properties
+Finally Edit File "/src/main/webapp/WEB-INF/classes/logging.properties
 so that logfile folder and log file prefix are correctly set
 
 e.g.

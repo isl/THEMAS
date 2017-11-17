@@ -1317,7 +1317,7 @@ public class DBCreate_Modify_Term {
             
             if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.HYPERTEXT_CATEGORY_SCOPENOTE, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_SCOPENOTE, Q,TA, sis_session));
             }
 
             //</editor-fold >
@@ -1434,7 +1434,7 @@ public class DBCreate_Modify_Term {
             }
             if (finalTrSNStr.length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, finalTrSNStr, DBConnect_Term.HYPERTEXT_CATEGORY_SCOPENOTE_TR, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, finalTrSNStr, DBConnect_Term.COMMENT_CATEGORY_SCOPENOTE_TR, Q,TA, sis_session));
             }
 
             //</editor-fold>
@@ -1522,7 +1522,97 @@ public class DBCreate_Modify_Term {
                 }
             if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.HYPERTEXT_CATEGORY_HISTORICALNOTE, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_HISTORICALNOTE, Q,TA, sis_session));
+            }
+
+            //</editor-fold >
+        }
+        else if (targetField.compareTo(ConstantParameters.comment_kwd) == 0) {
+            //<editor-fold defaultstate="collapsed" desc="Edit Comment Note...">
+
+            ArrayList<String> valsToRemove = new ArrayList<String>();
+            
+            if (valsToRemove.size() > 0) {
+                decodedValues.removeAll(valsToRemove);
+            }
+
+
+            ArrayList<String> commentNote = new ArrayList<String>();
+            commentNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.comment_kwd, Q, TA, sis_session));
+            if (decodedValues.size() > 0 && commentNote.size() > 0 && decodedValues.get(0).compareTo(commentNote.get(0)) == 0) {
+                return;
+            }
+
+            modifiedNodes = new String[1];
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
+
+            //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                TA.SetThesaurusName(SessionUserInfo.selectedThesaurus);
+            }
+            int ret = TA.DeleteDescriptorComment(targetDescriptorObj, fromClassObj, LinkObj);
+            if (ret == TMSAPIClass.TMS_APIFail) {
+                //errorMsg.setValue(" " + WTA.errorMessage.getValue());
+                TA.ALMOST_DONE_GetTMS_APIErrorMessage(errorMsg);
+                //reset to previous thesaurus name if needed
+                if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+                return;
+            }
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+            if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
+
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_COMMENT, Q,TA, sis_session));
+            }
+
+            //</editor-fold >
+        }
+        else if (targetField.compareTo(ConstantParameters.note_kwd) == 0) {
+            //<editor-fold defaultstate="collapsed" desc="Edit Note...">
+
+            ArrayList<String> valsToRemove = new ArrayList<>();
+            
+            if (valsToRemove.size() > 0) {
+                decodedValues.removeAll(valsToRemove);
+            }
+
+
+            ArrayList<String> noteNote = new ArrayList<String>();
+            noteNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.note_kwd, Q, TA, sis_session));
+            if (decodedValues.size() > 0 && noteNote.size() > 0 && decodedValues.get(0).compareTo(noteNote.get(0)) == 0) {
+                return;
+            }
+
+            modifiedNodes = new String[1];
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
+
+            //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                TA.SetThesaurusName(SessionUserInfo.selectedThesaurus);
+            }
+            int ret = TA.DeleteDescriptorComment(targetDescriptorObj, fromClassObj, LinkObj);
+            if (ret == TMSAPIClass.TMS_APIFail) {
+                //errorMsg.setValue(" " + WTA.errorMessage.getValue());
+                TA.ALMOST_DONE_GetTMS_APIErrorMessage(errorMsg);
+                //reset to previous thesaurus name if needed
+                if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+                return;
+            }
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+            if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
+
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_NOTE, Q,TA, sis_session));
             }
 
             //</editor-fold >
@@ -1595,13 +1685,19 @@ public class DBCreate_Modify_Term {
             StringObject scopenoteENLinkObj = new StringObject();
             dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenoteENFromClassObj, scopenoteENLinkObj, Q, sis_session);
 
+            
+            StringObject historicalnoteFromClassObj = new StringObject();
+            StringObject historicalnoteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            
             StringObject commentFromClassObj = new StringObject();
             StringObject commentLinkObj = new StringObject();
             dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
 
-            StringObject historicalnoteFromClassObj = new StringObject();
-            StringObject historicalnoteLinkObj = new StringObject();
-            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            StringObject noteFromClassObj = new StringObject();
+            StringObject noteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
+
             //DELETE ALL TERM RELATIONS EXCEPT BT RELATIONS
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
             StringObject prevThes = new StringObject();
@@ -1612,6 +1708,7 @@ public class DBCreate_Modify_Term {
             TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteFromClassObj, scopenoteLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteENFromClassObj, scopenoteENLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
+            TA.DeleteDescriptorComment(targetDescriptorObj, noteFromClassObj, noteLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, historicalnoteFromClassObj, historicalnoteLinkObj);
             //reset to previous thesaurus name if needed
             if(prevThes.getValue().equals(selectedThesaurus)==false){

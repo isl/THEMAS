@@ -51,20 +51,20 @@
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
-      
+     
+      <!--  
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
-
-     <!-- 
+-->
+     
     <PrimaryLanguage>English</PrimaryLanguage>
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
     <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
-	-->
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
 
     <BehaviorConfigs>
         <AtRenameStoreOldNameAsUf>true</AtRenameStoreOldNameAsUf>  
@@ -74,43 +74,43 @@
 
             <!-- THIS SHOULD ALSO BE PROVIDED AS A FIX DB OPERATION -->
             <ReplacementGroup>
-                <Source dellimeterChar=";">ά;ἀ;ἁ;ἂ;ἃ;ἄ;ἅ;ἆ;ἇ;ὰ;ά;ᾀ;ᾁ;ᾂ;ᾃ;ᾄ;ᾅ;ᾆ;ᾇ;ᾰ;ᾱ;ᾲ;ᾳ;ᾴ;ᾶ;ᾷ</Source>
+                <Source delimeterChar=";">ά;ἀ;ἁ;ἂ;ἃ;ἄ;ἅ;ἆ;ἇ;ὰ;ά;ᾀ;ᾁ;ᾂ;ᾃ;ᾄ;ᾅ;ᾆ;ᾇ;ᾰ;ᾱ;ᾲ;ᾳ;ᾴ;ᾶ;ᾷ</Source>
                 <Replacement>α</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">έ;ἐ;ἑ;ἒ;ἓ;ἔ;ἕ;ὲ;έ;</Source>
+                <Source delimeterChar=";">έ;ἐ;ἑ;ἒ;ἓ;ἔ;ἕ;ὲ;έ;</Source>
                 <Replacement>ε</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">ή;ἠ;ἡ;ἢ;ἣ;ἤ;ἥ;ἦ;ἧ;ὴ;ή;ᾐ;ᾑ;ᾒ;ᾓ;ᾔ;ᾕ;ᾖ;ᾗ;ῂ;ῃ;ῄ;;ῆ;ῇ</Source>
+                <Source delimeterChar=";">ή;ἠ;ἡ;ἢ;ἣ;ἤ;ἥ;ἦ;ἧ;ὴ;ή;ᾐ;ᾑ;ᾒ;ᾓ;ᾔ;ᾕ;ᾖ;ᾗ;ῂ;ῃ;ῄ;;ῆ;ῇ</Source>
                 <Replacement>η</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">ϊ;ΐ;ί;ἰ;ἱ;ἲ;ἳ;ἴ;ἵ;ἶ;ἷ;ὶ;ί;ῐ;ῑ;ῒ;ΐ;ῖ;ῗ</Source>
+                <Source delimeterChar=";">ϊ;ΐ;ί;ἰ;ἱ;ἲ;ἳ;ἴ;ἵ;ἶ;ἷ;ὶ;ί;ῐ;ῑ;ῒ;ΐ;ῖ;ῗ</Source>
                 <Replacement>ι</Replacement>
             </ReplacementGroup>            
             <ReplacementGroup>
-                <Source dellimeterChar=";">ό;ὀ;ὁ;ὂ;ὃ;ὄ;ὅ;ὸ;ό</Source>
+                <Source delimeterChar=";">ό;ὀ;ὁ;ὂ;ὃ;ὄ;ὅ;ὸ;ό</Source>
                 <Replacement>ο</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">ϋ;ΰ;ύ;ὐ;ὑ;ὒ;ὓ;ὔ;ὕ;ὖ;ὗ;ὺ;ύ;ῠ;ῡ;ῢ;ΰ;ῦ;ῧ</Source>
+                <Source delimeterChar=";">ϋ;ΰ;ύ;ὐ;ὑ;ὒ;ὓ;ὔ;ὕ;ὖ;ὗ;ὺ;ύ;ῠ;ῡ;ῢ;ΰ;ῦ;ῧ</Source>
                 <Replacement>υ</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">ῤ;ῥ</Source>
+                <Source delimeterChar=";">ῤ;ῥ</Source>
                 <Replacement>ρ</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">ώ;ὠ;ὡ;ὢ;ὣ;ὤ;ὥ;ὦ;ὧ;ὼ;ώ;ᾠ;ᾡ;ᾢ;ᾣ;ᾤ;ᾥ;ᾦ;ᾧ;ῲ;ῳ;ῴ;ῶ;ῷ</Source>
+                <Source delimeterChar=";">ώ;ὠ;ὡ;ὢ;ὣ;ὤ;ὥ;ὦ;ὧ;ὼ;ώ;ᾠ;ᾡ;ᾢ;ᾣ;ᾤ;ᾥ;ᾦ;ᾧ;ῲ;ῳ;ῴ;ῶ;ῷ</Source>
                 <Replacement>ω</Replacement>
             </ReplacementGroup>
             <!--<ReplacementGroup>
-                <Source dellimeterChar=";">ς</Source>
+                <Source delimeterChar=";">ς</Source>
                 <Replacement>σ</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source dellimeterChar=";">·,</Source>
+                <Source delimeterChar=";">·,</Source>
                 <Replacement> </Replacement>
             </ReplacementGroup>-->            
         </Transliterations>

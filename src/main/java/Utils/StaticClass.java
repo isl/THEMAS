@@ -225,6 +225,7 @@ public class StaticClass {
     }
     */
     private static final int maxSleepTimes = 100;
+    
     public static GraphDatabaseService getDBService() {
         int trials = 1;
         if (graphDb == null) {
@@ -288,7 +289,6 @@ public class StaticClass {
             }
         }
         return graphDb;
-
     }
 
     private static void registerShutdownHook() {

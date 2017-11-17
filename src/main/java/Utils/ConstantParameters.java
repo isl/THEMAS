@@ -197,6 +197,7 @@ public class ConstantParameters {
     public static final String translations_scope_note_kwd = "translations_scope_note";
     public static final String historical_note_kwd = "historical_note";
     public static final String comment_kwd= "comment";
+    public static final String note_kwd= "note";
     public static final String created_by_kwd = "created_by";
     public static final String modified_by_kwd ="modified_by";
     public static final String created_on_kwd ="created_on";
@@ -326,9 +327,12 @@ public class ConstantParameters {
     public static final String XML_skos_broader = "skos:broader";//rdf:resource
     public static final String XML_skos_inScheme = "skos:inScheme";//rdf:resource
     public static final String XML_skos_narrower = "skos:narrower";//rdf:resource
-    public static final String XML_skos_Note = "skos:Note";//text
+    
     public static final String XML_skos_related = "skos:related";//rdf:resource
     public static final String XML_skos_scopeNote = "skos:scopeNote"; //xml:lang
+    public static final String XML_skos_historyNote = "skos:historyNote"; 
+    public static final String XML_skos_EditorialNote = "skos:editorialNote";//text
+    public static final String XML_skos_Note = "skos:note";//text
 
 
     

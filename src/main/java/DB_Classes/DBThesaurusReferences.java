@@ -861,6 +861,18 @@ public class DBThesaurusReferences {
         int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("ThesaurusConcept"), new StringObject("translations_scope_note"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_description")), card);
         return ret;
     }
+    
+    /*----------------------------------------------------------------------
+                         getThesaurusCategory_note()
+    ------------------------------------------------------------------------
+    gets the name of the scope_note category of current Thesaurus: g.e. ekt_note
+    ------------------------------------------------------------------------*/
+    public int getThesaurusCategory_note(String SelectedThesaurus, QClass Q, int SISsessionID, StringObject retObject) {
+        IntegerObject card = new IntegerObject();
+
+        int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("ThesaurusConcept"), new StringObject("note"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_description")), card);
+        return ret;
+    }
     /*----------------------------------------------------------------------
                          getThesaurusCategory_taxonomic_code()
     ------------------------------------------------------------------------

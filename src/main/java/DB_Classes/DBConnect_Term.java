@@ -75,10 +75,11 @@ public class DBConnect_Term {
     public final int DB_DELETE = 2;
 
         // constats used by AddComment()
-    public static final int HYPERTEXT_CATEGORY_COMMENT = 0;
-    public static final int HYPERTEXT_CATEGORY_SCOPENOTE = 1;    
-    public static final int HYPERTEXT_CATEGORY_HISTORICALNOTE = 2;
-    public static final int HYPERTEXT_CATEGORY_SCOPENOTE_TR = 3;
+    public static final int COMMENT_CATEGORY_COMMENT = 0;
+    public static final int COMMENT_CATEGORY_SCOPENOTE = 1;    
+    public static final int COMMENT_CATEGORY_HISTORICALNOTE = 2;
+    public static final int COMMENT_CATEGORY_SCOPENOTE_TR = 3;
+    public static final int COMMENT_CATEGORY_NOTE = 4;
     
     /*----------------------------------------------------------------------
     Constructor of DBConnect_Term
@@ -129,8 +130,6 @@ public class DBConnect_Term {
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
     public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, ArrayList<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
-        
-        
         
         // initialize output
         String errorMsg = new String("");
@@ -951,7 +950,7 @@ public class DBConnect_Term {
     FUNCTION: adds a comment of the type:
     commentCategory == CATEGORY_THES_COMMENT => THES1ThesaurusConcept->thes1_comment
     commentCategory == CATEGORY_THES_SCOPENOTE => THES1ThesaurusConcept->thes1_scope_note
-    commentCategory == HYPERTEXT_CATEGORY_HISTORICALNOTE => THES1ThesaurusConcept->thes1_historical_note
+    commentCategory == COMMENT_CATEGORY_HISTORICALNOTE => THES1ThesaurusConcept->thes1_historical_note
     to the given Descriptor 
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
@@ -977,22 +976,25 @@ public class DBConnect_Term {
 
         StringObject commentCategoryStrObj = new StringObject();
         switch (commentCategory) {
-            case HYPERTEXT_CATEGORY_COMMENT:
+            case COMMENT_CATEGORY_COMMENT:
                 dbtr.getThesaurusCategory_comment(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
                 break;
-            case HYPERTEXT_CATEGORY_SCOPENOTE:
+            case COMMENT_CATEGORY_SCOPENOTE:
                 dbtr.getThesaurusCategory_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
                 break;
-            case HYPERTEXT_CATEGORY_HISTORICALNOTE:
+            case COMMENT_CATEGORY_HISTORICALNOTE:
                 dbtr.getThesaurusCategory_historical_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
                 break;
-            case HYPERTEXT_CATEGORY_SCOPENOTE_TR:
+            case COMMENT_CATEGORY_SCOPENOTE_TR:
                 dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;                
+            case COMMENT_CATEGORY_NOTE:
+                dbtr.getThesaurusCategory_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
                 break;
             default:
                 break;
         }
-
+        
         
          //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         StringObject prevThes = new StringObject();

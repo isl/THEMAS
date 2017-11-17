@@ -56,7 +56,7 @@ public class NodeInfoStringContainer {
             
             descriptorInfo = new HashMap<String,ArrayList<String>>();
             for(int i=0; i< output.length ; i++){
-                ArrayList<String> values = new ArrayList<String>();
+                ArrayList<String> values = new ArrayList<>();
                 descriptorInfo.put(output[i], values);               
             }
         }

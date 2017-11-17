@@ -494,6 +494,8 @@ public class WriteFileData {
         //skos:historyNote
         ArrayList<String> commentNotes = targetTermInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
         //skos:editorialNote
+        ArrayList<String> notes = targetTermInfo.descriptorInfo.get(ConstantParameters.note_kwd);
+        //skos:note
 
         if (targetTermId.length() > 0) {
             if (isTopConcept) {
@@ -728,9 +730,9 @@ public class WriteFileData {
             if (scopeNotes != null && scopeNotes.size() > 0) {
                 String scopeNoteVal = scopeNotes.get(0);
                 if (scopeNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(scopeNoteVal));
-                    logFileWriter.append("</skos:scopeNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
                 }
             }
 
@@ -749,9 +751,9 @@ public class WriteFileData {
                         noteStr = noteStr.substring(3);
                         if (noteStr != null && noteStr.trim().length() > 0) {
                             noteStr = noteStr.trim();
-                            logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
+                            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + langCode.toLowerCase() + "\">");
                             logFileWriter.append(Utilities.escapeXML(noteStr));
-                            logFileWriter.append("</skos:scopeNote>\r\n");
+                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
                         }
                     }
 
@@ -803,18 +805,27 @@ public class WriteFileData {
             if (historicalNotes != null && historicalNotes.size() > 0) {
                 String historicalNoteVal = historicalNotes.get(0);
                 if (historicalNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:historyNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_historyNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(historicalNoteVal));
-                    logFileWriter.append("</skos:historyNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\r\n");
                 }
             }
 
             if (commentNotes != null && commentNotes.size() > 0) {
                 String commentNoteVal = commentNotes.get(0);
                 if (commentNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:editorialNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_EditorialNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(commentNoteVal));
-                    logFileWriter.append("</skos:editorialNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\r\n");
+                }
+            }
+            
+            if (notes != null && notes.size() > 0) {
+                String noteVal = notes.get(0);
+                if (noteVal.length() > 0) {
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Note+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append(Utilities.escapeXML(noteVal));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\r\n");
                 }
             }
 
@@ -936,6 +947,8 @@ public class WriteFileData {
         //skos:historyNote
         ArrayList<String> commentNotes = targetTermInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
         //skos:editorialNote
+        ArrayList<String> notes = targetTermInfo.descriptorInfo.get(ConstantParameters.note_kwd);
+        //skos:note
 
         if (targetTermId.length() > 0) {
             if (isTopConcept) {
@@ -1191,9 +1204,9 @@ public class WriteFileData {
             if (scopeNotes != null && scopeNotes.size() > 0) {
                 String scopeNoteVal = scopeNotes.get(0);
                 if (scopeNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(scopeNoteVal));
-                    logFileWriter.append("</skos:scopeNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
                 }
             }
 
@@ -1212,9 +1225,9 @@ public class WriteFileData {
                         noteStr = noteStr.substring(3);
                         if (noteStr != null && noteStr.trim().length() > 0) {
                             noteStr = noteStr.trim();
-                            logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
+                            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + langCode.toLowerCase() + "\">");
                             logFileWriter.append(Utilities.escapeXML(noteStr));
-                            logFileWriter.append("</skos:scopeNote>\r\n");
+                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
                         }
                     }
 
@@ -1266,20 +1279,31 @@ public class WriteFileData {
             if (historicalNotes != null && historicalNotes.size() > 0) {
                 String historicalNoteVal = historicalNotes.get(0);
                 if (historicalNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:historyNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_historyNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(historicalNoteVal));
-                    logFileWriter.append("</skos:historyNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\r\n");
                 }
             }
 
             if (commentNotes != null && commentNotes.size() > 0) {
                 String commentNoteVal = commentNotes.get(0);
                 if (commentNoteVal.length() > 0) {
-                    logFileWriter.append("\t\t<skos:editorialNote xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_EditorialNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(commentNoteVal));
-                    logFileWriter.append("</skos:editorialNote>\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\r\n");
                 }
             }
+            
+            if (notes != null && notes.size() > 0) {
+                String noteVal = notes.get(0);
+                if (noteVal.length() > 0) {
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Note+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append(Utilities.escapeXML(noteVal));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\r\n");
+                }
+            }
+            
+            
 
             Collections.sort(creators);
             for (int j = 0; j < creators.size(); j++) {
@@ -1594,10 +1618,30 @@ public class WriteFileData {
             DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
 
-            String[] output = {ConstantParameters.system_transliteration_kwd, ConstantParameters.system_referenceUri_kwd, ConstantParameters.facet_kwd, ConstantParameters.topterm_kwd, ConstantParameters.status_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd,
-                ConstantParameters.tc_kwd, ConstantParameters.translation_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.uf_translations_kwd,
-                ConstantParameters.primary_found_in_kwd, ConstantParameters.translations_found_in_kwd, ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-                ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd};
+            String[] output = {ConstantParameters.system_transliteration_kwd, 
+                ConstantParameters.system_referenceUri_kwd,
+                ConstantParameters.facet_kwd, 
+                ConstantParameters.topterm_kwd, 
+                ConstantParameters.status_kwd, 
+                ConstantParameters.bt_kwd, 
+                ConstantParameters.nt_kwd,
+                ConstantParameters.tc_kwd, 
+                ConstantParameters.translation_kwd, 
+                ConstantParameters.rt_kwd, 
+                ConstantParameters.uf_kwd,
+                ConstantParameters.uf_translations_kwd,
+                ConstantParameters.primary_found_in_kwd, 
+                ConstantParameters.translations_found_in_kwd,
+                ConstantParameters.created_by_kwd, 
+                ConstantParameters.created_on_kwd, 
+                ConstantParameters.modified_by_kwd,
+                ConstantParameters.modified_on_kwd, 
+                ConstantParameters.scope_note_kwd,
+                ConstantParameters.translations_scope_note_kwd, 
+                ConstantParameters.historical_note_kwd,
+                ConstantParameters.comment_kwd,
+                ConstantParameters.note_kwd
+            };
 
             ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
 
@@ -1631,6 +1675,8 @@ public class WriteFileData {
             specialCategories.add(ConstantParameters.scope_note_kwd);
             specialCategories.add(ConstantParameters.translations_scope_note_kwd);
             specialCategories.add(ConstantParameters.historical_note_kwd);
+            specialCategories.add(ConstantParameters.comment_kwd);
+            specialCategories.add(ConstantParameters.note_kwd);
 
             if (allTerms.size() > 0) {
                 //logFileWriter.append("\r\n\t<terms>\r\n");
@@ -1729,7 +1775,9 @@ public class WriteFileData {
                                 }
 
                             } else if (category.equals(ConstantParameters.scope_note_kwd)
-                                    || category.equals(ConstantParameters.historical_note_kwd)) {
+                                    || category.equals(ConstantParameters.historical_note_kwd)
+                                    || category.equals(ConstantParameters.comment_kwd)
+                                    || category.equals(ConstantParameters.note_kwd)) {
                                 if (values != null && values.size() > 0) {
                                     String noteStr = values.get(0);
 

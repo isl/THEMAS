@@ -1271,6 +1271,11 @@ public class DBMergeThesauri {
         StringObject scopenote_TR_LinkObj = new StringObject();
         StringObject historicalnoteFromClassObj = new StringObject();
         StringObject historicalnoteLinkObj = new StringObject();
+        
+        StringObject commentFromClassObj = new StringObject();
+        StringObject commentLinkObj = new StringObject();
+        StringObject noteFromClassObj = new StringObject();
+        StringObject noteLinkObj = new StringObject();
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
@@ -1289,6 +1294,8 @@ public class DBMergeThesauri {
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj, Q, sis_session);
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenote_TR_FromClassObj, scopenote_TR_LinkObj, Q, sis_session);
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
 
         //Enumeration<String> termEnum = termsInfo.keys();
         //while(termEnum.hasMoreElements()){
@@ -1408,7 +1415,109 @@ public class DBMergeThesauri {
         if (prevThes.getValue().equals(thesaurusName1) == false) {
             TA.SetThesaurusName(prevThes.getValue());
         }
+        
+         //Comment Notes
+        ArrayList<String> terms_with_comment_Vec = new ArrayList<String>();
+        Q.reset_name_scope();
 
+        Q.set_current_node(commentFromClassObj);
+        Q.set_current_node(commentLinkObj);
+        int set_all_links_comm = Q.get_all_instances(0);
+        Q.reset_set(set_all_links_comm);
+        int set_terms_with_comment = Q.get_from_value(set_all_links_comm);
+        Q.reset_set(set_terms_with_comment);
+        Q.free_set(set_all_links_comm);
+
+        retVals.clear();
+        if (Q.bulk_return_nodes(set_terms_with_comment, retVals) != QClass.APIFail) {
+            for (Return_Nodes_Row row : retVals) {
+                String targetTerm = row.get_v1_cls_logicalname();
+                terms_with_comment_Vec.add(targetTerm);
+            }
+        }
+        /*
+         while (Q.retur_full_nodes(set_terms_with_hn, sysIdObj, nodeNameObj, classObj) != QClass.APIFail) {
+         //    if (resultNodesIds.contains(sysIdObj.getValue())) {
+         String targetTerm = nodeNameObj.getValue();
+         terms_with_hn_Vec.add(targetTerm);
+         //    }
+         }*/
+        Q.free_set(set_terms_with_comment);
+
+        prevThes = new StringObject("");
+        TA.GetThesaurusNameWithoutPrefix(prevThes);
+        if (prevThes.getValue().equals(thesaurusName1) == false) {
+            TA.SetThesaurusName(thesaurusName1);
+        }
+        for (int i = 0; i < terms_with_comment_Vec.size(); i++) {
+
+            String targetDBTerm = terms_with_comment_Vec.get(i);
+            String targetUITerm = dbGen.removePrefix(targetDBTerm);
+            StringObject commentObject = new StringObject("");
+            TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, commentFromClassObj, commentLinkObj);
+
+            if (commentObject.getValue().length() > 0) {
+                termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.comment_kwd).add(commentObject.getValue());
+            }
+        }
+
+        //reset to previous thesaurus name if needed
+        if (prevThes.getValue().equals(thesaurusName1) == false) {
+            TA.SetThesaurusName(prevThes.getValue());
+        }
+        
+
+        //Note NOTES
+        ArrayList<String> terms_with_notes_Vec = new ArrayList<String>();
+        Q.reset_name_scope();
+
+        Q.set_current_node(noteFromClassObj);
+        Q.set_current_node(noteLinkObj);
+        int set_all_links_notes = Q.get_all_instances(0);
+        Q.reset_set(set_all_links_notes);
+        int set_terms_with_note = Q.get_from_value(set_all_links_notes);
+        Q.reset_set(set_terms_with_note);
+        Q.free_set(set_all_links_notes);
+
+        retVals.clear();
+        if (Q.bulk_return_nodes(set_terms_with_note, retVals) != QClass.APIFail) {
+            for (Return_Nodes_Row row : retVals) {
+                String targetTerm = row.get_v1_cls_logicalname();
+                terms_with_notes_Vec.add(targetTerm);
+            }
+        }
+        /*
+         while (Q.retur_full_nodes(set_terms_with_hn, sysIdObj, nodeNameObj, classObj) != QClass.APIFail) {
+         //    if (resultNodesIds.contains(sysIdObj.getValue())) {
+         String targetTerm = nodeNameObj.getValue();
+         terms_with_hn_Vec.add(targetTerm);
+         //    }
+         }*/
+        Q.free_set(set_terms_with_note);
+
+        prevThes = new StringObject("");
+        TA.GetThesaurusNameWithoutPrefix(prevThes);
+        if (prevThes.getValue().equals(thesaurusName1) == false) {
+            TA.SetThesaurusName(thesaurusName1);
+        }
+        for (int i = 0; i < terms_with_notes_Vec.size(); i++) {
+
+            String targetDBTerm = terms_with_notes_Vec.get(i);
+            String targetUITerm = dbGen.removePrefix(targetDBTerm);
+            StringObject commentObject = new StringObject("");
+            TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, noteFromClassObj, noteLinkObj);
+
+            if (commentObject.getValue().length() > 0) {
+                termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.note_kwd).add(commentObject.getValue());
+            }
+        }
+
+        //reset to previous thesaurus name if needed
+        if (prevThes.getValue().equals(thesaurusName1) == false) {
+            TA.SetThesaurusName(prevThes.getValue());
+        }
+        
+        
         //HISTORICAL NOTES
         ArrayList<String> terms_with_hn_Vec = new ArrayList<String>();
         Q.reset_name_scope();
@@ -1458,37 +1567,8 @@ public class DBMergeThesauri {
         if (prevThes.getValue().equals(thesaurusName1) == false) {
             TA.SetThesaurusName(prevThes.getValue());
         }
-        /*
-         for(int i=0; i<termsOfThes1.size();i++){
-         String targetTerm = termsOfThes1.get(i);
-         NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
-         if(targetInfo.descriptorInfo.containsKey(ConstantParameters.scope_note_kwd)){
-         Q.reset_name_scope();
-         ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q, sis_session);
-         targetInfo.descriptorInfo.put(ConstantParameters.scope_note_kwd, scopeNote);
-         }
-
-         if(targetInfo.descriptorInfo.containsKey(ConstantParameters.comment_kwd)){
-         Q.reset_name_scope();
-         ArrayList<String> comment = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, sis_session);
-         targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comment);
-
-         }
-
-         if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)){
-         Q.reset_name_scope();
-         ArrayList<String> trSn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, sis_session);
-         targetInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, trSn);
-         }
-
-         if(targetInfo.descriptorInfo.containsKey(ConstantParameters.historical_note_kwd)){
-         Q.reset_name_scope();
-         ArrayList<String> hn = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, sis_session);
-         targetInfo.descriptorInfo.put(ConstantParameters.historical_note_kwd, hn);
-         }
-         }
-         */
-
+        
+       
         if (thesaurusName2 != null && thesaurusName2.length() > 0 && thesaurusName2.equals(thesaurusName1) == false) {
 
             wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName2);
@@ -1507,6 +1587,8 @@ public class DBMergeThesauri {
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj, Q, sis_session);
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenote_TR_FromClassObj, scopenote_TR_LinkObj, Q, sis_session);
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
 
             //Enumeration<String> termEnum = termsInfo.keys();
             //while(termEnum.hasMoreElements()){
@@ -1553,45 +1635,7 @@ public class DBMergeThesauri {
                     }
                 }
 
-                if (targetInfo.descriptorInfo.containsKey(ConstantParameters.comment_kwd)) {
-                    Q.reset_name_scope();
-                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
-                    ArrayList<String> comments = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, TA, sis_session);
-                    if (existing.size() == 1) {
-                        String finalVal = "";
-
-                        String cmOld = "";
-                        if (existing.size() == 1) {
-                            cmOld = existing.get(0);
-                        }
-
-                        String cmNew = "";
-                        if (comments.size() == 1) {
-                            cmNew = comments.get(0);
-                        }
-
-                        if (cmOld.length() > 0) {
-                            finalVal += cmOld;
-                        }
-
-                        if (cmNew.length() > 0 && cmNew.equals(cmOld) == false) {
-                            finalVal = u.mergeStrings(cmOld, cmNew);
-                            /*if (finalVal.length() > 0) {
-                             finalVal += "; ";
-                             }*/
-                            finalVal += cmNew;
-                        }
-
-                        comments.clear();
-                        if (finalVal.length() > 0) {
-                            comments.add(finalVal);
-                        }
-                        targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comments);
-                    } else {
-                        targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comments);
-                    }
-
-                }
+                
 
                 if (targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)) {
                     Q.reset_name_scope();
@@ -1670,6 +1714,85 @@ public class DBMergeThesauri {
                         targetInfo.descriptorInfo.put(ConstantParameters.historical_note_kwd, hn);
                     } else {
                         targetInfo.descriptorInfo.put(ConstantParameters.historical_note_kwd, hn);
+                    }
+                }
+                
+                if (targetInfo.descriptorInfo.containsKey(ConstantParameters.comment_kwd)) {
+                    Q.reset_name_scope();
+                    ArrayList<String> comments = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.comment_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
+
+                    if (existing.size() == 1) {
+                        String finalVal = "";
+
+                        String commentOld = "";
+                        if (existing.size() == 1) {
+                            commentOld = existing.get(0);
+                        }
+
+                        String commentNew = "";
+                        if (comments.size() == 1) {
+                            commentNew = comments.get(0);
+                        }
+
+                        if (commentOld.length() > 0) {
+                            finalVal += commentOld;
+                        }
+
+                        if (commentNew.length() > 0 && commentNew.equals(commentOld) == false) {
+                            if (finalVal.length() > 0) {
+                                finalVal += "; ";
+                            }
+                            finalVal += commentNew;
+                        }
+
+                        comments.clear();
+                        if (finalVal.length() > 0) {
+                            comments.add(finalVal);
+                        }
+                        targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comments);
+                    } else {
+                        targetInfo.descriptorInfo.put(ConstantParameters.comment_kwd, comments);
+                    }
+                }
+                
+                
+                if (targetInfo.descriptorInfo.containsKey(ConstantParameters.note_kwd)) {
+                    Q.reset_name_scope();
+                    ArrayList<String> notes = dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.note_kwd, Q, TA, sis_session);
+                    ArrayList<String> existing = targetInfo.descriptorInfo.get(ConstantParameters.note_kwd);
+
+                    if (existing.size() == 1) {
+                        String finalVal = "";
+
+                        String noteOld = "";
+                        if (existing.size() == 1) {
+                            noteOld = existing.get(0);
+                        }
+
+                        String noteNew = "";
+                        if (notes.size() == 1) {
+                            noteNew = notes.get(0);
+                        }
+
+                        if (noteOld.length() > 0) {
+                            finalVal += noteOld;
+                        }
+
+                        if (noteNew.length() > 0 && noteNew.equals(noteOld) == false) {
+                            if (finalVal.length() > 0) {
+                                finalVal += "; ";
+                            }
+                            finalVal += noteNew;
+                        }
+
+                        notes.clear();
+                        if (finalVal.length() > 0) {
+                            notes.add(finalVal);
+                        }
+                        targetInfo.descriptorInfo.put(ConstantParameters.note_kwd, notes);
+                    } else {
+                        targetInfo.descriptorInfo.put(ConstantParameters.note_kwd, notes);
                     }
                 }
             }
@@ -2025,7 +2148,12 @@ public class DBMergeThesauri {
                     allTerms.add(targetTerm);
                 }
 
-                if (categoryKwd == null || categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0) {
+                if (categoryKwd == null || 
+                        categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0 || 
+                        categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0 || 
+                        categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0 || 
+                        categoryKwd.compareTo(ConstantParameters.comment_kwd) == 0 || 
+                        categoryKwd.compareTo(ConstantParameters.note_kwd) == 0) {
                     continue;
                 }
 
@@ -2268,7 +2396,11 @@ public class DBMergeThesauri {
                         allTerms.add(targetTerm);
                     }
 
-                    if (categoryKwd == null || categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0) {
+                    if (categoryKwd == null || categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0 ||
+                            categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0 ||
+                            categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0 ||
+                            categoryKwd.compareTo(ConstantParameters.comment_kwd)==0||
+                            categoryKwd.compareTo(ConstantParameters.note_kwd)==0) {
                         continue;
                     }
 
@@ -3912,11 +4044,17 @@ public class DBMergeThesauri {
         StringObject scopenote_TR_LinkObj = new StringObject();
         StringObject historicalnoteFromClassObj = new StringObject();
         StringObject historicalnoteLinkObj = new StringObject();
+        StringObject commentNoteFromClassObj = new StringObject();
+        StringObject commentNoteLinkObj = new StringObject();
+        StringObject noteClassObj = new StringObject();
+        StringObject noteLinkObj = new StringObject();
         Utilities u = new Utilities();
 
         HashMap<String, String> scope_notes_HASH = new HashMap<String, String>();
         HashMap<String, String> scope_notes_EN_HASH = new HashMap<String, String>();
         HashMap<String, String> historical_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> comment_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> note_notes_HASH = new HashMap<String, String>();
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, thesaurusName1);
@@ -3926,6 +4064,10 @@ public class DBMergeThesauri {
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj, Q, sis_session);
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenote_TR_FromClassObj, scopenote_TR_LinkObj, Q, sis_session);
         dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.comment_kwd, commentNoteFromClassObj, commentNoteLinkObj, Q, sis_session);
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.note_kwd, noteClassObj, noteLinkObj, Q, sis_session);
+
+        
 
         Q.reset_name_scope();
         //Find out hierarchy Classes and get their instances
@@ -3944,6 +4086,9 @@ public class DBMergeThesauri {
             ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
             ArrayList<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
             ArrayList<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
+            
+            ArrayList<String> commentNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.comment_kwd, Q, TA, sis_session);
+            ArrayList<String> noteNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.note_kwd, Q, TA, sis_session);
 
             if (scopeNote != null && scopeNote.size() > 0 && scopeNote.get(0).length() > 0) {
                 commentCounter++;
@@ -3962,6 +4107,19 @@ public class DBMergeThesauri {
                 historical_notes_HASH.put(termNames.get(i), historicalNote.get(0));
                 // logFileWriter.append(commentCounter + ". READING Historical Note from term " +termNames.get(i)+ " of thesaurus "+thesaurusName+".\r\n");
             }
+            
+            if (commentNote != null && commentNote.size() > 0 && commentNote.get(0).length() > 0) {
+                commentCounter++;
+                comment_notes_HASH.put(termNames.get(i), commentNote.get(0));
+                // logFileWriter.append(commentCounter + ". READING Historical Note from term " +termNames.get(i)+ " of thesaurus "+thesaurusName+".\r\n");
+            }
+            
+                        
+            if (noteNote != null && noteNote.size() > 0 && noteNote.get(0).length() > 0) {
+                commentCounter++;
+                note_notes_HASH.put(termNames.get(i), noteNote.get(0));
+                // logFileWriter.append(commentCounter + ". READING Historical Note from term " +termNames.get(i)+ " of thesaurus "+thesaurusName+".\r\n");
+            }
         }
 
         Q.free_all_sets();
@@ -3976,6 +4134,8 @@ public class DBMergeThesauri {
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.scope_note_kwd, scopenoteFromClassObj, scopenoteLinkObj, Q, sis_session);
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenote_TR_FromClassObj, scopenote_TR_LinkObj, Q, sis_session);
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.comment_kwd, commentNoteFromClassObj, commentNoteLinkObj, Q, sis_session);
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.note_kwd, noteClassObj, noteLinkObj, Q, sis_session);
 
             Q.reset_name_scope();
             //Find out hierarchy Classes and get their instances
@@ -3995,6 +4155,9 @@ public class DBMergeThesauri {
                 ArrayList<String> scopeNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.scope_note_kwd, Q, TA, sis_session);
                 ArrayList<String> scopeNoteEN = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session);
                 ArrayList<String> historicalNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.historical_note_kwd, Q, TA, sis_session);
+                ArrayList<String> commentNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.comment_kwd, Q, TA, sis_session);
+                ArrayList<String> noteNote = dbGen.returnResults(SessionUserInfo, termNames.get(i), ConstantParameters.note_kwd, Q, TA, sis_session);
+
 
                 if (scopeNote != null && scopeNote.size() > 0 && scopeNote.get(0).length() > 0) {
                     commentCounter++;
@@ -4058,6 +4221,45 @@ public class DBMergeThesauri {
                     historical_notes_HASH.put(termNames.get(i), firstHistoricalNote);
                     // logFileWriter.append(commentCounter + ". READING Historical Note from term " +termNames.get(i)+ " of thesaurus "+thesaurusName+".\r\n");
                 }
+                
+                if (commentNote != null && commentNote.size() > 0 && commentNote.get(0).length() > 0) {
+                    commentCounter++;
+                    String firstCommentNote = comment_notes_HASH.get(termNames.get(i));
+                    String secondCommentNote = commentNote.get(0);
+                    if (firstCommentNote == null) {
+                        firstCommentNote = secondCommentNote;
+                    } else if (firstCommentNote.equals(secondCommentNote) == false) {
+
+                        firstCommentNote = firstCommentNote.concat(" ### " + secondCommentNote);
+                        logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.comment_kwd + "</errorType>");
+                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstCommentNote) + "</errorValue>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermCNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        //logFileWriter.append("<reason>Two Comments were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
+                        logFileWriter.append("</targetTerm>\r\n");
+                        logFileWriter.flush();
+                    }
+                    comment_notes_HASH.put(termNames.get(i), firstCommentNote);                    
+                }
+                
+                
+                if (noteNote != null && noteNote.size() > 0 && noteNote.get(0).length() > 0) {
+                    commentCounter++;
+                    String firstNote = note_notes_HASH.get(termNames.get(i));
+                    String secondNote = noteNote.get(0);
+                    if (firstNote == null) {
+                        firstNote = secondNote;
+                    } else if (firstNote.equals(secondNote) == false) {
+
+                        firstNote = firstNote.concat(" ### " + secondNote);
+                        logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.note_kwd + "</errorType>");
+                        logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstNote) + "</errorValue>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        //logFileWriter.append("<reason>Two Comments were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
+                        logFileWriter.append("</targetTerm>\r\n");
+                        logFileWriter.flush();
+                    }
+                    note_notes_HASH.put(termNames.get(i), firstNote);                    
+                }
             }
 
             Q.free_all_sets();
@@ -4065,7 +4267,9 @@ public class DBMergeThesauri {
         }
 
         logFileWriter.flush();
-        return CreateCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, mergedThesaurusName, scope_notes_HASH, scope_notes_EN_HASH, historical_notes_HASH, logFileWriter, pathToErrorsXML, resultObj, ConsistencyCheckPolicy);
+        return CreateCommentCategories(refSessionUserInfo, common_utils, Q, TA, sis_session, tms_session, mergedThesaurusName, 
+                scope_notes_HASH, scope_notes_EN_HASH, historical_notes_HASH,comment_notes_HASH, note_notes_HASH,
+                logFileWriter, pathToErrorsXML, resultObj, ConsistencyCheckPolicy);
     }
 
     public boolean CreateCommentCategories(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
@@ -4074,6 +4278,8 @@ public class DBMergeThesauri {
             HashMap<String, String> scope_notes_HASH,
             HashMap<String, String> scope_notes_EN_HASH,
             HashMap<String, String> historical_notes_HASH,
+            HashMap<String, String> comment_notes_HASH,
+            HashMap<String, String> note_notes_HASH,
             OutputStreamWriter logFileWriter, String pathToErrorsXML, StringObject resultObj, int ConsistencyCheckPolicy) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
@@ -4092,6 +4298,8 @@ public class DBMergeThesauri {
         int howmanyComments = scope_notes_HASH.size();
         howmanyComments += scope_notes_EN_HASH.size();
         howmanyComments += historical_notes_HASH.size();
+        howmanyComments += comment_notes_HASH.size();
+        howmanyComments += note_notes_HASH.size();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefixPerson = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue());
@@ -4184,6 +4392,74 @@ public class DBMergeThesauri {
 
                 // Q.free_set(set_top_terms);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add HN in term: '" + term + "'." + resultObj.getValue());
+                return false;
+            } else {                //logFileWriter.append(commentCounter +". HN of term: '" + term+"' was successfully added.\r\n");
+            }
+            //logFileWriter.flush();
+            //commentCounter++;
+            resultObj.setValue("");
+
+            //logFileWriter.append(commentCounter + ". " + term + " ----- " + scope_notes.get(term).toString() + "\r\n");
+        }
+        
+        
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING Comment Notes in " + mergedThesaurusName + ". Time: " + Utilities.GetNow());
+
+        pairsEnumMerged = comment_notes_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
+            if (commentCounter % restartInterval == 0) {
+                if (common_utils != null) {
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Comment counter: " + commentCounter + " of " + howmanyComments + "   ");
+                    common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
+                }
+            }
+            commentCounter++;
+
+            String term = pairsEnumMerged.next();
+            ArrayList<String> comments = new ArrayList<String>();
+            comments.add(comment_notes_HASH.get(term));
+
+            if (comments.size() > 0) {
+                creation_modificationOfTerm.commitTermTransaction(SessionUserInfo, term, ConstantParameters.comment_kwd, comments, user, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, true, logFileWriter, ConsistencyCheckPolicy);
+            }
+            if (resultObj.getValue().length() > 0) {
+
+                // Q.free_set(set_top_terms);
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add Comment in term: '" + term + "'." + resultObj.getValue());
+                return false;
+            } else {                //logFileWriter.append(commentCounter +". HN of term: '" + term+"' was successfully added.\r\n");
+            }
+            //logFileWriter.flush();
+            //commentCounter++;
+            resultObj.setValue("");
+
+            //logFileWriter.append(commentCounter + ". " + term + " ----- " + scope_notes.get(term).toString() + "\r\n");
+        }
+        
+        
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCREATING NOTES in " + mergedThesaurusName + ". Time: " + Utilities.GetNow());
+
+        pairsEnumMerged = note_notes_HASH.keySet().iterator();
+        while (pairsEnumMerged.hasNext()) {
+            if (commentCounter % restartInterval == 0) {
+                if (common_utils != null) {
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Comment (Notes) counter: " + commentCounter + " of " + howmanyComments + "   ");
+                    common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
+                }
+            }
+            commentCounter++;
+
+            String term = pairsEnumMerged.next();
+            ArrayList<String> notes = new ArrayList<String>();
+            notes.add(note_notes_HASH.get(term));
+
+            if (notes.size() > 0) {
+                creation_modificationOfTerm.commitTermTransaction(SessionUserInfo, term, ConstantParameters.note_kwd, notes, user, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, true, true, logFileWriter, ConsistencyCheckPolicy);
+            }
+            if (resultObj.getValue().length() > 0) {
+
+                // Q.free_set(set_top_terms);
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + commentCounter + ". Failed to add Note in term: '" + term + "'." + resultObj.getValue());
                 return false;
             } else {                //logFileWriter.append(commentCounter +". HN of term: '" + term+"' was successfully added.\r\n");
             }

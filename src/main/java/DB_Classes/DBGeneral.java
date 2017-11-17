@@ -1932,7 +1932,11 @@ public class DBGeneral {
             return get_accepted_status(SessionUserInfo.selectedThesaurus, term, Q, sis_session);
         } else if (output.equals("status")) {
             return get_term_status(SessionUserInfo.selectedThesaurus, term, Q, sis_session);
-        } else if (output.equals(ConstantParameters.comment_kwd) || output.equals(ConstantParameters.scope_note_kwd) || output.equals(ConstantParameters.translations_scope_note_kwd) || output.equals(ConstantParameters.historical_note_kwd)) {
+        } else if (output.equals(ConstantParameters.comment_kwd) ||
+                output.equals(ConstantParameters.scope_note_kwd) || 
+                output.equals(ConstantParameters.translations_scope_note_kwd) ||
+                output.equals(ConstantParameters.historical_note_kwd)||
+                output.equals(ConstantParameters.note_kwd)) {
             //else if (output.equals("comment")) {
             ArrayList<String> temp = getTermComment(SessionUserInfo.selectedThesaurus, term, output, Q, TA, sis_session);
             //if(output.equals(ConstantParameters.translations_scope_note_kwd)){
@@ -2241,6 +2245,9 @@ public class DBGeneral {
         } else if (commentKind.equals(ConstantParameters.historical_note_kwd)) {
             // looking for thes1_historical_note
             dbtr.getThesaurusCategory_historical_note(selectedThesaurus, Q, sis_session.getValue(), to);
+        } else if (commentKind.equals(ConstantParameters.note_kwd)) {
+            // looking for thes1_note
+            dbtr.getThesaurusCategory_note(selectedThesaurus, Q, sis_session.getValue(), to);
         }
 
         String prefix_el = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
@@ -3358,6 +3365,13 @@ public class DBGeneral {
                 } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.historical_note_kwd)) {
                     set_partial_descriptor_results = filterLinksByComment(SessionUserInfo, Q, TA, sis_session, ConstantParameters.historical_note_kwd, operators[i].toString(), searchVal);
                     Q.reset_set(set_partial_descriptor_results);
+                } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.comment_kwd)) {
+                    set_partial_descriptor_results = filterLinksByComment(SessionUserInfo, Q, TA, sis_session, ConstantParameters.comment_kwd, operators[i].toString(), searchVal);
+                    Q.reset_set(set_partial_descriptor_results);
+                }
+                else if (input[i].toString().equalsIgnoreCase(ConstantParameters.note_kwd)) {
+                    set_partial_descriptor_results = filterLinksByComment(SessionUserInfo, Q, TA, sis_session, ConstantParameters.note_kwd, operators[i].toString(), searchVal);
+                    Q.reset_set(set_partial_descriptor_results);
                 } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.created_by_kwd)) {
 
                     prefix = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue());
@@ -3588,6 +3602,8 @@ public class DBGeneral {
             dbtr.getThesaurusCategory_historical_note(SessionUserInfo.selectedThesaurus, Q, sisSessionId, thesCommentKind);
         } else if (commentKind.compareTo(ConstantParameters.comment_kwd) == 0) {
             dbtr.getThesaurusCategory_comment(SessionUserInfo.selectedThesaurus, Q, sisSessionId, thesCommentKind);
+        } else if (commentKind.compareTo(ConstantParameters.note_kwd) == 0) {
+            dbtr.getThesaurusCategory_note(SessionUserInfo.selectedThesaurus, Q, sisSessionId, thesCommentKind);
         }
 
         // get the set with ALL terms
@@ -4951,17 +4967,23 @@ public class DBGeneral {
             dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus, Q, sis_session.getValue(), retFrom);
             dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus, Q, sis_session.getValue(), retLink);
 
+        }  else if (keyWord.equalsIgnoreCase(ConstantParameters.historical_note_kwd)) {
+
+            dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus, Q, sis_session.getValue(), retFrom);
+            dbtr.getThesaurusCategory_historical_note(selectedThesaurus, Q, sis_session.getValue(), retLink);
+
         } else if (keyWord.equalsIgnoreCase(ConstantParameters.comment_kwd)) {
 
             dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus, Q, sis_session.getValue(), retFrom);
             dbtr.getThesaurusCategory_comment(selectedThesaurus, Q, sis_session.getValue(), retLink);
 
-        } else if (keyWord.equalsIgnoreCase(ConstantParameters.historical_note_kwd)) {
+        }
+        else if (keyWord.equalsIgnoreCase(ConstantParameters.note_kwd)) {
 
             dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus, Q, sis_session.getValue(), retFrom);
-            dbtr.getThesaurusCategory_historical_note(selectedThesaurus, Q, sis_session.getValue(), retLink);
+            dbtr.getThesaurusCategory_note(selectedThesaurus, Q, sis_session.getValue(), retLink);
 
-        } else if (keyWord.equalsIgnoreCase(ConstantParameters.created_by_kwd)) {
+        }else if (keyWord.equalsIgnoreCase(ConstantParameters.created_by_kwd)) {
 
             dbtr.getThesaurusClass_HierarchyTerm(selectedThesaurus, Q, sis_session.getValue(), retFrom);
             dbtr.getThesaurusCategory_created_by(selectedThesaurus, Q, sis_session.getValue(), retLink);
@@ -5957,6 +5979,12 @@ public class DBGeneral {
             } else if (targetOutput.compareTo(ConstantParameters.historical_note_kwd) == 0) {
                 dbtr.getThesaurusCategory_historical_note(selectedThesaurus, Q, sis_session.getValue(), categoryStr);
                 kewyWordsMappings.put(categoryStr.getValue(), ConstantParameters.historical_note_kwd);
+            } else if (targetOutput.compareTo(ConstantParameters.comment_kwd) == 0) {
+                dbtr.getThesaurusCategory_comment(selectedThesaurus, Q, sis_session.getValue(), categoryStr);
+                kewyWordsMappings.put(categoryStr.getValue(), ConstantParameters.comment_kwd);
+            } else if (targetOutput.compareTo(ConstantParameters.note_kwd) == 0) {
+                dbtr.getThesaurusCategory_note(selectedThesaurus, Q, sis_session.getValue(), categoryStr);
+                kewyWordsMappings.put(categoryStr.getValue(), ConstantParameters.note_kwd);
             } else if (targetOutput.compareTo(ConstantParameters.created_by_kwd) == 0) {
                 dbtr.getThesaurusCategory_created_by(selectedThesaurus, Q, sis_session.getValue(), categoryStr);
                 kewyWordsMappings.put(categoryStr.getValue(), ConstantParameters.created_by_kwd);
@@ -6318,7 +6346,9 @@ public class DBGeneral {
 
                 if (categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0
                         || categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0) {
+                        || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0
+                        || categoryKwd.compareTo(ConstantParameters.comment_kwd) == 0
+                        || categoryKwd.compareTo(ConstantParameters.note_kwd) == 0) {
 
                     continue;
                 }

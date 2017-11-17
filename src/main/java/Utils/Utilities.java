@@ -2909,11 +2909,28 @@ public class Utilities {
     }
 
     public static String[] getSortedTermAllOutputArray(){
-        String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
-            ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-            ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-            ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd, ConstantParameters.system_referenceUri_kwd, ConstantParameters.system_transliteration_kwd
+        String[] output = {
+            ConstantParameters.bt_kwd, 
+            ConstantParameters.nt_kwd, 
+            ConstantParameters.rt_kwd,
+            ConstantParameters.uf_kwd, 
+            ConstantParameters.tc_kwd,
+            ConstantParameters.translation_kwd, 
+            ConstantParameters.status_kwd, 
+            ConstantParameters.uf_translations_kwd,
+            ConstantParameters.primary_found_in_kwd,
+            ConstantParameters.translations_found_in_kwd,             
+            ConstantParameters.created_by_kwd, 
+            ConstantParameters.created_on_kwd, 
+            ConstantParameters.modified_by_kwd,
+            ConstantParameters.modified_on_kwd, 
+            ConstantParameters.scope_note_kwd,
+            ConstantParameters.translations_scope_note_kwd, 
+            ConstantParameters.historical_note_kwd, 
+            ConstantParameters.comment_kwd, 
+            ConstantParameters.note_kwd, 
+            ConstantParameters.system_referenceUri_kwd, 
+            ConstantParameters.system_transliteration_kwd
         };
         return output;
     }

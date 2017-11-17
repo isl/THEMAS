@@ -1831,58 +1831,6 @@ public class DBImportData {
         return true;
     }
 
-    public void readCurrentNodesAttributes(Node currentNode, String currentNodeValue, ArrayList<String> validAttrKeywords, HashMap<String, NodeInfoStringContainer> termsInfo, String[] output) {
-
-        int numOfCurrentNodeAttributes = currentNode.getAttributes().getLength();
-
-        NodeInfoStringContainer targetTermRestInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-
-        for (int k = 0; k < numOfCurrentNodeAttributes; k++) {
-            Node attrNode = currentNode.getAttributes().item(k);
-            String nodeType = attrNode.getNodeName();
-
-            if (validAttrKeywords.contains(nodeType) == false) {
-                continue;
-            }
-
-            String nodeValue = attrNode.getTextContent();
-            nodeValue = readXMLTag(nodeValue);
-
-            if (targetTermRestInfo.descriptorInfo.containsKey(nodeType) && targetTermRestInfo.descriptorInfo.get(nodeType).contains(nodeValue) == false) {
-                targetTermRestInfo.descriptorInfo.get(nodeType).add(nodeValue);
-            }
-
-        }
-
-        if (termsInfo.containsKey(currentNodeValue) == false) {
-            termsInfo.put(currentNodeValue, targetTermRestInfo);
-        } else {
-            NodeInfoStringContainer olderTermRestInfo = termsInfo.get(currentNodeValue);
-
-            if (olderTermRestInfo == null) {
-                termsInfo.put(currentNodeValue, targetTermRestInfo);
-            } else {
-                for (int p = 0; p < output.length; p++) {
-                    String mergeAttribute = output[p];
-                    ArrayList<String> part1 = olderTermRestInfo.descriptorInfo.get(mergeAttribute);
-                    ArrayList<String> part2 = targetTermRestInfo.descriptorInfo.get(mergeAttribute);
-                    int initialSize = part1.size();
-
-                    for (int r = 0; r < part2.size(); r++) {
-                        if (part1.contains(part2.get(r)) == false) {
-                            part1.add(part2.get(r));
-                        }
-                    }
-
-                    if (part1.size() > initialSize) {
-                        olderTermRestInfo.descriptorInfo.put(mergeAttribute, part1);
-                        termsInfo.put(currentNodeValue, olderTermRestInfo);
-                    }
-                }
-            }
-        }
-    }
-
     public void processXMLTerms(HashMap<String, NodeInfoStringContainer> termsInfo, HashMap<String, ArrayList<String>> descriptorRts, HashMap<String, ArrayList<String>> descriptorUfs,/* ArrayList<String> LinkingToSelf,*/ HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> topTerms, ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting Xml TERMS processing.");
@@ -3285,6 +3233,8 @@ public class DBImportData {
         HashMap<String, String> scope_notes_HASH = new HashMap<String, String>();
         HashMap<String, String> scope_notes_EN_HASH = new HashMap<String, String>();
         HashMap<String, String> historical_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> comment_notes_HASH = new HashMap<String, String>();
+        HashMap<String, String> note_notes_HASH = new HashMap<String, String>();
 
 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -3299,9 +3249,13 @@ public class DBImportData {
             String targetScopeNote = new String("");
             String targetScopeNoteEn = new String("");
             String targetHistoricalNote = new String("");
+            String targetCommentNote = new String("");
+            String targetNote = new String("");
             ArrayList<String> snNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
             ArrayList<String> snEnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
             ArrayList<String> hnNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.historical_note_kwd);
+            ArrayList<String> comNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.comment_kwd);
+            ArrayList<String> noteNodes = targetDescriptorInfo.descriptorInfo.get(ConstantParameters.note_kwd);
 
             if (snNodes.size() > 0) {
                 targetScopeNote = snNodes.get(0);
@@ -3326,12 +3280,26 @@ public class DBImportData {
                     historical_notes_HASH.put(targetDescriptor, targetHistoricalNote);
                 }
             }
+            
+            if (comNodes.size() > 0) {
+                targetCommentNote = comNodes.get(0);
+                if (targetCommentNote != null && targetCommentNote.length() > 0) {
+                    comment_notes_HASH.put(targetDescriptor, targetCommentNote);
+                }
+            }
+            
+            if (noteNodes.size() > 0) {
+                targetNote = noteNodes.get(0);
+                if (targetNote != null && targetNote.length() > 0) {
+                    note_notes_HASH.put(targetDescriptor, targetNote);
+                }
+            }
 
         }
 
         return dbMerge.CreateCommentCategories(refSessionUserInfo, common_utils, Q, TA,
                 sis_session, tms_session, importThesaurusName, scope_notes_HASH,
-                scope_notes_EN_HASH, historical_notes_HASH, logFileWriter,
+                scope_notes_EN_HASH, historical_notes_HASH, comment_notes_HASH, note_notes_HASH, logFileWriter,
                 pathToErrorsXML, resultObj, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY);
     }
 

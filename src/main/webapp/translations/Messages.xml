@@ -1103,6 +1103,14 @@
             <option lang="en">Two HNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
             <option lang="el">Βρέθηκαν 2 ΙΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
         </MergeTermHNs>
+        <MergeTermCNs>
+            <option lang="en">Two Comment Notes were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 σχόλια για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermCNs>
+        <MergeTermNs>
+            <option lang="en">Two Notes were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 σημειώσεις για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermNs>
         <MergeSourceSNsSourcePrefix>
             <option lang="en">Source: </option>
             <option lang="el">Πηγή: </option>

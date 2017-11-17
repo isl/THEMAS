@@ -549,6 +549,119 @@ public class DBexportData {
                 TA.SetThesaurusName(prevThes.getValue());
             }
         }
+        
+        
+        if (output.contains(ConstantParameters.comment_kwd)) {
+            //Comment NOTES 
+            ArrayList<String> terms_with_comment_Vec = new ArrayList<String>();
+            Q.reset_name_scope();
+            StringObject commentFromClassObj = new StringObject();
+            StringObject commentLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+            Q.reset_name_scope();
+
+            Q.set_current_node(commentFromClassObj);
+            Q.set_current_node(commentLinkObj);
+            int set_all_links_comment = Q.get_all_instances(0);
+            Q.reset_set(set_all_links_comment);
+            int set_terms_with_comment = Q.get_from_value(set_all_links_comment);
+            Q.reset_set(set_terms_with_comment);
+            Q.free_set(set_all_links_comment);
+
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
+            if(Q.bulk_return_nodes(set_terms_with_comment, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
+                        String targetTerm = row.get_v1_cls_logicalname();
+                        terms_with_comment_Vec.add(targetTerm);
+                    }
+                }
+            }
+            
+            Q.free_set(set_terms_with_comment);
+
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(selectedThesaurus);
+            }
+            for (int i = 0; i < terms_with_comment_Vec.size(); i++) {
+
+                String targetDBTerm = terms_with_comment_Vec.get(i);
+                String targetUITerm = dbGen.removePrefix(targetDBTerm);
+                StringObject commentObject = new StringObject("");
+                TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, commentFromClassObj, commentLinkObj);
+                if (termsInfo.containsKey(targetUITerm) == false) {
+                    NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                    termsInfo.put(targetUITerm, newContainer);
+                    allTerms.add(targetUITerm);
+                }
+
+                if (commentObject.getValue().length() > 0) {
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.comment_kwd).add(new SortItem(commentObject.getValue(), -1));
+                }
+            }
+            //reset to previous thesaurus name if needed
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(prevThes.getValue());
+            }
+        }
+        
+        if (output.contains(ConstantParameters.note_kwd)) {
+            //Comment NOTES 
+            ArrayList<String> terms_with_note_Vec = new ArrayList<String>();
+            Q.reset_name_scope();
+            StringObject noteFromClassObj = new StringObject();
+            StringObject noteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
+            Q.reset_name_scope();
+
+            Q.set_current_node(noteFromClassObj);
+            Q.set_current_node(noteLinkObj);
+            int set_all_links_note = Q.get_all_instances(0);
+            Q.reset_set(set_all_links_note);
+            int set_terms_with_note = Q.get_from_value(set_all_links_note);
+            Q.reset_set(set_terms_with_note);
+            Q.free_set(set_all_links_note);
+
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
+            if(Q.bulk_return_nodes(set_terms_with_note, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
+                        String targetTerm = row.get_v1_cls_logicalname();
+                        terms_with_note_Vec.add(targetTerm);
+                    }
+                }
+            }
+            
+            Q.free_set(set_terms_with_note);
+
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(selectedThesaurus);
+            }
+            for (int i = 0; i < terms_with_note_Vec.size(); i++) {
+
+                String targetDBTerm = terms_with_note_Vec.get(i);
+                String targetUITerm = dbGen.removePrefix(targetDBTerm);
+                StringObject commentObject = new StringObject("");
+                TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, noteFromClassObj, noteLinkObj);
+                if (termsInfo.containsKey(targetUITerm) == false) {
+                    NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                    termsInfo.put(targetUITerm, newContainer);
+                    allTerms.add(targetUITerm);
+                }
+
+                if (commentObject.getValue().length() > 0) {
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.note_kwd).add(new SortItem(commentObject.getValue(), -1));
+                }
+            }
+            //reset to previous thesaurus name if needed
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(prevThes.getValue());
+            }
+        }
     }
 
     public void ReadTermFacetAndHierarchies(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,

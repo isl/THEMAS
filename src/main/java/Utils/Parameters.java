@@ -226,7 +226,7 @@ public class Parameters {
                     for(int i=0; i< howmanyGroups; i++){
                         
                         
-                        String delimeter = xpath.evaluate("./Source/@dellimeterChar", TransltiterationGroups.item(i));
+                        String delimeter = xpath.evaluate("./Source/@delimeterChar", TransltiterationGroups.item(i));
                         String replaceWhat = xpath.evaluate("./Source", TransltiterationGroups.item(i));
                         String replaceWith =xpath.evaluate("./Replacement", TransltiterationGroups.item(i));
                         
