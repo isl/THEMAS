@@ -45,6 +45,28 @@
         <param-value>en</param-value>
         <!--<param-value>el</param-value>-->
     </context-param>
+    
+    <!-- adding filter mechanism that will clean urls of skos export e.g. 
+    skos uri:
+    http://139.91.183.91:8084/THEMAS/BBT/Facet/6
+    will be translated to :
+    http://139.91.183.91:8084/THEMAS/CardOf_Facet?referenceId=6&external_user=ExternalReader&external_thesaurus=BBT&mode=XMLSTREAM
+    
+    These rules are defined in the /WEB-INF/urlrewrite.xml 
+    where external_user parameter should be set to the name of a user that has been assigned the 
+    EXTERNALREADER role for the specified thesaurus  
+    -->
+    <filter>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
     <!-- ||||||||||||||||||||||||||||||||||||||||| -->
     <context-param>
         <param-name>ListStep</param-name>

@@ -69,6 +69,7 @@
         <password/>
         
         <thesaurus group="EXTERNALREADER">ANCIENT</thesaurus>        
+        <thesaurus group="EXTERNALREADER">BBT</thesaurus>        
         <thesaurus group="EXTERNALREADER">DEMOAAT</thesaurus>
         <thesaurus group="EXTERNALREADER">TESTDATA</thesaurus>
         <description>External Read only user for thesaurus THEMASDEMO (no login required - all non published terms included)</description>

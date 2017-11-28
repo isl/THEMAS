@@ -29,6 +29,17 @@ This file is part of the THEMAS system.
 THEMAS new version Release Notes
 =============================================================================
 - XML version exported in XML export schema
+- added url rewrite module in order to support SKOS export uris e.g. translate http://139.91.183.91:8084/THEMAS/BBT/Facet/6 to http://139.91.183.91:8084/THEMAS/CardOf_Facet?referenceId=6&external_user=ExternalReader&external_thesaurus=BBT&mode=XMLSTREAM 
+  Rules defined in /WEB-INF/urlrewrite.xml
+  Supposing that SKOS export uris have been produced using the default namespace values
+- Using the reduced scope note complexity functions of Neo4j-sisapi
+- Removed TSV files from THEMAS - more appropriate is to be released together with each Neo4j-sisapi version.
+  (also removed TSV language dependency - Adding configuration parameter about the UNCLASSIFIED TERMS facet in config.xml)
+- Added xml xsd file for version 2 
+- Skos Export Adaptations to be more close to the BBT and to be able to define concept scheme and target namespace
+- Adding note field in Terms
+- Adding scope note and note in Facets
+
 
 =============================================================================
 THEMAS 1.2.1 Release Notes
