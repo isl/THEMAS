@@ -306,7 +306,7 @@ public class OfflineToolsClass {
             UserInfoClass refSessionUserInfo = new UserInfoClass();
             refSessionUserInfo.selectedThesaurus = "";
             refSessionUserInfo.name = "admin";
-            refSessionUserInfo.userGroup = "ADMINISTRATOR";
+            refSessionUserInfo.userGroup = ConstantParameters.Group_Administrator;
             Utilities u = new Utilities();
             
             

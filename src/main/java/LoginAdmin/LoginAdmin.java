@@ -85,7 +85,7 @@ public class LoginAdmin extends HttpServlet {
                 }
             }
 
-            if (SessionUserInfo != null && SessionUserInfo.userGroup.equals("ADMINISTRATOR")==true ) {
+            if (SessionUserInfo != null && SessionUserInfo.userGroup.equals(ConstantParameters.Group_Administrator)==true ) {
                 response.setStatus(response.SC_MOVED_TEMPORARILY);
                 response.setHeader("Location", "HiddenActions");
 

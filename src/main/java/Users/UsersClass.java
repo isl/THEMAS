@@ -177,7 +177,7 @@ public class UsersClass {
         UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
         //String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
         String currentUserGroup = SessionUserInfo.userGroup;
-        if (currentUserGroup.equals("ADMINISTRATOR")) { // administrator has NO thesaurus limitations
+        if (currentUserGroup.equals(ConstantParameters.Group_Administrator)) { // administrator has NO thesaurus limitations
             return;
         }
         // load the XML file with the users to Vector THEMASUserInfoList
@@ -219,6 +219,10 @@ public class UsersClass {
             - a UserInfoClass class with the full information of the given user
     ----------------------------------------------------------------------*/                
     public UserInfoClass SearchTMSUser(HttpServletRequest request, String username) {
+        
+        //filter thesauri so that only existing ones are displayed
+        
+        
         // load the XML file with the users to Vector THEMASUserInfoList
         String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
         ArrayList THEMASUserInfoList = ReadWebAppUsersXMLFile(THEMASUsersFileName);
@@ -278,6 +282,7 @@ public class UsersClass {
         for (int i = 0; i < THEMASUserInfoListSize; i++) {
             UserInfoClass userInfo = (UserInfoClass)(THEMASUserInfoList.get(i));
             int thesaurusIndex = userInfo.thesaurusNames.indexOf(targetThesaurus);
+            
             if (thesaurusIndex != -1) {
                 UserNamesV.add(userInfo.name);
                 GroupsV.add(userInfo.thesaurusGroups.get(thesaurusIndex));
@@ -285,16 +290,40 @@ public class UsersClass {
         }          
     }    
     
-    /*---------------------------------------------------------------------
-                            GetThesaurusSetOfCurrentTMSUser()
-    -----------------------------------------------------------------------
-    INPUT: - HttpServlet servlet: the current servlet
-           - HttpServletRequest request: the servlet's request
-           - String username: the user to be searched
-    OUTPUT: - null in case the user with the given username does not exist
-            - a Vector with the thesaurus owned by the user
-    ----------------------------------------------------------------------*/                
+    /**
+     * 
+     * @param request : the servlet request
+     * @param username: the user login name to be searched for
+     * @return - null in case the user with the given username does not exist
+               - a Vector with the thesaurus owned by the user
+     */
     public ArrayList<String> GetThesaurusSetOfTMSUser(HttpServletRequest request, String username) {
+        
+        //get list of existing thesauri in order to filter out the 
+        //thesaurus names written in users xml
+        ArrayList<String> allExistingThesauri = new ArrayList<>();
+        
+        QClass Q = new QClass();
+        IntegerObject sis_session = new IntegerObject();            
+        DBGeneral dbGen = new DBGeneral();
+
+        //open connection and start Query
+        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
+        {
+            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class WebAppUsers GetThesaurusSetOfTMSUser()");
+            return null;
+        }
+
+        // get existing thesaurus
+        dbGen.GetExistingThesaurus(false, allExistingThesauri, Q, sis_session);  
+
+        //end query and close connection
+        Q.free_all_sets();
+        Q.TEST_end_query();
+        
+        dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+        
+        
         String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
         ArrayList<String> ThesaurusSetOfTMSUser = new ArrayList<String>();
         // load the XML file with the users to Vector THEMASUserInfoList
@@ -319,29 +348,20 @@ public class UsersClass {
         }        
         // in case of user ADMINISTRATOR or of user owning ALL thesaurus (*), return all the existing thesaurus
         //if (userInfo.thesaurusGroups.contains("ADMINISTRATOR") || userInfo.thesaurusNames.contains("*")) {
-        if (userInfo.thesaurusGroups.contains(ConstantParameters.Group_Administrator)) {
-            QClass Q = new QClass();
-            IntegerObject sis_session = new IntegerObject();            
-            DBGeneral dbGen = new DBGeneral();
-            
-            
-            //open connection and start Query
-            if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
-            {
-                Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class WebAppUsers GetThesaurusSetOfTMSUser()");
-                return null;
-            }
-
-            // get existing thesaurus
-            dbGen.GetExistingThesaurus(false, ThesaurusSetOfTMSUser, Q, sis_session);  
-            
-            //end query and close connection
-            Q.free_all_sets();
-            Q.TEST_end_query();
-            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+        if (userInfo.thesaurusGroups.contains(ConstantParameters.Group_Administrator)|| userInfo.thesaurusNames.contains(ConstantParameters.AllThesauriIndicator)) {
+            ThesaurusSetOfTMSUser.addAll(allExistingThesauri);
         }
         else {
-            ThesaurusSetOfTMSUser = userInfo.thesaurusNames;
+            //filter out thesauri that may have been defined in WebAppUSERS.xml 
+            //but do not exist in the database
+            if(userInfo.thesaurusNames!=null && userInfo.thesaurusNames.size()>0)
+            {
+                for(String str : userInfo.thesaurusNames){
+                    if(allExistingThesauri.contains(str)){
+                        ThesaurusSetOfTMSUser.add(str);
+                    }
+                }
+            }            
         }
         
         return ThesaurusSetOfTMSUser;
@@ -416,7 +436,7 @@ public class UsersClass {
             return USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20;
         }
         
-        // check 3. not blank password (check it only in case of a new user with a group different than "READER")
+        // check 3. not blank password (check it only in case of a new user with a group different than "READER" or External Reader)
         boolean newUsersGroupsAreAllREADEROrExternalReader = true;
         int groupVSize = groupV.size();
         for (int i = 0; i < groupVSize; i++) {        
@@ -444,7 +464,11 @@ public class UsersClass {
         }  
             
         // check 5. Vector thesaurusV must contain unique values (the same thesaurus cannot have 2 different groups)
-        ArrayList<String> uniqueThesaurusV = new ArrayList<String>();
+        ArrayList<String> uniqueThesaurusV = new ArrayList<>();
+        //first check global access thesauri
+        if(thesaurusV.size()>1 && thesaurusV.contains(ConstantParameters.AllThesauriIndicator)){
+            return THESAURUS_SET_WITH_DUBLICATE_VALUES;
+        }
         int thesaurusVSize = thesaurusV.size();
         for (int i = 0; i < thesaurusVSize; i++) {        
             String thesaurus = (String)thesaurusV.get(i);
@@ -534,7 +558,7 @@ public class UsersClass {
         userInfo.thesaurusGroups = groupV;
         if (createUserAsAdministrator == true) {
             userInfo.thesaurusNames.add("");
-            userInfo.thesaurusGroups.add("ADMINISTRATOR");
+            userInfo.thesaurusGroups.add(ConstantParameters.Group_Administrator);
         }
         userInfo.description = description;
         THEMASUserInfoList.add(userInfo);        
@@ -562,7 +586,16 @@ public class UsersClass {
 		<description>...</description>
 	</user>
     ----------------------------------------------------------------------*/                
-    public int EditUser(HttpServletRequest request,SessionWrapperClass sessionInstance,boolean deletePassword, boolean deleteUser,String oldUserName, String Newusername, String description) {
+    public int EditUser(HttpServletRequest request,SessionWrapperClass sessionInstance,
+            boolean deletePassword, 
+            boolean deleteUser,
+            boolean isAdmin,
+            String oldUserName, 
+            String Newusername, 
+            String description,
+            ArrayList<String> selectThesaurusVector,
+            ArrayList<String> selectUserGroupVector
+    ) {
         String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
         // load the XML file with the users to Vector THEMASUserInfoList
         ArrayList THEMASUserInfoList = ReadWebAppUsersXMLFile(THEMASUsersFileName);
@@ -630,8 +663,7 @@ public class UsersClass {
                         renameUser = true;
                     }
                 }
-
-            }
+            }            
         }        
         TargetUserInfo.description = description;
         
@@ -670,6 +702,24 @@ public class UsersClass {
         }
         
         
+        if (!deleteUser) {
+            // update the relevant user mappings
+            TargetUserInfo.thesaurusNames = new ArrayList<>();
+            TargetUserInfo.thesaurusGroups = new ArrayList<>();
+            if(isAdmin){
+                TargetUserInfo.thesaurusNames.add("");
+                TargetUserInfo.thesaurusGroups.add(ConstantParameters.Group_Administrator);
+            }
+            else{
+
+                if(selectThesaurusVector!=null && selectUserGroupVector!=null){
+                    for(int i=0; i< selectThesaurusVector.size(); i++){
+                        TargetUserInfo.thesaurusNames.add(selectThesaurusVector.get(i));
+                        TargetUserInfo.thesaurusGroups.add(selectUserGroupVector.get(i));
+                    }
+                }
+            }
+        }
        
         
         // inform Vector
@@ -807,11 +857,34 @@ public class UsersClass {
         
         // check 1. Vector groupsV must contain at least 1 THESAURUS_COMMITTEE
         if (groupsV.contains(Utils.ConstantParameters.Group_ThesaurusCommittee) == false) {
-            return THESAURUS_WITHOUT_THESAURUS_COMMITTEE;
+            boolean globalThesaurusUserFound = false;
+            for (UserInfoClass userInfo : THEMASUserInfoList) {
+                
+                if(userInfo.thesaurusNames!=null) {
+                    for(int i=0; i< userInfo.thesaurusNames.size(); i++){
+                        if(userInfo.thesaurusNames.get(i).equals(ConstantParameters.AllThesauriIndicator)){
+                            if(userInfo.thesaurusGroups.get(i).equals(Utils.ConstantParameters.Group_ThesaurusCommittee)){
+                                globalThesaurusUserFound = true;
+                                break;
+                            }
+                        }
+                    }                    
+                }
+            }
+            
+            if(!globalThesaurusUserFound){                      
+                return THESAURUS_WITHOUT_THESAURUS_COMMITTEE;
+            }
         }
         
         // check 2. Vector usersV must contain unique values (the same user cannot have 2 different groups for the same thesaurus)
-        ArrayList<String> uniqueUsersV = new ArrayList<String>();
+        ArrayList<String> uniqueUsersV = new ArrayList<>();
+        //first add the users with Global thesaurus access. 
+        //their editing will be disabled from share thesarus screen
+        THEMASUserInfoList.stream().filter((userInfo) -> (userInfo.thesaurusNames!=null && userInfo.thesaurusNames.contains(ConstantParameters.AllThesauriIndicator))).forEach((userInfo) -> {
+            uniqueUsersV.add(userInfo.name);
+        });
+        
         int usersVSize = usersV.size();
         for (int i = 0; i < usersVSize; i++) {        
             String user = (String)usersV.get(i);
@@ -825,6 +898,7 @@ public class UsersClass {
         
         // save changes
         // 1. clear ALL users references to targetThesaurus
+        //users with * access should not be affected
         int THEMASUserInfoListSize = THEMASUserInfoList.size();
         for (int i = 0; i < THEMASUserInfoListSize; i++) {
             // get info for current stored user
@@ -834,8 +908,8 @@ public class UsersClass {
             ArrayList<String> newthesaurusGroups = new ArrayList<String>();
             for (int j = 0; j < userThesNamesSize; j++) {
                 String thesName = (String)userInfo.thesaurusNames.get(j);
-                String thesGroup = (String)userInfo.thesaurusGroups.get(j);
-                if (thesName.equals(targetThesaurus) == false) {
+                String thesGroup = (String)userInfo.thesaurusGroups.get(j);                
+                if (thesName.equals(targetThesaurus) == false) { 
                     newthesaurusNames.add(thesName);
                     newthesaurusGroups.add(thesGroup);
                 }                
@@ -1034,14 +1108,14 @@ public class UsersClass {
         }
         // 2. check if user to be deleted is the last ADMINISTRATOR user
         ArrayList GivenUserThesaurusGroups = GivenUserInfo.thesaurusGroups;
-        boolean userToBeDeletedIsAdministrator = GivenUserThesaurusGroups.contains("ADMINISTRATOR");
+        boolean userToBeDeletedIsAdministrator = GivenUserThesaurusGroups.contains(ConstantParameters.Group_Administrator);
         if (userToBeDeletedIsAdministrator == true) {
             // count all ADMINISTRATORs
             int countOfAdministrators = 0;
             for (int i = 0; i < THEMASUserInfoListSize; i++) {
                 // get info for current stored user
                 UserInfoClass userInfo = (UserInfoClass)(THEMASUserInfoList.get(i));                
-                if (userInfo.thesaurusGroups.contains("ADMINISTRATOR") == true) {
+                if (userInfo.thesaurusGroups.contains(ConstantParameters.Group_Administrator) == true) {
                     countOfAdministrators++;
                 }
             }
@@ -1124,13 +1198,39 @@ public class UsersClass {
         //String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
         SetUTF8FileContents(WebAppUsersFileName, WebAppUsersFileNameContents);
     }    
-
-    /*---------------------------------------------------------------------
-                            ReadWebAppUsersXMLFile()
-    -----------------------------------------------------------------------
-    FUNCTION: returns a Vector of UserInfoClass classes with the users info found in UsersClass.xml
-    ----------------------------------------------------------------------*/                
+              
+    /**
+     * Returns a Vector of UserInfoClass classes with the users info found in WebAppUSERS.xml.
+     * Only existing Thesauri will be shown.
+     * 
+     * @param WebAppUsersFileName
+     * @return 
+     */
     public synchronized ArrayList<UserInfoClass> ReadWebAppUsersXMLFile(String WebAppUsersFileName) {
+        
+        //get list of existing thesauri in order to filter out the 
+        //thesaurus names written in users xml
+        ArrayList<String> allExistingThesauri = new ArrayList<>();
+        
+        QClass Q = new QClass();
+        IntegerObject sis_session = new IntegerObject();            
+        DBGeneral dbGen = new DBGeneral();
+
+        //open connection and start Query
+        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
+        {
+            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class WebAppUsers GetThesaurusSetOfTMSUser()");
+            return null;
+        }
+
+        // get existing thesaurus
+        dbGen.GetExistingThesaurus(false, allExistingThesauri, Q, sis_session);  
+
+        //end query and close connection
+        Q.free_all_sets();
+        Q.TEST_end_query();
+        
+        dbGen.CloseDBConnection(Q, null, sis_session, null, false);
         
         ArrayList<UserInfoClass> WebAppUserInfoList = new ArrayList<UserInfoClass>();
         
@@ -1179,8 +1279,14 @@ public class UsersClass {
                         else if(name.equals("thesaurus")){
                             String userThesaurus = childNode.getTextContent().trim();    
                             String userGroup = childNode.getAttributes().getNamedItem("group").getTextContent().trim();
-                            thesaurusGroups.add(userGroup);
-                            thesaurusNames.add(userThesaurus);
+                            //check that thesaurus option writen in xml file actually exists
+                            if(allExistingThesauri.contains(userThesaurus) 
+                                    || userThesaurus.equals(ConstantParameters.AllThesauriIndicator)
+                                    || userGroup.equals(ConstantParameters.Group_Administrator)){
+                                
+                                thesaurusGroups.add(userGroup);
+                                thesaurusNames.add(userThesaurus);
+                            }
                         }
                     }
                                         
@@ -1295,6 +1401,7 @@ public class UsersClass {
         // for each element of Vector THEMASUserInfoList
         int THEMASUserInfoListSize = THEMASUserInfoList.size();
         for (int i = 0; i < THEMASUserInfoListSize; i++) {
+            
             // get info for current stored user
             UserInfoClass userInfo = (UserInfoClass)(THEMASUserInfoList.get(i));
             String userNameStored = userInfo.name; 
@@ -1310,17 +1417,18 @@ public class UsersClass {
             // for each element of Vector thesaurusNamesStored
             boolean selectedThesaurusAuthenticationSucceded = false;
             String userGroup = null;
+            
             int thesaurusNamesStoredSize = thesaurusNamesStored.size();            
             for (int j = 0; j < thesaurusNamesStoredSize; j++) {
                 userGroup = (String)(thesaurusGroupsStored.get(j));
                 // in case of group="ADMINISTRATOR" do not check selectedThesaurus
-                if (userGroup.equals("ADMINISTRATOR") == true) {
+                if (userGroup.equals(ConstantParameters.Group_Administrator) == true) {
                     selectedThesaurusAuthenticationSucceded = true;
                     break;                    
                 }
-                String thesaurusNameStored = (String)(thesaurusNamesStored.get(j)); 
-                //if (thesaurusNameStored.equals(selectedThesaurus) == true || thesaurusNameStored.equals("*") == true) {
-                if (thesaurusNameStored.equals(selectedThesaurus) == true) {
+                
+                String thesaurusNameStored = (String)(thesaurusNamesStored.get(j));                 
+                if (thesaurusNameStored.equals(selectedThesaurus) == true || thesaurusNameStored.equals(ConstantParameters.AllThesauriIndicator) == true) {
                     selectedThesaurusAuthenticationSucceded = true;
                     break;
                 }

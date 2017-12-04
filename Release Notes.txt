@@ -39,6 +39,7 @@ THEMAS new version Release Notes
 - Skos Export Adaptations to be more close to the BBT and to be able to define concept scheme and target namespace
 - Adding note field in Terms
 - Adding scope note and note in Facets
+- THEMAS Users may be applied access to all thesauri via * instead of thesarus name
 
 
 =============================================================================

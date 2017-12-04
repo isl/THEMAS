@@ -61,6 +61,10 @@ body{
     margin-top:5px;
 }
 
+img.disabledImage{
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+}
 #header {    
     background-color: #E2E2E2;
     height:77px;    

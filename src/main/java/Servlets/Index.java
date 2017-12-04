@@ -116,7 +116,6 @@ public class Index extends ApplicationBasicServlet {
                             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "EXIT: user " + SessionUserInfo.name + " just Logged Out.");
                             SessionUserInfo = null;
                         }
-
                     }
                 
             } else if (SessionUserInfo != null) {

@@ -123,7 +123,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             } // case 5. called by "Edit User" icon 
             else if (targetEditField.equals("user_edit")) {
                 String user = u.getDecodedParameterValue(request.getParameter("user"));
-                OpenCardForUserEditing(request, context, sessionInstance, out, user);
+                OpenCardForUserEditing(request, context, sessionInstance, out, user, thesaurusVector);
             } // case 6. called by "Save" button for a user editing
             else if (targetEditField.equals("save_user_edit")) {
                 EditUser(request, sessionInstance, out);
@@ -197,7 +197,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             }
         } else {
             selectThesaurusVector.add("");
-            selectUserGroupVector.add("ADMINISTRATOR");
+            selectUserGroupVector.add(ConstantParameters.Group_Administrator);
         }
 
         xml.append(ConstantParameters.xmlHeader); // <?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -222,9 +222,13 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         u.XmlPrintWriterTransform(out, xml, sessionInstance.path + "/xml-xsl/EditUserActions/Edit_User.xsl");
     }
 
-    /*---------------------------------------------------------------------
-     OpenCardForSharingThesaurus()
-     ----------------------------------------------------------------------*/
+    /**
+     * 
+     * @param request
+     * @param context
+     * @param sessionInstance
+     * @param out 
+     */
     private void OpenCardForSharingThesaurus(HttpServletRequest request, ServletContext context, SessionWrapperClass sessionInstance, PrintWriter out) {
         Utilities u = new Utilities();
         // write XML output
@@ -273,9 +277,18 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         // <ThesaurusUsers_Groups>
         xml.append("<ThesaurusUsers_Groups>");
         // print all existing users - groups of current thesaurus
-        ArrayList<String> UserNamesV = new ArrayList<String>();
-        ArrayList<String> GroupsV = new ArrayList<String>();
+        ArrayList<String> UserNamesV = new ArrayList<>();
+        ArrayList<String> GroupsV = new ArrayList<>();
+        ArrayList<String> allThesauriUserNamesV = new ArrayList<>();
+        ArrayList<String> allThesauriGroupsV = new ArrayList<>();
+        
         tmsUsers.GetTMSUsers_GroupsOfThesaurus(request, CurrentThesaurus, UserNamesV, GroupsV);
+        tmsUsers.GetTMSUsers_GroupsOfThesaurus(request, ConstantParameters.AllThesauriIndicator, allThesauriUserNamesV, allThesauriGroupsV);
+        
+        int allThesUserNamesVSize = allThesauriUserNamesV.size();
+        for (int i = 0; i < allThesUserNamesVSize; i++) {
+            xml.append("<allThesauriUser group=\"" + (String) allThesauriGroupsV.get(i) + "\">" + (String) allThesauriUserNamesV.get(i) + "</allThesauriUser >");
+        }
         int UserNamesVSize = UserNamesV.size();
         for (int i = 0; i < UserNamesVSize; i++) {
             // group_translated=\"" + tmsUsers.translateGroup((String) GroupsV.get(i)) + "\"
@@ -290,12 +303,12 @@ public class EditDisplays_User extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
      OpenCardForUserEditing()
      ----------------------------------------------------------------------*/
-    private void OpenCardForUserEditing(HttpServletRequest request, ServletContext context, SessionWrapperClass sessionInstance, PrintWriter out, String user) {
+    private void OpenCardForUserEditing(HttpServletRequest request, ServletContext context, SessionWrapperClass sessionInstance, PrintWriter out, String user, ArrayList thesaurusVector) {
         Utilities u = new Utilities();
 
         // write XML output
         StringBuffer xml = new StringBuffer();
-        writeXMLForUserEditing(request, sessionInstance, xml, "save_user_edit", user);
+        writeXMLForUserEditing(request, sessionInstance, xml, "save_user_edit", user,thesaurusVector);
         // transform XML output
         u.XmlPrintWriterTransform(out, xml, sessionInstance.path + "/xml-xsl/EditUserActions/Edit_User.xsl");
     }
@@ -303,7 +316,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
      writeXMLForUserEditing()
      ----------------------------------------------------------------------*/
-    private void writeXMLForUserEditing(HttpServletRequest request, SessionWrapperClass sessionInstance, StringBuffer xml, String targetField, String targetUser) {
+    private void writeXMLForUserEditing(HttpServletRequest request, SessionWrapperClass sessionInstance, StringBuffer xml, String targetField, String targetUser, ArrayList thesaurusVector) {
         Utilities u = new Utilities();
         UsersClass tmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
@@ -312,8 +325,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         xml.append("<targetEditField>" + targetField + "</targetEditField>"); // user_create / user_edit
         xml.append("<targetUser>" + targetUser + "</targetUser>");
 
-        UserInfoClass userForEditingInfo = new UserInfoClass();
-        userForEditingInfo = tmsUsers.SearchTMSUser(request, targetUser);
+        UserInfoClass userForEditingInfo = tmsUsers.SearchTMSUser(request, targetUser);
 
         if (userForEditingInfo != null) {
             String userNameStored = userForEditingInfo.name;
@@ -334,6 +346,33 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             xml.append("<description>" + descriptionStored + "</description>");
             xml.append("</userForEditingInfo>");
         }
+        
+        
+        //only administrator will be given the edit user mappings right
+        if(SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Administrator)){
+            xml.append("<existingThesaurus>");
+            xml.append("<existingThesaurusName>" + Utils.ConstantParameters.AllThesauriIndicator + "</existingThesaurusName>");
+        
+            int thesaurusVectorSize = thesaurusVector.size();
+            for (int i = 0; i < thesaurusVectorSize; i++) {
+                xml.append("<existingThesaurusName>" + (String) thesaurusVector.get(i) + "</existingThesaurusName>");
+            }
+            xml.append("</existingThesaurus>");
+            
+            // <THEMASUsersGroups>
+            xml.append("<THEMASUsersGroups>");
+            for (String group : tmsUsers.UsersGroups) { // do not display ADMINISTRATOR
+                if(group.equals(ConstantParameters.Group_Administrator)){
+                    continue;
+                }
+                // tr=\"" + tmsUsers.UsersGroupsGR[i] + "\"
+                xml.append("<THEMASUsersGroupName>" + group + "</THEMASUsersGroupName>");
+            }
+            xml.append("</THEMASUsersGroups>");
+        }
+        
+        
+        
 
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append("</page>");
@@ -507,7 +546,11 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         // <pageInfo>
         xml.append("<pageInfo>");
         // <existingThesaurus>
+       
         xml.append("<existingThesaurus>");
+        if(SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Administrator)){
+            xml.append("<existingThesaurusName>" + Utils.ConstantParameters.AllThesauriIndicator + "</existingThesaurusName>");
+        }
         int thesaurusVectorSize = thesaurusVector.size();
         for (int i = 0; i < thesaurusVectorSize; i++) {
             xml.append("<existingThesaurusName>" + (String) thesaurusVector.get(i) + "</existingThesaurusName>");
@@ -541,9 +584,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         String administratorCheckBox = u.getDecodedParameterValue(request.getParameter("administratorCheckBox"));
         boolean createNewUserAsAdministrator = (administratorCheckBox != null);
         String[] selectThesaurusArray = null;
-        ArrayList<String> selectThesaurusVector = new ArrayList<String>();
+        ArrayList<String> selectThesaurusVector = new ArrayList<>();
         String[] selectUserGroupArray = null;
-        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<>();
         // in case of no Administrator creation/editing get the list of thesaurus-groups
         if (createNewUserAsAdministrator == false) {
             selectThesaurusArray = request.getParameterValues("selectThesaurus");
@@ -641,7 +684,7 @@ public class EditDisplays_User extends ApplicationBasicServlet {
             }
         }
 
-        if (selectUserGroupVector.contains("ADMINISTRATOR")) {
+        if (selectUserGroupVector.contains(ConstantParameters.Group_Administrator)) {
             createUserAsAdministrator = true;
         }
 
@@ -717,19 +760,68 @@ public class EditDisplays_User extends ApplicationBasicServlet {
      EditUser()
      ----------------------------------------------------------------------*/
     private void EditUser(HttpServletRequest request, SessionWrapperClass sessionInstance, PrintWriter out) throws IOException {
+        
+        UserInfoClass TMSCurrentUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        
         Utilities u = new Utilities();
         // get input parameters
         String oldUserName = u.getDecodedParameterValue(request.getParameter("targetUser"));
         String newName_User = u.getDecodedParameterValue(request.getParameter("newName_User"));
         String newDescription_User = u.getDecodedParameterValue(request.getParameter("newDescription_User"));
+        
+        UsersClass tmsUsers = new UsersClass();
+        
+        ArrayList<String> selectThesaurusVector = new ArrayList<>();         
+        ArrayList<String> selectUserGroupVector = new ArrayList<>();
+        
+        boolean isAdmin = false;
+        
+        // administrator will also be given the opportunity to edit the mappings
+        if (TMSCurrentUserInfo.userGroup.equals(ConstantParameters.Group_Administrator)) {
+            
+            String isAdminCheckbox = u.getDecodedParameterValue(request.getParameter("administratorCheckBox"));
+            isAdmin = (isAdminCheckbox != null);
+            
+            String[] selectThesaurusArray = request.getParameterValues("selectThesaurus");
+            if (selectThesaurusArray != null) {
+                int selectThesaurusArrayLen = selectThesaurusArray.length;
+                for (int i = 0; i < selectThesaurusArrayLen; i++) {
+                    selectThesaurusVector.add(u.getDecodedParameterValue(selectThesaurusArray[i]));
+                }
+                String[] selectUserGroupArray =  request.getParameterValues("selectUserGroup");
+                int selectUserGroupArrayLen = selectUserGroupArray.length;
+                for (int i = 0; i < selectUserGroupArrayLen; i++) {
+                    selectUserGroupVector.add(u.getDecodedParameterValue(selectUserGroupArray[i]));
+                }
+            }
+        }
+        else{
+            UserInfoClass currentMappings = tmsUsers.SearchTMSUser(request, oldUserName);
+            
+            if(currentMappings.userGroup.equals(ConstantParameters.Group_Administrator)){
+                isAdmin = true;
+            }
+                    
+            if(currentMappings.thesaurusNames!=null && currentMappings.thesaurusGroups!=null){
+                for(int i=0; i< currentMappings.thesaurusNames.size(); i++){
+                    selectThesaurusVector.add(currentMappings.thesaurusNames.get(i));
+                    selectUserGroupVector.add(currentMappings.thesaurusGroups.get(i));
+                    if(currentMappings.thesaurusGroups.get(i).equals(ConstantParameters.Group_Administrator)){
+                        isAdmin = true;
+                    }
+                }
+            }
+        }
+        
         String deletePasswordCheckBox = u.getDecodedParameterValue(request.getParameter("deletePasswordCheckBox"));
         boolean deletePassword = (deletePasswordCheckBox != null);
         String deleteUserCheckBox = u.getDecodedParameterValue(request.getParameter("deleteUserCheckBox"));
         boolean deleteUser = (deleteUserCheckBox != null);
 
-        UsersClass tmsUsers = new UsersClass();
-        int resultOfEditUser = tmsUsers.EditUser(request, sessionInstance, deletePassword, deleteUser, oldUserName, newName_User, newDescription_User);
+        
+        int resultOfEditUser = tmsUsers.EditUser(request, sessionInstance, deletePassword, deleteUser, isAdmin, oldUserName, newName_User, newDescription_User,selectThesaurusVector,selectUserGroupVector);
 
+        
         ServletContext context = getServletContext();
         DBGeneral dbGen = new DBGeneral();
 
@@ -975,9 +1067,9 @@ public class EditDisplays_User extends ApplicationBasicServlet {
         Utilities u = new Utilities();
         // get input parameters
         String[] selectUsersArray = null;
-        ArrayList<String> selectUsersVector = new ArrayList<String>();
+        ArrayList<String> selectUsersVector = new ArrayList<>();
         String[] selectUserGroupArray = null;
-        ArrayList<String> selectUserGroupVector = new ArrayList<String>();
+        ArrayList<String> selectUserGroupVector = new ArrayList<>();
         // get the list of users-groups
         selectUsersArray = request.getParameterValues("selectUser");
         if (selectUsersArray != null) {

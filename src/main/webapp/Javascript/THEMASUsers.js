@@ -31,6 +31,7 @@
  * 
  * This file is part of the THEMAS system.
  */
+
 /*-----------------------------------------------------
                     AddThesaurusGroupInput()
   -----------------------------------------------------
@@ -42,6 +43,7 @@ function AddThesaurusGroupInput(tableBodyId, rowId) {
   var MinusIconArray  = document.getElementsByName('MinusIcon');
   
     var tbody = getObj(tableBodyId);
+    /*
     var table = tbody.parentNode;
     var row = getObj(rowId);
     // get the number of rows of the table (-1 because of header)
@@ -57,7 +59,32 @@ function AddThesaurusGroupInput(tableBodyId, rowId) {
     else {
       var newRow = row.cloneNode(true);
       tbody.appendChild(newRow);      
-    }    
+    }
+    */
+    
+    
+    var table = tbody.parentNode;
+    var row = getObj(rowId);
+    // get the number of rows of the table (-1 because of header)
+    len = table.rows.length - 1;
+    //alert('Trying to add a row to table with ' + len + ' rows')
+    /*if (len == 1 && row.style.visibility == 'hidden') {
+      row.style.visibility = 'visible';
+      usersArray[0].style.visibility = 'visible';
+      groupsArray[0].style.visibility = 'visible';
+      MinusIconArray[0].style.visibility = 'visible';            
+    }
+    else {*/
+    //first row will always be collapsed 
+    var newRow = row.cloneNode(true);
+    newRow.style.visibility = 'visible';
+    var selects = newRow.getElementsByTagName('select');
+    //enable the disabled selects
+    for ( i=0; i< selects.length; i++) {
+        selects[i].disabled = false;
+    }
+    tbody.appendChild(newRow);      
+    //} 
 }
 
 /*-----------------------------------------------------
@@ -70,7 +97,7 @@ function RemoveThesaurusGroupInput(tableId, rowObj) {
   var groupsArray  = document.getElementsByName('selectUserGroup');
   var MinusIconArray  = document.getElementsByName('MinusIcon');
   
-    var table = getObj(tableId);
+  var table = getObj(tableId);
     
     // get the number of rows of the table (-1 because of header)
     len = table.rows.length - 1;
@@ -83,14 +110,15 @@ function RemoveThesaurusGroupInput(tableId, rowObj) {
       thesArray[0].style.visibility = 'hidden';
       groupsArray[0].style.visibility = 'hidden';
       MinusIconArray[0].style.visibility = 'hidden';      
-    }
+    }    
 }
 
-/*-----------------------------------------------------
-                    AddUserGroupInput()
-  -----------------------------------------------------
-  CALLED: any time + icon is pressed ("Προσθήκη") in Share Thesaurus card
-  -------------------------------------------------------*/      
+/**
+ * CALLED: any time + icon is pressed ("Add") in Share Thesaurus card
+ * @param {type} tableBodyId
+ * @param {type} rowId
+ * @returns {undefined}
+ */
 function AddUserGroupInput(tableBodyId, rowId) {
   var usersArray  = document.getElementsByName('selectUser');
   var groupsArray  = document.getElementsByName('selectUserGroup');
@@ -102,24 +130,33 @@ function AddUserGroupInput(tableBodyId, rowId) {
     // get the number of rows of the table (-1 because of header)
     len = table.rows.length - 1;
     //alert('Trying to add a row to table with ' + len + ' rows')
-    if (len == 1 && row.style.visibility == 'hidden') {
+    /*if (len == 1 && row.style.visibility == 'hidden') {
       row.style.visibility = 'visible';
       usersArray[0].style.visibility = 'visible';
       groupsArray[0].style.visibility = 'visible';
       MinusIconArray[0].style.visibility = 'visible';            
     }
-    else {
-      var newRow = row.cloneNode(true);
-      tbody.appendChild(newRow);      
-    }    
+    else {*/
+    //first row will always be collapsed 
+    var newRow = row.cloneNode(true);
+    newRow.style.visibility = 'visible';
+    var selects = newRow.getElementsByTagName('select');
+    //enable the disabled selects
+    for ( i=0; i< selects.length; i++) {
+        selects[i].disabled = false;
+    }
+    tbody.appendChild(newRow);      
+    //}    
 }
 
-/*-----------------------------------------------------
-                    RemoveUserGroupInput()
-  -----------------------------------------------------
-  CALLED: any time - icon is pressed in Share Thesaurus card
-  -------------------------------------------------------*/      
+/**
+ * CALLED: any time - icon is pressed in Share Thesaurus card
+ * @param {type} tableId
+ * @param {type} rowObj
+ * @returns {undefined}
+ */
 function RemoveUserGroupInput(tableId, rowObj) {
+    
   var usersArray  = document.getElementsByName('selectUser');
   var groupsArray  = document.getElementsByName('selectUserGroup');
   var MinusIconArray  = document.getElementsByName('MinusIcon');
@@ -144,27 +181,35 @@ function RemoveUserGroupInput(tableId, rowObj) {
                     administratorCheckBoxClick() 
   -------------------------------------------------------*/      
 function administratorCheckBoxClick(adminCheckBox) {
-  var thesArray  = document.getElementsByName('selectThesaurus');
+  /*var thesArray  = document.getElementsByName('selectThesaurus');
   var groupsArray  = document.getElementsByName('selectUserGroup');
-  var MinusIconArray  = document.getElementsByName('MinusIcon');
+  var MinusIconArray  = document.getElementsByName('MinusIcon');*/
+    
+  var userRolesTable = document.getElementById('thesaurusGroupTable');
+  var roleAdditionTable = document.getElementById('TableWithPlusIconId');
+  var editUserRolesTableRow = document.getElementById('rolesDefinitionRow');
+  
   if(adminCheckBox.checked) {
-    for(var i=0; i < thesArray.length; i++){
+    /*for(var i=0; i < thesArray.length; i++){
       thesArray[i].style.visibility = 'hidden';
       groupsArray[i].style.visibility = 'hidden';
       MinusIconArray[i].style.visibility = 'hidden';
-    }      
-    document.getElementById('thesaurusGroupTable').style.visibility = 'hidden';
-    document.getElementById('TableWithPlusIconId').style.visibility = 'hidden'; 
-
+    }    */  
+    if(userRolesTable){userRolesTable.style.display = 'none';}
+    if(roleAdditionTable){roleAdditionTable.style.display = 'none';}
+    if(editUserRolesTableRow){editUserRolesTableRow.style.display = 'none';}
   }
   else {
+      /*
     for(var i=0; i < thesArray.length; i++){
       thesArray[i].style.visibility = 'visible';
       groupsArray[i].style.visibility = 'visible';
       MinusIconArray[i].style.visibility = 'visible';
-    }        
-    document.getElementById('thesaurusGroupTable').style.visibility = 'visible';
-    document.getElementById('TableWithPlusIconId').style.visibility = 'visible'; 
+    }   */     
+        
+    if(userRolesTable){userRolesTable.style.display = 'table';}
+    if(roleAdditionTable){roleAdditionTable.style.display = 'table';}
+    if(editUserRolesTableRow){editUserRolesTableRow.style.display = 'table-row';}    
   }
 }
 
