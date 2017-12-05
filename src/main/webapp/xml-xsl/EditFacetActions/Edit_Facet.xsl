@@ -135,12 +135,34 @@
             <br/>
             <table border="0" width="100%" align="center">
                 <tr>
-                    <td colspan="3">
+                    <td style="text-align:right;">
                         <b>
                             <xsl:value-of select="$specificlocale/create/newname/option[@lang=$lang]"/>
                         </b>
-                        <input id="newFacetName_Id" type="text" size="57" name="newName_Facet"/>
+                    </td>
+                    <td>
+                        <input id="newFacetName_Id" type="text" size="57" name="newName_Facet"/>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
                         <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <!-- TODO: add an option for Top Term having the same name as the Facet -->
+                    <td style="text-align:right;">
+                        <b>
+                            <xsl:value-of select="$specificlocale/create/newTopTermName/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        
+                        <input id="newFacetTopTermName_Id" type="text" size="57" name="newName_FacetTopTerm"/>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
                         <br/>
                     </td>
                 </tr>

@@ -1055,7 +1055,7 @@ public class DBConnect_Term {
             // in case it doesn't exist
             if (dbGen.check_exist(((StringObject) alts_Vector.get(i)).getValue(),Q,sis_session) == false) {
                 // create Alternative Term
-                int ret = TA.CHECK_CreateAlternativeTerm( (StringObject) alts_Vector.get(i));
+                int ret = TA.CreateAlternativeTerm( (StringObject) alts_Vector.get(i));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     continue;
@@ -1335,7 +1335,7 @@ public class DBConnect_Term {
         // in case it doesn't exist
         if (dbGen.check_exist(user,Q,sis_session) == false) {
             // create it as orphan
-            ret = TA.CHECK_CreateEditor( new StringObject(user));
+            ret = TA.CreateEditor( new StringObject(user));
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                 return errorMsg;

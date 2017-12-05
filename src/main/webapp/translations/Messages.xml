@@ -241,11 +241,19 @@
             <EmptyName>
                 <option lang="en">A name must be specified for the new facet</option>
                 <option lang="el">Δεν έχει δηλωθεί όνομα για το θέμα</option>
-            </EmptyName>
+            </EmptyName>            
+            <EmptyTopTermName>
+                <option lang="en">A name must be specified for the new facet's top term</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για τον όρο κορυφής του νέου θέματος</option>
+            </EmptyTopTermName>
             <FacetExists>
                 <option lang="en">Facet %s already exists in the database.</option>
                 <option lang="el">Το Θέμα %s υπάρχει ήδη στη βάση.</option>
             </FacetExists>
+            <FacetTopTermExists>
+                <option lang="en">Top Term %s already exists in the database.</option>
+                <option lang="el">Ο όρος κορυφής %s υπάρχει ήδη στη βάση.</option>
+            </FacetTopTermExists>
             <SuccessMsg>
                 <option lang="en">Facet '%s' was successfully created.</option>
                 <option lang="el">Το Θέμα: '%s' δημιουργήθηκε με επιτυχία.</option>
@@ -261,7 +269,7 @@
                 <option lang="el">Λάθος κατά την τροποποίηση θέματος: </option>
             </ErrorPrefix>
             <NoTargetSpecified>
-                <option lang="en">No target facet has been specified for etiting/creation.</option>
+                <option lang="en">No target facet has been specified for editing/creation.</option>
                 <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση θέματος.</option>
             </NoTargetSpecified>
             <SuccessMsg>

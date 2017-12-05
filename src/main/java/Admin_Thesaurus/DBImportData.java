@@ -329,7 +329,7 @@ public class DBImportData {
         }
         
         // Step9 Create Facets specified by XML
-        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacets, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo, Q, TA, sis_session, tms_session, xmlFacets, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 
@@ -450,7 +450,7 @@ public class DBImportData {
         }
         
         // Step9 Create Facets specified by XML
-        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, xmlFacetsInSortItems, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
+        if (dbMerge.CreateFacetsFromSortItemsVector(SessionUserInfo, Q, TA, sis_session, tms_session, xmlFacetsInSortItems, resultObj,true,logFileWriter,ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY) == false) {
             return false;
         }
 

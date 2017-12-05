@@ -140,18 +140,18 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             if(targetField.compareTo("hierarchy_create")==0){
                 //Perform Checks
                 boolean succeeded = creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,
-                          dbGen,  targetHierarchy,  decodedValues,"create", null,SessionUserInfo.name, targetLocale,  errorMsg,true);
+                          dbGen,  targetHierarchy,  decodedValues,"create", null, targetLocale,  errorMsg,true);
 
                 if(succeeded && decodedValues.size()>1){
                    
                     succeeded = creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,
-                          dbGen,  targetHierarchy,  decodedValues,"modify", null,SessionUserInfo.name, targetLocale,  errorMsg,true);
+                          dbGen,  targetHierarchy,  decodedValues,"modify", null, targetLocale,  errorMsg,true);
                 }
             }
             else if(targetField.compareTo("hierarchy_facets")==0){
                 
                  creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,
-                           dbGen,  targetHierarchy,  decodedValues,"modify", null,SessionUserInfo.name, targetLocale,  errorMsg,true);
+                           dbGen,  targetHierarchy,  decodedValues,"modify", null, targetLocale,  errorMsg,true);
             }
             else if(targetField.compareTo(DBCreate_Modify_Hierarchy.hierarchy_delete_kwd)==0){
                 //creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(session, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  decodedValues,"modify", "delete",SessionUserInfo.name, targetLocale,  errorMsg,true);                

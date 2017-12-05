@@ -6,7 +6,7 @@
 	<!-- Status enumeration according to primary thesaurus language (Status nodes in the database are always stored with specific names. The translation used here though is defined in 
          THEMAS file: /translations/SaveAll_Locale_And_Scripting.xml - xpath: /root/common/statuses   -->
 	<!-- Perhaps include the transliteration replacements that should be followed -->
-	<!-- FUTURE TODO: Define a restriction for nt linkClass value so that is contained in the nodelabels wrapper -->	
+	<!-- FUTURE TODO: Define a restriction for nt linkClass value so that is contained in the nodelabels wrapper -->
 	<!-- FUTURE TODO: support referenceId for translations, UFs, UF translations, Hierarchies (different thatn their TopTerm) and Facets (different thatn their TopTerm) -->
 	<!-- currently restriction about reference Ids (xs:unique name="refId") should not include hierarhies as they share the same reference id as their top term -->
 	<!-- translation, uf_translations, translations_scope_note attribute linkClass should be restricted to the language identifiers contained in TranslationCategories -->
@@ -46,8 +46,9 @@
 			</xs:attribute>
 		</xs:complexType>
 		<xs:unique name="refId">
-<!--		<xs:selector xpath="./facets/facet/name|./hierarchies/hierarchy/name|./terms/term/descriptor"/>-->
-  		    <xs:selector xpath="./facets/facet/name|./terms/term/descriptor"/>
+			<!--		<xs:selector xpath="./facets/facet/name|./hierarchies/hierarchy/name|./terms/term/descriptor"/>
+			<xs:selector xpath="./facets/facet/name|./terms/term/descriptor"/>-->
+			<xs:selector xpath="./terms/term/descriptor"/>
 			<xs:field xpath="./@referenceId"/>
 		</xs:unique>
 	</xs:element>
