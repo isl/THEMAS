@@ -41,8 +41,8 @@
     </user>
         
     <user>
-        <name>committee</name>
-        <password>committee</password>
+        <name>com</name>
+        <password>com</password>
         <thesaurus group="THESAURUS_COMMITTEE">*</thesaurus>
         <description>Thesaurus Committee user for all thesauri</description>
     </user>
@@ -53,8 +53,8 @@
         <description>Thesaurus Team user for all thesauri</description>
     </user>
     <user>
-        <name>library</name>
-        <password>library</password>
+        <name>lib</name>
+        <password>lib</password>
         <thesaurus group="LIBRARY">*</thesaurus>
         <description>Library user for all thesauri</description>
     </user>
@@ -69,11 +69,5 @@
         <password/>        
         <thesaurus group="EXTERNALREADER">*</thesaurus>
         <description>External Read only user for for all thesauri (no login required - all non published terms included)</description>
-    </user>
-    <user>
-        <name>testUser</name> 
-        <password/>        
-        <thesaurus group="EXTERNALREADER">*</thesaurus>        
-        <description>External Read only user for all thesauri (no login required - all non published terms included)</description>
-    </user>
+    </user>   
 </WebAppUsers>
