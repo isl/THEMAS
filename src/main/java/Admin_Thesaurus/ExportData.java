@@ -207,6 +207,14 @@ public class ExportData extends ApplicationBasicServlet {
 
 
             xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+            if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
+                xml.append("<exportschematype>"+exportSchemaName+"<exportschematype>");
+                        xml.append("<skosConceptScheme>"+SkosExportConceptScheme+"<skosConceptScheme>");
+                        xml.append("<skosBaseNameSpace>"+SkosExportBaseNameSpace+"<skosBaseNameSpace>");
+                
+        
+            }
+            
             xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
             xml.append(getXMLMiddle(thesauriNames, Filename));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

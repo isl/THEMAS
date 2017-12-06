@@ -1178,7 +1178,7 @@
         <SuccessfulInsertion>
             <option lang="en">Data insertion finished successfully. Current Thesaurus set: %s.</option>
             <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο: %s.</option>
-        </SuccessfulInsertion>
+        </SuccessfulInsertion>        
     </ImportData>
     <commitMergeActions>
         <MergeThesaurusSucceed>
@@ -1204,9 +1204,13 @@
             <option lang="el">Η ιεραρχία '%s' που επιλέχθηκε για εισαγωγή όρων δεν βρέθηκε στην βάση. Παρακαλώ επιλέξτε ένα νέο όνομα ιεραρχίας.</option>
         </FailureFindHierarchy>
         <targetUITermAlreadyExists>
-            <option lang="en">The Term '%s' already exists in database and it did not change (to be essentially NT of Term: </option>
-            <option lang="el">Ο όρος '%s' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: </option>
-        </targetUITermAlreadyExists>
+            <option lang="en">The Term '%s' already exists in database and was not modified (to become NT of Term: '%s')</option>
+            <option lang="el">Ο όρος '%s' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: '%s')</option>
+        </targetUITermAlreadyExists>        
+        <NewThesaurusReferenceId>
+            <option lang="en">Thesaurus reference Id %s cannot be assigned to term %s because it is already assigned to Facet/Hierarchy/Term: %s. Term %s will be reassined to the next available Thesaurus Reference Id of thesaurus %s.</option>
+            <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον όρο %s επειδή έχει ήδη ανατεθεί στο Θέμα/Ιεραρχία/Όρο %s. Στον όρο: %s θα ανατεθεί το επόμενο διαθέσιμο θησαυρικό αναγνωριστικό του θησαυρού %s.</option>
+        </NewThesaurusReferenceId>
     </importTermsUnderHierarchy>
     <CreateHierarchies>
         <WrongHierarchyPosition>

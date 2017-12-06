@@ -1038,6 +1038,15 @@ public class ParseFileData {
 
     }
 
+    /**
+     * If languageSelections == null then accept all language codes
+     * 
+     * @param xmlFilePath
+     * @param xmlSchemaType
+     * @param termsInfo
+     * @param languageSelections
+     * @return 
+     */
     public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, String> languageSelections) {
 
@@ -3364,7 +3373,22 @@ public class ParseFileData {
         return collectionName;
 
     }
+    
+    
+    
 
+    /**
+     * If languageSelections == null then accept all lang codes
+     * 
+     * @param xpp
+     * @param xmlSchemaType
+     * @param termsInfo
+     * @param translationSeparator
+     * @param output
+     * @param idsToNames
+     * @param languageSelections
+     * @return 
+     */
     private boolean parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
             HashMap<String, NodeInfoStringContainer> termsInfo, 
             String translationSeparator, 
@@ -3440,7 +3464,7 @@ public class ParseFileData {
                                         //if it is the same then skip as we will find it from the idsToNames HashMap
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase()) == false) {
                                             //skip languages not supported
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
+                                            if (languageSelections==null || languageSelections.containsValue(langCode.toUpperCase())) {
                                                 ArrayList<String> translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
                                                 if (translationValues == null) {
                                                     translationValues = new ArrayList<String>();
@@ -3477,7 +3501,7 @@ public class ParseFileData {
                                                 targetTermInfo.descriptorInfo.put(ConstantParameters.uf_kwd, ufValues);
                                             }
                                         } else {
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
+                                            if (languageSelections==null || languageSelections.containsValue(langCode.toUpperCase())) {
                                                 ArrayList<String> uf_translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
                                                 if (uf_translationValues == null) {
                                                     uf_translationValues = new ArrayList<String>();
@@ -3714,7 +3738,7 @@ public class ParseFileData {
                                             targetTermInfo.descriptorInfo.put(ConstantParameters.scope_note_kwd, snValues);
 
                                         } else {
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
+                                            if (languageSelections ==null || languageSelections.containsValue(langCode.toUpperCase())) {
                                                 ArrayList<String> snTrValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
                                                 if (snTrValues == null) {
                                                     snTrValues = new ArrayList<String>();
@@ -3781,7 +3805,7 @@ public class ParseFileData {
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
 
-                ArrayList<String> validAttrKeywords = new ArrayList<String>();
+                ArrayList<String> validAttrKeywords = new ArrayList<>();
                 validAttrKeywords.add(ConstantParameters.XMLDescriptorElementName);
                 for (int i = 0; i < output.length; i++) {
                     validAttrKeywords.add(output[i]);

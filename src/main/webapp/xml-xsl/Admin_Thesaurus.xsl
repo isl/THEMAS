@@ -466,6 +466,17 @@
                             </table>
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: right;">
+                            
+                            <a href="./help-files/THEMAS_XML_schema_v_2.0.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
+                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/xmlschemalink/option[@lang=$lang]"/>
+                            </a>
+                            
+                            
+                        </td>
+                        
+                    </tr>
                 </table>
             </form>
         </fieldset>
@@ -593,12 +604,16 @@
                         </td>
                         <td>
                            <div style="display:inline-block; vertical-align:middle;"> 
-                                <input type="radio" name="exportschematype" id="radioTHEMAS" value="THEMAS"  onclick="checkSkosConfiguration();" style="margin-left:0px;margin-right:5px;" checked="checked"/>
+                                <input type="radio" name="exportschematype" id="radioTHEMAS" value="THEMAS"  
+                                       onclick="checkSkosConfiguration();" style="margin-left:0px;margin-right:5px;" checked="checked"/>
                                 <label for="radioTHEMAS" style="cursor:pointer;"><xsl:text>THEMAS</xsl:text></label>
                            </div>
                            <div style="display:inline-block; vertical-align:middle;"> 
                             
-                            <input type="radio" name="exportschematype" id="radioSKOS" value="skos" onclick="checkSkosConfiguration();" style="margin-left:10px;margin-right:5px;"/>
+                            <input type="radio" name="exportschematype" 
+                                   id="radioSKOS" value="skos" 
+                                   onclick="checkSkosConfiguration();" 
+                                   style="margin-left:10px;margin-right:5px;"/>
                             <label for="radioSKOS" style="cursor:pointer;">
                                 <xsl:text>Skos</xsl:text>
                             </label>                            

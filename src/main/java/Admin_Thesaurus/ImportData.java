@@ -242,8 +242,8 @@ public class ImportData extends ApplicationBasicServlet {
                         resultObj.setValue(u.translateFromMessagesXML("root/ImportData/ThesaurusDoesNotExist", new String[]{importThesaurusName}));
 
                         //resultObj.setValue("Thesaurus '" + importThesaurusName + "' does not exist in database. Please choose a different thesaurus if this one still exists.");
-                        ArrayList<String> allHierarchies = new ArrayList<String>();
-                        ArrayList<String> allGuideTerms = new ArrayList<String>();
+                        ArrayList<String> allHierarchies = new ArrayList<>();
+                        ArrayList<String> allGuideTerms = new ArrayList<>();
                         dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
 
                         //end query and close connection

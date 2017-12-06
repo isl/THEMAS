@@ -70,7 +70,9 @@ import neo4j_sisapi.*;
 
 import javax.xml.xpath.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -82,6 +84,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 
 /**
@@ -114,27 +118,21 @@ public class DBImportData {
 
     public boolean importTermsUnderHierarchy(SessionWrapperClass sessionInstance, String targetHierarchy, String xmlFilePath, String pathToErrorsXML, OutputStreamWriter logFileWriter, StringObject resultObj) throws IOException {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading terms from file: " + xmlFilePath + ".");
-        ArrayList<String> parsedTermNames = new ArrayList<String>();
+        ArrayList<String> parsedTermNames = new ArrayList<>();
 
+        ParseFileData parser = new ParseFileData();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+        
         try {
-
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.parse(new File(xmlFilePath));
-
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            NodeList termNames = (NodeList) xpath.evaluate("//data/terms/term/descriptor", document, XPathConstants.NODESET);
-
-            int howManyTerms = termNames.getLength();
-            for (int i = 0; i < howManyTerms; i++) {
-
-                String targetTerm = termNames.item(i).getTextContent();
-                targetTerm = readXMLTag(targetTerm);
-
-                if (parsedTermNames.contains(targetTerm) == false) {
-                    parsedTermNames.add(targetTerm);
-                }
+            String importSchemaName = ConstantParameters.xmlschematype_THEMAS;
+            if (parser.readXMLTerms(xmlFilePath, importSchemaName, termsInfo, null)) {
+                termsInfo.keySet().stream().forEach((targetTerm) -> {
+                    if (parsedTermNames.contains(targetTerm) == false) {
+                        parsedTermNames.add(targetTerm);
+                    }
+                });
             }
-
+            
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading terms. Found " + parsedTermNames.size() + " terms.");
 
         } catch (Exception e) {
@@ -167,7 +165,7 @@ public class DBImportData {
         try{
 
             String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-            ArrayList<String> btOfTerms = new ArrayList<String>();
+            ArrayList<String> btOfTerms = new ArrayList<>();
             btOfTerms.add(targetHierarchy);
             
             StringObject resultMessageObj = new StringObject();
@@ -194,7 +192,7 @@ public class DBImportData {
                 Q.free_all_sets();
                 Q.reset_name_scope();
                 
-                resultMessageObj_2.setValue(u.translateFromMessagesXML("root/importTermsUnderHierarchy/targetUITermAlreadyExists", new String[]{targetUITerm}));
+                resultMessageObj_2.setValue(u.translateFromMessagesXML("root/importTermsUnderHierarchy/targetUITermAlreadyExists", new String[]{targetUITerm,targetHierarchy}));
                 resultObj.setValue(resultMessageObj_2.getValue());
                 
                 if (Q.set_current_node(targetTermObj) != QClass.APIFail) {
@@ -207,19 +205,48 @@ public class DBImportData {
                     logFileWriter.append("</targetTerm>");
                     //Utils.StaticClass.webAppSystemOutPrintln("\tTerm: "+ targetUITerm + " already found in thes " + SessionUserInfo.selectedThesaurus);
                     continue;
-                } else {
-                    creation_modificationOfTerm.createNewTerm(SessionUserInfo, targetUITerm, btOfTerms, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, false, true, logFileWriter, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY);
-                    if (resultObj.getValue().length() > 0) {
-                        returnVal = false;
-                        return false;
+                } 
+                    
+                long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(termsInfo.get(targetUITerm));
+
+                if(refId >0){
+                    //check if it exists
+                    String existingTerm = Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, refId);
+                    if(existingTerm!=null && existingTerm.trim().length()>0) {
+                        existingTerm = dbGen.removePrefix(existingTerm);
+                        if(!existingTerm.equals(targetUITerm)){
+                           
+                           logFileWriter.append("<targetTerm>");
+                           logFileWriter.append("<name>" + Utilities.escapeXML(targetUITerm) + "</name>");
+                           logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
+                           logFileWriter.append("<errorValue>" + refId + "</errorValue>");
+                           logFileWriter.append("<reason>" +u.translateFromMessagesXML("root/importTermsUnderHierarchy/NewThesaurusReferenceId", new String[]{""+refId,targetUITerm,existingTerm,targetUITerm,SessionUserInfo.selectedThesaurus})+ "</reason>");
+                           //logFileWriter.append("<reason>The Term '" + targetUITerm + "' already exists in database and it did not change (to be essentially NT of Term: '" + Utilities.escapeXML(targetHierarchy) + "'.</reason>");
+                           logFileWriter.append("</targetTerm>");
+                           refId = -1; 
+                        }
+                        else{
+                            continue;
+                        }
                     }
+                    
                 }
+                
+                SortItem newNameObj = new SortItem(targetUITerm,-1,Utilities.getTransliterationString(targetUITerm, false),refId);
+
+                creation_modificationOfTerm.createNewTermSortItem(SessionUserInfo, 
+                        newNameObj, btOfTerms, SessionUserInfo.name, resultObj, Q, sis_session, TA, tms_session, dbGen, pathToErrorsXML, false, true, logFileWriter, ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY);
+
+                if (resultObj.getValue().length() > 0) {
+                    returnVal = false;
+                    return false;
+                }
+                
 
             }
             Q.free_all_sets();
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading terms from file: " + xmlFilePath + ".");
-
         }
         finally{
             if(returnVal){
@@ -228,10 +255,9 @@ public class DBImportData {
             }
             else{
                 Q.TEST_abort_transaction();
-            }
-            return returnVal;
+            }            
         }
-        
+        return returnVal;
     }
 
     //this function will find out all the thesaurusReferenceIds that have been used by searching in facets and terms
@@ -1435,7 +1461,7 @@ public class DBImportData {
         
         ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
         ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
-        HashMap<String, String> userSelections = new HashMap<String, String>();
+        HashMap<String, String> userLanguageSelections = new HashMap<String, String>();
 
         ArrayList<String> thesaurusVector = new ArrayList<String>();
         StringObject CreateThesaurusResultMessage = new StringObject("");
@@ -1481,11 +1507,11 @@ public class DBImportData {
         
         //might not be defined any
         if (processSucceded) {
-            parser.readTranslationCategories(xmlFilePath, inputScheme, userSelectedTranslationWords, userSelectedTranslationIdentifiers, userSelections);
+            parser.readTranslationCategories(xmlFilePath, inputScheme, userSelectedTranslationWords, userSelectedTranslationIdentifiers, userLanguageSelections);
         }
 
 
-        if (processSucceded && parser.readXMLTerms(xmlFilePath, inputScheme, termsInfo, userSelections) == false) {
+        if (processSucceded && parser.readXMLTerms(xmlFilePath, inputScheme, termsInfo, userLanguageSelections) == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read TERMS.");
             processSucceded = false;
         }
@@ -1608,7 +1634,7 @@ public class DBImportData {
                 Q, TA, sis_session, tms_session,
                 facetSortItems, guideTerms, XMLsources, XMLguideTermsRelations,
                 hierarchyFacets, termsInfo, userSelectedTranslationWords,
-                userSelectedTranslationIdentifiers, userSelections,
+                userSelectedTranslationIdentifiers, userLanguageSelections,
                 topTerms, descriptorRts, descriptorUfs,
                 allLevelsOfImportThes, importThesaurusName,
                 pathToErrorsXML, targetLocale, resultObj, logFileWriter);
