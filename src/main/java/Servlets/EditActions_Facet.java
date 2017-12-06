@@ -102,17 +102,11 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             String targetFacet  = u.getDecodedParameterValue(request.getParameter("targetFacet"));           
             String targetField  = u.getDecodedParameterValue(request.getParameter("targetEditField"));
-            String newFacetTopTermName= "";
+            
 
             
             if(targetField.compareTo("facet_create")==0){
                 targetFacet = u.getDecodedParameterValue(request.getParameter("newName_Facet"));           
-                newFacetTopTermName = u.getDecodedParameterValue(request.getParameter("newName_FacetTopTerm")); 
-                
-                if(newFacetTopTermName==null || newFacetTopTermName.trim().length()==0){
-                    newFacetTopTermName = targetFacet;
-                }
-                
             }
             
             //result tracking 
@@ -130,16 +124,16 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             
             if(targetField.compareTo("facet_create")==0){
                     
-                succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, newFacetTopTermName, "create",  null, errorMsg,true);
+                succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
+                         dbGen,  targetFacet, "create",  null, errorMsg,true);
             }
             if(targetField.compareTo("delete_facet")==0){
                     
                 ConsistensyCheck consistencies = new ConsistensyCheck();
                 boolean continueDeletion = consistencies.check_facet_deletion(SessionUserInfo, Q, sis_session, dbGen, targetFacet,errorMsg, targetLocale);
                 
-                succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, "", "modify",  "delete", errorMsg,true);
+                succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
+                         dbGen,  targetFacet, "modify",  "delete", errorMsg,true);
             }
             
             //check result of transaction. Prepend with Success or Failure any message returned and write it to PrintWriter out for ajax handling

@@ -433,6 +433,9 @@ public class DBAdminUtilities {
         
         StringObject errorMsg = new StringObject();
         
+        boolean succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(NewThesaurusNameDBformatted, Q, TA,  sis_session, tms_session,
+                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true);
+        
         UsersClass wtmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         
@@ -441,12 +444,6 @@ public class DBAdminUtilities {
         SessionUserInfo.thesaurusNames.add(NewThesaurusNameDBformatted);
         SessionUserInfo.thesaurusGroups.add(Utils.ConstantParameters.Group_ThesaurusCommittee);
         SessionUserInfo.userGroup = Utils.ConstantParameters.Group_ThesaurusCommittee;
-        
-        boolean succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo, Q, TA,  sis_session, tms_session,
-                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname,Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true);
-        
-        
-        
 
         if(succeded){
             ArrayList<String> facets = new ArrayList<>();
@@ -460,7 +457,8 @@ public class DBAdminUtilities {
                     Parameters.UnclassifiedTermsLogicalname, 
                     facets,
                     "create", 
-                    null,  
+                    null, 
+                    SessionUserInfo.name, 
                     new Locale(Parameters.TargetLocaleLang, Parameters.TargetLocaleCountry)
                     ,errorMsg
                     ,true);
@@ -1091,8 +1089,7 @@ public class DBAdminUtilities {
             String facetToBeDeleted = (String) facetsToBeDeleted.get(i);
             String facetToBeDeletedUIWithoutPrefix = dbGen.removePrefix(facetToBeDeleted);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + i + 1 + ". Delete facet: " + facetToBeDeletedUIWithoutPrefix);
-            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, 
-                    facetToBeDeletedUIWithoutPrefix,"", "modify", "delete", errorMsg, true) == false) {
+            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true) == false) {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- facet deletion cancelled");
                 return;
             } else {

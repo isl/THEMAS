@@ -34,8 +34,6 @@
 package DB_Classes;
 
 
-import Users.DBFilters;
-import Users.UserInfoClass;
 import Utils.ConsistensyCheck;
 import static Utils.ConsistensyCheck.EDIT_TERM_POLICY;
 import static Utils.ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
@@ -103,14 +101,11 @@ public class DBCreate_Modify_Facet {
     FUNCTION: creates / modifies the given Facet
     CALLED BY: Create_Modify_Facet servlet
     ----------------------------------------------------------------------*/
-    public boolean Create_Or_ModifyFacet(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
-            DBGeneral dbGen, String targetFacet,String targetFacetTopTerm,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
+    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
 
         //targetFacet shold come without prefix
         SortItem facetSortItem = new SortItem(targetFacet,-1,Utilities.getTransliterationString(targetFacet, false),-1);        
-        SortItem facetTopTermSortItem = new SortItem(targetFacetTopTerm,-1,Utilities.getTransliterationString(targetFacetTopTerm, false),-1);  
-        return Create_Or_ModifyFacetSortItem(SessionUserInfo,Q,TA,sis_session,tms_session,
-                dbGen,facetSortItem, facetTopTermSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,true,null,ConsistensyCheck.EDIT_TERM_POLICY);
+        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
         
         /*
         DBConnect_Facet dbCon = new DBConnect_Facet();
@@ -218,26 +213,23 @@ public class DBCreate_Modify_Facet {
 */
     }
 
-    public boolean Create_Or_ModifyFacetSortItem(UserInfoClass SessionUserInfo,
+    public boolean Create_Or_ModifyFacetSortItem(String selectedThesaurus,
                                                  QClass Q, 
                                                  TMSAPIClass TA, 
                                                  IntegerObject sis_session, 
                                                  IntegerObject tms_session,  
                                                  DBGeneral dbGen, 
                                                  SortItem targetFacetSortItem, 
-                                                 SortItem targetFacetTopTermSortItem, 
                                                  String createORmodify, 
                                                  String deletionOperator, 
                                                  StringObject errorMsg, 
                                                  boolean errorIfExists, 
                                                  boolean resolveError,
-                                                 boolean updateHistoricalData,
                                                  OutputStreamWriter logFileWriter, 
                                                  int ConsistencyChecksPolicy) {
 
         
-        DBConnect_Facet dbConFacet = new DBConnect_Facet();
-        DBConnect_Term dbConTerm = new DBConnect_Term();
+        DBConnect_Facet dbCon = new DBConnect_Facet();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Utilities u = new Utilities();
 
@@ -251,8 +243,7 @@ public class DBCreate_Modify_Facet {
         Q.reset_name_scope();
         
         // looking for Facet prefix (EKTClass`)        
-        String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        String prefix_topterm = dbtr.getThesaurusPrefix_TopTerm(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
         //loking for facet name without the prefix
         String targetFacetWithoutPrefix = targetFacetSortItem.getLogName();
         if(targetFacetWithoutPrefix.startsWith(prefix)){
@@ -267,30 +258,13 @@ public class DBCreate_Modify_Facet {
             return false;
         }
         
-        
-        String targetFacetTopTermWithoutPrefix = targetFacetTopTermSortItem.getLogName();
-        if(targetFacetTopTermWithoutPrefix.startsWith(prefix_topterm)){
-            targetFacetTopTermWithoutPrefix = dbGen.removePrefix(targetFacetTopTermWithoutPrefix);
-        }
-        
-        StringObject targetFacetTopTermObj = new StringObject(prefix_topterm.concat(targetFacetTopTermWithoutPrefix));
-
-        if (createORmodify.equals("create")) {    
-            // in case of empty TopTerm
-            if (targetFacetTopTermObj.getValue().trim().equals(prefix_topterm) == true) {
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/EmptyTopTermName", null));            
-                return false;
-            }
-        }
-        
-        
         //Facet of kind New / released or obsolete
-        int KindOfFacet = dbGen.GetKindOfFacet(SessionUserInfo.selectedThesaurus, targetFacetObj, Q, sis_session);
+        int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         
         // Check if reference uri exists
-        if(targetFacetSortItem.getThesaurusReferenceId()>0 && TA.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
+        if(targetFacetSortItem.getThesaurusReferenceId()>0 && TA.IsThesaurusReferenceIdAssigned(selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
             
-            String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, targetFacetSortItem.getThesaurusReferenceId()));
+            String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(selectedThesaurus, targetFacetSortItem.getThesaurusReferenceId()));
             if(termUsingThisReferenceId.equals(targetFacetSortItem.getLogName())==false)
             {
                 ConsistensyCheck con = new ConsistensyCheck();
@@ -305,7 +279,7 @@ public class DBCreate_Modify_Facet {
                         errorArgs.add(targetFacetSortItem.getLogName());                    
                         errorArgs.add(termUsingThisReferenceId);
                         errorArgs.add(targetFacetSortItem.getLogName());
-                        errorArgs.add(SessionUserInfo.selectedThesaurus);
+                        errorArgs.add(selectedThesaurus);
 
 
                         if(resolveError){
@@ -345,35 +319,9 @@ public class DBCreate_Modify_Facet {
 
         
         CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
-        CMValue targetFacetTopTermCMV = targetFacetTopTermSortItem.getCMValue(targetFacetTopTermObj.getValue());
+        
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbConFacet.ConnectFacetCMValue(SessionUserInfo.selectedThesaurus, 
-                    Q, TA, sis_session, tms_session, targetFacetCMV,targetFacetTopTermCMV, errorIfExists,Utilities.getXml_For_Messages())));
-            
-            
-            if (updateHistoricalData) {
-
-                // FILTER default status for term creation depending on user group
-                DBFilters dbf = new DBFilters();
-                
-                dbConTerm.CreateModifyStatus(SessionUserInfo.selectedThesaurus, targetFacetTopTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, errorMsg);
-
-                StringObject createdOnClass = new StringObject();
-                StringObject createdOnLink = new StringObject();
-                StringObject createdByClass = new StringObject();
-                StringObject createdByLink = new StringObject();
-
-                Q.reset_name_scope();
-
-                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_by_kwd, createdByClass, createdByLink, Q, sis_session);
-                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_on_kwd, createdOnClass, createdOnLink, Q, sis_session);
-                
-                String editor_Prefix = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue());
-
-                //Also update creation info of top terms
-                errorMsg.setValue(errorMsg.getValue().concat(dbConTerm.connectEditor(SessionUserInfo.selectedThesaurus, targetFacetTopTermObj, editor_Prefix.concat(SessionUserInfo.name), createdByClass.getValue(), createdByLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
-                errorMsg.setValue(errorMsg.getValue().concat(dbConTerm.connectTime(SessionUserInfo.selectedThesaurus, targetFacetTopTermObj, createdOnClass.getValue(), createdOnLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
-            }
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages())));
         } 
         else // modify
         {

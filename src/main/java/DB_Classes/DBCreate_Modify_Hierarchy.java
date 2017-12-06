@@ -117,12 +117,12 @@ public class DBCreate_Modify_Hierarchy {
     ----------------------------------------------------------------------*/
     public boolean Create_Or_ModifyHierarchy(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             DBGeneral dbGen, String targetHierarchy, ArrayList<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
-            String createORmodify, String deletionOperator, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
+            String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData) {
 
 
         //targetHierarchy shold come without prefix
         SortItem hierarchySortItem = new SortItem(targetHierarchy,-1,Utilities.getTransliterationString(targetHierarchy, false),-1);        
-        return Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchySortItem, targetHierarchyFacets, createORmodify, deletionOperator, targetLocale, errorMsg, updateHistoricalData,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
+        return Create_Or_ModifyHierarchySortItem(SessionUserInfo, Q, TA, sis_session, tms_session, dbGen, hierarchySortItem, targetHierarchyFacets, createORmodify, deletionOperator, userName, targetLocale, errorMsg, updateHistoricalData,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
         
         /*
         int SISApiSession = sis_session.getValue();
@@ -330,7 +330,7 @@ public class DBCreate_Modify_Hierarchy {
 
      public boolean Create_Or_ModifyHierarchySortItem(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
             DBGeneral dbGen, SortItem targetHierarchySortItem, ArrayList<String> targetHierarchyFacets,/* Vector targetHierarchyLetterCodes,*/
-            String createORmodify, String deletionOperator, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData,
+            String createORmodify, String deletionOperator, String userName, Locale targetLocale, StringObject errorMsg, boolean updateHistoricalData,
                                                  boolean resolveError,
                                                  OutputStreamWriter logFileWriter, 
                                                  int ConsistencyChecksPolicy) {
@@ -497,7 +497,7 @@ public class DBCreate_Modify_Hierarchy {
 
 
                 //Also update creation info of top terms
-                errorMsg.setValue(errorMsg.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTopTermObj, editor_Prefix.concat(SessionUserInfo.name), createdByClass.getValue(), createdByLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
+                errorMsg.setValue(errorMsg.getValue().concat(dbCon.connectEditor(SessionUserInfo.selectedThesaurus, targetTopTermObj, editor_Prefix.concat(userName), createdByClass.getValue(), createdByLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
                 errorMsg.setValue(errorMsg.getValue().concat(dbCon.connectTime(SessionUserInfo.selectedThesaurus, targetTopTermObj, createdOnClass.getValue(), createdOnLink.getValue(), Q, sis_session, dbGen, TA, tms_session)));
             }
 

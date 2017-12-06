@@ -111,7 +111,7 @@ public class Create_Modify_Facet extends ApplicationBasicServlet {
                 Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ servlet " + this.getServletName());
                 return;
             }
-            boolean succeeded =  creation.Create_Or_ModifyFacet(SessionUserInfo, Q, TA,  sis_session, tms_session,   dbGen,  targetFacet, "", createORmodify,  deletionOperator, resultObj,true);
+            boolean succeeded =  creation.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,   dbGen,  targetFacet, createORmodify,  deletionOperator, resultObj,true);
 
             Q.free_all_sets();
             if(succeeded){

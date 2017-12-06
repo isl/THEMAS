@@ -70,56 +70,28 @@ public class DBConnect_Facet {
     public String ConnectFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  StringObject targetFacet, boolean errorIfExists, String pathToErrorsXML) {
         CMValue cmv = new CMValue();
         cmv.assign_node(targetFacet.getValue(),-1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
-        return ConnectFacetCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,new CMValue(),errorIfExists,pathToErrorsXML);
+        return ConnectFacetCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,errorIfExists,pathToErrorsXML);
     }
     
-    public String ConnectFacetCMValue(String selectedThesaurus, 
-            QClass Q,
-            TMSAPIClass TA, 
-            IntegerObject sis_session, 
-            IntegerObject tms_session,  
-            CMValue targetFacetCmv, 
-            CMValue targetFacetTopTermCmv, 
-            boolean errorIfExists,
-            String pathToErrorsXML) {
+    public String ConnectFacetCMValue(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  CMValue targetFacetCmv, boolean errorIfExists, String pathToErrorsXML) {
         String errorMSG = new String("");
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus,Q,sis_session.getValue());
-        String prefix_topterm = dbtr.getThesaurusPrefix_TopTerm(selectedThesaurus,Q,sis_session.getValue());
 
         
         if (targetFacetCmv.getString().trim().equals(prefix)) {
             return  u.translateFromMessagesXML("root/EditFacet/Creation/EmptyName", null);
         }
-        
-        if (targetFacetTopTermCmv.getString().trim().equals(prefix_topterm)) {
-            return  u.translateFromMessagesXML("root/EditFacet/Creation/EmptyTopTermName", null);
-        }
 
-        //check if facet class exists
         if (dbGen.checkCMV_exist(targetFacetCmv,Q,sis_session) == false) {
             
-            //check if top term exists
-            if (dbGen.checkCMV_exist(targetFacetTopTermCmv,Q,sis_session) == false) {
-                int ret = TA.CreateFacetCMValue(targetFacetCmv,targetFacetTopTermCmv);            
-                if (ret == TMSAPIClass.TMS_APIFail) {
-                    errorMSG = errorMSG.concat(dbGen.check_success(ret, TA, null,tms_session));
-                    return errorMSG;
-                }
-            }
-            else{
-               if(errorIfExists){
-                
-                    errorMSG = errorMSG.concat(
-                            dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                            u.translateFromMessagesXML("root/EditFacet/Creation/FacetTopTermExists", new String[]{dbGen.removePrefix(targetFacetTopTermCmv.getString())})
-                            ,tms_session)
-                            );
-                    return errorMSG;
-                } 
+            int ret = TA.CreateFacetCMValue(targetFacetCmv, new CMValue());
+            
+            if (ret == TMSAPIClass.TMS_APIFail) {
+                errorMSG = errorMSG.concat(dbGen.check_success(ret, TA, null,tms_session));
+                return errorMSG;
             }
             
         } else {

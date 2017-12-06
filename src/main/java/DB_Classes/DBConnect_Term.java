@@ -1399,7 +1399,7 @@ public class DBConnect_Term {
         return errorMsg;
     }
     
-      public String connectTime(String selectedThesaurus,StringObject targetDescriptor, String FromClass, String Link,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTime(String selectedThesaurus,StringObject targetDescriptor, String FromClass, String Link,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
           
         int ret = TMSAPIClass.TMS_APISucc;
         Utilities u = new Utilities();
