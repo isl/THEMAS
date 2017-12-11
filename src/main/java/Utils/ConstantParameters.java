@@ -313,6 +313,7 @@ public class ConstantParameters {
     public static final String XML_skos_collection = "skos:Collection";
 
     public static final String XML_xml_lang = "xml:lang";
+    public static final String XML_skos_conceptScheme = "skos:ConceptScheme";
     public static final String XML_skos_concept = "skos:Concept";
     public static final String XML_rdf_about = "rdf:about";
     public static final String XML_skos_topConceptOf ="skos:topConceptOf";
@@ -325,9 +326,11 @@ public class ConstantParameters {
     public static final String XML_dc_creator = "dc:creator";//text
     public static final String XML_dc_date = "dc:date";//text
     public static final String XML_skos_altLabel = "skos:altLabel";//text //xml:lang
+    public static final String XML_skos_hiddenLabel = "skos:hiddenLabel";//text //xml:lang
     public static final String XML_skos_broader = "skos:broader";//rdf:resource
     public static final String XML_skos_broaderTransitive = "skos:broaderTransitive";//rdf:resource
     public static final String XML_skos_inScheme = "skos:inScheme";//rdf:resource
+    
     public static final String XML_skos_narrower = "skos:narrower";//rdf:resource
     public static final String XML_skos_narrowerTransitive = "skos:narrowerTransitive";//rdf:resource
     
@@ -336,6 +339,7 @@ public class ConstantParameters {
     public static final String XML_skos_historyNote = "skos:historyNote"; 
     public static final String XML_skos_EditorialNote = "skos:editorialNote";//text
     public static final String XML_skos_Note = "skos:note";//text
+    public static final String XML_skos_Notation = "skos:notation";//identifier
 
 
     

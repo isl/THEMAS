@@ -106,13 +106,13 @@ public class WriteFileData {
                     +">\r\n\r\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\""+ ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\">\r\n"+
-		"\t<skos:scopeNote xml:lang=\"en\"> grouping of concepts of the same inherent category</skos:scopeNote>\r\n"+
+		"\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\r\n"+
 		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\r\n"+
                 "\t</rdf:Description>\r\n\r\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
                     + "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\r\n"
-                    + "\t\t<skos:prefLabel>" + Utilities.escapeXML(importThesaurusName) + "</skos:prefLabel>\r\n"
+                    + "\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + Utilities.escapeXML(importThesaurusName) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n"
                     + "\t\t<dc:date>" + Utilities.GetNow() + "</dc:date>\r\n"
                     + "\t</rdf:Description>\r\n");
 
@@ -375,13 +375,18 @@ public class WriteFileData {
                 appendVal+=">\r\n";
                 logFileWriter.append(appendVal);
                 logFileWriter.append("\t\t<rdf:type rdf:resource=\""+ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\"/>\r\n");
-                logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogName()));
-                logFileWriter.append("</skos:prefLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                if(facetNameSortItem.getLogNameTransliteration()!=null && facetNameSortItem.getLogNameTransliteration().length()>0){
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogNameTransliteration()));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+                }
 
                 for (SortItem hierarchyVal : values) {
                     if (hierarchyVal != null && hierarchyVal.getLogName() !=null && hierarchyVal.getLogName().length() >0  && hierarchyVal.getThesaurusReferenceId() > 0) {
-                        logFileWriter.append("\t\t<skos:member rdf:resource=\"" + getSkosUri(false,schemePrefix,hierarchyVal.getThesaurusReferenceId()) + "\"/> <!-- " + hierarchyVal.getLogName() + " -->\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + getSkosUri(false,schemePrefix,hierarchyVal.getThesaurusReferenceId()) + "\"/> <!-- " + hierarchyVal.getLogName() + " -->\r\n");
                     }
                 }
 
@@ -471,6 +476,13 @@ public class WriteFileData {
             }
         }
 
+        String transliterationStr = "";
+        if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd) &&
+                targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).size()>0){
+            transliterationStr= targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).get(0);
+            
+        }
+        
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
         ArrayList<String> ufs = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
@@ -505,10 +517,15 @@ public class WriteFileData {
             }
             logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
             logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
-            logFileWriter.append("\t\t<skos:notation>"+targetTermId+"</skos:notation>\r\n");
-            logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetTermId+"</"+ConstantParameters.XML_skos_Notation+">\r\n");
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetTermName));
-            logFileWriter.append("</skos:prefLabel>\r\n");
+            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            if(transliterationStr!=null && transliterationStr.length()>0){
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                logFileWriter.append(Utilities.escapeXML(transliterationStr));
+                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+            }
 
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
@@ -516,18 +533,18 @@ public class WriteFileData {
                 String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
                 String langCode = parts[0].toLowerCase();
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + langCode + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</skos:prefLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
             }
 
             Collections.sort(ufs);
             for (int j = 0; j < ufs.size(); j++) {
                 String value = ufs.get(j);
 
-                logFileWriter.append("\t\t<skos:altLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(value));
-                logFileWriter.append("</skos:altLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
             }
             Collections.sort(ufTranslations);
             for (int j = 0; j < ufTranslations.size(); j++) {
@@ -535,9 +552,9 @@ public class WriteFileData {
                 String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
                 String langCode = parts[0].toLowerCase();
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<skos:altLabel xml:lang=\"" + langCode + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</skos:altLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
             }
 
             //broader
@@ -660,8 +677,8 @@ public class WriteFileData {
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
-                        logFileWriter.append("\t\t\t<skos:Collection>\r\n");
-                        logFileWriter.append("\t\t\t\t<skos:prefLabel>" + targetGuideTerm + "</skos:prefLabel>\r\n");
+                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -687,11 +704,11 @@ public class WriteFileData {
                                 ntId = schemePrefix + "/" + ntId;
                             }
 
-                            logFileWriter.append("\t\t\t\t<skos:member rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
+                            logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
 
                         }
 
-                        logFileWriter.append("\t\t\t</skos:Collection>\r\n");
+                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
                         logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                     }
 
@@ -868,7 +885,7 @@ public class WriteFileData {
             }
 
             if (isTopConcept) {
-                logFileWriter.append("\t\t<skos:topConceptOf rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             } else {
                 logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             }
@@ -924,6 +941,14 @@ public class WriteFileData {
             }
         }
 
+        String transliterationStr = "";
+        if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd) &&
+                targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).size()>0){
+            transliterationStr= targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).get(0);            
+        }
+        else if(targetSortItem.getLogNameTransliteration()!=null && targetSortItem.getLogNameTransliteration().length()>0){
+            transliterationStr = targetSortItem.getLogNameTransliteration();
+        }
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
         ArrayList<String> ufs = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
@@ -959,10 +984,16 @@ public class WriteFileData {
             //logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\r\n");
             logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
             logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
-            logFileWriter.append("\t\t<skos:notation>"+targetSortItem.getThesaurusReferenceId()+"</skos:notation>\r\n");            
-            logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetSortItem.getThesaurusReferenceId()+"</"+ConstantParameters.XML_skos_Notation+">\r\n");            
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetSortItem.getLogName()));
-            logFileWriter.append("</skos:prefLabel>\r\n");
+            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            
+            if(transliterationStr!=null && transliterationStr.length()>0){
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                logFileWriter.append(Utilities.escapeXML(transliterationStr));
+                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+            }
 
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
@@ -970,18 +1001,18 @@ public class WriteFileData {
                 String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
                 String langCode = parts[0].toLowerCase();
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<skos:prefLabel xml:lang=\"" + langCode + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</skos:prefLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
             }
 
             Collections.sort(ufs);
             for (int j = 0; j < ufs.size(); j++) {
                 String value = ufs.get(j);
 
-                logFileWriter.append("\t\t<skos:altLabel xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(value));
-                logFileWriter.append("</skos:altLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
             }
             Collections.sort(ufTranslations);
             for (int j = 0; j < ufTranslations.size(); j++) {
@@ -989,9 +1020,9 @@ public class WriteFileData {
                 String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
                 String langCode = parts[0].toLowerCase();
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<skos:altLabel xml:lang=\"" + langCode + "\">");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</skos:altLabel>\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
             }
 
             //broader
@@ -1123,8 +1154,8 @@ public class WriteFileData {
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
-                        logFileWriter.append("\t\t\t<skos:Collection>\r\n");
-                        logFileWriter.append("\t\t\t\t<skos:prefLabel>" + targetGuideTerm + "</skos:prefLabel>\r\n");
+                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -1155,11 +1186,11 @@ public class WriteFileData {
                                 ntUriVal = getSkosUri(false,schemePrefix,ntId) ;
                             }
 
-                            logFileWriter.append("\t\t\t\t<skos:member rdf:resource=\"" + ntUriVal + "\"/> <!-- " + ntStr + " -->\n");
+                            logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + ntUriVal + "\"/> <!-- " + ntStr + " -->\n");
 
                         }
 
-                        logFileWriter.append("\t\t\t</skos:Collection>\r\n");
+                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
                         logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                     }
 
@@ -1197,7 +1228,7 @@ public class WriteFileData {
                     rtUriVal = getSkosUri(false,schemePrefix,termId) ;
                 }
 
-                logFileWriter.append("\t\t<skos:related rdf:resource=\"" + rtUriVal + "\"/> <!-- " + termName + " -->\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_related+" rdf:resource=\"" + rtUriVal + "\"/> <!-- " + termName + " -->\n");
 
             }
 
@@ -1344,9 +1375,9 @@ public class WriteFileData {
             }
 
             if (isTopConcept) {
-                logFileWriter.append("\t\t<skos:topConceptOf rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             } else {
-                logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_inScheme+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + importThesaurusName + " -->\r\n");
             }
             logFileWriter.append("\t</rdf:Description>\r\n");
         }

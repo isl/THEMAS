@@ -121,9 +121,9 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
 
-                        if (openingTagName.equals("skos:ConceptScheme")) {
+                        if (openingTagName.equals(ConstantParameters.XML_skos_conceptScheme)) {
                             insideConceptScheme = true;
-                        } else if (insideConceptScheme && openingTagName.equals("skos:prefLabel")) {
+                        } else if (insideConceptScheme && openingTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
                             returnVal = this.parseSimpleContentElement(xpp);
                             break;
                         }
