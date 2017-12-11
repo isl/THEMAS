@@ -344,8 +344,44 @@ public class DBImportData {
                 specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
             }
         }
+        //since Unclassified terms is affected by the create thesaurus functionality 
+        //concerning its status its creator and its creation date
+        //one should check if termsInfo contains both creator and creation date. 
+        //If this is the case then current creation links created by Created Thesaurus should be removed
+        if(termsInfo.containsKey(Parameters.UnclassifiedTermsLogicalname)){
+            HashMap<String,ArrayList<String>> container  = termsInfo.get(Parameters.UnclassifiedTermsLogicalname).descriptorInfo;
+            if(container!=null &&
+                    container.containsKey(ConstantParameters.created_by_kwd) && 
+                    container.get(ConstantParameters.created_by_kwd).size()>0 && 
+                    
+                    container.containsKey(ConstantParameters.created_on_kwd) && 
+                    container.get(ConstantParameters.created_on_kwd).size()>0 ){
+                
+                DBGeneral dbGen = new DBGeneral();          
+                DBConnect_Term dbCon = new DBConnect_Term();
+                
+                StringObject createdOnClass = new StringObject();
+                StringObject createdOnLink = new StringObject();
+                StringObject createdByClass = new StringObject();
+                StringObject createdByLink = new StringObject();
+                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_by_kwd, createdByClass, createdByLink, Q, sis_session);
+                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_on_kwd, createdOnClass, createdOnLink, Q, sis_session);
+                
+                StringObject errorMsg = new StringObject("");
+                
+                dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, Parameters.UnclassifiedTermsLogicalname, ConstantParameters.FROM_Direction, createdByClass.getValue(), createdByLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+                if(errorMsg.getValue().length()>0){
+                     Utils.StaticClass.webAppSystemOutPrintln("Failed to remove Previous created By links of: " + Parameters.UnclassifiedTermsLogicalname);
+                     return false;
+                }
+                dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, Parameters.UnclassifiedTermsLogicalname, ConstantParameters.FROM_Direction, createdOnClass.getValue(), createdOnLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
+                if(errorMsg.getValue().length()>0){
+                     Utils.StaticClass.webAppSystemOutPrintln("Failed to remove Previous created On links of: " + Parameters.UnclassifiedTermsLogicalname);
+                     return false;
+                }
+            }
+        }
 
-        
         Q.reset_name_scope();
         //common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
 

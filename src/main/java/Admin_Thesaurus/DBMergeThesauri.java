@@ -3858,6 +3858,12 @@ public class DBMergeThesauri {
         DBFilters dbF = new DBFilters();
         //THEMASUsers wtmsUsers = new UsersClass();
 
+        StringObject genericStatusObject = new StringObject();
+        dbtr.getThesaurusClass_StatusOfTerm(mergedThesaurusName,genericStatusObject);
+        
+        
+        
+        
         String minorPriorityStatusKey = "";
         int minorPriority = 1000;
         Iterator<String> statusEnum = merged_thesaurus_status_classIds.keySet().iterator();
@@ -3877,6 +3883,20 @@ public class DBMergeThesauri {
         int counter = 0;
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "\t\tCreating Statuses to terms in thesaurus : " + mergedThesaurusName + ".");
         logFileWriter.flush();
+        
+        
+        Q.reset_name_scope();
+        long checkGenericExists = Q.set_current_node(genericStatusObject);
+        if (checkGenericExists == QClass.APIFail) {            
+            resultObj.setValue("Failure: Could Not find class: " + genericStatusObject.toString() + ".");
+            return false;
+        }
+        // Collect all statusues in statusesSet so that this set will be intersected with 
+        //each term classes to see if any existing status valu has been defined in the database 
+        //(so that it is removed)
+        int statusesSet = Q.get_subclasses(0);
+        Q.reset_set(statusesSet);
+        
         String mergedTermPrefix = dbtr.getThesaurusPrefix_Descriptor(mergedThesaurusName, Q, sis_session.getValue());
         Iterator<String> pairsEnumMerged = thesaurus1_statuses.keySet().iterator();
         while (pairsEnumMerged.hasNext()) {
@@ -3885,6 +3905,17 @@ public class DBMergeThesauri {
                 if (common_utils != null) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Status counter: " + counter + " of " + howmany + "   ");
                     common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, mergedThesaurusName);
+                    
+                    //after restart the all statuses set must be calculated again because it was lost
+                    Q.reset_name_scope();
+                    checkGenericExists = Q.set_current_node(genericStatusObject);
+                    if (checkGenericExists == QClass.APIFail) {            
+                        resultObj.setValue("Failure: Could Not find class: " + genericStatusObject.toString() + ".");
+                        return false;
+                    }
+
+                    statusesSet = Q.get_subclasses(0);
+                    Q.reset_set(statusesSet);                    
                 }
             }
             counter++;
@@ -3905,22 +3936,81 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             long termIDL = Q.set_current_node(new StringObject(mergedTermPrefix.concat(term)));
 
+            
             if (termIDL == QClass.APIFail) {
 
                 resultObj.setValue("Failure: Could Not find term: " + term + " in order to update its status.");
+                Q.free_set(statusesSet);
                 return false;
             }
+            int classesSet = Q.get_classes(0);
+            
+            ArrayList<Return_Nodes_Row> existingStatuses = new ArrayList<>();
+            Q.set_intersect(classesSet, statusesSet);
+            if(Q.set_get_card(classesSet)>0){
+                //in this case instance value should be removed
+                if(Q.bulk_return_nodes(classesSet, existingStatuses)!=QClass.APIFail){
+                    /* DEBUG
+                    existingStatuses.forEach((row) -> {
+                        System.out.println("term: " + term +" belongs to "+row.get_v1_cls_logicalname()+" with id " + row.get_Neo4j_NodeId());
+                    });                   
+                    */
+                }                
+            }
+            
+            Q.free_set(classesSet);
             Q.reset_name_scope();
             int ret = QClass.APISucc;
 
             if (StatusThes1 == null && StatusThes2 != null) {
                 Identifier I_Status = new Identifier(merged_thesaurus_status_classIds.get(StatusThes2).longValue());
                 Identifier I_Term = new Identifier(termIDL);
-                ret = Q.CHECK_Add_Instance(I_Term, I_Status);
+                
+                boolean addInstance = true;
+                if(existingStatuses.size()>0){
+                    for(Return_Nodes_Row row : existingStatuses)
+                    {
+                        if(row.get_Neo4j_NodeId() != I_Status.getSysid()){
+                            ret = Q.CHECK_Delete_Instance(I_Term, new Identifier(row.get_Neo4j_NodeId()));
+                            if(ret==QClass.APIFail){
+                                System.out.println("Failed to remove status: " + row.get_v1_cls_logicalname() +" from term "+term);
+                                Q.free_set(statusesSet);
+                                return false;                                
+                            }
+                        }
+                        else{
+                            addInstance = false;
+                        }
+                    }
+                }
+                if(addInstance){
+                    ret = Q.CHECK_Add_Instance(I_Term, I_Status);
+                }
             } else if (StatusThes1 != null && StatusThes2 == null) {
                 Identifier I_Status = new Identifier(merged_thesaurus_status_classIds.get(StatusThes1).longValue());
                 Identifier I_Term = new Identifier(termIDL);
-                ret = Q.CHECK_Add_Instance(I_Term, I_Status);
+                
+                
+                boolean addInstance = true;
+                if(existingStatuses.size()>0){
+                    for(Return_Nodes_Row row : existingStatuses)
+                    {
+                        if(row.get_Neo4j_NodeId() != I_Status.getSysid()){
+                            ret = Q.CHECK_Delete_Instance(I_Term, new Identifier(row.get_Neo4j_NodeId()));
+                            if(ret==QClass.APIFail){
+                                System.out.println("Failed to remove status: " + row.get_v1_cls_logicalname() +" from term "+term);
+                                Q.free_set(statusesSet);
+                                return false;                                
+                            }
+                        }
+                        else{
+                            addInstance = false;
+                        }
+                    }
+                }
+                if(addInstance){
+                    ret = Q.CHECK_Add_Instance(I_Term, I_Status);
+                }                
             } else { // select appropriate status
                 String StatusThes1StrGR = "";
                 String StatusThes2StrGR = "";
@@ -3957,14 +4047,27 @@ public class DBMergeThesauri {
                     logFileWriter.flush();
                     Identifier I_Status = new Identifier(merged_thesaurus_status_classIds.get(StatusThes1).longValue());
                     Identifier I_Term = new Identifier(termIDL);
-                    ret = Q.CHECK_Add_Instance(I_Term, I_Status);
-                    /* Not needed as merged thesaurus has no statuses defined yet
-                     if (ret == QClass.APIFail) {
-                     return false;
-                     }
-
-                     Identifier I_DelelteStatus = new Identifier(merged_thesaurus_status_classIds.get(StatusThes2).longValue());
-                     ret = Q.Delete_Instance(I_Term, I_DelelteStatus);*/
+                    
+                    boolean addInstance = true;
+                    if(existingStatuses.size()>0){
+                        for(Return_Nodes_Row row : existingStatuses)
+                        {
+                            if(row.get_Neo4j_NodeId() != I_Status.getSysid()){
+                                ret = Q.CHECK_Delete_Instance(I_Term, new Identifier(row.get_Neo4j_NodeId()));
+                                if(ret==QClass.APIFail){
+                                    System.out.println("Failed to remove status: " + row.get_v1_cls_logicalname() +" from term "+term);
+                                    Q.free_set(statusesSet);
+                                    return false;                                
+                                }
+                            }
+                            else{
+                                addInstance = false;
+                            }
+                        }
+                    }
+                    if(addInstance){
+                        ret = Q.CHECK_Add_Instance(I_Term, I_Status);
+                    }                    
 
                 } else { //both status != null
                     if (priority < 0) {
@@ -3987,6 +4090,7 @@ public class DBMergeThesauri {
                 resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
                 //resultObj.setValue("Failed to update status of term: " + term);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
+                Q.free_set(statusesSet);
                 return false;
             }
         }
@@ -4006,6 +4110,7 @@ public class DBMergeThesauri {
                     
                     resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/TermReferenceFailed", new String[]{term,mergedThesaurusName}));
                     //resultObj.setValue("Failed to refer to " + term + " of thesaurus: " + mergedThesaurusName);
+                    Q.free_set(statusesSet);
                     return false;
                 }
                 Q.reset_name_scope();
@@ -4023,10 +4128,12 @@ public class DBMergeThesauri {
 
                     resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
                     //resultObj.setValue("Failed to update status of term: " + term);
+                    Q.free_set(statusesSet);
                     return false;
                 }
             }
         }
+        Q.free_set(statusesSet);
         return true;
     }
 
