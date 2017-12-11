@@ -566,7 +566,7 @@ public class WriteFileData {
                     termId = schemePrefix + "/" + termId;
                 }
 
-                logFileWriter.append("\t\t<skos:broader rdf:resource=\"" + termId + "\"/> <!-- " + termName + " -->\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broaderTransitive+" rdf:resource=\"" + termId + "\"/> <!-- " + termName + " -->\n");
 
             }
 
@@ -652,14 +652,14 @@ public class WriteFileData {
                             ntId = schemePrefix + "/" + ntId;
                         }
 
-                        logFileWriter.append("\t\t<skos:narrower rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+" rdf:resource=\"" + ntId + "\"/> <!-- " + ntStr + " -->\n");
                     }
 
                 } else {
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<skos:narrower>\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                         logFileWriter.append("\t\t\t<skos:Collection>\r\n");
                         logFileWriter.append("\t\t\t\t<skos:prefLabel>" + targetGuideTerm + "</skos:prefLabel>\r\n");
 
@@ -692,7 +692,7 @@ public class WriteFileData {
                         }
 
                         logFileWriter.append("\t\t\t</skos:Collection>\r\n");
-                        logFileWriter.append("\t\t</skos:narrower>\r\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                     }
 
                 }
@@ -1024,7 +1024,7 @@ public class WriteFileData {
                     uriVal = getSkosUri(false,schemePrefix,termId) ;
                 }
 
-                logFileWriter.append("\t\t<skos:broader rdf:resource=\"" + uriVal + "\"/> <!-- " + btTermName + " -->\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broaderTransitive+" rdf:resource=\"" + uriVal + "\"/> <!-- " + btTermName + " -->\n");
 
             }
 
@@ -1115,14 +1115,14 @@ public class WriteFileData {
                             ntUriVal = getSkosUri(false,schemePrefix,ntId) ;
                         }
 
-                        logFileWriter.append("\t\t<skos:narrower rdf:resource=\"" + ntUriVal + "\"/> <!-- " + ntStr + " -->\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+" rdf:resource=\"" + ntUriVal + "\"/> <!-- " + ntStr + " -->\n");
                     }
 
                 } else {
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<skos:narrower>\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                         logFileWriter.append("\t\t\t<skos:Collection>\r\n");
                         logFileWriter.append("\t\t\t\t<skos:prefLabel>" + targetGuideTerm + "</skos:prefLabel>\r\n");
 
@@ -1160,7 +1160,7 @@ public class WriteFileData {
                         }
 
                         logFileWriter.append("\t\t\t</skos:Collection>\r\n");
-                        logFileWriter.append("\t\t</skos:narrower>\r\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                     }
 
                 }

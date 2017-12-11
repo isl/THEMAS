@@ -326,8 +326,10 @@ public class ConstantParameters {
     public static final String XML_dc_date = "dc:date";//text
     public static final String XML_skos_altLabel = "skos:altLabel";//text //xml:lang
     public static final String XML_skos_broader = "skos:broader";//rdf:resource
+    public static final String XML_skos_broaderTransitive = "skos:broaderTransitive";//rdf:resource
     public static final String XML_skos_inScheme = "skos:inScheme";//rdf:resource
     public static final String XML_skos_narrower = "skos:narrower";//rdf:resource
+    public static final String XML_skos_narrowerTransitive = "skos:narrowerTransitive";//rdf:resource
     
     public static final String XML_skos_related = "skos:related";//rdf:resource
     public static final String XML_skos_scopeNote = "skos:scopeNote"; //xml:lang

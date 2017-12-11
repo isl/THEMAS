@@ -2594,13 +2594,13 @@ public class ParseFileData {
                             if (insideConcept) {
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
 
-                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower)) {
+                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower) || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
                                     } else {
                                         ArrayList<String> collectionIds = new ArrayList<String>();
-                                        targetGuideTerm = parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
+                                        targetGuideTerm = parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
 
                                         if (collectionIds != null) {
                                             if (targetGuideTerm != null && targetGuideTerm.length() > 0) {
@@ -3566,8 +3566,9 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="broder - bts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader) || openingTagName.equals(ConstantParameters.XML_skos_broaderTransitive)) {
 
+                                    
                                     String broaderId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
                                     if (broaderId != null && broaderId.trim().length() > 0) {
 
@@ -3590,7 +3591,7 @@ public class ParseFileData {
                                     } else {
                                         //in this case it may be a colletion with members nodes
                                         ArrayList<String> collectionIds = new ArrayList<String>();
-                                        parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_broader, collectionIds);
+                                        parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
                                                 String collectionMemberId = collectionIds.get(k);
@@ -3617,7 +3618,7 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower) || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
@@ -3640,7 +3641,7 @@ public class ParseFileData {
                                     } else {
                                         //in this case it may be a colletion with members nodes
                                         ArrayList<String> collectionIds = new ArrayList<String>();
-                                        parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
+                                        parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
                                                 String collectionMemberId = collectionIds.get(k);
