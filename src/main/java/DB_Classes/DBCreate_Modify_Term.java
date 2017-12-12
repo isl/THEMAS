@@ -40,16 +40,9 @@ import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import Utils.Parameters;
 import Utils.SortItem;
-import Utils.TaxonomicCodeItem;
 import Utils.Utilities;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.*;
 import neo4j_sisapi.*;
 import neo4j_sisapi.TMSAPIClass;
 import java.util.*;

@@ -3065,18 +3065,26 @@ public class Utilities {
         else{
             transliterationString = originalLogicalNameWithoutPrefix;
         }
+        
         if(Parameters.TransliterationsToLowerCase){
             transliterationString = transliterationString.toLowerCase();
         }
+        //if apache remove accents needs some changes these can be applies by useing these filters before it is applies 
         for (String key : Parameters.TransliterationsReplacements.keySet()) {
             String replaceRegEx = "["+key+"]";
             String replaceWith = Parameters.TransliterationsReplacements.get(key);
 
             transliterationString = transliterationString.replaceAll(replaceRegEx, replaceWith);
-
         }
+        
+        //apache remove accents 
+        transliterationString = org.apache.commons.lang3.StringUtils.stripAccents(transliterationString);
+        //System.out.println(transliterationString +" --> "+ org.apache.commons.lang3.StringUtils.stripAccents(transliterationString));
+        
         //normalize gaps keep just one if multiple defined
         transliterationString = transliterationString.replaceAll(" +", " ");
+        
+        
         return transliterationString;
     }
     

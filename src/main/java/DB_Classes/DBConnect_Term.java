@@ -458,7 +458,7 @@ public class DBConnect_Term {
         String[] uf_split = ufs.split("###");
         // fill a Vector with the UFs with prefix and DB encoding		
         */
-        ArrayList<StringObject> ufsVector = new ArrayList<StringObject>();
+        ArrayList<StringObject> ufsVector = new ArrayList<>();
         for (int i = 0; i < ufs.size(); i++) {           
             ufsVector.add(new StringObject(prefix.concat(ufs.get(i))));
         }
@@ -469,13 +469,18 @@ public class DBConnect_Term {
         }
         // for each UF
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
-        for (int i = 0; i < ufsVector.size(); i++) {
+        for (StringObject ufTermObj : ufsVector) {
+            
+            CMValue targetUfTermCmv = new CMValue();
+            targetUfTermCmv.assign_node(ufTermObj.getValue(), -1, Utilities.getTransliterationString(ufTermObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+            
             // in case it doesn't exist
-            if (dbGen.check_exist(((StringObject) ufsVector.get(i)).getValue(),Q,sis_session) == false) {
+            if (dbGen.check_exist(ufTermObj.getValue(),Q,sis_session) == false) {
                 // create it
                 //StringObject dummy = new StringObject();
                 //TA.GetThesaurusName( dummy);
-                int ret = TA.CHECK_CreateUsedForTerm((StringObject) ufsVector.get(i) );
+                int ret = TA.CHECK_CreateUsedForTermCMValue(targetUfTermCmv);
                 //TA.GetThesaurusName( dummy);
                 //TA.GetTMS_APIErrorMessage( dummy);TA.
                 if (ret == TMSAPIClass.TMS_APIFail) {
@@ -491,8 +496,8 @@ public class DBConnect_Term {
                 }
             } else { // UF exists		                
                 // in case it is not a UsedForTerm, fill error message
-                if (dbGen.NodeBelongsToClass((StringObject) ufsVector.get(i), new StringObject(selectedThesaurus + "UsedForTerm"), false,Q,sis_session) == false) {
-                    String str = dbGen.removePrefix(((StringObject) ufsVector.get(i)).getValue());
+                if (dbGen.NodeBelongsToClass(ufTermObj, new StringObject(selectedThesaurus + "UsedForTerm"), false,Q,sis_session) == false) {
+                    String str = dbGen.removePrefix(ufTermObj.getValue());
                     
                      errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUsedForTerms", new String[]{str}),tms_session) + "");
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Term: " + str + " does not belong in non-preferred terms set and therefore cannot be defined as UF.",tms_session) + "");
@@ -509,9 +514,9 @@ public class DBConnect_Term {
             }
             // create the UF link
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node( (StringObject) ufsVector.get(i));
+            long sysid1L = Q.set_current_node( ufTermObj);
             CMValue to = new CMValue();
-            to.assign_node(((StringObject) ufsVector.get(i)).getValue(), sysid1L);
+            to.assign_node(ufTermObj.getValue(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( thesHierarchyTerm);
@@ -788,19 +793,23 @@ public class DBConnect_Term {
             }
         }
         // for each Source value	
-        for (int i = 0; i < sources.size(); i++) {
+        for (StringObject sourceObj : sources) {
+            
+            CMValue targetSourceCmv = new CMValue();
+            targetSourceCmv.assign_node(sourceObj.getValue(), -1, Utilities.getTransliterationString(sourceObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+                    
             // if it doesn't exist with TMSAPI
-            if (dbGen.check_exist(((StringObject) sources.get(i)).getValue(),Q,sis_session) == false) {
+            if (dbGen.check_exist(sourceObj.getValue(),Q,sis_session) == false) {
                 // create it
-                int ret = TA.CHECK_CreateSource( (StringObject) sources.get(i));
+                int ret = TA.CHECK_CreateSourceCMValue(targetSourceCmv);
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat(" " + dbGen.check_success(ret, TA,null,tms_session) + " ");
                     continue;
                 }
             } else { // already exists
                 // check it is an instance of class Source
-                if (dbGen.NodeBelongsToClass((StringObject) sources.get(i), new StringObject("Source"), false,Q,sis_session) == false) {
-                    String str = dbGen.removePrefix(((StringObject) sources.get(i)).getValue());
+                if (dbGen.NodeBelongsToClass(sourceObj, new StringObject("Source"), false,Q,sis_session) == false) {
+                    String str = dbGen.removePrefix(sourceObj.getValue());
                     errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInSources", new String[]{str}),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Value: " + str + " does not belong in the set Sources and therefore cannot be used as primary or translations source.",tms_session) + " ");
                     continue;
@@ -815,9 +824,9 @@ public class DBConnect_Term {
             long sysidL = Q.set_current_node( targetDescriptor);
             Identifier from = new Identifier(sysidL);
             Q.reset_name_scope();
-            long sysid2L = Q.set_current_node( (StringObject) sources.get(i));
+            long sysid2L = Q.set_current_node( sourceObj);
             CMValue to = new CMValue();
-            to.assign_node(((StringObject) sources.get(i)).getValue(), sysid2L);
+            to.assign_node(sourceObj.getValue(), sysid2L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             long sysid3L = Q.set_current_node( thesHierarchyTerm);
@@ -833,7 +842,7 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) sources.get(i)).getValue())}) ,tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(sourceObj.getValue())}) ,tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) sources.get(i)).getValue()) + " .",tms_session) + " ");
             }
         } // for each Source value
@@ -1149,7 +1158,7 @@ public class DBConnect_Term {
             
 
             // in case it doesn't exist
-            if (dbGen.check_exist(translationsVector.get(i),Q,sis_session) == false) {
+            if (dbGen.check_exist(targetWordCmv.getString(),Q,sis_session) == false) {
                 // create it as orphan
                 ret = TA.CHECK_CreateTranslationWordCMValue(targetWordCmv, new StringObject(targetWordClass));
                 if (ret == TMSAPIClass.TMS_APIFail) {
@@ -1247,16 +1256,17 @@ public class DBConnect_Term {
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
 
-            String targetWord = translationsVector.get(i);
-            String prefix = targetWord.substring(0,targetWord.indexOf(ConstantParameters.languageIdentifierSuffix));
+            CMValue targetWordCmv = new CMValue();
+            targetWordCmv.assign_node(translationsVector.get(i), -1, Utilities.getTransliterationString(translationsVector.get(i), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            String prefix = targetWordCmv.getString().substring(0,targetWordCmv.getString().indexOf(ConstantParameters.languageIdentifierSuffix));
             String targetWordClass =languagesIDs2Words.get(prefix)+ConstantParameters.wordClass;
             String targetSubTranslationCategory =selectedThesaurus + ConstantParameters.thesaursUFTranslationCategorysubString + prefix;
 
 
             // in case it doesn't exist
-            if (dbGen.check_exist(translationsVector.get(i),Q,sis_session) == false) {
+            if (dbGen.check_exist(targetWordCmv.getString(),Q,sis_session) == false) {
                 // create it as orphan
-                ret = TA.CHECK_CreateTranslationWord( new StringObject(targetWord), new StringObject(targetWordClass));
+                ret = TA.CHECK_CreateTranslationWordCMValue(targetWordCmv, new StringObject(targetWordClass));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     return errorMsg;
@@ -1264,9 +1274,9 @@ public class DBConnect_Term {
             } else {
 
                 //consistency check 26 is supposed to be applied prior to this call
-                if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
+                if (dbGen.NodeBelongsToClass(new StringObject(targetWordCmv.getString()), new StringObject(targetWordClass), false,Q,sis_session) == false) {
                     
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUFTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUFTranslations", new String[]{targetWordCmv.getString()}) ,tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+"  does not belong in the set of non preferred Translation terms and therefore cannot be defined as translation UF.",tms_session) + " ");
                     return errorMsg;
                 }
@@ -1278,9 +1288,9 @@ public class DBConnect_Term {
             }
             // create the translation links
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node(new StringObject(targetWord));
+            long sysid1L = Q.set_current_node(new StringObject(targetWordCmv.getString()));
             CMValue to = new CMValue();
-            to.assign_node(targetWord, sysid1L);
+            to.assign_node(targetWordCmv.getString(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( fromClass);

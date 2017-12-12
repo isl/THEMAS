@@ -1765,7 +1765,9 @@ public class DBImportData {
                 } else {
                     //source does not exist Create it with its source note
                     Q.reset_name_scope();
-                    int ret = TA.CHECK_CreateSource(nameDBObj);
+                    CMValue targetSourceCmv = new CMValue();
+                    targetSourceCmv.assign_node(nameDBObj.getValue(), -1, Utilities.getTransliterationString(nameDBObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+                    int ret = TA.CHECK_CreateSourceCMValue(targetSourceCmv);
                     if (ret == TMSAPIClass.TMS_APIFail) {
                         resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
                         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create source: " + nameStr);

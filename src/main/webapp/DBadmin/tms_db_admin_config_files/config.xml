@@ -72,18 +72,65 @@
             <!-- source https://el.wikipedia.org/wiki/%CE%A0%CE%BF%CE%BB%CF%85%CF%84%CE%BF%CE%BD%CE%B9%CE%BA%CE%AE_%CE%B3%CF%81%CE%B1%CF%86%CE%AE_%CF%84%CE%B7%CF%82_%CE%B5%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CE%AE%CF%82_%CE%B3%CE%BB%CF%8E%CF%83%CF%83%CE%B1%CF%82 -->
             <!-- Προστέθηκε ο απλός τόνος και τα διαλυτικά μέ ή χωρίς τόνο στα ι και υ -->
 
-            <!-- THIS SHOULD ALSO BE PROVIDED AS A FIX DB OPERATION -->
             <ReplacementGroup>
-                <Source delimeterChar=";">ä</Source>
-                <Replacement>a</Replacement>
+                <Source delimeterChar=";">æ</Source>
+                <Replacement>ae</Replacement>
+            </ReplacementGroup> 
+            <ReplacementGroup>
+                <Source delimeterChar=";">œ</Source>
+                <Replacement>ce</Replacement>
+            </ReplacementGroup> 
+            <ReplacementGroup>
+                <Source delimeterChar=";">¢</Source>
+                <Replacement>c</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source delimeterChar=";">ö</Source>
+                <Source delimeterChar=";">ø</Source>
+                <Replacement>o</Replacement>
+            </ReplacementGroup>   
+            <ReplacementGroup>
+                <Source delimeterChar=";">ß</Source>
+                <Replacement>ss</Replacement>
+            </ReplacementGroup>        
+           
+            <!-- THIS SHOULD ALSO BE PROVIDED AS A FIX DB OPERATION 
+            <ReplacementGroup>
+                <Source delimeterChar=";">ç;¢</Source>
+                <Replacement>c</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ä;à;á;â;ã;å</Source>
+                <Replacement>a</Replacement>
+            </ReplacementGroup>
+            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ë;è;é;ê</Source>
+                <Replacement>e</Replacement>
+            </ReplacementGroup>
+            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ì;í;î;ï</Source>
+                <Replacement>i</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ñ</Source>
+                <Replacement>n</Replacement>
+            </ReplacementGroup>            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ö;ô;ò;ó;ø;õ</Source>
                 <Replacement>o</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
-                <Source delimeterChar=";">ü</Source>
+                <Source delimeterChar=";">ý;ÿ</Source>
+                <Replacement>y</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ü;ù;û;ú</Source>
                 <Replacement>u</Replacement>
+            </ReplacementGroup>            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ß</Source>
+                <Replacement>ss</Replacement>
             </ReplacementGroup>
             <ReplacementGroup>
                 <Source delimeterChar=";">ά;ἀ;ἁ;ἂ;ἃ;ἄ;ἅ;ἆ;ἇ;ὰ;ά;ᾀ;ᾁ;ᾂ;ᾃ;ᾄ;ᾅ;ᾆ;ᾇ;ᾰ;ᾱ;ᾲ;ᾳ;ᾴ;ᾶ;ᾷ</Source>
@@ -116,15 +163,15 @@
             <ReplacementGroup>
                 <Source delimeterChar=";">ώ;ὠ;ὡ;ὢ;ὣ;ὤ;ὥ;ὦ;ὧ;ὼ;ώ;ᾠ;ᾡ;ᾢ;ᾣ;ᾤ;ᾥ;ᾦ;ᾧ;ῲ;ῳ;ῴ;ῶ;ῷ</Source>
                 <Replacement>ω</Replacement>
-            </ReplacementGroup>
+            </ReplacementGroup>-->
             <!--<ReplacementGroup>
                 <Source delimeterChar=";">ς</Source>
                 <Replacement>σ</Replacement>
-            </ReplacementGroup>
+            </ReplacementGroup>--> 
             <ReplacementGroup>
                 <Source delimeterChar=";">·,</Source>
                 <Replacement> </Replacement>
-            </ReplacementGroup>-->            
+            </ReplacementGroup>           
         </Transliterations>
     </BehaviorConfigs>
     

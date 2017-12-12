@@ -126,7 +126,10 @@ public class DBCreate_Modify_Source {
             return false;
         }
 
-        int ret = TA.CHECK_CreateSource(sourceObj);
+        CMValue targetSourceCmv = new CMValue();
+            targetSourceCmv.assign_node(sourceObj.getValue(), -1, Utilities.getTransliterationString(sourceObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+        int ret = TA.CHECK_CreateSourceCMValue(targetSourceCmv);
         if (ret == TMSAPIClass.TMS_APIFail) {
             errorMsg.setValue(dbGen.check_success(ret,TA,  null, tms_session));
             return false;
@@ -347,7 +350,8 @@ public class DBCreate_Modify_Source {
                 */
 
             Q.reset_name_scope();
-            if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
+            long currentSourceIdL = Q.set_current_node(targetSourceObj);
+            if (currentSourceIdL == QClass.APIFail) {
                 errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/NotFound", new String[]{targetSource}));                
                 //errorMsg.setValue("Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
@@ -364,8 +368,17 @@ public class DBCreate_Modify_Source {
                 return false;
             }
 
+            CMValue Iocurent = new CMValue();
+            Iocurent.assign_node(targetSourceObj.getValue(), currentSourceIdL);
+            
+            CMValue Inew = new CMValue();
+            Inew.assign_node(newSourceNameObj.getValue(), -1,Utilities.getTransliterationString(newSourceNameObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+            
+          
             //rename source node
-            int ret = Q.CHECK_Rename_Node(new Identifier(targetSourceObj.getValue()), new Identifier(newSourceNameObj.getValue()));
+            //int ret = Q.CHECK_Rename_Node(new Identifier(targetSourceObj.getValue()), new Identifier(newSourceNameObj.getValue()));
+            int ret = Q.CHECK_Rename_NodeCMValue(Iocurent,Inew);
 
             //check result
             if (ret == QClass.APIFail) {

@@ -3901,43 +3901,44 @@ public class ParseFileData {
                             String parsedValue = this.parseSimpleContentElement(xpp);
                             if (parsedValue != null && parsedValue.trim().length() > 0) {
                                 parsedValue = readXMLTag(parsedValue);
-                            }
+                            
+                            
+                                if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
+                                        && currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
 
+                                    targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator +" "+ parsedValue);
 
-                            if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
-                                    && currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
+                                    /*ArrayList<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
 
-                                targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator +" "+ parsedValue);
-
-                                /*ArrayList<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
-
-                                if (existingTRSN != null && existingTRSN.size() > 0) {
-                                    String existingStr = existingTRSN.get(0);
-                                    if (existingStr.length() > 0) {
-                                        existingStr += "\n";
+                                    if (existingTRSN != null && existingTRSN.size() > 0) {
+                                        String existingStr = existingTRSN.get(0);
+                                        if (existingStr.length() > 0) {
+                                            existingStr += "\n";
+                                        }
+                                        existingStr += languagePrefix + translationSeparator + "\n" + parsedValue;
+                                        existingTRSN.set(0, existingStr);
+                                    } else {
+                                        existingTRSN = new ArrayList<String>();
+                                        existingTRSN.add(languagePrefix + translationSeparator + "\n" + parsedValue);
                                     }
-                                    existingStr += languagePrefix + translationSeparator + "\n" + parsedValue;
-                                    existingTRSN.set(0, existingStr);
-                                } else {
-                                    existingTRSN = new ArrayList<String>();
-                                    existingTRSN.add(languagePrefix + translationSeparator + "\n" + parsedValue);
-                                }
-                                targetTermInfo.descriptorInfo.put(currentTagName, existingTRSN);*/
-                            } else if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
-                                    && targetTermInfo.descriptorInfo.get(currentTagName).contains(parsedValue) == false) {
-                                if (currentTagName.equals(ConstantParameters.translation_kwd)
-                                        || currentTagName.equals(ConstantParameters.uf_translations_kwd)) {
+                                    targetTermInfo.descriptorInfo.put(currentTagName, existingTRSN);*/
+                                } else if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
+                                        && targetTermInfo.descriptorInfo.get(currentTagName).contains(parsedValue) == false) {
+                                    if (currentTagName.equals(ConstantParameters.translation_kwd)
+                                            || currentTagName.equals(ConstantParameters.uf_translations_kwd)) {
 
 
 
-                                    if (languagePrefix != null && languagePrefix.trim().length() > 0 && translationSeparator != null && translationSeparator.trim().length() > 0) {
-                                        targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator + parsedValue);
+                                        if (languagePrefix != null && languagePrefix.trim().length() > 0 && translationSeparator != null && translationSeparator.trim().length() > 0) {
+                                            targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator + parsedValue);
+                                        } else {
+                                            targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
+                                        }
                                     } else {
                                         targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
                                     }
-                                } else {
-                                    targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
                                 }
+                            
                             }
                         }
                     } //</editor-fold>
@@ -3967,7 +3968,7 @@ public class ParseFileData {
                                     targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(translit);
                                 }
                                 //if term info does not exist then add it
-                                if (termsInfo.containsKey(targetTermName) == false) {
+                                if (targetTermName.length()>0 && termsInfo.containsKey(targetTermName) == false) {
                                     termsInfo.put(targetTermName, targetTermInfo);
                                 } //if term inof existed then updated the old with the new parsed info
                                 else {
@@ -3988,14 +3989,16 @@ public class ParseFileData {
 
                                             for (int i = 0; i < values.size(); i++) {
                                                 String val = values.get(i);
-                                                if (existingValues.contains(val) == false) {
-                                                    if(existingValues.size()>0){
-                                                        if(code.equals(ConstantParameters.system_referenceUri_kwd)){
-                                                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Term: " + targetTermName +" was found with 2 different Thesaurus referenceIds: " + val +" and "+existingValues.get(0));
-                                                            return false;
-                                                        }                           
+                                                if(val!=null && val.length()>0){
+                                                    if (existingValues.contains(val) == false) {
+                                                        if(existingValues.size()>0){
+                                                            if(code.equals(ConstantParameters.system_referenceUri_kwd)){
+                                                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Term: " + targetTermName +" was found with 2 different Thesaurus referenceIds: " + val +" and "+existingValues.get(0));
+                                                                return false;
+                                                            }                           
+                                                        }
+                                                        existingValues.add(val);
                                                     }
-                                                    existingValues.add(val);
                                                 }
                                             }
                                             existingInfo.descriptorInfo.put(code, existingValues);
@@ -4011,7 +4014,7 @@ public class ParseFileData {
 
                                 for (int k = 0; k < bts.size(); k++) {
                                     String checkExists = bts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {                                        
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);
@@ -4020,7 +4023,7 @@ public class ParseFileData {
                                 }
                                 for (int k = 0; k < nts.size(); k++) {
                                     String checkExists = nts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.bt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);
@@ -4028,7 +4031,7 @@ public class ParseFileData {
                                 }
                                 for (int k = 0; k < rts.size(); k++) {
                                     String checkExists = rts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);

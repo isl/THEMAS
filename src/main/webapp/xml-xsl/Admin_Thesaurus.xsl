@@ -379,7 +379,7 @@
             <form method="post" style="margin-top:10px;" id="Import_DataForm" action="" ENCTYPE="multipart/form-data" >
                 <table>
                     <tr style="width:800px;">
-                        <td style="width:230px;">
+                        <td style="width:230px; text-align:right;">
                             <xsl:value-of select="$specificlocale/selectxmlinputfile/option[@lang=$lang]"/>
                         </td>
                         <td style="width:550px;">
@@ -387,7 +387,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="text-align:right;">
                             <xsl:value-of select="$specificlocale/chooseinputthesaurus/option[@lang=$lang]"/>
                         </td>
                         <td>
@@ -490,7 +490,7 @@
             <form method="post" style="margin-top:10px;" id="bulkImport_DataForm" action="" ENCTYPE="multipart/form-data" >
                 <table>
                     <tr style="width:800px;">
-                        <td style="width:230px;">
+                        <td style="width:230px; text-align:right;">
                             <xsl:value-of select="$specificlocale/selectxmlinputfile/option[@lang=$lang]"/>
                         </td>
                         <td style="width:550px;">
@@ -498,7 +498,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="text-align:right;">
                             <xsl:value-of select="$specificlocale/selecthierarchy/option[@lang=$lang]"/>
                         </td>
                         <td>
@@ -574,7 +574,7 @@
             <form style="margin-top:10px;" method="post" id="Export_DataForm" action="">
                 <table>
                     <tr style="width:800px;">
-                        <td style="width:230px;">
+                        <td style="width:230px; text-align:right;">
                             <xsl:value-of select="$specificlocale/selectexportthesaurus/option[@lang=$lang]"/>
                         </td>
                         <td align="left">
@@ -599,7 +599,7 @@
                         <td/>
                     </tr>
                     <tr width="95%">
-                        <td>
+                        <td style="text-align:right;">
                             <xsl:value-of select="$specificlocale/selectexportxmlschematype/option[@lang=$lang]"/>
                         </td>
                         <td>
@@ -650,7 +650,7 @@
                         </td>
                     </tr>
                     <tr width="95%" id="skosConceptSchemeConfigurationRowId" style="visibility:hidden;">
-                        <td>
+                        <td style="text-align:right;">
                            <label for="skosConceptSchemeId" style="cursor:pointer;">
                                 <xsl:text>SKOS Concept Scheme:</xsl:text>
                             </label>
@@ -660,7 +660,7 @@
                         </td>                       
                     </tr>
                     <tr width="95%" id="skosBaseNameSpaceConfigurationRowId" style="visibility:hidden;">
-                        <td>
+                        <td style="text-align:right;">
                            <label for="skosBaseNameSpaceId" style="cursor:pointer;">
                                 <xsl:text>SKOS Namespace:</xsl:text>
                             </label>
