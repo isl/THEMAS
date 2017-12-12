@@ -77,6 +77,7 @@ public class Linguist {
             if (chooseLangCode.equals("fr")) { return "French"; }
             if (chooseLangCode.equals("ga")) { return "Irish"; }
             if (chooseLangCode.equals("it")) { return "Italian"; }
+            if (chooseLangCode.equals("la")) { return "Latin"; }
             if (chooseLangCode.equals("lv")) { return "Latvian"; }
             if (chooseLangCode.equals("lt")) { return "Lithuanian"; }
             if (chooseLangCode.equals("hu")) { return "Hungarian"; }
@@ -101,6 +102,8 @@ public class Linguist {
 
 http://publications.europa.eu/code/en/en-370200.htm
 
+http://www.loc.gov/standards/iso639-2/php/code_list.php
+    
 The language versions should appear in alphabetical order of the formal titles
      in their original written forms (the codes used are the ISO codes 639-1
      in force, alpha-2 code— also see the ISO website):
@@ -130,10 +133,10 @@ Finnish	    fi
 Swedish	    sv
      */
     private static String[] acceptableTHEMASLangCodes = {"bg", "es", "cs", "da", "de", "et", "el", "en", "fr",
-    "ga", "it", "lv", "lt", "hu", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "fi", "sv", "cn"};
+    "ga", "it", "la", "lv", "lt", "hu", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "fi", "sv", "cn"};
 
 
-    public static String SupportedTHEMASLangcodes(String langCode){
+    public static String SupportedTHEMASLangcodes(String langCode, boolean applyFilter){
         if(langCode==null || langCode.trim().length()==0){
             return "";
         }
@@ -143,14 +146,19 @@ Swedish	    sv
             return "en";
         }
 
-        for(int i=0; i< acceptableTHEMASLangCodes.length;i++){
-            if(comparelangCode.equals(acceptableTHEMASLangCodes[i])){
-                return  comparelangCode;
+        if(applyFilter){
+            for(int i=0; i< acceptableTHEMASLangCodes.length;i++){
+                if(comparelangCode.equals(acceptableTHEMASLangCodes[i])){
+                    return  comparelangCode;
+                }
             }
+
+
+            return "";
         }
-
-
-        return "";
+        else{
+            return comparelangCode;
+        }
     }
 
 
@@ -182,6 +190,7 @@ Swedish	    sv
             if (temp.contains("Finnish"))    { return "fi";}
             if (temp.contains("Swedish"))    { return "sv";}
             if (temp.contains("Chinese"))    { return "cn";}
+            if (temp.contains("Latin"))    { return "la";}
              /*else {
                 newLanguages.put(temp, "");
                 temp = "";

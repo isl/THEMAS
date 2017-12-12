@@ -1091,7 +1091,7 @@ public class ParseFileData {
                                 targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
                                 targetPrefferedName = this.parseSimpleContentElement(xpp);
@@ -1412,7 +1412,7 @@ public class ParseFileData {
                                 targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null
                                     && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
@@ -2504,7 +2504,7 @@ public class ParseFileData {
                                 targetTermId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null
                                     && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
@@ -3456,7 +3456,7 @@ public class ParseFileData {
 
                                 // <editor-fold defaultstate="collapsed" desc="prefLabel - translations">
                                 if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
@@ -3483,7 +3483,7 @@ public class ParseFileData {
                                 // <editor-fold defaultstate="collapsed" desc="altLabel - uf and uf_translations">
                                 else if (openingTagName.equals(ConstantParameters.XML_skos_altLabel)) {
 
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
@@ -3717,7 +3717,7 @@ public class ParseFileData {
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="scopeNote - scope_note and translations_scope_note">
                                 else if (openingTagName.equals(ConstantParameters.XML_skos_scopeNote)) {
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
@@ -4556,7 +4556,7 @@ public class ParseFileData {
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -4581,7 +4581,7 @@ public class ParseFileData {
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -4605,7 +4605,7 @@ public class ParseFileData {
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -4738,13 +4738,13 @@ public class ParseFileData {
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
-                ArrayList<String> langCodes = new ArrayList<String>();
+                ArrayList<String> langCodes = new ArrayList<>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
 
                     if (eventType == xpp.START_TAG) {
-                        String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                        String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),true);
                         if (langCode != null && langCode.length() > 0 && langCodes.contains(langCode.toUpperCase()) == false) {
                             langCodes.add(langCode.toUpperCase());
                         }

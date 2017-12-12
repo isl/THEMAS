@@ -79,7 +79,8 @@ public class EditActions_Term extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
         try {
             
-            QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
+            QClass Q = new QClass(); 
+            TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();            
             IntegerObject tms_session = new IntegerObject();
             
@@ -106,8 +107,8 @@ public class EditActions_Term extends ApplicationBasicServlet {
             
             //result
             StringObject errorMsg = new StringObject("");
-            ArrayList<String> ntsDecodedValues = new ArrayList<String>();
-            ArrayList<String> GuideTermsDecodedValues = new ArrayList<String>();
+            ArrayList<String> ntsDecodedValues = new ArrayList<>();
+            ArrayList<String> GuideTermsDecodedValues = new ArrayList<>();
                 
             if(targetField.compareTo(ConstantParameters.guide_term_kwd)==0){
                 
@@ -115,8 +116,8 @@ public class EditActions_Term extends ApplicationBasicServlet {
                 String[] guideTerms = request.getParameterValues("GuideTerm");
                 
                 if(nts!=null){
-                    for(int i=0; i< nts.length ;i++){
-                        String temp =u.getDecodedParameterValue(nts[i]);
+                    for (String nt : nts) {
+                        String temp = u.getDecodedParameterValue(nt);
                         if(temp!=null && temp.trim().length()>0 && ntsDecodedValues.contains(temp)==false){ 
                             ntsDecodedValues.add(temp);
                         }
@@ -124,8 +125,8 @@ public class EditActions_Term extends ApplicationBasicServlet {
                 }
                 
                 if(guideTerms!=null){
-                    for(int i=0; i< guideTerms.length ;i++){
-                        String temp =u.getDecodedParameterValue(guideTerms[i]);
+                    for (String guideTerm : guideTerms) {
+                        String temp = u.getDecodedParameterValue(guideTerm);
                         if(temp!=null && temp.trim().length()>0 ){ 
                             GuideTermsDecodedValues.add(temp);
                         }
@@ -133,8 +134,7 @@ public class EditActions_Term extends ApplicationBasicServlet {
                             GuideTermsDecodedValues.add("");
                         }
                     }
-                }
-                
+                }                
             }
             
             //actions for create. bt values must be read apart from targetField
@@ -144,10 +144,10 @@ public class EditActions_Term extends ApplicationBasicServlet {
             String[] values = request.getParameterValues(NewtargetField);
             
             //values are always read in decodedValues vector from values[] --> if term_create then values[] is filled with bts  
-            ArrayList<String> decodedValues = new ArrayList<String>();
+            ArrayList<String> decodedValues = new ArrayList<>();
             if(values!=null){
-                for(int i=0; i< values.length ;i++){
-                    String temp =u.getDecodedParameterValue(values[i]);
+                for (String value : values) {
+                    String temp = u.getDecodedParameterValue(value);
                     temp = temp.replaceAll(" +", " ");
                     temp = temp.replaceAll("\r", "\n");
                     temp = temp.replaceAll(" \n", "\n");

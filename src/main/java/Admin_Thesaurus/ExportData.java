@@ -48,9 +48,11 @@ import java.io.PrintWriter;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -190,14 +192,14 @@ public class ExportData extends ApplicationBasicServlet {
 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
 
-            } catch (Exception exc) {
+            } catch (FileNotFoundException | UnsupportedEncodingException exc) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
                 Utils.StaticClass.handleException(exc);
             }
 
-            ArrayList<String> thesauriNames = new ArrayList<String>();
-            ArrayList<String> allHierarchies = new ArrayList<String>();
-            ArrayList<String> allGuideTerms = new ArrayList<String>();
+            ArrayList<String> thesauriNames = new ArrayList<>();
+            ArrayList<String> allHierarchies = new ArrayList<>();
+            ArrayList<String> allGuideTerms = new ArrayList<>();
             
             exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 

@@ -1140,8 +1140,10 @@ public class DBConnect_Term {
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
             
-            String targetWord = translationsVector.get(i);
-            String prefix = targetWord.substring(0,targetWord.indexOf(ConstantParameters.languageIdentifierSuffix));
+            CMValue targetWordCmv = new CMValue();
+            targetWordCmv.assign_node(translationsVector.get(i), -1, Utilities.getTransliterationString(translationsVector.get(i), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+            String prefix = targetWordCmv.getString().substring(0,targetWordCmv.getString().indexOf(ConstantParameters.languageIdentifierSuffix));
             String targetWordClass =languagesIDs2Words.get(prefix)+ConstantParameters.wordClass;
             String targetSubTranslationCategory =selectedThesaurus + ConstantParameters.thesaursTranslationCategorysubString + prefix;
             
@@ -1149,7 +1151,7 @@ public class DBConnect_Term {
             // in case it doesn't exist
             if (dbGen.check_exist(translationsVector.get(i),Q,sis_session) == false) {
                 // create it as orphan
-                ret = TA.CHECK_CreateTranslationWord( new StringObject(targetWord), new StringObject(targetWordClass));
+                ret = TA.CHECK_CreateTranslationWordCMValue(targetWordCmv, new StringObject(targetWordClass));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     return errorMsg;
@@ -1157,8 +1159,8 @@ public class DBConnect_Term {
             } else { 
                 
                 //consistency check 26 is supposed to be applied prior to this call
-                if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                if (dbGen.NodeBelongsToClass(new StringObject(targetWordCmv.getString()), new StringObject(targetWordClass), false,Q,sis_session) == false) {
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{targetWordCmv.getString()}) ,tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+" does not belong in the set of Translation terms and therefore cannot be defined as Translation.",tms_session) + " ");
                     return errorMsg;
                 }
@@ -1170,9 +1172,9 @@ public class DBConnect_Term {
             }
             // create the translation links
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node(new StringObject(targetWord));
+            long sysid1L = Q.set_current_node(new StringObject(targetWordCmv.getString()));
             CMValue to = new CMValue();
-            to.assign_node(targetWord, sysid1L);
+            to.assign_node(targetWordCmv.getString(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( fromClass);

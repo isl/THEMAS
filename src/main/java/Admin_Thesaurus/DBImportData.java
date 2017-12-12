@@ -2885,7 +2885,7 @@ public class DBImportData {
         }
 
         common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-        //<editor-fold defaultstate="collapsed" desc="Simple term links --> en, uk_uf,primary_found_in, translations_found_in ...">
+        //<editor-fold defaultstate="collapsed" desc="Simple term links --> Translations, UF_Translataions,primary_found_in, translations_found_in ...">
         String[] readNodes = {ConstantParameters.translation_kwd,
             ConstantParameters.uf_translations_kwd,
             ConstantParameters.tc_kwd,

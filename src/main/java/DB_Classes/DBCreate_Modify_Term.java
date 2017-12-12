@@ -732,57 +732,16 @@ public class DBCreate_Modify_Term {
 
             //String prefixEN = dbtr.getThesaurusPrefix_EnglishWord(SessionUserInfo.selectedThesaurus,Q,sis_session.getValue());
 
-            ArrayList<String> valsToRemove = new ArrayList<String>();
+            ArrayList<String> valsToRemove = new ArrayList<>();
+            /* Debuggin code
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
                 String langPrefix = "";
                 if (val.indexOf(Parameters.TRANSLATION_SEPERATOR) > 0) {
                     langPrefix = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR) + 1).trim();
                     val = val.substring(val.indexOf(Parameters.TRANSLATION_SEPERATOR) + 1).trim();
-                }
-                /*
-                try {
-                    
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForTranslation(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-                        if (resolveError) {
-                            valsToRemove.add(langPrefix + val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/Translations/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.translation_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(langPrefix + val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/Translations/LongName", errorArgs, pathToMessagesXML);
-
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                */
-            }
+                }                
+            }*/
 
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);

@@ -60,6 +60,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import javax.servlet.ServletContext;
@@ -2040,14 +2041,12 @@ public class DBMergeThesauri {
             ArrayList<String> guideTerms,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
-        ArrayList<String> allTerms = new ArrayList<String>();
+        ArrayList<String> allTerms = new ArrayList<>();
 
         String[] output = Utilities.getSortedTermAllOutputArray();
 
-        ArrayList<String> outputVec = new ArrayList<String>();
-        for (int k = 0; k < output.length; k++) {
-            outputVec.add(output[k]);
-        }
+        ArrayList<String> outputVec = new ArrayList<>();
+        outputVec.addAll(Arrays.asList(output));
 
         UsersClass wtmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);

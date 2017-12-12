@@ -74,6 +74,18 @@
 
             <!-- THIS SHOULD ALSO BE PROVIDED AS A FIX DB OPERATION -->
             <ReplacementGroup>
+                <Source delimeterChar=";">ä</Source>
+                <Replacement>a</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ö</Source>
+                <Replacement>o</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ü</Source>
+                <Replacement>u</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
                 <Source delimeterChar=";">ά;ἀ;ἁ;ἂ;ἃ;ἄ;ἅ;ἆ;ἇ;ὰ;ά;ᾀ;ᾁ;ᾂ;ᾃ;ᾄ;ᾅ;ᾆ;ᾇ;ᾰ;ᾱ;ᾲ;ᾳ;ᾴ;ᾶ;ᾷ</Source>
                 <Replacement>α</Replacement>
             </ReplacementGroup>

@@ -36,8 +36,6 @@ package Admin_Thesaurus;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,6 +68,7 @@ import neo4j_sisapi.TMSAPIClass;
 public class DBexportData {
 
     public DBexportData() {
+        
     }
 
     public void exportThesaurusActions(UserInfoClass SessionUserInfo, /*CommonUtilsDBadmin common_utils,*/
@@ -82,7 +81,8 @@ public class DBexportData {
 
         DBGeneral dbGen = new DBGeneral();
 
-        QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
+        QClass Q = new QClass(); 
+        TMSAPIClass TA = new TMSAPIClass();
         IntegerObject sis_session = new IntegerObject();
 
         WriteFileData writer = new WriteFileData();
@@ -90,23 +90,24 @@ public class DBexportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBImportData dbImport = new DBImportData();
 
-        HashMap<String, String> translationCategories = new HashMap<String, String>();
+        HashMap<String, String> translationCategories = new HashMap<>();
         
-        ArrayList<SortItem> xmlFacetsInSortItem = new ArrayList<SortItem>();
-        HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets = new HashMap<SortItem, ArrayList<SortItem>>();
+        ArrayList<SortItem> xmlFacetsInSortItem = new ArrayList<>();
+        HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets;
+        
 
         
-        ArrayList<String> guideTerms = new ArrayList<String>();
-        HashMap<String, String> XMLsources = new HashMap<String, String>();
-        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<>();
+        HashMap<String, String> XMLsources = new HashMap<>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
 
-        ArrayList<String> topTerms = new ArrayList<String>();
-        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<String, ArrayList<String>>();
-        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<String, ArrayList<String>>();
-        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<HashMap<String, ArrayList<String>>>();
+        ArrayList<String> topTerms = new ArrayList<>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<>();
+        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<>();
 
 
-        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<>();
 
 
             //open connection and start Query

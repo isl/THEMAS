@@ -106,9 +106,9 @@ public class WriteFileData {
                     +">\r\n\r\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\""+ ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\">\r\n"+
-		"\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\r\n"+
 		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\r\n"+
-                "\t</rdf:Description>\r\n\r\n");
+                "\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\r\n"+
+		"\t</rdf:Description>\r\n\r\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
                     + "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\r\n"
@@ -364,8 +364,12 @@ public class WriteFileData {
             for (SortItem facetNameSortItem :  facetsToExportInSortItemFormat) {
                 //Enumeration<String> facetHierIds = facetHierarchyIds.keys();
                 //while(facetHierIds.hasMoreElements()){
-                ArrayList<SortItem> values = facetHierarchyIds.get(facetNameSortItem);
-                Collections.sort(values,transliterationComparator);
+                ArrayList<SortItem> values = new ArrayList<>();
+                if(facetHierarchyIds.containsKey(facetNameSortItem)){
+                    values.addAll(facetHierarchyIds.get(facetNameSortItem));
+                    Collections.sort(values,transliterationComparator);
+                }
+ 
                 
                 logFileWriter.append("\r\n\t<!-- Facet -->\r\n");
                 String appendVal = "\t<rdf:Description" ;
@@ -1845,7 +1849,9 @@ public class WriteFileData {
                                     String val = "";
 
                                     if (translationVal.contains(Parameters.TRANSLATION_SEPERATOR)) {
-                                        langCode = Linguist.SupportedTHEMASLangcodes(translationVal.substring(0, translationVal.indexOf(Parameters.TRANSLATION_SEPERATOR, 0)));
+                                        langCode = translationVal.substring(0, translationVal.indexOf(Parameters.TRANSLATION_SEPERATOR)).toUpperCase();
+                                        //bug it skipped GR (Greek instead of el) and LA (Latin)
+                                        //Linguist.SupportedTHEMASLangcodes(translationVal.substring(0, translationVal.indexOf(Parameters.TRANSLATION_SEPERATOR, 0)));
                                         val = translationVal.replaceFirst(langCode.toUpperCase() + Parameters.TRANSLATION_SEPERATOR, "");
                                     }
                                     if (langCode != null && langCode.length() > 0 && val != null && val.length() > 0) {
