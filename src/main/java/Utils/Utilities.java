@@ -1717,9 +1717,9 @@ public class Utilities {
             else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorContains)==0){
                 String relevantInput = input[i];
                 ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
-                if(!nameRefersToSource){
+                //if(!nameRefersToSource)// sources can also be serarched via transliteration
                     keywordsThatShouldBeSearchedWithTransliteration.add("name");
-                }
+                //}
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
@@ -1728,10 +1728,13 @@ public class Utilities {
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
-                if(nameRefersToSource){
+                //if(nameRefersToSource){ sources can also be serarched via transliteration
                     keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
                     keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
-                }
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translation_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_translations_kwd);
                 
                 if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
                     searchOperators[i] = ConstantParameters.searchOperatorTransliterationContains;
@@ -1740,9 +1743,9 @@ public class Utilities {
             else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorNotContains)==0){
                 String relevantInput = input[i];
                 ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
-                if(!nameRefersToSource){
+                //if(!nameRefersToSource){ // sources can also be serarched via transliteration
                     keywordsThatShouldBeSearchedWithTransliteration.add("name");
-                }
+                //}
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
@@ -1751,10 +1754,13 @@ public class Utilities {
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
                 keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
-                if(nameRefersToSource){
+                //if(nameRefersToSource){ // sources can also be serarched via transliteration
                     keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
                     keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
-                }
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translation_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_translations_kwd);
                 
                 if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
                     searchOperators[i] = ConstantParameters.searchOperatorNotTransliterationContains;

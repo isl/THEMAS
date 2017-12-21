@@ -5461,7 +5461,7 @@ public class DBGeneral {
         String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject SourceClassObj = new StringObject(ConstantParameters.SourceClass);
 
-        ArrayList<String> globalSourceResults = new ArrayList<String>();
+        ArrayList<String> globalSourceResults = new ArrayList<>();
 
         Q.reset_name_scope();
         Q.set_current_node(SourceClassObj);
@@ -5529,7 +5529,7 @@ public class DBGeneral {
                         //</editor-fold>
 
                     } else if (operators[i].equals("!")) {
-
+                        // <editor-fold defaultstate="collapsed" desc="Code for Not equal">
                         int set_exclude_sources = Q.set_get_new();
 
                         if (Q.set_current_node(new StringObject(prefixSource.concat(searchVal))) != QClass.APIFail) {
@@ -5546,9 +5546,9 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-
-                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains) || operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
-
+                        // </editor-fold>
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Not Contains">
                         //int set_exclude_sources = Q.set_get_new();
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
@@ -5578,16 +5578,14 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-                    }
-                    /*
+                        // </editor-fold>
+                    }                    
                     else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
-                        
-                        Transliteration is only stored in Facets/Hierarchies/TopTerms/Terms/Sources                    
-                        
+                        // <editor-fold defaultstate="collapsed" desc="Code for Not Transliteration Contains">
                         
                         Q.reset_set(set_s);
                         
-                        int set_exclude_sources = Q.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal,false),false);
+                        int set_exclude_sources = TA.get_matched_OnTransliteration(set_s, Utilities.getTransliterationString(searchVal,false),false);
                         Q.reset_set(set_exclude_sources);
                         //Q.free_set(ptrn_set);
 
@@ -5600,9 +5598,8 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-
-                    }
-                     */
+                        // </editor-fold>
+                    }                    
                 }
                 //</editor-fold>
 

@@ -146,56 +146,8 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             // -------------------- paging info And criteria retrieval--------------------------
             if (updateSourceCriteria != null) { // detect if search was pressed or left menu option was triggered
                 searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", updateSourceCriteria, request, u);
-                if(searchCriteria.input.size()==searchCriteria.value.size()){
-                    /*
-                    for(int k=0; k<searchCriteria.input.size(); k++){
-                        String inputKwd = searchCriteria.input.get(k);
-                        String value = searchCriteria.value.get(k);
-                        byte[] valbytes = value.getBytes("UTF-8");
-                        if(inputKwd.equals("name")){
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                            if(valbytes.length > dbtr.getMaxBytesForSource(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-                        }
-                        else if(inputKwd.equals(ConstantParameters.primary_found_in_kwd) || inputKwd.equals(ConstantParameters.translations_found_in_kwd)){
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                            if(valbytes.length > dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-                        }
-                        else if(inputKwd.equals(ConstantParameters.source_note_kwd)){
-                            if(valbytes.length > dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                        }
-                    }*/
-                }
-                else{
-                    Utils.StaticClass.webAppSystemOutPrintln("Search Input Error");
+                if(searchCriteria.input.size()!=searchCriteria.value.size()){
+                    Utils.StaticClass.webAppSystemOutPrintln("Search Sources Input Error");
                 }
                 sessionInstance.setAttribute("SearchCriteria_Sources", searchCriteria);
                 
