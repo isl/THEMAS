@@ -134,7 +134,7 @@ public class ConversionActions {
             OutputStream bout = new BufferedOutputStream(fout);
                 logFileWriter = new OutputStreamWriter(bout, "UTF-8");
 
-            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName);
+            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName, Parameters.UILang); //default ui lang
 
             writer.WriteTranslationCategories(logFileWriter, outputScheme, userSelections);
 
@@ -237,7 +237,7 @@ public class ConversionActions {
             OutputStream bout = new BufferedOutputStream(fout);
             logFileWriter = new OutputStreamWriter(bout, "UTF-8");
 
-            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName);
+            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName, Parameters.UILang); //default ui lang
 
             writer.WriteTranslationCategories(logFileWriter, outputScheme, userSelections);
 
@@ -424,8 +424,8 @@ public class ConversionActions {
             OutputStream bout = new BufferedOutputStream(fout);
             logFileWriter = new OutputStreamWriter(bout, "UTF-8");
 
-            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName);
-
+            writer.WriteFileStart(logFileWriter, outputScheme, importThesaurusName, Parameters.UILang); //default ui lang
+            
             writer.WriteTranslationCategories(logFileWriter, outputScheme, userSelections);
 
             writer.WriteFacets(logFileWriter, outputScheme, importThesaurusName, xmlFacets, hierarchyFacets, termsInfo, filterFacets, filterTerms);

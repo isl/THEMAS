@@ -117,11 +117,11 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             if(targetField==null || targetTerm==null){
                 
                 
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
                         Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf()+
-                        "<resultText>"+u.translateFromMessagesXML("root/EditTerm/Edit/NothingSpecified", null)+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditTerm/Edit/NothingSpecified", null,SessionUserInfo.UILang)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path +  "/xml-xsl/EditTermActions/Edit_Term.xsl");
@@ -141,7 +141,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             Q.reset_name_scope();
             String results = "";
             ArrayList<String> currentValues = new ArrayList<>();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             if(targetField.compareTo(ConstantParameters.term_create_kwd)==0){
                 currentValues.add(Parameters.UnclassifiedTermsLogicalname);
                 xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());

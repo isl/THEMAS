@@ -98,10 +98,10 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             
             if(targetField==null || targetHierarchy==null){
                 
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
                 xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
-                        "<resultText>"+u.translateFromMessagesXML("root/EditHierarchy/Edit/NothingSpecified", null)+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditHierarchy/Edit/NothingSpecified", null,SessionUserInfo.UILang)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path + "/xml-xsl/EditHierarchyActions/Edit_Hierarchy.xsl");
@@ -141,7 +141,7 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             
             if(targetField.compareTo("hierarchy_create")==0){
                 
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
                     xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
@@ -156,7 +156,7 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             }
             else if(targetField.compareTo("hierarchy_facets")==0){
                 
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 /*
                 xml.append("<currentFacets>");
                 for(int i=0 ; i<currentFacets.size();i++){
@@ -181,7 +181,7 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 
             }
             else{
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");

@@ -75,10 +75,20 @@ public class ApplicationBasicServlet extends HttpServlet {
         
         new CommonUtilsDBadmin(new ConfigDBadmin(basePath)).RestartDatabaseIfNeeded();
         
+        String overrideUILangParameter = request.getParameter("lang");
+        
+        
         
         Calendar cal = Calendar.getInstance();
         UsersClass tmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+        
+        if(overrideUILangParameter!=null && overrideUILangParameter.trim().length()>0){
+            overrideUILangParameter = overrideUILangParameter.trim().toLowerCase();
+            if(Parameters.SupportedUILangCodes!=null && SessionUserInfo!=null && Parameters.SupportedUILangCodes.containsKey(overrideUILangParameter)){
+                SessionUserInfo.UILang = Parameters.SupportedUILangCodes.get(overrideUILangParameter);
+            }
+        }
         
         // check the case of the servlet being called without login (URL intergrated to other web sites) 
         // g.e. SearchResults_Hierarchies?external_user=readerAAA&external_thesaurus=AAA       (for specific thesaurus reader)

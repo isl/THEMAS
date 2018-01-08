@@ -216,7 +216,8 @@ public class DBAdminUtilities {
     /*----------------------------------------------------------------------
      DBCanBeInitialized()
      ------------------------------------------------------------------------*/
-    public boolean DBCanBeInitialized(ConfigDBadmin config, CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, StringObject InitializeDBResultMessage, Boolean DBInitializationSucceded) {
+    public boolean DBCanBeInitialized(ConfigDBadmin config, CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, 
+            StringObject InitializeDBResultMessage, Boolean DBInitializationSucceded,final String uiLang) {
 
         // check if the SISInitializeDBTelosSourcesDirectory configuration directory
         // (g.e. "C:\ICS-FORTH\TMS-EKT\telos_sources\model\generic"), exists
@@ -224,7 +225,7 @@ public class DBAdminUtilities {
         boolean fileExists = (Neo4jInitializeDBTsvFile.exists() && !Neo4jInitializeDBTsvFile.isDirectory());
         //boolean SISInitializeDBTelosSourcesDirectoryExists = SISInitializeDBTelosSourcesDirectory.isDirectory();
         if (fileExists == false) {
-            String InvalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue");
+            String InvalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue", uiLang);
             InitializeDBResultMessage.setValue(InvalidConfigValue + ": " + common_utils.Neo4j_GenericTsvFile);
             DBInitializationSucceded = false;
             return false;
@@ -240,11 +241,11 @@ public class DBAdminUtilities {
      ------------------------------------------------------------------------*/
     public boolean GivenThesaurusCanBeCreated(ConfigDBadmin config, CommonUtilsDBadmin common_utils,
             ArrayList thesaurusVector, String NewThesaurusName, String NewThesaurusNameDBformatted,
-            StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
+            StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded,final String uiLang) {
         // check if the given NewThesaurusName exists
         boolean exists = thesaurusVector.contains(NewThesaurusName);
         if (exists == true) {
-            String ThesaurusExists = common_utils.config.GetTranslation("ThesaurusExists");
+            String ThesaurusExists = common_utils.config.GetTranslation("ThesaurusExists",uiLang);
             CreateThesaurusResultMessage.setValue(ThesaurusExists);
             CreateThesaurusSucceded = false;
             return false;
@@ -252,7 +253,7 @@ public class DBAdminUtilities {
         // check if the given NewThesaurusName has only 1 character
         boolean OneCharacter = (NewThesaurusName.length() == 1);
         if (OneCharacter == true) {
-            String OneCharacterMessage = common_utils.config.GetTranslation("OneCharacterMessage");
+            String OneCharacterMessage = common_utils.config.GetTranslation("OneCharacterMessage",uiLang);
             CreateThesaurusResultMessage.setValue(OneCharacterMessage);
             CreateThesaurusSucceded = false;
             return false;
@@ -260,7 +261,7 @@ public class DBAdminUtilities {
         // check if the given NewThesaurusName contains invalid characters
         boolean ContainsInvalidCharacters = common_utils.FileNameContainsInvalidCharacters(NewThesaurusNameDBformatted);
         if (ContainsInvalidCharacters == true) {
-            String ThesaurusContainsInvalidCharacters = common_utils.config.GetTranslation("ThesaurusContainsInvalidCharacters");
+            String ThesaurusContainsInvalidCharacters = common_utils.config.GetTranslation("ThesaurusContainsInvalidCharacters",uiLang);
             CreateThesaurusResultMessage.setValue(ThesaurusContainsInvalidCharacters);
             CreateThesaurusSucceded = false;
             return false;
@@ -270,7 +271,7 @@ public class DBAdminUtilities {
         boolean fileExists = (Neo4jSpecificTsvFile.exists() && !Neo4jSpecificTsvFile.isDirectory());
         //boolean SISInitializeDBTelosSourcesDirectoryExists = SISInitializeDBTelosSourcesDirectory.isDirectory();
         if (fileExists == false) {
-            String InavalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue");
+            String InavalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue",uiLang);
             CreateThesaurusResultMessage.setValue(InavalidConfigValue + ": " + common_utils.Neo4j_SpecificTsvFile);
             CreateThesaurusSucceded = false;
             return false;
@@ -384,7 +385,7 @@ public class DBAdminUtilities {
          */
 
         // create a backup of the data base anyway
-        common_utils.CreateDBbackup(backUpDescrition, CreateThesaurusResultMessage, DBbackupFileNameCreated);
+        common_utils.CreateDBbackup(backUpDescrition, CreateThesaurusResultMessage, DBbackupFileNameCreated, refSessionUserInfo.UILang);
 
         /*// start server
          boolean serverStarted = common_utils.StartDatabase();
@@ -404,7 +405,7 @@ public class DBAdminUtilities {
         if (expimps.importSpecificFromFile(Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath(),false) == false) {
 
             StringObject result = new StringObject("");
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, refSessionUserInfo.UILang);
             CreateThesaurusResultMessage.setValue("Can not create file : " + Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath() + "\r\n" + result.getValue());
             return false;
         }
@@ -434,7 +435,7 @@ public class DBAdminUtilities {
         StringObject errorMsg = new StringObject();
         
         boolean succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(NewThesaurusNameDBformatted, Q, TA,  sis_session, tms_session,
-                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true);
+                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true, refSessionUserInfo.UILang);
         
         UsersClass wtmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -538,7 +539,7 @@ public class DBAdminUtilities {
          }
          */
         // inform user for success
-        String CreateThesaurusSuccess = common_utils.config.GetTranslation("CreateThesaurusSuccess");
+        String CreateThesaurusSuccess = common_utils.config.GetTranslation("CreateThesaurusSuccess",SessionUserInfo.UILang);
         CreateThesaurusResultMessage.setValue(CreateThesaurusSuccess);
         return true;
     }
@@ -546,7 +547,7 @@ public class DBAdminUtilities {
     /*-----------------------------------------------------
      InitializeDB()
      -------------------------------------------------------*/
-    public boolean InitializeDB(CommonUtilsDBadmin common_utils, StringObject InitializeDBResultMessage) {
+    public boolean InitializeDB(CommonUtilsDBadmin common_utils, StringObject InitializeDBResultMessage,final String uiLang) {
 
         //ArrayList<String> tlsFiles = new ArrayList<String>();
         //fillTlsFilesVector(tlsFiles, common_utils, null, CREATE_BAT_FILE_FOR_INIT_DB);
@@ -563,7 +564,7 @@ public class DBAdminUtilities {
          }*/
         // create a backup of the data base anyway
         StringObject DBbackupFileNameCreated = new StringObject("");
-        common_utils.CreateDBbackup("backup_before_DB_initialization", InitializeDBResultMessage, DBbackupFileNameCreated);
+        common_utils.CreateDBbackup("backup_before_DB_initialization", InitializeDBResultMessage, DBbackupFileNameCreated, uiLang);
 
         Utils.StaticClass.closeDb();
         // check if server runs (close it before deleting DB folder contents)
@@ -580,10 +581,10 @@ public class DBAdminUtilities {
         // clear db folder contents
         boolean dbIsCleared = common_utils.DeleteFolderContents(common_utils.DBPath);
         if (dbIsCleared == false) {
-            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure");
+            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure", uiLang);
             InitializeDBResultMessage.setValue(ClearDBFolderFailure + " " + common_utils.DBPath);
             //common_utils.RestartDatabaseIfNeeded();
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject());
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject(), uiLang);
             return false;
         }
 
@@ -595,7 +596,7 @@ public class DBAdminUtilities {
         TSVExportsImports expimps = new TSVExportsImports();
         if (expimps.importGenericFromFile(genericTSVFile,false) == false) {
             InitializeDBResultMessage.setValue("Generic Import Failed");
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject());
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject(), uiLang);
 
             return false;
         }
@@ -657,7 +658,7 @@ public class DBAdminUtilities {
         Utils.StaticClass.getDBService();
 
         // inform user for success
-        String InitializeDBSuccess = common_utils.config.GetTranslation("InitializeDBSuccess");
+        String InitializeDBSuccess = common_utils.config.GetTranslation("InitializeDBSuccess", uiLang);
         InitializeDBResultMessage.setValue(InitializeDBSuccess + " ");
         return true;
     }
@@ -780,12 +781,12 @@ public class DBAdminUtilities {
         switch (ret) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
                 
-                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}, refSessionUserInfo.UILang));
                 //errorMsg.setValue("The renaming user: '" + targetUser + "' could not be found as a user of the system.");
                 return;
             case UsersClass.AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED:
                 
-                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", new String[]{targetUser,targetThesaurus}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", new String[]{targetUser,targetThesaurus}, refSessionUserInfo.UILang));
                 //errorMsg.setValue(User '" + targetUser + "' does not have permission to delete the thesaurus '" + targetThesaurus+ "'.");
                 // ATTENTION: the following is necessary so as to restore the old valid state of the "SessionUser" session attribute
                 sessionInstance.setAttribute("SessionUser", refSessionUserInfo);
@@ -795,7 +796,7 @@ public class DBAdminUtilities {
         Q.reset_name_scope();
         if (Q.set_current_node(targetThesaurusObj) == QClass.APIFail) {
             
-            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", new String[]{targetThesaurus}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", new String[]{targetThesaurus}, refSessionUserInfo.UILang));
             //errorMsg.setValue(errorMsg.getValue().concat("Thesaurus '" + targetThesaurus + "' does not exist in database."));
             return;
         }
@@ -867,7 +868,7 @@ public class DBAdminUtilities {
         ArrayList<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
             String GuideTermForDeletion = guideTerms.get(i);
-            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg);
+            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg, SessionUserInfo.UILang);
             if (errorMsg.getValue().equals("") == false) {
                 return;
             }
@@ -1089,7 +1090,7 @@ public class DBAdminUtilities {
             String facetToBeDeleted = (String) facetsToBeDeleted.get(i);
             String facetToBeDeletedUIWithoutPrefix = dbGen.removePrefix(facetToBeDeleted);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + i + 1 + ". Delete facet: " + facetToBeDeletedUIWithoutPrefix);
-            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true) == false) {
+            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true, SessionUserInfo.UILang) == false) {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- facet deletion cancelled");
                 return;
             } else {
@@ -1165,7 +1166,7 @@ public class DBAdminUtilities {
         // <editor-fold defaultstate="collapsed" desc="Delete Translation Categories">
         dbGen.synchronizeTranslationCategories(dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, SessionUserInfo.selectedThesaurus, null, false, true),
                             new HashMap<String, String>(), new ArrayList<String>(), new ArrayList<String>(), SessionUserInfo.selectedThesaurus,
-                            errorMsg, Utilities.getXml_For_Messages(), Q, TA, sis_session,  tms_session);
+                            errorMsg, Utilities.getXml_For_Messages(), Q, TA, sis_session,  tms_session, SessionUserInfo.UILang);
         // </editor-fold>
         
         /*
@@ -1185,7 +1186,7 @@ public class DBAdminUtilities {
         StringObject deleteThesErrorMsgCode = new StringObject();
         if(!TA.DeleteEmptyThesaurusModel(targetThesaurus,deleteThesErrorMsgCode)){
             
-            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}));    
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}, refSessionUserInfo.UILang));    
             if(Parameters.DEBUG && deleteThesErrorMsgCode.getValue() !=null && deleteThesErrorMsgCode.getValue().length()>0){
                 errorMsg.setValue(errorMsg.getValue()+"\n"+deleteThesErrorMsgCode.getValue());
                 return;

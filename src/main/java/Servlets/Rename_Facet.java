@@ -93,7 +93,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             //StringBuffer xml = new StringBuffer();
             //String RenameResult = "Renamed succesfully!!";
             
-            String RenameResult =  u.translateFromMessagesXML("root/EditFacet/Rename/Success", null);
+            String RenameResult =  u.translateFromMessagesXML("root/EditFacet/Rename/Success", null,SessionUserInfo.UILang);
             
             String Xmlresult = "";
             StringObject ob = new StringObject();
@@ -140,7 +140,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((OldFacet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //OLD NAME NULL?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NoFacetSelected", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NoFacetSelected", null,SessionUserInfo.UILang));
                 //ob.setValue("No Facet selected for rename. Operation cancelled.");
                 
                 ret1 = TMSAPIClass.TMS_APIFail;
@@ -152,7 +152,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if (!dbGen.check_exist(OldFacet.toString(), Q, sis_session)) {
 
                 //OLD NAME EXISTS?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                 //ob.setValue("Facet selected for rename does not exist anymore. Please search again for this facet and try again. Operation cancelled.");
                 
                 //abort transaction and close connection
@@ -165,7 +165,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((facet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //NEW NAME ONY PREFIX?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/EmptyNewName", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/EmptyNewName", null,SessionUserInfo.UILang));
                 //ob.setValue("A new facet name was not provided. Operation cancelled.");
                 //abort transaction and close connection
                 Q.free_all_sets();
@@ -175,7 +175,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 ret1 = TMSAPIClass.TMS_APIFail;
             } else if (dbGen.check_exist(facet, Q, sis_session)) {
                 //NEW NAME EXISTS?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NewNameExists", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NewNameExists", null,SessionUserInfo.UILang));
                 //ob.setValue("New Facet name already exists in the database. Operation cancelled.");
                 
                 //abort transaction and close connection
@@ -200,7 +200,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 CMValue oldFacet = new CMValue();
                 long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldFacet);
                 if(ret<=0){
-                    ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null));
+                    ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                     //errorMsgObj.setValue("Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.");
 
                     ret1 = TMSAPIClass.TMS_APIFail;

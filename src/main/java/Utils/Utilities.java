@@ -115,8 +115,8 @@ public class Utilities {
         return returnVal;
     }
     
-    public String getXMLStart(String LeftMenuMode) {
-        return getXMLStart(LeftMenuMode, false);
+    public String getXMLStart(String LeftMenuMode,final String uiLang) {
+        return getXMLStart(LeftMenuMode, false, uiLang);
     }
     /*---------------------------------------------------------------------
     getXMLStart()
@@ -124,7 +124,7 @@ public class Utilities {
     OUTPUT: - String XMLStart: an XML string
     CALLED BY: all servlets in order to get the first part of their XML representation
     ----------------------------------------------------------------------*/
-    public String getXMLStart(String LeftMenuMode, boolean skipLeftMenu) {
+    public String getXMLStart(String LeftMenuMode, boolean skipLeftMenu,final String uiLang) {
         String XMLStart =
                 //"<?xml version=\"1.0\" encoding=\"windows-1253\"?>" +
                 // changed by karam (6/2/2008) and also the xslTransform() 
@@ -134,7 +134,7 @@ public class Utilities {
                  // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
                 if(!skipLeftMenu){
                     XMLStart+= "\r\n<leftmenu>"
                     + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
@@ -2795,7 +2795,7 @@ public class Utilities {
 
             Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Restore Backup Nedded. Creating Backup before restoration.");
             CommonUtilsDBadmin common_utils = new CommonUtilsDBadmin(config);
-            if (common_utils.CreateDBbackup("BackUp_before_Automatic_BackUp_Restore", new StringObject(), new StringObject()) == false) {
+            if (common_utils.CreateDBbackup("BackUp_before_Automatic_BackUp_Restore", new StringObject(), new StringObject(), Parameters.UILang) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Error in creating Backup before Automatic BackUp Restore.");
                 return;
             }
@@ -2811,7 +2811,7 @@ public class Utilities {
 
                 if (BackUpName != null && BackUpName.length() > 0) {
                     Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Trying to restore " + BackUpName);
-                    boolean restored = common_utils.RestoreDBbackup(BackUpName, new StringObject());
+                    boolean restored = common_utils.RestoreDBbackup(BackUpName, new StringObject(), Parameters.UILang);
                     if (restored) {
                         Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "BackUp Restoration of '" + BackUpName + "' Successfully completed.");
                     } else {
@@ -2835,8 +2835,8 @@ public class Utilities {
 
     }
 
-    public String translateFromMessagesXML( String messageXPath, String[] args){
-        
+    public String translateFromMessagesXML(String messageXPath, String[] args, final String uiLang){
+        //String uiLang = Parameters.UILang;
         ArrayList<String> argsVector = null;
         if(args!=null){            
             argsVector = new ArrayList<String>();
@@ -2846,11 +2846,11 @@ public class Utilities {
             }
             
         }       
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
         return translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
     }
     
-    public String translateFromTranslationsXML(String messageXPath, String[] args){
+    public String translateFromTranslationsXML(String messageXPath, String[] args, final String uiLang){
         
         ArrayList<String> argsVector = null;
         if(args!=null){            
@@ -2861,11 +2861,11 @@ public class Utilities {
             }
             
         }        
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
         return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
     }
     
-    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args){
+    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args, final String uiLang){
         
         ArrayList<String> argsVector = null;
         if(args!=null){            
@@ -2875,7 +2875,7 @@ public class Utilities {
                 argsVector.add(args[i]);
             }            
         }        
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
         return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
     }
     

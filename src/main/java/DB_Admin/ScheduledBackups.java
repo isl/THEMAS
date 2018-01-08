@@ -149,7 +149,7 @@ public class ScheduledBackups extends TimerTask {
 
             
             
-            maintenanceSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated);
+            maintenanceSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated, SessionUserInfo.UILang);
             if (maintenanceSucceded == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Create System BackUp Failed on:" + formatter.format(new Date()) + ". ErrorMsg: " + CreateDBbackupResultMessage.getValue());
                 return;
@@ -219,7 +219,7 @@ public class ScheduledBackups extends TimerTask {
             Utils.StaticClass.handleException(ex);
             //sendmail();
             resetDBBackupFolder();
-            boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), resultObj);
+            boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), resultObj, SessionUserInfo.UILang);
             if (restored) {
                 MonitorMaintananceFile.delete();
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Restoration of : " + DBbackupFileNameCreated.getValue() + " succeeded.");
@@ -235,7 +235,7 @@ public class ScheduledBackups extends TimerTask {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Automatic Maintenance Failed on:" + formatter.format(new Date()) + ".");
                 //sendmail();
                 resetDBBackupFolder();
-                boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), resultObj);
+                boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), resultObj, SessionUserInfo.UILang);
                 if (restored) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Restoration of : " + DBbackupFileNameCreated.getValue() + " succeeded.");
                 } else {
@@ -376,12 +376,13 @@ public class ScheduledBackups extends TimerTask {
     
     private boolean initalizeDB(){
         
+        String uiLang = SessionUserInfo.UILang;
         //Initialize server with emty db
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting DB folder and Starting Server With Empty DB");
         // stop server
         boolean serverStopped = common_utils.StopDatabase();
         if (serverStopped == false) {
-            String StopServerFailure = common_utils.config.GetTranslation("StopServerFailure");
+            String StopServerFailure = common_utils.config.GetTranslation("StopServerFailure", uiLang);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + StopServerFailure );
             return false;
         }
@@ -390,7 +391,7 @@ public class ScheduledBackups extends TimerTask {
         // clear db folder contents
         boolean dbIsCleared = common_utils.DeleteFolderContents(common_utils.DBPath);
         if (dbIsCleared == false) {
-            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure");
+            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure", uiLang);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ClearDBFolderFailure + " " + common_utils.DBPath);
             common_utils.RestartDatabaseIfNeeded();
             return false;
@@ -398,7 +399,7 @@ public class ScheduledBackups extends TimerTask {
         // start server with empty data base folder
         boolean serverStarted = common_utils.StartWithEmptyDataBase();
         if (serverStarted == false) {
-            String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
+            String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure", uiLang);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + StartServerFailure );
             common_utils.RestartDatabaseIfNeeded();
             return false;
@@ -446,7 +447,7 @@ public class ScheduledBackups extends TimerTask {
                 logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
                 //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../" + webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
                 logFileWriter.append("<importActions>\r\n");
-                logFileWriter.append("<title>"+u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurus,Utilities.GetNow()})+"</title>\r\n");
+                logFileWriter.append("<title>"+u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurus,Utilities.GetNow()},SessionUserInfo.UILang)+"</title>\r\n");
                 //logFileWriter.append("<!--"+time + " LogFile  of import data in thesaurus: " + importThesaurusName +".-->\r\n");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LogFile of import data in thesaurus: " + importThesaurus + ".");
 
@@ -471,7 +472,7 @@ public class ScheduledBackups extends TimerTask {
                 logFileWriter.close();
                 
                 StringObject FixDBResultMessage_Global = new StringObject("");
-                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global);
+                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global,SessionUserInfo.UILang);//default ui lang
                 if(!dbFixed){
                    
                     Utils.StaticClass.webAppSystemOutPrintln("Fix DB failed");

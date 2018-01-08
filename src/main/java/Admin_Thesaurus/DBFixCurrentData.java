@@ -74,7 +74,7 @@ public class DBFixCurrentData {
         //<editor-fold defaultstate="collapsed" desc="HierarchyStatuses...">  
         if (functionallity.compareTo("HierarchyStatuses") == 0 && mode.compareTo("Fix") == 0) { // no preview mode supported
 
-            ChangeStatus(SessionUserInfo.selectedThesaurus, targetHierarchy, targetStatus, fixed);
+            ChangeStatus(SessionUserInfo.selectedThesaurus, targetHierarchy, targetStatus, fixed, SessionUserInfo.UILang);
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Prefixes...">      
         if (functionallity.compareTo("Prefixes") == 0) {
@@ -82,7 +82,7 @@ public class DBFixCurrentData {
             Save_Results_file_name.setValue("Prefix_Inconsistencies_" + time);
             XSL_fileNameObject.setValue(webAppSaveResults_AbsolutePath + "/FixData_WrongNames_Report.xsl");
 
-            RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+            RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
 
         } else //</editor-fold>      
@@ -96,11 +96,11 @@ public class DBFixCurrentData {
 
                 int parseTimes = 0;
 
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -122,11 +122,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     parseTimes++;
                 }
 
@@ -143,7 +143,7 @@ public class DBFixCurrentData {
             }
 
             if (fixed == true) {
-                TransformDates(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                TransformDates(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="TopTerm_Inconsistencies..."> 
@@ -156,11 +156,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -190,11 +190,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -234,11 +234,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -275,7 +275,7 @@ public class DBFixCurrentData {
             }
 
             if (fixed == true) {
-                Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>       
         //<editor-fold defaultstate="collapsed" desc="Classes_and_BTs...">  
@@ -287,11 +287,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -328,11 +328,11 @@ public class DBFixCurrentData {
 
                 parseTimes = 0;
                 if (fixed == true) {
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 }
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     parseTimes++;
                 }
             }
@@ -357,11 +357,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -398,11 +398,11 @@ public class DBFixCurrentData {
 
                 parseTimes = 0;
                 if (fixed == true) {
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 }
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     parseTimes++;
                 }
 
@@ -431,11 +431,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -472,17 +472,17 @@ public class DBFixCurrentData {
 
                 parseTimes = 0;
                 if (fixed == true) {
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 }
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     parseTimes++;
                 }
 
             }
             if (fixed == true) {
-                Collect_Garbage(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Collect_Garbage(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Unclassified_Source_relations...">      
@@ -494,11 +494,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -516,7 +516,7 @@ public class DBFixCurrentData {
             }
 
             if (fixed == true) {
-                Unclassified_Sources(SessionUserInfo.selectedThesaurus, targetLocale, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Unclassified_Sources(SessionUserInfo.selectedThesaurus, targetLocale, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Unclassified_Editor_relations..."> 
@@ -528,11 +528,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -549,7 +549,7 @@ public class DBFixCurrentData {
 
             }
             if (fixed == true) {
-                Unclassified_Editors(SessionUserInfo.selectedThesaurus, targetLocale, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Unclassified_Editors(SessionUserInfo.selectedThesaurus, targetLocale, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Unclassified_HierarchyTerms...">      
@@ -561,11 +561,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -582,7 +582,7 @@ public class DBFixCurrentData {
 
             }
             if (fixed == true) {
-                Unclassified_Hierarchy_Terms(SessionUserInfo.selectedThesaurus, mode, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Unclassified_Hierarchy_Terms(SessionUserInfo.selectedThesaurus, mode, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Multiple_Usage...">      
@@ -594,11 +594,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -628,11 +628,11 @@ public class DBFixCurrentData {
             if (mode.compareTo("Fix") == 0) {
 
                 int parseTimes = 0;
-                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    RepairPrefixes(SessionUserInfo.selectedThesaurus, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     //RepairPrefixes(SessionUserInfo.selectedThesaurus, Q, sis_session, time, mode, fixed, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
                     parseTimes++;
                 }
@@ -669,17 +669,17 @@ public class DBFixCurrentData {
 
                 parseTimes = 0;
                 if (fixed == true) {
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                 }
                 while (fixed == false && parseTimes < MAXPARSETIMES) {
                     fixed = true;
-                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                    Terms_Wrong_Unclassified(SessionUserInfo.selectedThesaurus, mode, fixed, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
                     parseTimes++;
                 }
 
             }
             if (fixed == true) {
-                Multiple_Editors_And_Dates(SessionUserInfo.selectedThesaurus, mode, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale);
+                Multiple_Editors_And_Dates(SessionUserInfo.selectedThesaurus, mode, time, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name.getValue(), pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             }
         }
         //</editor-fold>   
@@ -713,7 +713,7 @@ public class DBFixCurrentData {
                 OutputStream bout = new BufferedOutputStream(fout);
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + title + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -973,7 +973,7 @@ public class DBFixCurrentData {
 
     }
 
-    void ChangeStatus(String selectedThesaurus, String targetHierarchy, String targetStatus, Boolean fixed) {
+    void ChangeStatus(String selectedThesaurus, String targetHierarchy, String targetStatus, Boolean fixed, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1000,7 +1000,7 @@ public class DBFixCurrentData {
         Q.reset_name_scope();
 
         if (Q.set_current_node(targetHier) == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/FixCurrentData/ChangeStatusFailure", new String[]{targetHierarchy}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/FixCurrentData/ChangeStatusFailure", new String[]{targetHierarchy},uiLang));
             //errorMsg.setValue("Failed to find Hierarchy " + targetHierarchy + " in database.");
             fixed = false;
             return;
@@ -1028,7 +1028,14 @@ public class DBFixCurrentData {
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
     }
 
-    void RepairPrefixes(String selectedThesaurus, String title, String mode, Boolean fixed, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void RepairPrefixes(String selectedThesaurus, 
+            String title, 
+            String mode, 
+            Boolean fixed, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         //Fix or repair names that are not normalized and trimmed and nodes that do not have the right prefix
 
         //tools
@@ -1053,7 +1060,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
                 //out.write(XSL);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + title + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -1262,7 +1269,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
                 //out.write(XSL);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + title + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -1474,33 +1481,33 @@ public class DBFixCurrentData {
             
             
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_1Names, prefix1_2, "",
-                    /*"Facet"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Facet", null), out);
+                    /*"Facet"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Facet", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_2Names, prefix1_2, "", 
-                    /*"Hierarchy"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Hierarchy", null), out);
+                    /*"Hierarchy"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Hierarchy", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_3Names, prefix3_5, "", 
-                    /*"Term"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Term", null), out);
+                    /*"Term"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Term", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_4Names, prefix3_5, "", 
-                    /*"UF"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/UF", null), out);
+                    /*"UF"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/UF", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_5Names, prefix3_5, "", 
-                    /*"ALT"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/AlternativeTerm", null), out);
+                    /*"ALT"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/AlternativeTerm", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_6Names, prefix6_8, "", 
-                    /*"TR"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Translation", null), out);
+                    /*"TR"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Translation", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_7Names, prefix6_8, "", 
-                    /*"UF (Tra.)"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/tr_UF", null), out);            
+                    /*"UF (Tra.)"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/tr_UF", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);            
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_9Names, prefix9, "", 
-                    /*"Source"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Source", null), out);
+                    /*"Source"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Source", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_10Names, prefix10, "", 
-                    /*"Editor"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Editor", null), out);
+                    /*"Editor"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/Editor", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_11Names, prefix3_5, "`" + scope_noteLinkObj.getValue(), 
-                    /*"SN"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/SN", null), out);
+                    /*"SN"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/SN", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_12Names, prefix3_5, "`" + commentLinkObj.getValue(), 
-                    /*"HN"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/HN", null), out);
+                    /*"HN"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/HN", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, set_13Names, prefix3_5, "`" + scope_noteENLinkObj.getValue(), 
-                    /*"SN (Tra.)"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/tr_SN", null), out);
+                    /*"SN (Tra.)"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/tr_SN", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, createdDates, "", "", 
-                    /*"Creation Date"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/CreationDate", null), out);
+                    /*"Creation Date"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/CreationDate", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
             RepairNames_Preview_or_Fix(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, targetLocale, mode, fixed, modifiedDates, "", "", 
-                    /*"Modification Date"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/ModificationDate", null), out);
+                    /*"Modification Date"*/u.translateFromMessagesXML("root/PreviewErrorReports/Kinds/ModificationDate", null,SessionUserInfo.UILang), out,SessionUserInfo.UILang);
 
             if (mode.compareTo("Preview") == 0) {
                 Q.TEST_end_query();
@@ -1518,7 +1525,7 @@ public class DBFixCurrentData {
         }
     }
 
-    void RepairNames_Preview_or_Fix(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, ArrayList<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out) {
+    void RepairNames_Preview_or_Fix(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, String mode, Boolean fixed, ArrayList<String> allNamesWithPrefix, String prefix, String suffix, String kind, OutputStreamWriter out, final String uiLang) {
 
         //DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1877,7 +1884,7 @@ public class DBFixCurrentData {
 
                     if (exists) {
                         //out.write("YES");
-                        out.write(u.translateFromMessagesXML("root/PreviewErrorReports/Yes", null));
+                        out.write(u.translateFromMessagesXML("root/PreviewErrorReports/Yes", null,uiLang));
                     } else {
                         out.write(" - ");
                     }
@@ -1920,7 +1927,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
                 //out.write(XSL);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
                 out.flush();
@@ -2344,7 +2351,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
 
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -2563,7 +2570,14 @@ public class DBFixCurrentData {
         }
     }
 
-    void Terms_Wrong_Unclassified(String selectedThesaurus, String mode, Boolean fixed, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Terms_Wrong_Unclassified(String selectedThesaurus, 
+            String mode, 
+            Boolean fixed, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         try {
 
             //tools
@@ -2585,7 +2599,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
 
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -2784,7 +2798,7 @@ public class DBFixCurrentData {
 
             Collections.sort(decr, new StringLocaleComparator(targetLocale));
 
-            out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+            out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             out.write("<title>" + title + "</title>");
             out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
             for (int i = 0; i < decr.size(); i++) {
@@ -3002,7 +3016,7 @@ public class DBFixCurrentData {
                 OutputStream bout = new BufferedOutputStream(fout);
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -3181,14 +3195,22 @@ public class DBFixCurrentData {
         }
     }
 
-    void Unclassified_Sources(String selectedThesaurus, Locale targetLocale, String mode, Boolean fixed, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Unclassified_Sources(String selectedThesaurus, 
+            Locale targetLocale, 
+            String mode, 
+            Boolean fixed, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         try {
 
             OutputStreamWriter out = null;
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            StringObject existsMsgObj = new StringObject(u.translateFromMessagesXML("root/PreviewErrorReports/ExistsMessage", null));
+            StringObject existsMsgObj = new StringObject(u.translateFromMessagesXML("root/PreviewErrorReports/ExistsMessage", null, uiLang));
             
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
             QClass Q = new neo4j_sisapi.QClass();
@@ -3204,7 +3226,7 @@ public class DBFixCurrentData {
                 OutputStream bout = new BufferedOutputStream(fout);
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -3424,14 +3446,22 @@ public class DBFixCurrentData {
         }
     }
 
-    void Unclassified_Editors(String selectedThesaurus, Locale targetLocale, String mode, Boolean fixed, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Unclassified_Editors(String selectedThesaurus, 
+            Locale targetLocale, 
+            String mode, 
+            Boolean fixed, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         try {
 
             OutputStreamWriter out = null;
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            StringObject existsMsgObj = new StringObject(u.translateFromMessagesXML("root/PreviewErrorReports/ExistsMessage", null));
+            StringObject existsMsgObj = new StringObject(u.translateFromMessagesXML("root/PreviewErrorReports/ExistsMessage", null, uiLang));
             
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
             QClass Q = new neo4j_sisapi.QClass();
@@ -3447,7 +3477,7 @@ public class DBFixCurrentData {
                 OutputStream bout = new BufferedOutputStream(fout);
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -3682,7 +3712,13 @@ public class DBFixCurrentData {
         }
     }
 
-    void Unclassified_Hierarchy_Terms(String selectedThesaurus, String mode, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Unclassified_Hierarchy_Terms(String selectedThesaurus, 
+            String mode, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
 
         OutputStreamWriter out = null;
         Utilities u = new Utilities();
@@ -3727,7 +3763,7 @@ public class DBFixCurrentData {
             if (mode.compareTo("Preview") == 0) {
 
                 String title = hierarchyTermObj.getValue().concat(" " + time);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + title + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
             }
@@ -3769,7 +3805,14 @@ public class DBFixCurrentData {
         }
     }
 
-    void Collect_Garbage(String selectedThesaurus, String mode, Boolean fixed, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Collect_Garbage(String selectedThesaurus, 
+            String mode, 
+            Boolean fixed, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
 
         try {
 
@@ -3814,7 +3857,7 @@ public class DBFixCurrentData {
             if (mode.compareTo("Preview") == 0) {
 
                 String title = hierarchyTermObj.getValue().concat(" " + time);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + title + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
             }
@@ -3949,7 +3992,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
 
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -4251,7 +4294,13 @@ public class DBFixCurrentData {
         }
     }
 
-    void Multiple_Editors_And_Dates(String selectedThesaurus, String mode, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void Multiple_Editors_And_Dates(String selectedThesaurus, 
+            String mode, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         try {
 
             OutputStreamWriter out = null;
@@ -4272,7 +4321,7 @@ public class DBFixCurrentData {
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
 
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 
@@ -4512,7 +4561,14 @@ public class DBFixCurrentData {
         }
     }
 
-    void TransformDates(String selectedThesaurus, String mode, Boolean fixed, String time, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, String pathToSaveScriptingAndLocale) {
+    void TransformDates(String selectedThesaurus, 
+            String mode, 
+            Boolean fixed, 
+            String time, 
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         try {
 
             OutputStreamWriter out = null;
@@ -4532,7 +4588,7 @@ public class DBFixCurrentData {
                 OutputStream bout = new BufferedOutputStream(fout);
                 out = new OutputStreamWriter(bout, "UTF-8");
                 out.write(ConstantParameters.xmlHeader);
-                out.write("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                out.write("<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 out.write("<title>" + time + "</title>");
                 out.write("<save>../../images/save.gif</save><print>../../images/print.gif</print>" + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
 

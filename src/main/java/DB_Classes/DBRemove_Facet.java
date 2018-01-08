@@ -121,18 +121,18 @@ public class DBRemove_Facet {
     INPUT: - StringObject targetFacet: the NEW Facet to be deleted
     FUNCTION: deletes the given NEW facet (if it exists)
     ----------------------------------------------------------------------*/
-    public String DeleteFacet(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,StringObject targetFacet) {
+    public String DeleteFacet(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,StringObject targetFacet, final String uiLang) {
         CMValue cmv = new CMValue();
         cmv.assign_node(targetFacet.getValue(), -1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
-        return DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, cmv);        
+        return DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, cmv, uiLang);        
     }
     
-    public String DeleteFacetCMValue(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,CMValue targetFacet) {
+    public String DeleteFacetCMValue(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,CMValue targetFacet, final String uiLang) {
         String errorMsg = new String("");
 
         if (dbGen.check_exist(targetFacet.getString(),Q,sis_session) == false) {
             Utilities u = new Utilities();            
-            errorMsg = u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet.getString()});
+            errorMsg = u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet.getString()},uiLang);
             //errorMsg = "Facet " + targetFacet + " does not exist";
             
             return errorMsg;

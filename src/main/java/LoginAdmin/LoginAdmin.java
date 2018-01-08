@@ -97,7 +97,7 @@ public class LoginAdmin extends HttpServlet {
                 }
             }
 
-            DisplayLoginPage(out, sessionInstance);
+            DisplayLoginPage(out, sessionInstance,SessionUserInfo.UILang);
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+".Exception catched in servlet " +getServletName()+". Message:" +e.getMessage());
             Utils.StaticClass.handleException(e);
@@ -117,10 +117,10 @@ public class LoginAdmin extends HttpServlet {
      /*---------------------------------------------------------------------
                                 DisplayLoginPage()
     ----------------------------------------------------------------------*/
-    public void DisplayLoginPage(PrintWriter out, SessionWrapperClass sessionInstance) {
+    public void DisplayLoginPage(PrintWriter out, SessionWrapperClass sessionInstance, final String uiLang) {
         StringBuffer xml = new StringBuffer();
 
-        xml.append(getXMLLoginStart());
+        xml.append(getXMLLoginStart(uiLang));
         xml.append(getXMLEnd());
         Utilities u = new Utilities();
         u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/HiddenActions/LoginAdmin.xsl");
@@ -138,10 +138,11 @@ public class LoginAdmin extends HttpServlet {
     /*---------------------------------------------------------------------
                             getXMLLoginStart()
     ----------------------------------------------------------------------*/
-    public String getXMLLoginStart() {
+    public String getXMLLoginStart(final String uiLang) {
+        //getServletContext().getInitParameter("UILanguage")
         String XMLLoginStart =
                 ConstantParameters.xmlHeader +
-                "<page language=\""+getServletContext().getInitParameter("UILanguage")+"\" mode=\"insert\">" +
+                "<page language=\""+uiLang+"\" mode=\"insert\">" +
                 "<content>" +
                 "<inputs>" +
                 "<login></login>" +

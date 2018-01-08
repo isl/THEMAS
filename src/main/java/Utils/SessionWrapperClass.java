@@ -49,7 +49,7 @@ public class SessionWrapperClass {
     HashMap<String, Object> keywords ;
     public String path;
     
-    public  SessionWrapperClass(){
+        public  SessionWrapperClass(){
         validAttrs = new ArrayList<String>();
         validAttrs.add("currentTABup");
         validAttrs.add("SessionUser");

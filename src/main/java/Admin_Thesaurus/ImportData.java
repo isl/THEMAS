@@ -204,7 +204,7 @@ public class ImportData extends ApplicationBasicServlet {
 
                     if (thesauriNames.contains(importThesaurusName)) {
 
-                        resultObj.setValue(u.translateFromMessagesXML("root/ImportData/importThesaurusNameFailure", new String[]{importThesaurusName}));
+                        resultObj.setValue(u.translateFromMessagesXML("root/ImportData/importThesaurusNameFailure", new String[]{importThesaurusName}, SessionUserInfo.UILang));
                         //resultObj.setValue("Thesaurus '" + importThesaurusName + "' already exists in database. Please choose a different name for the Thesaurus.");
 
                         ArrayList<String> allHierarchies = new ArrayList<>();
@@ -218,10 +218,10 @@ public class ImportData extends ApplicationBasicServlet {
                         dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                         StringBuffer xml = new StringBuffer();
-                        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+                        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
                         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
 
-                        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/ImportData/ImportFunctionFailure", null) + resultObj.getValue(), importMethodChoice));
+                        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/ImportData/ImportFunctionFailure", null, SessionUserInfo.UILang) + resultObj.getValue(), importMethodChoice));
                         xml.append(u.getXMLUserInfo(SessionUserInfo));
                         xml.append(u.getXMLEnd());
                         u.XmlPrintWriterTransform(out, xml, sessionInstance.path + "/xml-xsl/page_contents.xsl");
@@ -239,7 +239,7 @@ public class ImportData extends ApplicationBasicServlet {
                         StringObject resultMessageObj_2 = new StringObject();
                         //ArrayList<String> errorArgs = new ArrayList<String>();
 
-                        resultObj.setValue(u.translateFromMessagesXML("root/ImportData/ThesaurusDoesNotExist", new String[]{importThesaurusName}));
+                        resultObj.setValue(u.translateFromMessagesXML("root/ImportData/ThesaurusDoesNotExist", new String[]{importThesaurusName}, SessionUserInfo.UILang));
 
                         //resultObj.setValue("Thesaurus '" + importThesaurusName + "' does not exist in database. Please choose a different thesaurus if this one still exists.");
                         ArrayList<String> allHierarchies = new ArrayList<>();
@@ -253,10 +253,10 @@ public class ImportData extends ApplicationBasicServlet {
                         dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                         StringBuffer xml = new StringBuffer();
-                        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+                        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
                         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
 
-                        resultMessageObj_2.setValue(u.translateFromMessagesXML("root/ImportData/InsertionFailure", null));
+                        resultMessageObj_2.setValue(u.translateFromMessagesXML("root/ImportData/InsertionFailure", null, SessionUserInfo.UILang));
                         xml.append(getXMLMiddle(thesauriNames, resultMessageObj_2.getValue() + resultObj.getValue(), importMethodChoice));
                         //xml.append(getXMLMiddle(thesauriNames, "Data insertion failure. " + resultObj.getValue(),importMethodChoice));
                         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -290,8 +290,8 @@ public class ImportData extends ApplicationBasicServlet {
                 logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
                 //logFileWriter.append("<?xml-stylesheet type=\"text/xsl\" href=\"../" + webAppSaveResults_Folder + "/ImportCopyMergeThesaurus_Report.xsl" + "\"?>\r\n");
-                logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-                logFileWriter.append("<title>" + u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurusName, time}) + "</title>\r\n"
+                logFileWriter.append("<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
+                logFileWriter.append("<title>" + u.translateFromMessagesXML("root/ImportData/ReportTitle", new String[]{importThesaurusName, time}, SessionUserInfo.UILang) + "</title>\r\n"
                         + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\r\n");
                 //logFileWriter.append("<!--"+time + " LogFile for data import in thesaurus: " + importThesaurusName +".-->\r\n");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile for data import in thesaurus: " + importThesaurusName + ".");
@@ -333,7 +333,7 @@ public class ImportData extends ApplicationBasicServlet {
             commitActions(request, WebAppUsersFileName, sessionInstance, context, targetLocale, importThesaurusName, out, Filename.concat(".html"));
 
             //ReportSuccessMessage            
-            logFileWriter.append("\r\n<creationInfo>" + u.translateFromMessagesXML("root/ImportData/ReportSuccessMessage", new String[]{importThesaurusName, xmlFilePath, ((Utilities.stopTimer(startTime)) / 60) + ""}) + "</creationInfo>\r\n");
+            logFileWriter.append("\r\n<creationInfo>" + u.translateFromMessagesXML("root/ImportData/ReportSuccessMessage", new String[]{importThesaurusName, xmlFilePath, ((Utilities.stopTimer(startTime)) / 60) + ""}, SessionUserInfo.UILang) + "</creationInfo>\r\n");
 
             if (logFileWriter != null) {
                 logFileWriter.append("</page>");
@@ -464,13 +464,13 @@ public class ImportData extends ApplicationBasicServlet {
         // inform current user's rights with the new thesaurus 
         wtmsUsers.AddNewThesaurusForCurrentTMSUser(WebAppUsersFileName, sessionInstance, importThesaurusName);
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         xml.append("<" + resultFileTagName + ">");
         xml.append(reportFile);
         xml.append("</" + resultFileTagName + ">");
 
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/ImportData/SuccessfulInsertion", new String[]{importThesaurusName}), importMethodChoice));
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/ImportData/SuccessfulInsertion", new String[]{importThesaurusName}, SessionUserInfo.UILang), importMethodChoice));
         //xml.append(getXMLMiddle(thesauriNames, "Data insertion finished successfully. Current Thesaurus set: " + importThesaurusName + ".", importMethodChoice));
 
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -507,7 +507,7 @@ public class ImportData extends ApplicationBasicServlet {
         wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + DBbackupFileNameCreated.getValue());
 
-        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, SessionUserInfo.UILang);
         thesauriNames.remove(mergedThesaurusName);
 
         QClass Q = new QClass();
@@ -535,11 +535,11 @@ public class ImportData extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Did not manage to restore : " + DBbackupFileNameCreated.getValue());
         }
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         StringObject resultMessageObj_2 = new StringObject();
 
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActions/InsertionFailure", null) + resultObj.getValue(), importMethodChoice));
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActions/InsertionFailure", null, SessionUserInfo.UILang) + resultObj.getValue(), importMethodChoice));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 

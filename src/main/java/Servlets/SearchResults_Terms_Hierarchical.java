@@ -618,10 +618,10 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             String XSL = webAppSaveResults_AbsolutePath.resolve("Hierarchical_Term_Display.xsl").toString();
             if (answerType != null && answerType.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
                 writeHierarchicalResultsInXMLFile(out, SessionUserInfo.selectedThesaurus.toUpperCase(), targetTerm, allTermsOfDescriptorsTopTerms, ntsOfDesciptorsTopTerms, topTerms, referencesPerHier, u,
-                        time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale, targetLocale);
+                        time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale, targetLocale, SessionUserInfo.UILang);
             } else {
                 writeHierarchicalResultsInXMLFile(null, SessionUserInfo.selectedThesaurus.toUpperCase(), targetTerm, allTermsOfDescriptorsTopTerms, ntsOfDesciptorsTopTerms, topTerms, referencesPerHier, u,
-                        time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale, targetLocale);
+                        time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale, targetLocale, SessionUserInfo.UILang);
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
 
                 //Send HTML relative url to output and return
@@ -654,7 +654,8 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             String query,
             String fileName,
             String pathToSaveScriptingAndLocale,
-            Locale targetLocale) {
+            Locale targetLocale,
+            final String uiLang) {
 
         String Full_Save_Results_file_name = fileName;
 
@@ -664,7 +665,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
         }
         OutputStreamWriter out = null;
         String appendVal = ConstantParameters.xmlHeader + 
-                "<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\n"+
+                "<page language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\n"+
                 "<title>" + title + "</title>"
                 +"<query>" + query + "</query>";
         if (streamOutput) {
@@ -830,7 +831,8 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             String query,
             String fileName,
             String pathToSaveScriptingAndLocale,
-            Locale targetLocale) {
+            Locale targetLocale,
+            final String uiLang) {
 
             SortItemComparator transliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
         String Full_Save_Results_file_name = fileName;
@@ -841,7 +843,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
         }
         OutputStreamWriter out = null;
         String appendVal = ConstantParameters.xmlHeader + 
-                "<page thesaurus=\""+targetThesaurus+"\" language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\n"+
+                "<page thesaurus=\""+targetThesaurus+"\" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\n"+
                 "<title>" + title + "</title>"
                 +"<query>" + query + "</query>";
         if (streamOutput) {

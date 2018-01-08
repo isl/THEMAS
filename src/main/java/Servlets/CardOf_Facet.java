@@ -163,8 +163,8 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             
             if(targetFacet==null || targetFacet.length()==0){
                 
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfFacet/NoFacetSelected", null)+"</errorMsg>";
-                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfFacet/NoFacetSelected", null,SessionUserInfo.UILang)+"</errorMsg>";
+                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode, SessionUserInfo.UILang);
                 return;
             }
             
@@ -184,9 +184,9 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             
             if(Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix_Class.concat(targetFacet)),checkIfFacetExistsCmv)==QClass.APIFail){
 
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfFacet/FacetNotFound", new String[]{targetFacet})+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfFacet/FacetNotFound", new String[]{targetFacet},SessionUserInfo.UILang)+"</errorMsg>";
                 
-                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
+                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode, SessionUserInfo.UILang);
                 Q.free_all_sets();
                 Q.TEST_end_query();
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
@@ -207,12 +207,12 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             
             if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
                 if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS,true));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS,true, SessionUserInfo.UILang));
                     xml.append(xmlResults);  
                     xml.append(u.getXMLEnd());
                 }
                 else{
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS, SessionUserInfo.UILang));
                     xml.append(u.getXMLMiddle(xmlResults + "<facetName>" + Utilities.escapeXML(targetFacet) + "</facetName>", "FacetDetails"));  
                     xml.append(u.getXMLUserInfo(SessionUserInfo));
                     xml.append(u.getXMLEnd());
@@ -227,7 +227,7 @@ public class CardOf_Facet extends ApplicationBasicServlet {
                 }
             } 
             else if (outputMode == null) {
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS, SessionUserInfo.UILang));
                 xml.append(u.getXMLMiddle(xmlResults + "<facetName>" + Utilities.escapeXML(targetFacet) + "</facetName>", "FacetDetails"));  
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
@@ -252,10 +252,10 @@ public class CardOf_Facet extends ApplicationBasicServlet {
         }
     } 
     
-    void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode){
+    void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode, final String uiLang){
         StringBuffer xml = new StringBuffer();
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS, uiLang));
         xml.append(u.getXMLMiddle(errorMsg, "Details"));
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());

@@ -33,6 +33,7 @@
  */
 package Users;
 
+import Utils.Parameters;
 import java.util.*;
 
 
@@ -55,9 +56,12 @@ Class for storing information
 2. for the authenticated THEMAS user of each session
 ----------------------------------------------------------------------*/
 public class UserInfoClass {
+    
     // <user> info found in WebAppUSERS.xml
     public String name;
     public String password;
+    
+    public String UILang;
     //String DBname;
     // parallel Vectors for tags (g.e.): 
     // <thesaurus group="READER">THES1</thesaurus>
@@ -175,7 +179,7 @@ Servlets.WaitForDownload.class.getName(),
         password = "";
         thesaurusNames = new  ArrayList<String>();
         thesaurusGroups = new ArrayList<String>();
-        
+        UILang = Parameters.UILang;
         description = "";
         selectedThesaurus = "";
         userGroup = "";
@@ -189,11 +193,15 @@ Servlets.WaitForDownload.class.getName(),
     public UserInfoClass(UserInfoClass refUserInfo) {
         name = refUserInfo.name;
         password = refUserInfo.password;
-        thesaurusNames = new ArrayList<String>();
+        UILang = refUserInfo.UILang;
+        if(UILang==null || UILang.trim().length()==0){
+            UILang = Parameters.UILang;
+        }
+        thesaurusNames = new ArrayList<>();
         if(refUserInfo.thesaurusNames!=null){
             thesaurusNames.addAll(refUserInfo.thesaurusNames);
         }
-        thesaurusGroups = new ArrayList<String>();
+        thesaurusGroups = new ArrayList<>();
         if(refUserInfo.thesaurusGroups!=null){
             thesaurusGroups.addAll(refUserInfo.thesaurusGroups);
         }

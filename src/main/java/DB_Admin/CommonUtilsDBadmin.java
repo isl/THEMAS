@@ -34,7 +34,9 @@
 package DB_Admin;
 
 import DB_Classes.DBGeneral;
+import Users.UserInfoClass;
 import Utils.Parameters;
+import Utils.SessionWrapperClass;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -252,7 +254,7 @@ public class CommonUtilsDBadmin {
     /*-----------------------------------------------------
                       FixDB()
     -------------------------------------------------------*/
-    public boolean FixDB(boolean resetDb, StringObject FixDBResultMessage) {
+    public boolean FixDB(boolean resetDb, StringObject FixDBResultMessage,final String uiLang) {
     
         
         // check if server runs (close it before fixing DB)
@@ -281,7 +283,7 @@ public class CommonUtilsDBadmin {
         // create a backup of the data base anyway
         StringObject DBbackupFileNameCreated = new StringObject("");
         if(resetDb){
-            CreateDBbackup("backup_before_fixing_data_base", FixDBResultMessage, DBbackupFileNameCreated);
+            CreateDBbackup("backup_before_fixing_data_base", FixDBResultMessage, DBbackupFileNameCreated, uiLang);
         }
 
         /*
@@ -301,8 +303,6 @@ public class CommonUtilsDBadmin {
         }
 
         */
-        
-        
         // remove previously found DB_Admin_ExportOutputTelosFile.tls (if any)
         String exportFileName =Neo4jExportTsvsFileDirectory + File.separator + "TSV_Global_Export_"+GetCurrentDateAndTime()+".tsv";
         //String TelosFileName = Neo4jExportBatFileDirectory + File.separator + exportFileName;
@@ -317,7 +317,7 @@ public class CommonUtilsDBadmin {
         if(exportCompleted==false){
             //TODO: Translate message
             //FixDBResultMessage.setValue("Error occured while exporting");
-            String ExportFailed = config.GetTranslation("ExportFailed");
+            String ExportFailed = config.GetTranslation("ExportFailed",uiLang);
             FixDBResultMessage.setValue(ExportFailed);
             return false;
         }
@@ -387,12 +387,12 @@ public class CommonUtilsDBadmin {
             srcDir.mkdir();
         } catch (IOException ex) {
             Logger.getLogger(CommonUtilsDBadmin.class.getName()).log(Level.SEVERE, null, ex);
-            String ClearDBFolderFailure = config.GetTranslation("ClearDBFolderFailure");
+            String ClearDBFolderFailure = config.GetTranslation("ClearDBFolderFailure",uiLang);
             FixDBResultMessage.setValue(ClearDBFolderFailure + " " + DBPath);
             return false;
         } catch (InterruptedException ex) {
             Logger.getLogger(CommonUtilsDBadmin.class.getName()).log(Level.SEVERE, null, ex);
-            String ClearDBFolderFailure = config.GetTranslation("ClearDBFolderFailure");
+            String ClearDBFolderFailure = config.GetTranslation("ClearDBFolderFailure",uiLang);
             FixDBResultMessage.setValue(ClearDBFolderFailure + " " + DBPath);
             return false;
         }
@@ -410,7 +410,7 @@ public class CommonUtilsDBadmin {
         
         boolean importSucceeded = expimp.globalImportFromFile(exportFileName,false);
         if(importSucceeded==false){
-            String TelosFailed = config.GetTranslation("TelosFailed");
+            String TelosFailed = config.GetTranslation("TelosFailed",uiLang);
             FixDBResultMessage.setValue(TelosFailed);
             return false;
         }
@@ -422,7 +422,7 @@ public class CommonUtilsDBadmin {
         
         
         // inform user for success
-        String FixDBSuccess = config.GetTranslation("FixDBSuccess");
+        String FixDBSuccess = config.GetTranslation("FixDBSuccess",uiLang);
         FixDBResultMessage.setValue(FixDBSuccess);
         return true;
         /*
@@ -785,12 +785,12 @@ public class CommonUtilsDBadmin {
     /*-----------------------------------------------------
     CreateDBbackup()
     -------------------------------------------------------*/
-    public boolean CreateDBbackup(String backupDescription, StringObject CreateDBbackupResultMessage, StringObject DBbackupFileNameCreated/*, String folderPath*/) {
+    public boolean CreateDBbackup(String backupDescription, StringObject CreateDBbackupResultMessage, StringObject DBbackupFileNameCreated/*, String folderPath*/,final String uiLang) {
         // check backupDescription for invalid characters
         boolean fileNameContainsInvalidCharacters = FileNameContainsInvalidCharacters(backupDescription);
         if (fileNameContainsInvalidCharacters == true) {
-            String FileNameContainsInvalidCharacters = config.GetTranslation("fileNameContainsInvalidCharacters");
-            String Error = config.GetTranslation("Error");
+            String FileNameContainsInvalidCharacters = config.GetTranslation("fileNameContainsInvalidCharacters", uiLang);
+            String Error = config.GetTranslation("Error", uiLang);
             CreateDBbackupResultMessage.setValue(Error + ": " + FileNameContainsInvalidCharacters + "  \\ / : * ? \" &lt; &gt; |");
             return false;
         }
@@ -842,7 +842,7 @@ public class CommonUtilsDBadmin {
             
             FileUtils.deleteRecursively(destDir);
             // inform user for success
-            String CreateDBbackupSuccess = config.GetTranslation("CreateDBbackupSuccess");
+            String CreateDBbackupSuccess = config.GetTranslation("CreateDBbackupSuccess", uiLang);
             CreateDBbackupResultMessage.setValue(CreateDBbackupSuccess + " " + zipFileName);
             DBbackupFileNameCreated.setValue(zipFileName);
         } catch (IOException ex) {
@@ -865,7 +865,7 @@ public class CommonUtilsDBadmin {
     /*-----------------------------------------------------
     RestoreDBbackup()
     -------------------------------------------------------*/
-    public boolean RestoreDBbackup(String selectedDBbackupFileName, StringObject result) {
+    public boolean RestoreDBbackup(String selectedDBbackupFileName, StringObject result,final String uiLang) {
         
         /*
         // check if server runs (close it before restoring backup)
@@ -907,7 +907,7 @@ public class CommonUtilsDBadmin {
         String file_to_be_extracted = DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName;
         ExtractUtility eu = new ExtractUtility(file_to_be_extracted, Utils.StaticClass.getGraphDbFolderPath());
         // inform user for success
-        String RestoreDBbackupSuccess = config.GetTranslation("RestoreDBbackupSuccess");
+        String RestoreDBbackupSuccess = config.GetTranslation("RestoreDBbackupSuccess", uiLang);
         result.setValue(RestoreDBbackupSuccess + selectedDBbackupFileName);
 
         // after finishing the job and in case SIS server is not running, restart it
@@ -1149,7 +1149,7 @@ public class CommonUtilsDBadmin {
 
     //restart transaction and sis server
     public boolean restartTransactionAndDatabase(QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, String targetThesaurusName) {
-DBGeneral dbGen = new DBGeneral();
+        DBGeneral dbGen = new DBGeneral();
         if(Utils.ConstantParameters.DEVELOPING){
             
                         Q.TEST_end_transaction();
@@ -1181,7 +1181,7 @@ DBGeneral dbGen = new DBGeneral();
         //start it and wait until it is started
         boolean serverStarted = StartDatabase();
         if (serverStarted == false) {
-            String StartServerFailure = config.GetTranslation("StartServerFailure");
+            String StartServerFailure = config.GetTranslation("StartServerFailure", Parameters.UILang); //default ui lang
             if (Parameters.DEBUG) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + StartServerFailure);
             }

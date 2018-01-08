@@ -376,9 +376,9 @@ public class DBCreate_Modify_Hierarchy {
 
         StringObject errorMsgPrefix = new StringObject("");
         if (createORmodify.equals("create")) {
-            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Creation/ErrorPrefix", null));
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Creation/ErrorPrefix", null, SessionUserInfo.UILang));
         } else {
-            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null));
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null, SessionUserInfo.UILang));
         }
 
 
@@ -386,7 +386,7 @@ public class DBCreate_Modify_Hierarchy {
 
         if (createORmodify.equals("create") == false && Q.set_current_node(targetHierarchyObj) == QClass.APIFail) {
             
-            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/HierarchyNotFound", new String[]{targetHierarchyWithoutPrefix}));
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/HierarchyNotFound", new String[]{targetHierarchyWithoutPrefix}, SessionUserInfo.UILang));
 
             //errorMsg.setValue(errorMsg.getValue().concat(errorMsgPrefix.getValue() + "Hierarchy %s was not found in the database."));
             return false;
@@ -398,19 +398,19 @@ public class DBCreate_Modify_Hierarchy {
 
             //During creation of new hierarchy one and only one parent facet may be declared
             if (targetHierarchyWithoutPrefix == null || targetHierarchyWithoutPrefix.length() == 0) {
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null));
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("A name must be specified for the new hierarchy");
                 return false;
             }
             if (targetHierarchyFacets == null || targetHierarchyFacets.isEmpty()) {
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacet", null));
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacet", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("At least one parent facet must be specified for the new hierarchy creation.");
                 return false;
             }
             Q.reset_name_scope();
             if (Q.set_current_node(targetHierarchyObj) != QClass.APIFail) {
 
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/AlreadyinDB", new String[]{targetHierarchyWithoutPrefix}));
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/AlreadyinDB", new String[]{targetHierarchyWithoutPrefix}, SessionUserInfo.UILang));
                 //errorMsg.setValue("Name %s is already used in the database as a hierarchy name or facet name.");
                 return false;
             }
@@ -418,7 +418,7 @@ public class DBCreate_Modify_Hierarchy {
             Q.reset_name_scope();
             if (Q.set_current_node(targetTopTermObj) != QClass.APIFail) {
 
-                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/TermAlreadyinDB", new String[]{targetHierarchyWithoutPrefix}));
+                errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Creation/TermAlreadyinDB", new String[]{targetHierarchyWithoutPrefix}, SessionUserInfo.UILang));
                 //errorMsg.setValue("Name %s is already used in the database as a term name and it can not be used in order to create the relavant TT.");
                 return false;
             }
@@ -455,7 +455,7 @@ public class DBCreate_Modify_Hierarchy {
                                     logFileWriter.append("<name>" + Utilities.escapeXML(targetHierarchySortItem.getLogName()) + "</name>");
                                     logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
                                     logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
-                                    logFileWriter.append("<reason>" + con.translate(28, 5, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()) + "</reason>");
+                                    logFileWriter.append("<reason>" + con.translate(28, 5, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), SessionUserInfo.UILang) + "</reason>");
                                     logFileWriter.append("</targetHierarchy>\r\n");
                                 } catch (IOException ex) {
                                     Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
@@ -469,7 +469,7 @@ public class DBCreate_Modify_Hierarchy {
                             errorArgs.add(targetHierarchySortItem.getLogName());                    
                             errorArgs.add(termUsingThisReferenceId);
 
-                            errorMsg.setValue(con.translate(28, 6, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()));
+                            errorMsg.setValue(con.translate(28, 6, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), SessionUserInfo.UILang));
 
                             return false; 
 
@@ -485,7 +485,7 @@ public class DBCreate_Modify_Hierarchy {
             StringObject targetHierarchyFacetObj = new StringObject(prefix.concat(targetHierarchyFacets.get(0).toString()));
             CMValue targetHierarchyCmv =targetHierarchySortItem.getCMValue(targetHierarchyObj.getValue());
             
-            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchyCMValue(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyCmv, targetHierarchyFacetObj, Utilities.getXml_For_Messages())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbConH.ConnectHierarchyCMValue(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, targetHierarchyCmv, targetHierarchyFacetObj, Utilities.getXml_For_Messages(), SessionUserInfo.UILang)));
 
 
             if (updateHistoricalData) {
@@ -507,7 +507,7 @@ public class DBCreate_Modify_Hierarchy {
 
                 if (KindOfHierarchy == ConstantParameters.HIERARCHY_OF_KIND_NEW) { // new descriptor => delete 
 
-                    if (checkTopTermDependencies(SessionUserInfo.selectedThesaurus, Q, sis_session, errorMsg, targetHierarchyWithoutPrefix) == true) {
+                    if (checkTopTermDependencies(SessionUserInfo.selectedThesaurus, Q, sis_session, errorMsg, targetHierarchyWithoutPrefix, SessionUserInfo.UILang) == true) {
 
                         StringObject taxonomicCodeFromClass = new StringObject();
                         StringObject taxonomicCodeLink = new StringObject();
@@ -540,7 +540,7 @@ public class DBCreate_Modify_Hierarchy {
                         dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, createdByClass.getValue(), createdByLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
                         dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetHierarchyWithoutPrefix, ConstantParameters.FROM_Direction, createdOnClass.getValue(), createdOnLink.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
 
-                        errorMsg.setValue(errorMsg.getValue().concat(dbRemH.DeleteHierarchy(Q, TA, sis_session, tms_session, dbGen, targetHierarchyObj)));
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemH.DeleteHierarchy(Q, TA, sis_session, tms_session, dbGen, targetHierarchyObj, SessionUserInfo.UILang)));
 
                     }
 
@@ -560,7 +560,7 @@ public class DBCreate_Modify_Hierarchy {
 
                 if (targetHierarchyFacets.isEmpty()) {
                     //errorMsg = " Every hierarchy should have at least one parent Facet. Modification Aborted";
-                    errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", null));
+                    errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditHierarchy/Edit/NoFacet", null, SessionUserInfo.UILang));
                     //errorMsg.setValue("Every Hierarchy must be classified under at least one facet. Modification aborted.");
                     return false;
                 } else {
@@ -635,7 +635,7 @@ public class DBCreate_Modify_Hierarchy {
         String pathToConsistencyErrorsXML = Utilities.getXml_For_ConsistencyChecks();
         StringObject errorMsgPrefixObj = new StringObject();
 
-        errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null));
+        errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Edit/ErrorPrefix", null, SessionUserInfo.UILang));
         
         int ret = 0;
         int SISApiSession = sis_session.getValue();
@@ -671,13 +671,13 @@ public class DBCreate_Modify_Hierarchy {
         Q.reset_name_scope();
         if (Q.set_current_node(targetHierarchyObj) == QClass.APIFail) {
 
-            errorMsg.setValue(errorMsg.getValue().concat(u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy})));
+            errorMsg.setValue(errorMsg.getValue().concat(u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy}, SessionUserInfo.UILang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Hierarchy %s was not found in the database."));
             return;
         }
         // check if target hierarchy to be deleted is the AAAEN`Unclassified terms
         if (targetHierarchyObj.getValue().compareTo(orphansHierarchyObj.getValue()) == 0) {
-            errorMsg.setValue(errorMsg.getValue().concat(u.translateFromMessagesXML("root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null)));
+            errorMsg.setValue(errorMsg.getValue().concat(u.translateFromMessagesXML("root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null, SessionUserInfo.UILang)));
             //errorMsg.setValue(errorMsg.getValue().concat("This hierarchy can not be deleted. It is used to classify all new terms that are not classified elsewhere."));
             return;
         }
@@ -924,7 +924,7 @@ public class DBCreate_Modify_Hierarchy {
             //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"old_top_terms size = " + old_top_terms.size());
             if (DBCMT.deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
                     dbGen, dbCon, ConstantParameters.DESCRIPTOR_OF_KIND_NEW, new StringObject(termToBeDeleted),
-                    termToBeDeletedUIWithoutPrefix, errorMsg, old_top_terms) == false) {
+                    termToBeDeletedUIWithoutPrefix, errorMsg, old_top_terms, SessionUserInfo.UILang) == false) {
                 //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"deletion cancelled");
                 Logger.getLogger(DBCreate_Modify_Hierarchy.class.getName()).log(Level.INFO, "Failed To delete: "+termToBeDeleted);
                 return;
@@ -938,7 +938,7 @@ public class DBCreate_Modify_Hierarchy {
         //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"old_top_terms size = " + old_top_terms.size());
         if (DBCMT.deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
                 dbGen, dbCon, ConstantParameters.DESCRIPTOR_OF_KIND_NEW, new StringObject(termToBeDeleted),
-                termToBeDeletedUIWithoutPrefix, errorMsg, old_top_terms) == false) {
+                termToBeDeletedUIWithoutPrefix, errorMsg, old_top_terms, SessionUserInfo.UILang) == false) {
             //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"deletion cancelled");
             Logger.getLogger(DBCreate_Modify_Hierarchy.class.getName()).log(Level.INFO, "Failed To delete: "+termToBeDeleted);
             return;
@@ -1048,7 +1048,7 @@ public class DBCreate_Modify_Hierarchy {
     /*---------------------------------------------------------------------
     checkTopTermDependencies()
     ----------------------------------------------------------------------*/
-    public boolean checkTopTermDependencies(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String oldName) {
+    public boolean checkTopTermDependencies(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String oldName, final String uiLang) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Utilities u = new Utilities();
@@ -1077,14 +1077,14 @@ public class DBCreate_Modify_Hierarchy {
         dbtr.getThesaurusCategory_taxonomic_code(selectedThesaurus, taxonomicCodeLink);
 
         if (oldName.compareTo(Parameters.UnclassifiedTermsLogicalname) == 0) {
-            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null));
+            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/UnclassifiedTermsHierarchy", null, uiLang));
             //errorMsg.setValue(errorMsg.getValue().concat("This hierarchy can not be deleted. It is used to classify all new terms that are not classified elsewhere."));
             return false;
         }
 
         Q.reset_name_scope();
         if (Q.set_current_node(new StringObject(prefix_el.concat(oldName))) == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermNotFound", null));
+            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermNotFound", null, uiLang));
             //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top Term was not found in the database. The hierarchy deletion action failed."));
             return false;
         }
@@ -1092,14 +1092,14 @@ public class DBCreate_Modify_Hierarchy {
         int set_to_links = Q.get_link_to(0);
         Q.reset_set(set_to_links);
         if (Q.set_get_card(set_to_links) > 0) {
-            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermHasLinksTo", null));
+            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermHasLinksTo", null, uiLang));
             //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top term has references pointing to it. The hierarchy deletion action failed."));
             return false;
         }
 
         Q.reset_name_scope();
         if (Q.set_current_node(new StringObject(prefix_el.concat(oldName))) == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermNotFound", null));
+            errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermNotFound", null, uiLang));
             //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top Term was not found in the database. The hierarchy deletion action failed."));
             return false;
         }
@@ -1137,7 +1137,7 @@ public class DBCreate_Modify_Hierarchy {
                 }
                 count++;
                 if (count > 1) {
-                    errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermHasLinksFrom", null));
+                    errorMsg.setValue(u.translateFromMessagesXML( "root/EditHierarchy/Deletion/TopTermHasLinksFrom", null, uiLang));
                     //errorMsg.setValue(errorMsg.getValue().concat("The relevant Top term has references pointing to other nodes. The hierarchy deletion action failed."));
                     return false;
                 }

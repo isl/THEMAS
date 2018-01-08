@@ -108,7 +108,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
 
             xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+term_decoded+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

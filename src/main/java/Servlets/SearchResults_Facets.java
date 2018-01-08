@@ -313,7 +313,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             xmlResults += (u.writePagingInfoXML(facetsPagingListStep, facetsPagingFirst, facetsPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Facets"));
             xmlResults += "</results>";
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_FACETS, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults, "SearchFacetResults"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -822,7 +822,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
         String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
 
         String appendVal = ConstantParameters.xmlHeader
-                + "\n<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                + "\n<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
         if (streamOutput) {
             outStream.append(appendVal);
         } else {

@@ -164,7 +164,7 @@ public class GraphicalView extends ApplicationBasicServlet {
             String SVG_file_name = SVGproducer.Start(SessionUserInfo, TargetName, TargetKind, termPrefix, facetPrefix, request);
 
             // write the necessary XML data to be used for displaying the SVG graph
-            String xmlResults = GraphicalViewXML(TargetName, TargetKind, SVG_file_name,targetBTterms);
+            String xmlResults = GraphicalViewXML(TargetName, TargetKind, SVG_file_name,targetBTterms, SessionUserInfo.UILang);
             StringBuffer xml = new StringBuffer(xmlResults);
             // XSL transformation of XML output of servlet
             
@@ -264,14 +264,14 @@ public class GraphicalView extends ApplicationBasicServlet {
            - SVG_file_name: the name of the temporary SVG file to be displayed (g.e. SVGtempGraph2008-08-22 16-41-35.svg)
     OUTPUT: a String with the XML representation of the necessary data to be used for displaying the SVG graph
     ----------------------------------------------------------------------*/                                
-    String GraphicalViewXML(String TargetName, String TargetKind, String SVG_file_name,ArrayList targetBTterms) {
+    String GraphicalViewXML(String TargetName, String TargetKind, String SVG_file_name,ArrayList targetBTterms, final String uiLang) {
         String TargetNameWithoutPrefix = TargetName.substring(TargetName.indexOf("`") + 1);
         Utilities u = new Utilities();
         // temporary SVG graph
         String fileName = "SVGproducer/SVG_temporary_files/" + SVG_file_name;//SVG_file_name.replace(" ", "%20");
         // XML
         String XMLstr = ConstantParameters.xmlHeader ;
-        XMLstr += "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">";
+        XMLstr += "<page language=\""+uiLang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">";
             XMLstr += "<TargetName>" + Utilities.escapeXML(TargetName) + "</TargetName>";
             XMLstr += "<TargetNameWithoutPrefix>" + Utilities.escapeXML(TargetNameWithoutPrefix) + "</TargetNameWithoutPrefix>";
             XMLstr += "<TargetKind>" + TargetKind + "</TargetKind>";

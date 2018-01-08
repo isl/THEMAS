@@ -82,6 +82,7 @@ public class Index extends ApplicationBasicServlet {
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
         init(request, response, sessionInstance);
         
+        String overrideUILangParameter = request.getParameter("lang");
         
         PrintWriter out = response.getWriter();
         
@@ -93,6 +94,7 @@ public class Index extends ApplicationBasicServlet {
 
         Utilities u = new Utilities();
         
+        String uiLang = Parameters.UILang;
         try {
             u.CheckMaintenanceCompleted(config, restoreBackupTxtFilePath, SystemOutPrefix);
         
@@ -113,6 +115,7 @@ public class Index extends ApplicationBasicServlet {
                             }
                         }
                         if (SessionUserInfo != null) {
+                            uiLang = SessionUserInfo.UILang;
                             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "EXIT: user " + SessionUserInfo.name + " just Logged Out.");
                             SessionUserInfo = null;
                         }
@@ -121,7 +124,7 @@ public class Index extends ApplicationBasicServlet {
             } else if (SessionUserInfo != null) {
                 response.setStatus(response.SC_MOVED_TEMPORARILY);
                 response.setHeader("Location", "Links");
-
+                uiLang = SessionUserInfo.UILang;
                 out.close();
                 return;
             } else {
@@ -136,7 +139,18 @@ public class Index extends ApplicationBasicServlet {
             }
             
 
-            DisplayLoginPage(out,sessionInstance);
+            //parameters has not been initialized yet in order to check the SupportedUILangCodes value
+            if(overrideUILangParameter!=null && overrideUILangParameter.trim().length()>0){
+                overrideUILangParameter = overrideUILangParameter.trim().toLowerCase();
+                HashMap<String,String> supportedVals = Parameters.getAvailableUICodes(request.getSession().getServletContext(),false);
+                if(supportedVals.containsKey(overrideUILangParameter)){
+                    uiLang = supportedVals.get(overrideUILangParameter);
+                }
+            }
+            if(uiLang==null || uiLang.trim().length()==0){
+                uiLang = getServletContext().getInitParameter("UILanguage");
+            }
+            DisplayLoginPage(out,sessionInstance,uiLang);
             
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln("Exception catched in servlet " +getServletName()+". Message:" +e.getMessage());
@@ -163,10 +177,10 @@ public class Index extends ApplicationBasicServlet {
     - String path: the "THEMASLocation" initialization parameter of the application
     CALLED BY: most of the servlets in case the user must login to the application
     ----------------------------------------------------------------------*/
-    public void DisplayLoginPage(PrintWriter out, SessionWrapperClass sessionInstance) {
+    public void DisplayLoginPage(PrintWriter out, SessionWrapperClass sessionInstance, final String uiLang) {
         StringBuffer xml = new StringBuffer();
 
-        xml.append(getXMLLoginStart());
+        xml.append(getXMLLoginStart(uiLang));
         xml.append(getXMLEnd());
         String xsl = "";
         if(sessionInstance!= null && sessionInstance.path.endsWith("/")){
@@ -234,10 +248,11 @@ public class Index extends ApplicationBasicServlet {
     OUTPUT: - String XMLLoginStart: an XML string
     CALLED BY: Index and Links servlets
     ----------------------------------------------------------------------*/
-    public String getXMLLoginStart() {
+    public String getXMLLoginStart(final String uiLang) {
+        //getServletContext().getInitParameter("UILanguage")
         String XMLLoginStart =
                 ConstantParameters.xmlHeader  +
-                "<page language=\""+getServletContext().getInitParameter("UILanguage")+"\" mode=\"insert\">" +
+                "<page language=\""+uiLang+"\" mode=\"insert\">" +
                 "<content>" +
                 "<inputs>" +
                 "<login></login>" +
@@ -245,6 +260,14 @@ public class Index extends ApplicationBasicServlet {
                 "</inputs>" +
                 "</content>";
 
+        HashMap<String,String> availableLangs = Parameters.getAvailableUICodes(getServletContext(),true);
+        XMLLoginStart += "<availableUILangs>";
+        for (Map.Entry<String, String> entry : availableLangs.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            XMLLoginStart+="<langcode code=\""+value+"\">"+key+"</langcode>";
+        }
+        XMLLoginStart += "</availableUILangs>";
         // Get the existing Thesaurus in DB
         ArrayList<String> thesaurusVector = GetExistingThesaurus();
         int thesaurusVectorCount = thesaurusVector.size();

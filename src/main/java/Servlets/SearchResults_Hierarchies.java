@@ -286,7 +286,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             xmlResults += (u.writePagingInfoXML(hierarchiesPagingListStep, hierarchiesPagingFirst, hierarchiesPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Hierarchies"));
             xmlResults += "</results>";
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults, "SearchHierarchyResults"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -974,7 +974,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             String temp = "";
 
             temp += xml_header /*+xslLink*/ +
-                    "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
+                    "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
                     "<title>" + title + "</title>" +
                     "<query>" + sc.getQueryString(u) + "</query>";
             if(pathToSaveScriptingAndLocale!=null){

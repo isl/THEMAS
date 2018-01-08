@@ -212,7 +212,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Alphabetical.xsl").toString();
                 String pathToLabels = context.getRealPath("/translations/labels.xml");
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                String resultsInfo = "<page language=\""+Parameters.UILang+"\" " +
+                String resultsInfo = "<page language=\""+SessionUserInfo.UILang+"\" " +
                         "primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" + 
                         "<title>" + time +"</title>" + 
                         "<query>" + searchCriteria.getQueryString(u) +"</query>" + 
@@ -319,7 +319,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Alphabetical View : " + elapsedTimeSec);
             
             
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             xml.append(createPagingInfo(alphabeticalPagingListStep,alphabeticalPagingFirst,alphabeticalPagingQueryResultsCount));
             xml.append(u.getXMLMiddle(xmlResults.toString(), "Alphabetical"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

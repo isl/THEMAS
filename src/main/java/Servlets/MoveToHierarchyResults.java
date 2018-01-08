@@ -125,7 +125,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
             }//Not Move to Hier Action --> Bypass Consistency checks
             else {
                 // action = deleteBT
-                if (DeleteBTAction(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session, dbGen, TargetTermName, TargetBTforDeletion, SessionUserInfo.name, MoveToHierarchyResultsMessage) == false) {
+                if (DeleteBTAction(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session, dbGen, TargetTermName, TargetBTforDeletion, SessionUserInfo.name, MoveToHierarchyResultsMessage, SessionUserInfo.UILang) == false) {
 
                     finalResult = false;
                 } else {
@@ -143,7 +143,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                         dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
                         Q.reset_set(check_nodes_set);
 
-                        if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg) == false) {
+                        if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg,SessionUserInfo.UILang) == false) {
                             //abort transaction and close connection
                             finalResult = false;
                         } else {
@@ -182,7 +182,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             // XML output of servlet - START
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
 
             // write the necessary data to be used by Move to Hierarchy operation to XML
             String xmlResults = MoveToHierarchyResultsXML(TargetTermName, finalResult, MoveToHierarchyResultsMessage);
@@ -260,7 +260,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                             Q.reset_set(check_nodes_set);
                         }
 
-                        if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg) == false) {
+                        if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg,SessionUserInfo.UILang) == false) {
                             //abort transaction and close connection
                             return false;
                         } else {
@@ -360,7 +360,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[]{TargetTermName}));
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[]{TargetTermName},SessionUserInfo.UILang));
                 //MoveToHierarchyResultsMessage.setValue("Movement of term \"" + TargetTermName + "\" was successfully performed.");
                 return true;
             } else {
@@ -380,7 +380,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
     DeleteBTAction()
     ----------------------------------------------------------------------*/
-    boolean DeleteBTAction(String selectedThesaurus, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String TargetBTforDeletion, String user, StringObject MoveToHierarchyResultsMessage) {
+    boolean DeleteBTAction(String selectedThesaurus, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String TargetBTforDeletion, String user, StringObject MoveToHierarchyResultsMessage, final String uiLang) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBConnect_Term dbCon = new DBConnect_Term();
@@ -455,7 +455,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
             Q.free_all_sets();
             if (MoveToHierarchyResultsMessage.getValue().compareTo("") == 0) {
-                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtSuccess", new String[]{TargetBTforDeletion,TargetTermName}));
+                MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtSuccess", new String[]{TargetBTforDeletion,TargetTermName}, uiLang));
                 //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" was successfully completed.");
 
                 return true;
@@ -465,7 +465,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                 return false;
             }
         } else {
-            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtFailure", new String[]{TargetBTforDeletion,TargetTermName}));
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SpecificDeleteBtFailure", new String[]{TargetBTforDeletion,TargetTermName}, uiLang));
             //MoveToHierarchyResultsMessage.setValue("Deletion of BT: \"" + TargetBTforDeletion + "\" from term: \"" + TargetTermName + "\" failed.");
             Q.free_all_sets();
 
@@ -561,7 +561,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         return otherModifiedNodes;
     }
 
-    boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg) {
+    boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg, final String uiLang) {
 
 
         int SisSessionId = sis_session.getValue();
@@ -665,7 +665,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
 
                         ret = Q.CHECK_Delete_Instance( from, to);
                         if (ret == QClass.APIFail) {
-                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr},uiLang));
                             //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
@@ -691,7 +691,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                             String tempStr = checkNodes.get(i);
                             tempStr = dbGen.removePrefix(tempStr);
 
-                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr}));
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError",  new String[]{tempStr},uiLang));
                             //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }

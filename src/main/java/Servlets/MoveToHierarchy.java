@@ -114,18 +114,18 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
                 targetTermUTF8=new String("");
                 targetTermCanBeMovedToHierarchy= false;
                 
-                reasonTargetTermCannotBeMovedToHierarchy.setValue(u.translateFromMessagesXML( "root/EditTerm/Move2Hierarchy/NoTargetTermSpecified", null));
+                reasonTargetTermCannotBeMovedToHierarchy.setValue(u.translateFromMessagesXML( "root/EditTerm/Move2Hierarchy/NoTargetTermSpecified", null,SessionUserInfo.UILang));
                 //reasonTargetTermCannotBeMovedToHierarchy.setValue("No target term was specified for the movement operation.");
             }
             else{   
                 StringObject targetTermUTF8WithPrefix = new StringObject(termPrefix.concat(targetTermUTF8));
 
                 // check if the given target term can be moved to Hierarchy
-                targetTermCanBeMovedToHierarchy = dbGen.DescriptorCanBeMovedToHierarchy(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix, reasonTargetTermCannotBeMovedToHierarchy,Q,sis_session);
+                targetTermCanBeMovedToHierarchy = dbGen.DescriptorCanBeMovedToHierarchy(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix, reasonTargetTermCannotBeMovedToHierarchy,Q,sis_session, SessionUserInfo.UILang);
 
                 // get the target existing Hierarchies
                 ArrayList<String> tmpVector = new ArrayList<String>();
-                tmpVector = dbGen.getDescriptorHierarchies(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix,Q,sis_session);
+                tmpVector = dbGen.getDescriptorHierarchies(SessionUserInfo.selectedThesaurus, targetTermUTF8WithPrefix,Q,sis_session, SessionUserInfo.UILang);
 
                 /*
                 if (!tmpVector.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
@@ -163,7 +163,7 @@ public class MoveToHierarchy extends ApplicationBasicServlet {
 
             // XML output of servlet - START
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));			 
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));			 
 
             // XML output of servlet - MIDDLE
             // get the previously selected tab of the UP part

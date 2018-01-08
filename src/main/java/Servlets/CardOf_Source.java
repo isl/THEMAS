@@ -106,7 +106,7 @@ public class CardOf_Source extends ApplicationBasicServlet {
             
             if(targetSource==null || targetSource.length()==0){
                 
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfSource/NoSourceSelected", null)+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfSource/NoSourceSelected", null, SessionUserInfo.UILang)+"</errorMsg>";
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);                
                 return;
             }
@@ -143,7 +143,7 @@ public class CardOf_Source extends ApplicationBasicServlet {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
             
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults.toString(), "SourceDetails"));//"<source_note>" + sourceNoteObj.getValue() +"</source_note>" + "<sourceName>" + targetSource + "</sourceName>", "SourceDetails"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -166,7 +166,8 @@ public class CardOf_Source extends ApplicationBasicServlet {
     void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode){
         StringBuffer xml = new StringBuffer();
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+        UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
         xml.append(u.getXMLMiddle(errorMsg, "Details"));
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());

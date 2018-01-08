@@ -104,7 +104,7 @@ public class EditDisplays_Facet extends ApplicationBasicServlet {
             //int maxUTF8Length = THEMASAPIClass.LOGINAM_SIZE-1-prefix.length();
 
 
-            xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">\n");
+            xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">\n");
             xml.append("\t<targetFacet>"+Utilities.escapeXML(targetFacet)+"</targetFacet>\n"
                     + "\t<targetEditField>"+targetField+"</targetEditField>\n"
                     + "\t<maxFacetUTF8Length></maxFacetUTF8Length>\n");

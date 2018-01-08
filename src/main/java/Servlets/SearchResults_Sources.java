@@ -287,7 +287,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             xmlResults.append("</results>");
 
            
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults.toString(), "SearchSourceResults"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -316,7 +316,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             String temp ="";
 
             temp += ConstantParameters.xmlHeader+
-                    "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
+                    "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
                     "<title>" + title + "</title>" +
                     "<query>" + sc.getQueryString(u) + "</query>";
             if(pathToSaveScriptingAndLocale!=null){

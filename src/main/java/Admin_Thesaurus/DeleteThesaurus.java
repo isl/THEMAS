@@ -117,7 +117,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             // create a backup of the data base anyway
             StringObject DBbackupFileNameCreated = new StringObject("");
             String backUpDescrition = new String("backup_before_deletion_of_thesaurus_"+ThesaurusName);            
-            common_utils.CreateDBbackup(backUpDescrition, DeleteThesaurusResultMessage, DBbackupFileNameCreated);
+            common_utils.CreateDBbackup(backUpDescrition, DeleteThesaurusResultMessage, DBbackupFileNameCreated, SessionUserInfo.UILang);
             DeleteThesaurusResultMessage.setValue("");
             boolean DeleteThesaurusSucceded = true;
 
@@ -168,7 +168,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             boolean serverStarted = common_utils.StartDatabase();
 
             if (serverStarted == false) {
-                String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
+                String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure",SessionUserInfo.UILang);
                 //CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
                 common_utils.RestartDatabaseIfNeeded();
             }
@@ -202,7 +202,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             StringObject resultMessageObj = new StringObject();
             if (DeleteThesaurusSucceded == true) {
             
-                resultMessageObj.setValue(u.translateFromMessagesXML("root/DeleteThesaurus/DeleteThesaurusSucceded", new String[]{ThesaurusName}));
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/DeleteThesaurus/DeleteThesaurusSucceded", new String[]{ThesaurusName}, SessionUserInfo.UILang));
                 
                 DeleteThesaurusResultMessage.setValue(resultMessageObj.getValue());
                 //DeleteThesaurusResultMessage.setValue("Thesaurus " + ThesaurusName + " deletion completed successfully");
@@ -246,7 +246,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
 
             // write the XML results
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI,SessionUserInfo.UILang));
             xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, ThesaurusName, DeleteThesaurusResultMessage, DeleteThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

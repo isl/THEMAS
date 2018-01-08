@@ -202,7 +202,7 @@ public class DBexportData {
 
             try{
 
-                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus);
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
                 writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
 
                 writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);

@@ -177,7 +177,7 @@ public class EditActions_Term extends ApplicationBasicServlet {
             }
             else if(targetField.compareTo(ConstantParameters.guide_term_kwd)==0){
                 
-                creation_modificationOfTerm.performGuideTermEditing(SessionUserInfo.selectedThesaurus,Q,sis_session,errorMsg,targetTerm,ntsDecodedValues,GuideTermsDecodedValues);
+                creation_modificationOfTerm.performGuideTermEditing(SessionUserInfo.selectedThesaurus,Q,sis_session,errorMsg,targetTerm,ntsDecodedValues,GuideTermsDecodedValues, SessionUserInfo.UILang);
                 
             }
             else{

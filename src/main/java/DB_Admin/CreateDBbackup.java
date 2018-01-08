@@ -112,10 +112,10 @@ public class CreateDBbackup extends ApplicationBasicServlet {
             // do the creation of the backup
             CreateDBbackupResultMessage = new StringObject("");
             StringObject DBbackupFileNameCreated = new StringObject("");
-            CreateDBbackupSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated);
+            CreateDBbackupSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated, SessionUserInfo.UILang);
 
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));
             //xml.append(u.getDBAdminHierarchiesAndStatusesXML(allHierarcies, dbGen));  
             xml.append(getXMLMiddle());
             xml.append(u.getXMLUserInfo(SessionUserInfo));

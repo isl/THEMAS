@@ -52,6 +52,15 @@ function getAjaxActiveXObject() {
     }
     return xmlHttp;
 }
+function setLangCode(selectBoxId, targetLangId){
+    var selectBox = document.getElementById(selectBoxId);
+    if(selectBox && selectBox.selectedIndex>=0){
+        var inputBox = document.getElementById(targetLangId);
+        if(inputBox){
+            inputBox.value = selectBox.options[selectBox.selectedIndex].value;
+        }
+    }
+}
 
 /*-----------------------------------------------------
  getObj()

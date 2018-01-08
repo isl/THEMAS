@@ -150,9 +150,9 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             StringObject InitializeDBResultMessage = new StringObject("");
             Boolean DBInitializationSucceded = true;
             if (InitializeDB != null || DataBaseIsInitialized == false) {
-                boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, NewThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded);
+                boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, NewThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded, SessionUserInfo.UILang);
                 if (DBCanBeInitialized == true) {
-                    DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage);
+                    DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage,SessionUserInfo.UILang);
                     // clear the vector with the existing Thesaurus in DB after DB initialization
                     thesaurusVector.clear();
                     
@@ -166,7 +166,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             Boolean CreateThesaurusSucceded = true;
             if (DBInitializationSucceded == true) {
                 // check if the given NewThesaurusName exists
-                boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesaurusVector, NewThesaurusName, NewThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded);
+                boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesaurusVector, NewThesaurusName, NewThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded,SessionUserInfo.UILang);
                 if (GivenThesaurusCanBeCreated == true) {
 
                     
@@ -254,7 +254,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             
          
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
             xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, NewThesaurusName, InitializeDBResultMessage, CreateThesaurusResultMessage, CreateThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

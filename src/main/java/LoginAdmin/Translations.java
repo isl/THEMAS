@@ -220,7 +220,7 @@ public class Translations extends ApplicationBasicServlet {
 
                     dbGen.synchronizeTranslationCategories(currentTranslationCategories,
                             userSelections, userSelectedTranslationWords, userSelectedTranslationIdentifiers, selectedThesaurus,
-                            resultMessageStrObj, pathToMessagesXML, Q, TA, sis_session,  tms_session);
+                            resultMessageStrObj, pathToMessagesXML, Q, TA, sis_session,  tms_session, SessionUserInfo.UILang);
 
                     if(resultMessageStrObj.getValue().length()>0)
                     {

@@ -53,7 +53,7 @@ public class DBEditGuideTerms {
     public DBEditGuideTerms() {
     }
 
-    public boolean addGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String newGuideTerm, StringObject errorMsg) {
+    public boolean addGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String newGuideTerm, StringObject errorMsg, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -63,7 +63,7 @@ public class DBEditGuideTerms {
         guideTermLinks.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         if (guideTermLinks.contains(newGuideTerm)) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/Exists", new String[]{newGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/Exists", new String[]{newGuideTerm},uiLang));
             //errorMsg.setValue("Guide Term '" + newGuideTerm + "' is already defined in the database.");
             return false;
         }
@@ -140,7 +140,7 @@ public class DBEditGuideTerms {
         int ret = Q.CHECK_Add_Named_Attribute(newCategIdent, fromClassIdent, toClassCMV, QClass.SIS_API_S_CLASS, -1,true);
 
         if (ret == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AdditionError", new String[]{newGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AdditionError", new String[]{newGuideTerm}, uiLang));
             //errorMsg.setValue("Creation failure of new Guide Term: " + newGuideTerm);
             return false;
         }
@@ -150,7 +150,7 @@ public class DBEditGuideTerms {
         //long newLinkIdL = Q.set_current_node(newLinkObj);
 
         if (newCategIdent.getSysid() == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AccessError", new String[]{newGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/AccessError", new String[]{newGuideTerm}, uiLang));
             //errorMsg.setValue("Failed to refer to the new Guide Term: " + newGuideTerm);
             return false;
         }
@@ -158,7 +158,7 @@ public class DBEditGuideTerms {
 
         ret = Q.CHECK_Add_IsA(newCategIdent, new Identifier(bt_LinkIdL));
         if (ret == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationError", new String[]{newGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationError", new String[]{newGuideTerm}, uiLang));
             //errorMsg.setValue("Failed to classify new guide term %s under BT category.");
             return false;
         }
@@ -167,7 +167,7 @@ public class DBEditGuideTerms {
             //ret = Q.CHECK_Add_Instance(new Identifier(newLinkIdL), new Identifier(newGuideTermInstanceOfL[k]));
             ret = Q.CHECK_Add_Instance(newCategIdent, new Identifier(newGuideTermInstanceOfL[k]));
             if (ret == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationIDError", new String[]{newGuideTerm,""+newGuideTermInstanceOfL[k]}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Creation/InstatiationIDError", new String[]{newGuideTerm,""+newGuideTermInstanceOfL[k]}, uiLang));
                 //errorMsg.setValue("Failed to classify new guide term %s under link-node with id: " + newGuideTermInstanceOf[k]);
                 return false;
             }
@@ -175,7 +175,7 @@ public class DBEditGuideTerms {
         return true;
     }
 
-    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String deleteGuideTerm, StringObject errorMsg) {
+    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String deleteGuideTerm, StringObject errorMsg, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -185,7 +185,7 @@ public class DBEditGuideTerms {
 
         if (guideTermLinks.contains(deleteGuideTerm) == false) {
             
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/NotFound", new String[]{deleteGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/NotFound", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue(Guide Term '" + deleteGuideTerm + "' was not found in the database.");
             return false;
         }
@@ -208,14 +208,14 @@ public class DBEditGuideTerms {
         long toIdL = Q.set_current_node(BTLinkObj);
         int ret = Q.CHECK_IMPROVE_Add_Instance_Set(set_move_instances, new Identifier(toIdL));
         if (ret == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksCopyError", new String[]{deleteGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksCopyError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Copying failure of BT links of guide term: " + deleteGuideTerm);
             return false;
         }
 
         ret = Q.CHECK_IMPROVE_Delete_Instance_Set(set_move_instances, new Identifier(fromIdL));
         if (ret == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksDeletionError", new String[]{deleteGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksDeletionError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Deletion failure of BT links of guide term: " + deleteGuideTerm);
             return false;
         }
@@ -226,7 +226,7 @@ public class DBEditGuideTerms {
         Identifier fromIdIdentifier = new Identifier(fromIdL);     //ALLGRETHE_BTMyGuideTermLink
         ret = Q.CHECK_Delete_Named_Attribute(fromIdIdentifier, fromClsIdentifier);
         if (ret == QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/GeneralError", new String[]{deleteGuideTerm}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/GeneralError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Deletion failure of guide term: " + deleteGuideTerm);
             return false;
         }
@@ -234,7 +234,7 @@ public class DBEditGuideTerms {
     }
 
     public boolean renameGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session,
-            String renameGuideTermFrom, String renameGuideTermTo, StringObject errorMsg) {
+            String renameGuideTermFrom, String renameGuideTermTo, StringObject errorMsg, final String uiLang) {
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
         
@@ -263,13 +263,13 @@ public class DBEditGuideTerms {
 
         if (guideTermLinks.contains(renameGuideTermFrom) == false) {
 
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NotFound", new String[]{renameGuideTermFrom}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NotFound", new String[]{renameGuideTermFrom}, uiLang));
             //errorMsg.setValue("Guide Term '" + renameGuideTermFrom + "' was not found in the database.");
             return false;
         }
 
         if (guideTermLinks.contains(renameGuideTermTo)) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NewNameExists", new String[]{renameGuideTermFrom}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/NewNameExists", new String[]{renameGuideTermFrom}, uiLang));
             //errorMsg.setValue("New Guide Term name '" + renameGuideTermTo + "' is already defined in the database.");
             return false;
         }
@@ -290,7 +290,7 @@ public class DBEditGuideTerms {
         int ret = Q.CHECK_Rename_Named_Attribute(new Identifier(tagetIdL), new Identifier(descriptorIdL), new Identifier(renameGuideTermToObj.getValue()));
         if (ret == QClass.APIFail) {
             
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/GeneralError", new String[]{renameGuideTermFrom,renameGuideTermTo}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Rename/GeneralError", new String[]{renameGuideTermFrom,renameGuideTermTo}, uiLang));
             //errorMsg.setValue("Renaming action of Guide Term  '"+renameGuideTermFrom+"'\n to '"+renameGuideTermTo+"' failed.");
             return false;
         }

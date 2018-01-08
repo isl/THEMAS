@@ -106,10 +106,10 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
             
             if(targetField==null || targetSource==null){
                 
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
                 xml.append("<targeSource>"+Utilities.escapeXML(targetSource)+"</targeSource>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
-                        "<resultText>"+u.translateFromMessagesXML("root/EditSource/Edit/NothingSpecified", null)+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditSource/Edit/NothingSpecified", null,SessionUserInfo.UILang)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path +  "/xml-xsl/EditSourceActions/Edit_Source.xsl");
@@ -117,7 +117,7 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
             }
             
             if(targetField.compareTo(source_create_kwd)==0){
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
                 xml.append("<targetSource></targetSource><targetEditField>"+targetField+"</targetEditField>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());    
@@ -167,7 +167,7 @@ public class EditDisplays_Source extends ApplicationBasicServlet {
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
             xml.append(xmlResults.toString() + "<targetSource>"+Utilities.escapeXML(targetSource)+"</targetSource><targetEditField>"+targetField+"</targetEditField>");
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

@@ -39,6 +39,7 @@ package Servlets;
  */
 
 
+import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 import Utils.Parameters;
@@ -82,7 +83,8 @@ public class WaitForDownload extends ApplicationBasicServlet {
             }
             Utilities u = new Utilities();
             StringBuffer responseXML = new StringBuffer();
-            responseXML.append(u.getXMLStart(ConstantParameters.LMENU_NONE));
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            responseXML.append(u.getXMLStart(ConstantParameters.LMENU_NONE, SessionUserInfo.UILang));
             responseXML.append(u.getXMLEnd());
             
             u.XmlPrintWriterTransform(out, responseXML,sessionInstance.path + "/Save_Results_Displays/WaitForDownload.xsl");

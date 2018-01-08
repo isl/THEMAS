@@ -87,15 +87,15 @@ public class WriteFileData {
         return ConstantParameters.SchemePrefix;
     }
 
-    public void WriteFileStart(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName) throws IOException {
+    public void WriteFileStart(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName, final String uiLang) throws IOException {
 
         Utilities u = new Utilities();
 
         //locale/footer/tooltipappnameandversion
         logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
 
-        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null) +" "+
-                u.translateFromTranslationsXML("locale/version", null) +" -->\r\n");
+        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
+                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
@@ -128,7 +128,7 @@ public class WriteFileData {
             //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
             logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\""+
                                       " exportDate=\"" + Utilities.GetNow() + "\""+
-                                      " schemaversion=\"" + u.translateFromTranslationsXML("locale/version", null) + "\">\r\n");
+                                      " schemaversion=\"" + u.translateFromTranslationsXML("locale/version", null,uiLang) + "\">\r\n");
         }
 
         logFileWriter.flush();

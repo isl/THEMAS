@@ -101,7 +101,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
             int ret1 = TMSAPIClass.TMS_APISucc; //Will store the result of rename
             int retAllowContinue = TMSAPIClass.TMS_APISucc;
             //String RenameResult = "Rename completed sucessfully.";
-            String RenameResult = u.translateFromMessagesXML("root/EditHierarchy/Rename/Success", null);
+            String RenameResult = u.translateFromMessagesXML("root/EditHierarchy/Rename/Success", null, SessionUserInfo.UILang);
             
             StringObject errorMsgObj = new StringObject("");
 
@@ -130,7 +130,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
             else
             if ((OldHierarchy.toString().trim()).equals(prefix.toString().trim())) {
                 //OLD NAME NULL?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NoHierarchySelected", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NoHierarchySelected", null, SessionUserInfo.UILang));
                 //errorMsgObj.setValue("No hierarchy selected for rename. Operation cancelled.");
                 
                 ret1 = TMSAPIClass.TMS_APIFail;
@@ -141,7 +141,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
 
             } else if (!dbGen.check_exist(OldHierarchy.toString(), Q, sis_session)) {
                 //OLD NAME EXISTS?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/OldNameDoesNotExist", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/OldNameDoesNotExist", null, SessionUserInfo.UILang));
                 //errorMsgObj.setValue("Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.");
                 
                 ret1 = TMSAPIClass.TMS_APIFail;
@@ -152,7 +152,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
 
             } else if ((hierarchy.toString().trim()).equals(prefix.toString().trim())) {
                 //NEW NAME ONY PREFIX?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/EmptyNewName", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/EmptyNewName", null, SessionUserInfo.UILang));
                 //errorMsgObj.setValue("A new hierarchy name was not provided. Operation cancelled.");
                 ret1 = TMSAPIClass.TMS_APIFail;
 
@@ -163,7 +163,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
 
             } else if (dbGen.check_exist(hierarchy, Q, sis_session)) {
                 //NEW NAME EXISTS?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NewNameExists", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NewNameExists", null, SessionUserInfo.UILang));
                 //errorMsgObj.setValue("New hierarchy name already exists in the database. Operation cancelled.");
                 ret1 = TMSAPIClass.TMS_APIFail;
 
@@ -184,7 +184,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                 CMValue oldHierarchy = new CMValue();
                 long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldHierarchy);
                 if(ret<=0){
-                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/OldNameDoesNotExist", null));
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/OldNameDoesNotExist", null, SessionUserInfo.UILang));
                     //errorMsgObj.setValue("Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.");
 
                     ret1 = TMSAPIClass.TMS_APIFail;
@@ -202,7 +202,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                 //Find out which nodes must also update their modified fields due to top term rename
                 if (oldName.compareTo(Parameters.UnclassifiedTermsLogicalname) == 0) {
                     retAllowContinue = TMSAPIClass.TMS_APIFail;
-                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/CannotRenameDefaultHierarchy", null));
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/CannotRenameDefaultHierarchy", null, SessionUserInfo.UILang));
                     //errorMsgObj.setValue("This hierarchy cannot be renamed. All new terms created are classified by default under this heirarchy.");                    
                 } else {
 
@@ -210,7 +210,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
                     Q.reset_name_scope();
                     if (Q.set_current_node(newTopTermName) != QClass.APIFail) {
                         retAllowContinue = TMSAPIClass.TMS_APIFail;
-                        errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NewNameExistsAsTT", null));
+                        errorMsgObj.setValue(u.translateFromMessagesXML("root/EditHierarchy/Rename/NewNameExistsAsTT", null, SessionUserInfo.UILang));
                         //errorMsgObj.setValue("New hierarchy name cannot be used as Top Term of the Hierarchy. Operation cancelled.");                        
                     }
                 }

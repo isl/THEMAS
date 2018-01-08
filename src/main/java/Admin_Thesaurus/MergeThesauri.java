@@ -238,7 +238,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + DBbackupFileNameCreated.getValue());
 
-        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, SessionUserInfo.UILang);
         thesauriNames.remove(mergedThesaurusName);
 
         if (restored) {
@@ -258,10 +258,10 @@ public class MergeThesauri extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Did not manage to restore : " + DBbackupFileNameCreated.getValue());
         }
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null) + resultObj.getValue()));
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null, SessionUserInfo.UILang) + resultObj.getValue()));
         
         //xml.append(getXMLMiddle(thesauriNames, "Merge of thesauri failure. " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -301,7 +301,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
         xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
         xml.append("<mergewarnings>");
         xml.append(mergeNotes);
@@ -310,7 +310,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         xml.append(Filename);
         xml.append("</mergeReportFile>");
         
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/commitActionsMergeThesauri/MergeSucceeded", new String[]{mergedThesaurusName})));        
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/commitActionsMergeThesauri/MergeSucceeded", new String[]{mergedThesaurusName}, SessionUserInfo.UILang)));        
         //xml.append(getXMLMiddle(thesauriNames, "Thesauri merge finished successfully. New thesaurus  " + mergedThesaurusName + " was set as current thesaurus."));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());

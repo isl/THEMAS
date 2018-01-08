@@ -227,7 +227,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
                 Path webAppSaveResults_AbsolutePath = Paths.get(webAppSaveResults_AbsolutePathStr);
                 String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Systematic.xsl").toString();
                 String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
-                writeResultsInXMLFile(descriptors,u, time, searchCriteria, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale);
+                writeResultsInXMLFile(descriptors,u, time, searchCriteria, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name,pathToSaveScriptingAndLocale, SessionUserInfo.UILang);
             
             
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", 
@@ -272,7 +272,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
               
             
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults, "Systematic"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -328,7 +328,14 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
     }
     
     
-    public String writeResultsInXMLFile(ArrayList<TaxonomicCodeItem> allTerms, Utilities u, String title, SearchCriteria sc,String webAppSaveResults_temporary_filesAbsolutePath,String Save_Results_file_name,String pathToSaveScriptingAndLocale ) {
+    public String writeResultsInXMLFile(ArrayList<TaxonomicCodeItem> allTerms, 
+            Utilities u, 
+            String title, 
+            SearchCriteria sc,
+            String webAppSaveResults_temporary_filesAbsolutePath,
+            String Save_Results_file_name,
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
         //DBThesaurusReferences dbtr = new DBThesaurusReferences(sis_session);
         //String prefix_el = dbtr.getThesaurusPrefix_Descriptor();
 
@@ -345,7 +352,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
             out.write(ConstantParameters.xmlHeader);
             //out.write(xslLink);
-            out.write("<page title=\""+ title +"\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">");
+            out.write("<page title=\""+ title +"\" language=\""+uiLang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">");
                           
             out.write("<query>");
             out.write(sc.getQueryString(u ));

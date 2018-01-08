@@ -2374,7 +2374,7 @@ public class DBGeneral {
      - true, otherwise
      FUNCTION: checks if the given descriptor can be moved to Hierarchy 
      ----------------------------------------------------------------------*/
-    public boolean DescriptorCanBeMovedToHierarchy(String selectedThesaurus, StringObject targetDescriptor, StringObject reasonOfFalse, QClass Q, IntegerObject sis_session) {
+    public boolean DescriptorCanBeMovedToHierarchy(String selectedThesaurus, StringObject targetDescriptor, StringObject reasonOfFalse, QClass Q, IntegerObject sis_session, final String uiLang) {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
         Utilities u = new Utilities();
@@ -2382,7 +2382,7 @@ public class DBGeneral {
         // check the case the given descriptor does not belong to DB
         if (check_exist(targetDescriptor.getValue(), Q, sis_session) == false) {
             //The given term does not exist in data base.
-            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotFound", null));
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotFound", null, uiLang));
             return false;
         }
         // check the case the given descriptor is TopTerm        
@@ -2392,7 +2392,7 @@ public class DBGeneral {
         boolean isTopTerm = NodeBelongsToClass(targetDescriptor, thesTopTerm, false, Q, sis_session);
         if (isTopTerm == true) {
             //reasonOfFalse.setValue("The given term is a Top Term");
-            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsTopTerm", null));
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsTopTerm", null, uiLang));
             return false;
         }
         // check the case the given descriptor is ObsoleteDescriptor
@@ -2402,7 +2402,7 @@ public class DBGeneral {
         boolean isObsolete = NodeBelongsToClass(targetDescriptor, thesObsoleteDescriptor, false, Q, sis_session);
         if (isObsolete == true) {
             //reasonOfFalse.setValue("The given term is Obsolete");
-            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsObsolete", null));
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermIsObsolete", null, uiLang));
             return false;
         }
         // check the case the given descriptor is not a descriptor
@@ -2413,7 +2413,7 @@ public class DBGeneral {
         boolean isDescriptor = NodeBelongsToClass(targetDescriptor, thesDescriptor, false, Q, sis_session);
         if (isDescriptor == false) {
             //reasonOfFalse.setValue("The given term is not a Descriptor");
-            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotDescriptor", null));
+            reasonOfFalse.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/CurrentTermNotDescriptor", null, uiLang));
             return false;
         }
 
@@ -2430,7 +2430,7 @@ public class DBGeneral {
      the given Descriptor does not belong to a Hierarchy and is not a TopTerm
      FUNCTION: collects in a Vector all the hierarchies that the given Descriptor is instance of
      ----------------------------------------------------------------------*/
-    public ArrayList<String> getDescriptorHierarchies(String selectedThesaurus, StringObject targetDescriptor, QClass Q, IntegerObject sis_session) {
+    public ArrayList<String> getDescriptorHierarchies(String selectedThesaurus, StringObject targetDescriptor, QClass Q, IntegerObject sis_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
 
@@ -2476,7 +2476,7 @@ public class DBGeneral {
                 Q.free_set(set_h);
                 Q.free_set(set_c);
             } else {
-                errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/DBConnectionError", null) + "</td></tr>");
+                errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/DBConnectionError", null, uiLang) + "</td></tr>");
                 //errorMsg = errorMsg.concat("<tr><td>" + "A database connection error occurred. Please try again later." + "</td></tr>");
                 error.add(errorMsg);
                 return error;
@@ -2495,7 +2495,7 @@ public class DBGeneral {
                 hierarchiesVector.add(classPrefix.concat(removePrefix(targetDescriptor.getValue())));
                 return hierarchiesVector;
             }
-            errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{removePrefix(targetDescriptor.getValue())}) + "</td></tr>");
+            errorMsg = errorMsg.concat("<tr><td>" + u.translateFromMessagesXML("root/GeneralMessages/TermDoesNotBelongInAnyHierarchy", new String[]{removePrefix(targetDescriptor.getValue())}, uiLang) + "</td></tr>");
             //errorMsg = errorMsg.concat("<tr><td>Term: '" + removePrefix(targetDescriptor.getValue()) + "' is not classified under any hierarchy.</td></tr>");
             error.add(errorMsg);
             return error;
@@ -4535,7 +4535,7 @@ public class DBGeneral {
         return names;
     }
 
-    public boolean collect_Recurcively_ALL_BTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
+    public boolean collect_Recurcively_ALL_BTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session, final String uiLang) {
 
         int sisSessionId = sis_session.getValue();
         Utilities u = new Utilities();
@@ -4548,7 +4548,7 @@ public class DBGeneral {
         /*Check if target node exists*/
         Q.reset_name_scope();
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/GeneralMessages/TermNotfoundInTheDatabase", new String[]{targetDescriptorObj.getValue()})));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/GeneralMessages/TermNotfoundInTheDatabase", new String[]{targetDescriptorObj.getValue()}, uiLang)));
             //resultMessage.setValue(resultMessage.getValue().concat("Term: " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
@@ -4598,7 +4598,7 @@ public class DBGeneral {
         return true;
     }
 
-    public boolean collect_Recurcively_ALL_NTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session) {
+    public boolean collect_Recurcively_ALL_NTs(String selectedThesaurus, StringObject targetDescriptorObj, int set_result, StringObject resultMessage, boolean includeTarget, QClass Q, IntegerObject sis_session, final String uiLang) {
 
         int sisSessionId = sis_session.getValue();
         Utilities u = new Utilities();
@@ -4609,7 +4609,7 @@ public class DBGeneral {
 
         /*Check if target node still exists*/
         if (Q.set_current_node(targetDescriptorObj) == QClass.APIFail) {
-            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{targetDescriptorObj.getValue()})));
+            resultMessage.setValue(resultMessage.getValue().concat(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{targetDescriptorObj.getValue()}, uiLang)));
             //resultMessage.setValue(resultMessage.getValue().concat("Term " + targetDescriptorObj.getValue() + " was not found in the database"));
             return false;
         }
@@ -5035,7 +5035,7 @@ public class DBGeneral {
      - 3. in case targetTerm belongs to EKTUsedForTerm with UF links pointing to it from terms x1, x2, ..., xn =>
      "as non preferred term of terms: x1, x2, ..., xn"        
      ----------------------------------------------------------------------*/
-    public StringObject ExistingTermSortDescription(String selectedThesaurus, StringObject targetTerm, QClass Q, IntegerObject sis_session) {
+    public StringObject ExistingTermSortDescription(String selectedThesaurus, StringObject targetTerm, QClass Q, IntegerObject sis_session, final String uiLang) {
         String description = "";
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Utilities u = new Utilities();
@@ -5055,7 +5055,7 @@ public class DBGeneral {
         Q.reset_set(BTlinksSet);
         int BTlinksSetCard = Q.set_get_card(BTlinksSet);
         if (BTlinksSetCard >= 1) {
-            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNTtermOfTerms", null);
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNTtermOfTerms", null, uiLang);
         }
         //StringObject label = new StringObject();
         //StringObject cls = new StringObject();
@@ -5089,7 +5089,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_TopTerm(selectedThesaurus, Q, sis_session.getValue(), thesTopTerm);
         boolean isTopTerm = NodeBelongsToClass(targetTerm, thesTopTerm, false, Q, sis_session);
         if (isTopTerm == true) {
-            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsTopTerm", null);
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsTopTerm", null, uiLang);
         }
         // 3. in case targetTerm belongs to EKTUsedForTerm with UF links pointing to it from terms x1, x2, ..., xn =>
         // "as non preferred term of terms: x1, x2, ..., xn"        
@@ -5098,7 +5098,7 @@ public class DBGeneral {
         dbtr.getThesaurusClass_UsedForTerm(selectedThesaurus, Q, sis_session.getValue(), thesUsedForTerm);
         boolean isUsedForTerm = NodeBelongsToClass(targetTerm, thesUsedForTerm, false, Q, sis_session);
         if (isUsedForTerm == true) {
-            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNonPreferredTerm", null);
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/AsNonPreferredTerm", null, uiLang);
         }
         // looking for EKTHierarchyTerm 
         StringObject thesHierarchyTerm = new StringObject();
@@ -5112,7 +5112,7 @@ public class DBGeneral {
         Q.reset_set(UFlinksSet);
         int UFlinksSetCard = Q.set_get_card(UFlinksSet);
         if (UFlinksSetCard >= 1) {
-            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/OfTermOrTerms", null);
+            description += "\r\n" + u.translateFromMessagesXML("root/GeneralMessages/ConsistencyChecks/OfTermOrTerms", null, uiLang);
         }
         counter = 0;
         retVals.clear();
@@ -6204,7 +6204,7 @@ public class DBGeneral {
                 String termNameWithoutPrefix = removePrefix(targetTerm);
 
                 int set_recursive_nts = Q.set_get_new();
-                this.collect_Recurcively_ALL_NTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session);
+                this.collect_Recurcively_ALL_NTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session,SessionUserInfo.UILang);
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
@@ -6232,7 +6232,7 @@ public class DBGeneral {
                 String termNameWithoutPrefix = removePrefix(targetTerm);
 
                 int set_recursive_nts = Q.set_get_new();
-                this.collect_Recurcively_ALL_BTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session);
+                this.collect_Recurcively_ALL_BTs(SessionUserInfo.selectedThesaurus, new StringObject(targetTerm), set_recursive_nts, errorMsg, false, Q, sis_session, SessionUserInfo.UILang);
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
@@ -7381,7 +7381,7 @@ public class DBGeneral {
      */
     public boolean deleteTranslationCategories(QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             IntegerObject tms_session, String targetThesaurus, HashMap<String, String> LanguageWordsAndIds,
-            boolean startTransactionAndConnection, StringObject resultMessageObj, String pathToTranslationsXML) {
+            boolean startTransactionAndConnection, StringObject resultMessageObj, String pathToTranslationsXML, final String uiLang) {
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Utilities u = new Utilities();
@@ -7500,7 +7500,7 @@ public class DBGeneral {
             StringObject thesaurusTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursTranslationCategorysubString).concat(languageId));
 
             String[] errorArgs = {languageWord, languageId, thesaurusTranslationCategoryStrObj.getValue()};
-            String errorMessage1 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
+            String errorMessage1 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs, uiLang);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
             Q.set_current_node(thesaurusTermStrObj);
@@ -7582,7 +7582,7 @@ public class DBGeneral {
 
                 } else {
 
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/DeletionErrorRemainingInstances", errorArgs, uiLang));
                     return false;
 
                 }
@@ -7597,7 +7597,7 @@ public class DBGeneral {
             StringObject thesaurusUFTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursUFTranslationCategorysubString).concat(languageId));
             errorArgs[2] = thesaurusUFTranslationCategoryStrObj.getValue();
 
-            String errorMessage2 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
+            String errorMessage2 = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs, uiLang);
             //update the identifer so that it is based on system identifier i.e. AAA_translation, to_IT
             Q.reset_name_scope();
             Q.set_current_node(thesaurusHierarchyTermStrObj);
@@ -7771,7 +7771,7 @@ public class DBGeneral {
             StringObject toTranslationCategoryStrObj = new StringObject(ConstantParameters.toTranslationCategoryPrefix.concat(languageId));
 
             String[] errorArgs = {languageWord, languageId, toTranslationCategoryStrObj.getValue()};
-            String errorMessage = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
+            String errorMessage = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs, uiLang);
 
             //get an identifier with id for the new language category i.e. to_IT
             Q.reset_name_scope();
@@ -7867,7 +7867,7 @@ public class DBGeneral {
             }
 
             String[] errorArgs = {languageWord, languageId, ConstantParameters.hasPrefix};
-            String errorMsgStr = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs);
+            String errorMsgStr = u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionError", errorArgs, uiLang);
 
             //
             //  RETELL (ItalianWord)
@@ -7926,13 +7926,13 @@ public class DBGeneral {
             } else {
                 String[] errorArgs2 = {languageWord, languageId, ConstantParameters.hasPrefix, languageWord};
                 if (instancesCardinallity != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2, uiLang));
 
                 } else if (allLinksToNumber != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2, uiLang));
 
                 } else if (hasPrefixLinksFromNumber != allLinksFromNumber) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2, uiLang));
                 }
                 return false;
             }
@@ -8018,7 +8018,7 @@ public class DBGeneral {
 
                 ret = Q.CHECK_Delete_Instance(LanguagePrefixIdentifier, PrefixClassIdentifier);
                 if (ret == QClass.APIFail) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1, uiLang));
                     return false;
                 }
 
@@ -8028,7 +8028,7 @@ public class DBGeneral {
                 //
                 ret = Q.CHECK_Delete_Node(LanguagePrefixIdentifier);
                 if (ret == QClass.APIFail) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1, uiLang));
                     return false;
                 }
 
@@ -8044,7 +8044,7 @@ public class DBGeneral {
                 //
                 ret = Q.CHECK_Delete_IsA(LanguageWordIdentifier, WordIdentifier);
                 if (ret == QClass.APIFail) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1, uiLang));
                     return false;
                 }
 
@@ -8054,7 +8054,7 @@ public class DBGeneral {
                 //
                 ret = Q.CHECK_Delete_Instance(LanguageWordIdentifier, ThesaursNotionTypeIdentifier);
                 if (ret == QClass.APIFail) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1, uiLang));
                     return false;
                 }
 
@@ -8064,20 +8064,20 @@ public class DBGeneral {
                 //
                 ret = Q.CHECK_Delete_Node(LanguageWordIdentifier);
                 if (ret == QClass.APIFail) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/CategoryDeletionErrorFinalStep", errorArgs1, uiLang));
                     return false;
                 }
             } else {
                 String[] errorArgs2 = {languageWord, languageId, languageWord};
                 if (instancesCardinallity != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordInstances", errorArgs2, uiLang));
                 } else if (allLinksToNumber != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2, uiLang));
                 } else if (allLinksFromNumber != 0) {
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingWordRelations", errorArgs2, uiLang));
                 } else if (remainingLinksToPrefix != 0) {
                     errorArgs2[2] = languageId;
-                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingPrefixRelations", errorArgs2));
+                    resultMessageObj.setValue(u.translateFromMessagesXML("root/TranslationsSynchronization/remainingPrefixRelations", errorArgs2, uiLang));
                 }
                 return false;
             }
@@ -8101,7 +8101,8 @@ public class DBGeneral {
             String selectedThesaurus,
             StringObject resultMessageStrObj,
             String pathToMessagesXML,
-            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session) {
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
+            final String uiLang) {
 
         boolean commitTransaction = true;
         //FIND OUT WHICH TRANSLATION CATEGORIES TO KEEP/ADD/DELETE
@@ -8156,7 +8157,7 @@ public class DBGeneral {
         }
 
         if (resultMessageStrObj.getValue().length() <= 0) {
-            commitTransaction = deleteTranslationCategories(Q, TA, sis_session, tms_session, selectedThesaurus, languagesForDeletion, false, resultMessageStrObj, pathToMessagesXML);
+            commitTransaction = deleteTranslationCategories(Q, TA, sis_session, tms_session, selectedThesaurus, languagesForDeletion, false, resultMessageStrObj, pathToMessagesXML, uiLang);
             if (commitTransaction) {
                 commitTransaction = createTranslationCategories(Q, TA, sis_session, tms_session, selectedThesaurus, languagesForAddition, false, resultMessageStrObj, pathToMessagesXML);
             } else {

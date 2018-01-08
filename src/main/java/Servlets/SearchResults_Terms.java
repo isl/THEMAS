@@ -363,7 +363,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 //Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
                 
                 //Write XML file
-                String startXML = "<page language=\"" + Parameters.UILang + "\""+
+                String startXML = "<page language=\"" + SessionUserInfo.UILang + "\""+
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
                                         + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
@@ -482,7 +482,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in terms --> time elapsed: " + elapsedTimeSec);
 
             
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             xml.append("<results>");
             xml.append(u.writePagingInfoXML(termsPagingListStep, termsPagingFirst, termsPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Terms"));
             xml.append("</results>");

@@ -98,6 +98,8 @@ public class Parameters {
     public static boolean TransliterationsToLowerCase = false;
     public static HashMap<String,String> TransliterationsReplacements = new HashMap<>();
     
+    public static HashMap<String,String> SupportedUILangCodes = new HashMap<>();
+    
     
     public static ArrayList<Integer> TermModificationChecks;
     
@@ -161,6 +163,52 @@ public class Parameters {
             return "<SaveOldNameAsUF>no</SaveOldNameAsUF>";
         }
     }
+    
+    public static HashMap<String, String> getAvailableUICodes(ServletContext context, boolean displayOnly){
+        String rootPathString = context.getRealPath("");
+        Path rootPath = Paths.get(rootPathString);
+        String pathToXMLForPrimaryLang = rootPath.resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
+        HashMap<String, String> retVals = new HashMap<>();
+        try {
+
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document document = builder.parse(new File(pathToXMLForPrimaryLang));
+
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                NodeList SupportedUILangCodesList = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document,XPathConstants.NODESET);
+                if(SupportedUILangCodesList!=null){
+                    int howmanyItems = SupportedUILangCodesList.getLength();
+                    for(int i=0; i< howmanyItems; i++){
+                        
+                        String langcode = xpath.evaluate("./text()", SupportedUILangCodesList.item(i));
+                        String mapcode = xpath.evaluate("./@mapcode", SupportedUILangCodesList.item(i));
+                        String displayStr = xpath.evaluate("./@display", SupportedUILangCodesList.item(i));
+                        
+                        
+                        if(displayOnly == false ){
+                                                
+                            if(mapcode!=null && mapcode.trim().length()>0){
+                                mapcode = mapcode.trim().toLowerCase();
+                            }
+
+                            if(langcode!=null && langcode.trim().length()>0){
+                                langcode = langcode.trim().toLowerCase();
+                            }                        
+                            retVals.put(langcode, mapcode);
+                        }
+                        else if(displayStr!=null && displayStr.trim().toLowerCase().equals("yes")){
+                            String displayTextStr = xpath.evaluate("./@displayText", SupportedUILangCodesList.item(i));
+                            retVals.put(displayTextStr, mapcode);
+                        }
+                    }
+                }
+        }catch (Exception e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
+            Utils.StaticClass.handleException(e);
+        }
+        return retVals;
+    }
+    
     public static void initParams(String basePathString){
         Path basePath = Paths.get(basePathString);
         try {
@@ -233,6 +281,27 @@ public class Parameters {
                         Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith==null?"":replaceWith);
                     }
                 }
+                
+                NodeList SupportedUILangCodesList = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document,XPathConstants.NODESET);
+                if(SupportedUILangCodesList!=null){
+                    int howmanyItems = SupportedUILangCodesList.getLength();
+                    for(int i=0; i< howmanyItems; i++){
+                        
+                        String langcode = xpath.evaluate("./text()", SupportedUILangCodesList.item(i));
+                        String mapcode = xpath.evaluate("./@mapcode", SupportedUILangCodesList.item(i));
+                                                
+                        if(mapcode!=null && mapcode.trim().length()>0){
+                            mapcode = mapcode.trim().toLowerCase();
+                        }
+                        
+                        if(langcode!=null && langcode.trim().length()>0){
+                            langcode = langcode.trim().toLowerCase();
+                        }
+                        
+                        Parameters.SupportedUILangCodes.put(langcode, mapcode);
+                    }
+                }
+                
                 
                 ArrayList<String> permittedClassesFromXml = new ArrayList<>();
                 NodeList classesPermitted = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document,XPathConstants.NODESET);

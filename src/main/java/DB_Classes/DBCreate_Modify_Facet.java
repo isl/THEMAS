@@ -101,11 +101,11 @@ public class DBCreate_Modify_Facet {
     FUNCTION: creates / modifies the given Facet
     CALLED BY: Create_Modify_Facet servlet
     ----------------------------------------------------------------------*/
-    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
+    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists, final String uiLang) {
 
         //targetFacet shold come without prefix
         SortItem facetSortItem = new SortItem(targetFacet,-1,Utilities.getTransliterationString(targetFacet, false),-1);        
-        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,null,ConsistensyCheck.EDIT_TERM_POLICY);
+        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,null,ConsistensyCheck.EDIT_TERM_POLICY, uiLang);
         
         /*
         DBConnect_Facet dbCon = new DBConnect_Facet();
@@ -226,7 +226,8 @@ public class DBCreate_Modify_Facet {
                                                  boolean errorIfExists, 
                                                  boolean resolveError,
                                                  OutputStreamWriter logFileWriter, 
-                                                 int ConsistencyChecksPolicy) {
+                                                 int ConsistencyChecksPolicy,
+                                                 final String uiLang) {
 
         
         DBConnect_Facet dbCon = new DBConnect_Facet();
@@ -235,9 +236,9 @@ public class DBCreate_Modify_Facet {
 
         StringObject errorMsgPrefix = new StringObject();
         if (createORmodify.equals("create")) {            
-            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/ErrorPrefix", null));
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/ErrorPrefix", null, uiLang));
         } else {
-            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/ErrorPrefix", null));
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/ErrorPrefix", null, uiLang));
         }
 
         Q.reset_name_scope();
@@ -254,7 +255,7 @@ public class DBCreate_Modify_Facet {
 
         // in case of empty Facet
         if (targetFacetObj.getValue().trim().equals(prefix) == true) {
-            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/NoTargetSpecified", null));            
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/NoTargetSpecified", null, uiLang));            
             return false;
         }
         
@@ -290,7 +291,7 @@ public class DBCreate_Modify_Facet {
                                 logFileWriter.append("<name>" + Utilities.escapeXML(targetFacetSortItem.getLogName()) + "</name>");
                                 logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
                                 logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
-                                logFileWriter.append("<reason>" + con.translate(28, 3, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()) + "</reason>");
+                                logFileWriter.append("<reason>" + con.translate(28, 3, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), uiLang) + "</reason>");
                                 logFileWriter.append("</targetFacet>\r\n");
                             } catch (IOException ex) {
                                 Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
@@ -304,7 +305,7 @@ public class DBCreate_Modify_Facet {
                         errorArgs.add(targetFacetSortItem.getLogName());                    
                         errorArgs.add(termUsingThisReferenceId);
 
-                        errorMsg.setValue(con.translate(28, 4, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks()));
+                        errorMsg.setValue(con.translate(28, 4, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), uiLang));
 
                         return false; 
 
@@ -321,7 +322,7 @@ public class DBCreate_Modify_Facet {
         CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
         
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages(),uiLang)));
         } 
         else // modify
         {
@@ -329,7 +330,7 @@ public class DBCreate_Modify_Facet {
 
                 DBRemove_Facet dbRemF = new DBRemove_Facet();
                 if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) { // new facet => delete 
-                    errorMsg.setValue(errorMsg.getValue().concat(dbRemF.DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, targetFacetCMV)));
+                    errorMsg.setValue(errorMsg.getValue().concat(dbRemF.DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, targetFacetCMV,uiLang)));
                 } else {
                     //Facet_CreationOrModificationSucceded = true;
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) { // obsolete facet => undo abandon

@@ -128,15 +128,15 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             }
             
             if (mode.compareTo("new") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,newGuideTerm,errorMsg);
+                operationSucceded = dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,newGuideTerm,errorMsg, SessionUserInfo.UILang);
             }
             
             if (mode.compareTo("delete") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,errorMsg);
+                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,errorMsg, SessionUserInfo.UILang);
             }
             
             if (mode.compareTo("rename") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.renameGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, renameGuideTermFrom, renameGuideTermTo, errorMsg);
+                operationSucceded = dbEdit_Guide_Terms.renameGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, renameGuideTermFrom, renameGuideTermTo, errorMsg, SessionUserInfo.UILang);
             }
             
             //check result of transaction. 

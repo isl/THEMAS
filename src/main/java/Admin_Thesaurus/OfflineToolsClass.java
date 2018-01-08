@@ -394,23 +394,23 @@ public class OfflineToolsClass {
                     logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
 
 
-                    logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-                    logFileWriter.append("<title>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/importreporttitle", new String[]{importThesaurusName,time})+"</title>\r\n");
+                    logFileWriter.append("<page language=\"" + refSessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
+                    logFileWriter.append("<title>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/importreporttitle", new String[]{importThesaurusName,time},refSessionUserInfo.UILang)+"</title>\r\n");
 
                     logFileWriter.append("<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>\r\n");
 
                     if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, false, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                         Utils.StaticClass.webAppSystemOutPrintln("Failure");
-                        abortActions( common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj);
+                        abortActions( common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj, refSessionUserInfo.UILang);
                         return;
                     }
 
                     Utils.StaticClass.closeDb();
-                    commitActions(importThesaurusName, Filename.concat(".html"));
+                    commitActions(importThesaurusName, Filename.concat(".html"), refSessionUserInfo.UILang);
 
                     Utils.StaticClass.webAppSystemOutPrintln("IMPORT PROCESS FINISHED SUCCESSFULLY at time: " + Utilities.GetNow());
                     
-                    logFileWriter.append("\r\n<creationInfo>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/creationinfomsg", new String[]{importThesaurusName,inputFilePath})+"</creationInfo>\r\n");
+                    logFileWriter.append("\r\n<creationInfo>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/creationinfomsg", new String[]{importThesaurusName,inputFilePath},refSessionUserInfo.UILang)+"</creationInfo>\r\n");
 
                     if(logFileWriter!=null){
                         logFileWriter.append("</page>");
@@ -593,7 +593,7 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="fixDbMode">
             if(mode.equals(fixDbMode)){
                 StringObject FixDBResultMessage_Global = new StringObject("");
-                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global);
+                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global,refSessionUserInfo.UILang);
                 if(!dbFixed){
                     unlockSystem = false;
                     Utils.StaticClass.webAppSystemOutPrintln("Fix DB failed");
@@ -729,7 +729,7 @@ public class OfflineToolsClass {
 
     }
 
-    public static void commitActions(String importThesaurusName, String reportFile) {
+    public static void commitActions(String importThesaurusName, String reportFile,final String uiLang) {
 
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();
@@ -769,12 +769,12 @@ public class OfflineToolsClass {
 
         
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, uiLang));
         xml.append("<"+resultFileTagName+">");
         xml.append(reportFile);
         xml.append("</"+resultFileTagName+">");
 
-        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/sucessresultmsg", null),importMethodChoice));
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/sucessresultmsg", null, uiLang),importMethodChoice));
 
 
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -790,7 +790,7 @@ public class OfflineToolsClass {
 
     public static void abortActions(
             CommonUtilsDBadmin common_utils, String initiallySelectedThesaurus,
-            String mergedThesaurusName, StringObject DBbackupFileNameCreated, StringObject resultObj) {
+            String mergedThesaurusName, StringObject DBbackupFileNameCreated, StringObject resultObj,final String uiLang) {
 
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();
@@ -824,7 +824,7 @@ public class OfflineToolsClass {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+DBbackupFileNameCreated.getValue());
 
-        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, uiLang);
         //thesauriNames.remove(mergedThesaurusName);
 
         if (restored) {
@@ -849,10 +849,10 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Did not manage to restore : " + DBbackupFileNameCreated.getValue());
         }
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, uiLang));
         //xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
         
-        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/abortresultmsg", new String[]{resultObj.getValue()}),importMethodChoice));
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/abortresultmsg", new String[]{resultObj.getValue()}, uiLang),importMethodChoice));
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 

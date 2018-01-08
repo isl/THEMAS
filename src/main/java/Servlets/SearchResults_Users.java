@@ -180,7 +180,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
                 elapsedTimeSec = Utilities.stopTimer(startTime);
                 // ---------------- SYNCHRONIZED BLOCK (END)----------------             
             }
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_USERS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_USERS, SessionUserInfo.UILang));
             xml.append("<results>");
             xml.append(u.writePagingInfoXML(usersPagingListStep, usersPagingFirst, usersPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Users"));
             xml.append("</results>");

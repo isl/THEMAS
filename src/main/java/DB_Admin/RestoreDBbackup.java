@@ -101,21 +101,21 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
             Boolean RestoreDBbackupSucceded = true;
             if (action.compareTo("DELETE") == 0) {
                 // do the deletion of the backup
-                RestoreDBbackupSucceded = DeleteDBbackup(common_utils,selectedDBbackupFileName, RestoreDBbackupResultMessage);            
+                RestoreDBbackupSucceded = DeleteDBbackup(common_utils,selectedDBbackupFileName, RestoreDBbackupResultMessage, SessionUserInfo.UILang);            
             }
             else { // RESTORE
                 StringObject result = new StringObject("");
                 // create a backup of the data base anyway
                 StringObject DBbackupFileNameCreated = new StringObject("");
-                common_utils.CreateDBbackup("backup_before_restoring_data_base_backup", result, DBbackupFileNameCreated);             
+                common_utils.CreateDBbackup("backup_before_restoring_data_base_backup", result, DBbackupFileNameCreated, SessionUserInfo.UILang);             
 
                 // do the restoration of the backup
-                RestoreDBbackupSucceded = common_utils.RestoreDBbackup(selectedDBbackupFileName, result);
+                RestoreDBbackupSucceded = common_utils.RestoreDBbackup(selectedDBbackupFileName, result, SessionUserInfo.UILang);
                 RestoreDBbackupResultMessage.setValue(result.getValue());
             }
 
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));  
             //xml.append(u.getDBAdminHierarchiesAndStatusesXML(allHierarcies, dbGen));
             xml.append(getXMLMiddle(common_utils,action,RestoreDBbackupResultMessage,RestoreDBbackupSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -170,18 +170,18 @@ public class RestoreDBbackup extends ApplicationBasicServlet {
     /*-----------------------------------------------------
                       DeleteDBbackup()
     -------------------------------------------------------*/
-    public boolean DeleteDBbackup(CommonUtilsDBadmin common_utils,String selectedDBbackupFileName, StringObject RestoreDBbackupResultMessage) {
+    public boolean DeleteDBbackup(CommonUtilsDBadmin common_utils,String selectedDBbackupFileName, StringObject RestoreDBbackupResultMessage, final String uiLang) {
         File fileForDeletion = new File(common_utils.DB_BackupFolder.getPath() + File.separator + selectedDBbackupFileName);
         boolean deletionSucceded = fileForDeletion.delete();        
         
         Utilities u = new Utilities();
                 
         if (deletionSucceded == false) {
-            RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileNotFound", new String[]{selectedDBbackupFileName}));
+            RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileNotFound", new String[]{selectedDBbackupFileName}, uiLang));
             //RestoreDBbackupResultMessage.setValue("File: '%s' was not found.");
             return false;
         }
-        RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileSuccessfullyDeleted", new String[]{selectedDBbackupFileName}));
+        RestoreDBbackupResultMessage.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/BackupRestore/ZipFileSuccessfullyDeleted", new String[]{selectedDBbackupFileName}, uiLang));
         //RestoreDBbackupResultMessage.setValue("File: " + selectedDBbackupFileName + " was successfully deleted.");        
         return true;
     }    

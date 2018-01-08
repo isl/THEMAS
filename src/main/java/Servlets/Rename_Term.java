@@ -96,7 +96,7 @@ public class Rename_Term extends ApplicationBasicServlet {
             
             //"Renamed succesfully!!" ;
             
-            String RenameResult = u.translateFromMessagesXML("root/EditTerm/Rename/Success", null);
+            String RenameResult = u.translateFromMessagesXML("root/EditTerm/Rename/Success", null,SessionUserInfo.UILang);
             
             String oldName = u.getDecodedParameterValue(request.getParameter("target"));            
             String saveAsUf = u.getDecodedParameterValue(request.getParameter("saveasuf")); 
@@ -126,7 +126,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 //OLD NAME NULL?
                 //No term selected for rename. Operation cancelled.
                 ret1 = TMSAPIClass.TMS_APIFail;
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NoTermSelected", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NoTermSelected", null,SessionUserInfo.UILang));
                 //abort transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
@@ -137,7 +137,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             } else if (!dbGen.check_exist(oldtermobj.getValue(), Q, sis_session)) {
                 //OLD NAME EXISTS?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                 //errorMsgObj.setValue("Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.");
                 ret1 = TMSAPIClass.TMS_APIFail;
 
@@ -153,7 +153,7 @@ public class Rename_Term extends ApplicationBasicServlet {
 
                 //NEW NAME ONY PREFIX?
                 //errorMsgObj.setValue("A new term name was not provided. Operation cancelled.");
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/EmptyNewName", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/EmptyNewName", null,SessionUserInfo.UILang));
                 ret1 = TMSAPIClass.TMS_APIFail;
                 
                 //abort transaction and close connection
@@ -167,7 +167,7 @@ public class Rename_Term extends ApplicationBasicServlet {
             } else if (dbGen.check_exist(newtermobj.getValue(), Q, sis_session)) {
                 //NEW NAME EXISTS?
                 //errorMsgObj.setValue("New term name already exists in the database. Operation cancelled.");
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NewNameExists", null));                
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NewNameExists", null,SessionUserInfo.UILang));                
                 ret1 = TMSAPIClass.TMS_APIFail;
 
                 //abort transaction and close connection
@@ -231,7 +231,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 CMValue oldtermCmv = new CMValue();                
                 long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldtermCmv);
                 if(ret<=0){
-                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null));
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                     //errorMsgObj.setValue("Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.");
                     ret1 = TMSAPIClass.TMS_APIFail;
 
@@ -322,7 +322,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                         errorMessageStr = errorMessageStr.substring(errorMessageStr.indexOf("`") + 1);
                     }
                     
-                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{errorMessageStr}));                    
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{errorMessageStr},SessionUserInfo.UILang));                    
                     
                 }
                 out.println(errorMsgObj.toString());

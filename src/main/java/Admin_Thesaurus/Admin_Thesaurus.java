@@ -126,7 +126,7 @@ public class Admin_Thesaurus extends ApplicationBasicServlet {
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));  
             xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(CurrentShownDIV,thesaurusVector));
             xml.append(u.getXMLUserInfo(SessionUserInfo));

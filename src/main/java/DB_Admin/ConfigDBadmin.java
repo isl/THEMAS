@@ -115,8 +115,8 @@ public class ConfigDBadmin {
     /*----------------------------------------------------------------------
                           GetTranslation()
     ------------------------------------------------------------------------*/
-    public String GetTranslation(String translationTagName) {
-        String currentLanguageTagName = Parameters.UILang;
+    public String GetTranslation(String translationTagName, final String langCode) {
+        String currentLanguageTagName = langCode;
 
 
         Node configNodes[] = null;

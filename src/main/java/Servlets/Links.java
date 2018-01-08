@@ -79,6 +79,7 @@ public class Links extends ApplicationBasicServlet {
             String CheckLength = request.getParameter("CheckLength");
             String username = request.getParameter("username");
             String password = request.getParameter("password");
+            String overrideUILangParameter = request.getParameter("lang");
             String selectedThesaurusNAME = request.getParameter("selectedThesaurusNAME");            
             String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
             //String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
@@ -124,7 +125,9 @@ public class Links extends ApplicationBasicServlet {
             }
             // ATTENTION: Parameters.initParams() must be called after tmsUsers.Authenticate()
             Parameters.initParams(getServletContext());
-
+            
+            
+            
             
             if (Parameters.ENABLE_AUTOMATIC_BACKUPS) {
                 Parameters.ENABLE_AUTOMATIC_BACKUPS = false;
@@ -174,13 +177,23 @@ public class Links extends ApplicationBasicServlet {
             }
 
             SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            
+            if(overrideUILangParameter!=null && overrideUILangParameter.trim().length()>0){
+                overrideUILangParameter = overrideUILangParameter.trim().toLowerCase();
+                if(Parameters.SupportedUILangCodes.containsKey(overrideUILangParameter)){
+                    SessionUserInfo.UILang = Parameters.SupportedUILangCodes.get(overrideUILangParameter);
+                }
+            }
+            if(SessionUserInfo.UILang==null || SessionUserInfo.UILang.trim().length()==0){
+                SessionUserInfo.UILang = Parameters.UILang;
+            }
             String XMLMiddleCustomVal = "";
             if(CheckLength!=null && CheckLength.equals("true")){
                 //pathToMessagesXML
                 //SearchCriteria/LongName
-                XMLMiddleCustomVal+=u.translateFromMessagesXML("root/SearchCriteria/LongName", null);//"Check Length";
+                XMLMiddleCustomVal+=u.translateFromMessagesXML("root/SearchCriteria/LongName", null,SessionUserInfo.UILang);//"Check Length";
             }
-            xml.append(u.getXMLStart(leftMenuMode));
+            xml.append(u.getXMLStart(leftMenuMode, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(XMLMiddleCustomVal, currentTABup));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

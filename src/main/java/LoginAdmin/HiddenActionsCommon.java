@@ -53,7 +53,7 @@ public class HiddenActionsCommon {
     -----------------------------------------------------------------------
     OUTPUT: - String XMLStr: an XML string with the necessary data of this servlet
     ----------------------------------------------------------------------*/    
-    private String getXMLMiddle(ServletContext context,CommonUtilsDBadmin common_utils, String translationsXml) {
+    private String getXMLMiddle(ServletContext context,CommonUtilsDBadmin common_utils, String translationsXml, final String uiLang) {
         // get the active sessions
         Utilities u = new Utilities();
         int OtherActiveSessionsNO = SessionListener.activesessionsNO - 1;
@@ -87,7 +87,7 @@ public class HiddenActionsCommon {
         
         XMLMiddleStr.append("<SystemConfigurations>");
             XMLMiddleStr.append("<UILanguage>");
-            XMLMiddleStr.append(Utilities.escapeXML(context.getInitParameter("UILanguage")));
+            XMLMiddleStr.append(uiLang);
             XMLMiddleStr.append("</UILanguage>");
             XMLMiddleStr.append("<ListStep>");
             XMLMiddleStr.append(Utilities.escapeXML(context.getInitParameter("ListStep")));
@@ -154,8 +154,8 @@ public class HiddenActionsCommon {
         StringBuffer xml = new StringBuffer();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(currentTab));  
-        xml.append(getXMLMiddle(context,common_utils,""));
+        xml.append(u.getXMLStart(currentTab, SessionUserInfo.UILang));  
+        xml.append(getXMLMiddle(context,common_utils,"",SessionUserInfo.UILang));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
         u.XmlPrintWriterTransform(out, xml,sessionInstance.path +  "/xml-xsl/HiddenActions/admin_page.xsl");                
@@ -165,8 +165,8 @@ public class HiddenActionsCommon {
         StringBuffer xml = new StringBuffer();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(currentTab));
-        xml.append(getXMLMiddle(context,common_utils,translationsXML));
+        xml.append(u.getXMLStart(currentTab, SessionUserInfo.UILang));
+        xml.append(getXMLMiddle(context,common_utils,translationsXML,SessionUserInfo.UILang));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
         

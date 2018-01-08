@@ -97,6 +97,22 @@
                                         <xsl:value-of select="$locale/header/name/option[@lang=$lang]"/>
                                     </xsl:attribute>
                                 </img>
+                                
+                                <select id="langSelectionControl" style="z-index: 100; float: left; position: absolute;right: 5px; top: 35px;" onchange="setLangCode('langSelectionControl','langID');">
+                                    <xsl:for-each select="//availableUILangs/langcode">
+                                        <option>
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="./@code"/>
+                                            </xsl:attribute>
+                                            <xsl:if test="$lang = ./@code">
+                                                <xsl:attribute name="selected">
+                                                    <xsl:text>selected</xsl:text>
+                                                </xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:value-of select="./text()"/>
+                                        </option>                                    
+                                    </xsl:for-each>
+                                </select>                                
                             </div>                          
                         </div>
                     
@@ -111,15 +127,15 @@
                     <table style="width:100%; margin-left:auto; margin-right:auto;" >
                         <tr>
                             <td style="text-align:center;">
-                          <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
-                              <xsl:attribute name="src">
-                                  <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
-                              </xsl:attribute>
-                              <xsl:attribute name="title">
-                                  <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
-                              </xsl:attribute>
-                          </img>
-                          </td>
+                                <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
+                                    <xsl:attribute name="src">
+                                        <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="title">
+                                        <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                </img>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -148,7 +164,7 @@
                         <br/>
                         <form name="loginForm" method="post" action="Links">
                             <table width="295" cellspacing="0" cellpadding="5" align="center">
-                                <!-- Όνομα Χρήστη -->
+                                <!-- User name -->
                                 <tr style="width:100%; background-color:#FFFFFF;">
                                     <td align="right">
                                         <xsl:value-of select="$locale/loginpage/username/option[@lang=$lang]"/>
@@ -157,7 +173,7 @@
                                         <input type="text" name="username" style="width:160px;" onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
                                     </td>
                                 </tr>
-                                <!-- Κωδικός -->
+                                <!-- Password -->
                                 <tr style="width:100%; background-color:#FFFFFF;">
                                     <td align="right">
                                         <xsl:value-of select="$locale/loginpage/password/option[@lang=$lang]"/>
@@ -166,7 +182,7 @@
                                         <input type="password" name="password" style="width:160px;" onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
                                     </td>
                                 </tr>
-                                <!-- -->
+                                <!-- Thesaurus Selection -->
                                 <tr style="width:100%; background-color:#FFFFFF;">
                                     <td align="right">
                                         <xsl:value-of select="$locale/loginpage/thesaurus/option[@lang=$lang]"/>                                            
@@ -196,6 +212,11 @@
                                 </tr>
                                 <tr style="width:100%;">
                                     <td colspan="2" align="right" style="padding-top:10px; padding-right:18px;">
+                                        <input id="langID" type="hidden" name="lang" class="button">
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="$lang"/>
+                                            </xsl:attribute>
+                                        </input>&#160;
                                         <input type="submit" name="Submit" class="button">
                                             <xsl:attribute name="value">
                                                 <xsl:value-of select="$locale/loginpage/submitbutton/option[@lang=$lang]"/>

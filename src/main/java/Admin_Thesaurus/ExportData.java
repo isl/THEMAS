@@ -208,7 +208,7 @@ public class ExportData extends ApplicationBasicServlet {
 
 
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
                 xml.append("<exportschematype>"+exportSchemaName+"</exportschematype>");
                         xml.append("<skosConceptScheme>"+SkosExportConceptScheme+"</skosConceptScheme>");

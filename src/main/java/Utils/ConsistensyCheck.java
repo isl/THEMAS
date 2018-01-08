@@ -126,7 +126,7 @@ public class ConsistensyCheck {
                     //Check if term is Top Term 
                     descriptor = descriptor;
                     newBT = newBT;
-                    if(move_To_Hierarchy_Consistency_Test_1(SessionUserInfo.selectedThesaurus, Q,  sis_session,   dbGen, errorMsg, pathToErrorsXML, descriptor,  prefix)==false){
+                    if(move_To_Hierarchy_Consistency_Test_1(SessionUserInfo.selectedThesaurus, Q,  sis_session,   dbGen, errorMsg, pathToErrorsXML, descriptor,  prefix, SessionUserInfo.UILang)==false){
                         return false;
                     }
                     break;  
@@ -136,7 +136,7 @@ public class ConsistensyCheck {
                     //check if sourceObj has any RT relations with all targetObj's BTs recursively -- targetObj included                    
                     descriptor = descriptor;
                     newBT = newBT;
-                    if(move_To_Hierarchy_Consistency_Test_2(SessionUserInfo.selectedThesaurus, Q,  sis_session, dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix)==false){
+                    if(move_To_Hierarchy_Consistency_Test_2(SessionUserInfo.selectedThesaurus, Q,  sis_session, dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix, SessionUserInfo.UILang)==false){
                         return false;
                     }
                     break;  
@@ -149,7 +149,7 @@ public class ConsistensyCheck {
                     // set_1 must have nothing in common with set_3
                     descriptor = descriptor;
                     newBT = newBT;
-                    if(move_To_Hierarchy_Consistency_Test_3(SessionUserInfo.selectedThesaurus,Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor, prefix)==false){
+                    if(move_To_Hierarchy_Consistency_Test_3(SessionUserInfo.selectedThesaurus,Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor, prefix, SessionUserInfo.UILang)==false){
                         return false;
                     }
                     break; 
@@ -172,7 +172,7 @@ public class ConsistensyCheck {
                     // Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix
                     descriptor = descriptor;
                     newBT = newBT;
-                    if (move_To_Hierarchy_Consistency_Test_4(SessionUserInfo.selectedThesaurus, Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix) == false) {
+                    if (move_To_Hierarchy_Consistency_Test_4(SessionUserInfo.selectedThesaurus, Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix, SessionUserInfo.UILang) == false) {
                         return false;
                     }
                     break;
@@ -190,7 +190,7 @@ public class ConsistensyCheck {
                     // 
                     descriptor = descriptor;
                     newBT = newBT;
-                    if(move_To_Hierarchy_Consistency_Test_5(SessionUserInfo.selectedThesaurus,Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix)==false){
+                    if(move_To_Hierarchy_Consistency_Test_5(SessionUserInfo.selectedThesaurus,Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix, SessionUserInfo.UILang)==false){
                         return false;
                     }
                     break; 
@@ -211,7 +211,7 @@ public class ConsistensyCheck {
                     // set_4 and set_2 must have nothing in common
                     descriptor = descriptor;
                     newBT = newBT;
-                    if(move_To_Hierarchy_Consistency_Test_6(SessionUserInfo.selectedThesaurus, Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix)==false){
+                    if(move_To_Hierarchy_Consistency_Test_6(SessionUserInfo.selectedThesaurus, Q,  sis_session,  dbGen, errorMsg, pathToErrorsXML, descriptor,  newBT, prefix, SessionUserInfo.UILang)==false){
                         return false;
                     }
                     break; 
@@ -271,7 +271,7 @@ public class ConsistensyCheck {
                     if(descriptor.compareTo(newBT)==0){
                         ArrayList<String> errorArgs=new ArrayList<String>();
                         errorArgs.add(descriptor);
-                        errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, SessionUserInfo.UILang)));
 
                         return false;
                     }
@@ -289,20 +289,20 @@ public class ConsistensyCheck {
     }
   
     
-    public boolean create_modify_check_01(StringObject errorMsg,String pathToErrorsXML, String targetDescriptor){
+    public boolean create_modify_check_01(StringObject errorMsg,String pathToErrorsXML, String targetDescriptor, final String uiLang){
         if(Parameters.TermModificationChecks.contains(1)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_1");
         //Check if name declared is null or empty
         if (targetDescriptor == null || targetDescriptor.trim().length() == 0) {
-            errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
             return false;
         }        
        
         return true;
     }
    
-    public boolean create_modify_check_03(ArrayList<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML){
+    public boolean create_modify_check_03(ArrayList<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML, final String uiLang){
         if(Parameters.TermModificationChecks.contains(3)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_3");
@@ -318,7 +318,7 @@ public class ConsistensyCheck {
                 }
             }
             if(count!=1){
-                errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
                 return false;
             }
@@ -369,7 +369,8 @@ public class ConsistensyCheck {
         return true;
     }
     */
-    public boolean create_modify_check_07(ArrayList<String> invalidNames_Vector, StringObject errorMsg,String pathToErrorsXML, String targetDescriptor){
+    public boolean create_modify_check_07(ArrayList<String> invalidNames_Vector, StringObject errorMsg,String pathToErrorsXML, String targetDescriptor,
+            final String uiLang){
         if(Parameters.TermModificationChecks.contains(7)==false)
             return true;
         
@@ -378,7 +379,7 @@ public class ConsistensyCheck {
 
         if (invalidNames_Vector.contains(targetDescriptor)) {
 
-            errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,Create_Modify_XML_STR,null,pathToErrorsXML)));            
+            errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));            
             return false;
         }
         
@@ -412,7 +413,16 @@ public class ConsistensyCheck {
         return true;
     }
     */
-    public boolean create_modify_check_09(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,String targetDescriptor,String prefix, String create_modify){
+    public boolean create_modify_check_09(String selectedThesaurus,
+            QClass Q, 
+            IntegerObject sis_session,
+            DBGeneral dbGen, 
+            StringObject errorMsg,
+            String pathToErrorsXML,
+            String targetDescriptor,
+            String prefix, 
+            String create_modify, 
+            final String uiLang){
         if(Parameters.TermModificationChecks.contains(9)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_9");
@@ -427,10 +437,10 @@ public class ConsistensyCheck {
 
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(targetDescriptor);
-                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));//"Term '" + targetDescriptor + "' already exists in the database.";
+                errorMsg.setValue(errorMsg.getValue().concat(translate(9,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML, uiLang)));//"Term '" + targetDescriptor + "' already exists in the database.";
                 
                 // append a sort description of the existing term
-                errorMsg.setValue(errorMsg.getValue().concat(dbGen.ExistingTermSortDescription(selectedThesaurus,targetDescr,Q,sis_session).getValue()));
+                errorMsg.setValue(errorMsg.getValue().concat(dbGen.ExistingTermSortDescription(selectedThesaurus,targetDescr,Q,sis_session, uiLang).getValue()));
                 
                 Q.reset_name_scope();
                 return false;
@@ -441,7 +451,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_11(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> tcs_Vector){
+    public boolean create_modify_check_11(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> tcs_Vector, final String uiLang){
         if(Parameters.TermModificationChecks.contains(11)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_11");
@@ -452,7 +462,7 @@ public class ConsistensyCheck {
             if(!testTC.matches(Parameters.TaxonomicalCodeFormat)){
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(testTC);
-                errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(11,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML,uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Non approved taxinomical code : '" + testDN + "'.";
                 return false;
             }
@@ -487,7 +497,17 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_12(String selectedThesaurus,QClass Q, IntegerObject sis_session,  DBGeneral dbGen, StringObject errorMsg, String pathToErrorsXML, ArrayList<String> tcs_Vector, String prefix_TC, String targetDescriptor/*,String create_modify*/) {
+    public boolean create_modify_check_12(String selectedThesaurus,
+            QClass Q, 
+            IntegerObject sis_session, 
+            DBGeneral dbGen, 
+            StringObject errorMsg, 
+            String pathToErrorsXML, 
+            ArrayList<String> tcs_Vector, 
+            String prefix_TC, 
+            String targetDescriptor,
+            /*String create_modify,*/
+            final String uiLang) {
 
         if(Parameters.TermModificationChecks.contains(12)==false)
             return true;
@@ -541,7 +561,7 @@ public class ConsistensyCheck {
 
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(getStringList_Of_Set(Q, sis_session, dbGen, set_problematic_tcs, "', '") + "\n");
-                errorMsg.setValue(errorMsg.getValue().concat(translate(12, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(12, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Taxinomical codes : '" + dns_Vector.get(i) + "' already exist in database and are used for other terms.";
 
 
@@ -574,7 +594,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_13(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML, ArrayList<String> sources_Vector,String prefix_Source){
+    public boolean create_modify_check_13(QClass Q, IntegerObject sis_session,StringObject errorMsg,String pathToErrorsXML, ArrayList<String> sources_Vector,String prefix_Source, final String uiLang){
         if(Parameters.TermModificationChecks.contains(13)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_13");
@@ -593,7 +613,7 @@ public class ConsistensyCheck {
                     
                     ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(sources_Vector.get(i));
-                    errorMsg.setValue(errorMsg.getValue().concat(translate(13, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                    errorMsg.setValue(errorMsg.getValue().concat(translate(13, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
                     //errorMsg.setValue(errorMsg.getValue().concat("Source : '" + sources_Vector.get(i) + "' does not exist in database.";
                     Q.reset_name_scope();
                     return false;
@@ -632,7 +652,7 @@ public class ConsistensyCheck {
     }
     */
     
-    public boolean create_modify_check_15(String selectedThesaurus, QClass Q,IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_or_rts_Vector,String prefix,int errorMsgOffset){
+    public boolean create_modify_check_15(String selectedThesaurus, QClass Q,IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_or_rts_Vector,String prefix,int errorMsgOffset, final String uiLang){
         //if bts check --> errorMsgOffset = 2 else if rts check errorMsgOffset = 0
         if(Parameters.TermModificationChecks.contains(15)==false)
             return true;
@@ -656,7 +676,7 @@ public class ConsistensyCheck {
                 } else {
                     ArrayList<String> errorArgs = new ArrayList<String>();
                     errorArgs.add(bts_or_rts_Vector.get(i));
-                    errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+1), Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                    errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+1), Create_Modify_XML_STR, errorArgs,pathToErrorsXML,uiLang)));
                     //errorMsg.setValue(errorMsg.getValue().concat("RT '" + rts_Vector.get(i) + "' does not exist in database.";
                     Q.free_set( set_bts_or_rts);
                     Q.reset_name_scope();
@@ -683,7 +703,7 @@ public class ConsistensyCheck {
 
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_bts_or_rts, "', '")+"\n");
-                errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+2), Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(15, (errorMsgOffset+2), Create_Modify_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Terms: '" + getStringList_Of_Set(set_rts, "', '") + "' do not belong in related terms in condition to be used in the field of RT.";
                 Q.free_set( set_bts_or_rts);
                 Q.reset_name_scope();
@@ -699,7 +719,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_16(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> ufs_Vector,String prefix,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_16(String selectedThesaurus,QClass Q, IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> ufs_Vector,String prefix,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang){
         if(Parameters.TermModificationChecks.contains(16)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_16");
@@ -762,18 +782,18 @@ public class ConsistensyCheck {
                                 logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                                 ufs_Vector.remove(removeUfs.get(k));
                                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(removeUfs.get(k)) + "</errorValue>");
-                                logFileWriter.append("<reason>" + translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML) + "</reason>");
+                                logFileWriter.append("<reason>" + translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang) + "</reason>");
                                 logFileWriter.append("</targetTerm>\r\n");
                             }
                             
 
 
                         } else {
-                            errorMsg.setValue(errorMsg.getValue().concat(translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                            errorMsg.setValue(errorMsg.getValue().concat(translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
                             return false;
                         }
                     } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML) + "\n" + ex.getMessage());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(16, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                         Utils.StaticClass.handleException(ex);
                     }
                  
@@ -850,7 +870,7 @@ public class ConsistensyCheck {
         return true;
     }
     */
-    public boolean create_modify_check_18(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,ArrayList<String> uk_ufs_Vector,String prefixEN,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_18(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,ArrayList<String> uk_ufs_Vector,String prefixEN,String targetTerm, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang){
         if(Parameters.TermModificationChecks.contains(18)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_18");
@@ -914,16 +934,16 @@ public class ConsistensyCheck {
                                 logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                                 uk_ufs_Vector.remove(errorUFENValues.get(k));
                                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(errorUFENValues.get(k)) + "</errorValue>");
-                                logFileWriter.append("<reason>" + translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML) + "</reason>");
+                                logFileWriter.append("<reason>" + translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang) + "</reason>");
                                 logFileWriter.append("</targetTerm>\r\n");
                             }
                             
                         } else {
-                            errorMsg.setValue(errorMsg.getValue().concat(translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                            errorMsg.setValue(errorMsg.getValue().concat(translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
                             return false;
                         }
                     } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML) + "\n" + ex.getMessage());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(18, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                         Utils.StaticClass.handleException(ex);
                     }
                     
@@ -1046,7 +1066,7 @@ public class ConsistensyCheck {
     */
     //Function "check_Rts_Modification_Consistency" 
     //checks if "targetDescriptor" has BTs or NTs that are also declared as "targetDescriptor"'s RTs
-    public boolean create_modify_check_20(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral  dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> rts_Vector, String prefix, String create_modify, boolean resolveError, OutputStreamWriter logFileWriter) {
+    public boolean create_modify_check_20(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral  dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> rts_Vector, String prefix, String create_modify, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang) {
         
         //Check if RTs delared exist in set that includes all BTs and all NTs recursively of target Node
         //DEBUG NOTE: propably some set is lost in this code
@@ -1065,7 +1085,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node(descriptorObj) == QClass.APIFail) {
             ArrayList<String> errorArgs = new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(20, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(20, 1, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + "  not found in database.";
             return false;
         }
@@ -1092,7 +1112,7 @@ public class ConsistensyCheck {
                 
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(rts_Vector.get(i));
-                errorMsg.setValue(errorMsg.getValue().concat(translate(20, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(20, 2, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term '" + rts_Vector.get(i) + "'  was not found in database.";
                 
                 Q.free_set( set_1);
@@ -1155,7 +1175,7 @@ public class ConsistensyCheck {
                         logFileWriter.append("<name>"+Utilities.escapeXML(errorArgs.get(0))+"</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>"+Utilities.escapeXML(removeRts.get(k))+"</errorValue>");
-                        logFileWriter.append("<reason>"+translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)+"</reason>");
+                        logFileWriter.append("<reason>"+translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)+"</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                     }
                     
@@ -1163,13 +1183,13 @@ public class ConsistensyCheck {
                     Q.free_set( set_2);
                    
                 } else {
-                    errorMsg.setValue(errorMsg.getValue().concat(translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML)));
+                    errorMsg.setValue(errorMsg.getValue().concat(translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang)));
                     //errorMsg.setValue(errorMsg.getValue().concat("Term '" + descriptor + "' cannot has as RT the '" + getStringList_Of_Set(set_2, "'\n'") + "' due to the existance of recursive relationships with BT and NT.'";
                     Q.free_set( set_2);
                     return false;
                 }
             } catch (IOException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " +  translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML) + "\n" + ex.getMessage());
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " +  translate(20, 3, Create_Modify_XML_STR, errorArgs,pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                 Utils.StaticClass.handleException(ex);
             }
             
@@ -1188,7 +1208,7 @@ public class ConsistensyCheck {
         return true;
     }
    
-    public boolean create_modify_check_24(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_Vector,String UnclassifiedClass){
+    public boolean create_modify_check_24(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_Vector,String UnclassifiedClass, final String uiLang){
         if(Parameters.TermModificationChecks.contains(24)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_24");  
@@ -1198,7 +1218,7 @@ public class ConsistensyCheck {
             if(bts_Vector.contains(UnclassifiedClass)){
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(UnclassifiedClass);
-                errorMsg.setValue(errorMsg.getValue().concat(translate(24,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(24,1,Create_Modify_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
                 return false;
             }
         }
@@ -1206,7 +1226,7 @@ public class ConsistensyCheck {
         return true;
     }
     
-    public boolean create_modify_check_25(String selectedThesaurus,QClass Q,IntegerObject sis_session,  DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String targetTerm, ArrayList<String> bts_Vector, String create_modify,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean create_modify_check_25(String selectedThesaurus,QClass Q,IntegerObject sis_session,  DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String targetTerm, ArrayList<String> bts_Vector, String create_modify,String prefix, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang){
         if (Parameters.TermModificationChecks.contains(25) == false) {
             return true;
         }
@@ -1232,7 +1252,7 @@ public class ConsistensyCheck {
             int set_all_bts = Q.set_get_new();
             Q.reset_set(set_all_bts);
 
-            if (dbGen.collect_Recurcively_ALL_BTs(selectedThesaurus, targetDescriptorObj, set_all_bts, tmpMessage, false, Q, sis_session) == false) {
+            if (dbGen.collect_Recurcively_ALL_BTs(selectedThesaurus, targetDescriptorObj, set_all_bts, tmpMessage, false, Q, sis_session, uiLang) == false) {
                 errorMsg.setValue(errorMsg.getValue().concat(tmpMessage.getValue()));
                 return false;
             }
@@ -1245,7 +1265,7 @@ public class ConsistensyCheck {
 
                 if (bts_Vector.contains(target_Rec_BTs_Names_Vec.get(k))) {
 
-                    ArrayList<String> errorArgs = new ArrayList<String>();
+                    ArrayList<String> errorArgs = new ArrayList<>();
                     errorArgs.add(bts_Vector.get(i));
                     errorArgs.add(target_Rec_BTs_Names_Vec.get(k));
                     errorArgs.add(targetTerm);
@@ -1264,16 +1284,16 @@ public class ConsistensyCheck {
                             logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(target_Rec_BTs_Names_Vec.get(k)) + "</errorValue>");
 
-                            logFileWriter.append("<reason>" + translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
 
                             continue;
                         } else {
-                            errorMsg.setValue(errorMsg.getValue().concat(translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML)));
+                            errorMsg.setValue(errorMsg.getValue().concat(translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                             return false;
                         }
                     } catch (IOException ex) {
-                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed in writing: " + translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) + "\n" + ex.getMessage());
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed in writing: " + translate(25, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                         Utils.StaticClass.handleException(ex);
                     }
 
@@ -1496,7 +1516,7 @@ public class ConsistensyCheck {
                             logFileWriter.append("<name>" + Utilities.escapeXML(errorArgs.get(0)) + "</name>");
                             logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(errorArgs.get(3)) + "</errorValue>");
-                            logFileWriter.append("<reason>" + translate(27, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(27, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML,SessionUserInfo.UILang) + "</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                         } catch (IOException ex) {
                             Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
@@ -1517,7 +1537,7 @@ public class ConsistensyCheck {
                     errorArgs.add(NonOrphannsStringList);
                     errorArgs.add(OrphannsStringList);
                     
-                    errorMsg.setValue(translate(27, 2, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+                    errorMsg.setValue(translate(27, 2, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) );
                     Q.free_set(set_orphans);
                     Q.free_set(set_non_orphans);
                     Q.free_set(set_candidate_Bts);
@@ -1736,7 +1756,7 @@ public class ConsistensyCheck {
                         errorArgs.add(OrphannsStringList);
                         errorArgs.add(targetTerm);
                         errorArgs.add(targetTerm);
-                        errorMsg.setValue(translate(27, 3, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+                        errorMsg.setValue(translate(27, 3, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) );
                         
                         Q.free_set(set_exclude_target);
                         Q.free_set(set_all_hierarchies);
@@ -1750,7 +1770,7 @@ public class ConsistensyCheck {
                     errorArgs.add(OrphannsStringList);
                     errorArgs.add(targetTerm);
                     errorArgs.add(targetTerm);
-                    errorMsg.setValue(translate(27, 3, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+                    errorMsg.setValue(translate(27, 3, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) );
                     
                     Q.free_set(set_exclude_target);
                     Q.free_set(set_all_hierarchies);
@@ -1766,7 +1786,7 @@ public class ConsistensyCheck {
                     errorArgs.add(NonOrphannsStringList);
                     errorArgs.add(targetTerm);
                     errorArgs.add(targetTerm);
-                    errorMsg.setValue(translate(27, 4, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+                    errorMsg.setValue(translate(27, 4, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) );
                     
                     Q.free_set(set_exclude_target);
                     Q.free_set(set_all_hierarchies);
@@ -1833,7 +1853,7 @@ public class ConsistensyCheck {
                                 logFileWriter.append("<name>" + Utilities.escapeXML(targetTermSortItem.getLogName()) + "</name>");
                                 logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
                                 logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
-                                logFileWriter.append("<reason>" + translate(28, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                                logFileWriter.append("<reason>" + translate(28, 1, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) + "</reason>");
                                 logFileWriter.append("</targetTerm>\r\n");
                             } catch (IOException ex) {
                                 Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
@@ -1848,7 +1868,7 @@ public class ConsistensyCheck {
                         errorArgs.add(targetTermSortItem.getLogName());                    
                         errorArgs.add(termUsingThisReferenceId);
 
-                        errorMsg.setValue(translate(28, 2, Create_Modify_XML_STR, errorArgs, pathToErrorsXML) );
+                        errorMsg.setValue(translate(28, 2, Create_Modify_XML_STR, errorArgs, pathToErrorsXML, SessionUserInfo.UILang) );
 
                         return false; 
 
@@ -1865,7 +1885,7 @@ public class ConsistensyCheck {
     }
     
     
-    public boolean move_To_Hierarchy_Consistency_Test_1(String selectedThesaurus, QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_1(String selectedThesaurus, QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor,String prefix, final String uiLang){
         //Applies to moveActions: MOVE_NODE_ONLY   MOVE_NODE_AND_SUBTREE     CONNECT_NODE_AND_SUBTREE
         //Check if term is Top Term 
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"move_ToHierarchy_Consistency_Test_1");
@@ -1875,14 +1895,14 @@ public class ConsistensyCheck {
         if (dbGen.NodeBelongsToClass(sourceObj, new StringObject(selectedThesaurus + "TopTerm"), false,Q,sis_session)) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " is declared as Top Term and cannot be moved from the hierarchy."; //Do not Translate
             return false;
         }
         return true;        
     }
     
-    public boolean move_To_Hierarchy_Consistency_Test_2(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_2(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix, final String uiLang){
 
         //Applies to moveAction: MOVE_NODE_ONLY  
         //check if sourceObj has any RT relations with all targetObj's BTs recursively -- targetObj included 
@@ -1899,7 +1919,7 @@ public class ConsistensyCheck {
 
         StringObject tmpMsgObj = new StringObject();
         int set_All_Target_BTs = Q.set_get_new();
-        if(dbGen.collect_Recurcively_ALL_BTs(selectedThesaurus,targetObj, set_All_Target_BTs, tmpMsgObj, true,Q,sis_session)==false){
+        if(dbGen.collect_Recurcively_ALL_BTs(selectedThesaurus,targetObj, set_All_Target_BTs, tmpMsgObj, true,Q,sis_session, uiLang)==false){
             errorMsg.setValue(errorMsg.getValue().concat(tmpMsgObj.getValue()));
             return false;
         }
@@ -1911,7 +1931,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(2,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(2,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
@@ -1942,7 +1962,7 @@ public class ConsistensyCheck {
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_RTs, "', '"));
             errorArgs.add(newBT);
 
-            errorMsg.setValue(errorMsg.getValue().concat(translate(2,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(2,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("The following RT of term '" + descriptor + "' : '" + getStringList_Of_Set(set_RTs, "', '") + "' prevent the creation of relationship BT with the term: '" + newBT + "'.";
             Q.free_set( set_RTs);
@@ -1955,7 +1975,7 @@ public class ConsistensyCheck {
         return true;
     }
             
-    public boolean move_To_Hierarchy_Consistency_Test_3(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_3(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor,String prefix, final String uiLang){
         //Applies to moveAction: MOVE_NODE_ONLY
 
         // set_1 Get Direct BTs of sourceObj --> sourceObj not included 
@@ -1976,7 +1996,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
         }
@@ -2031,7 +2051,7 @@ public class ConsistensyCheck {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
-            errorMsg.setValue(errorMsg.getValue().concat(translate(3,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(3,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term '" + descriptor +
             //        "' cannot be moved due to the relationships that will be created from the NTs of the terms: '" +
@@ -2045,7 +2065,7 @@ public class ConsistensyCheck {
         return true;        
     }
     
-    public boolean move_To_Hierarchy_Consistency_Test_4(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_4(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix, final String uiLang){
         //Applies to moveActions: MOVE_NODE_AND_SUBTREE 
         //All target BTs recursively target included, and all their RTs nothing in common with all Nts of source and all their BTs recursively excluding E
         
@@ -2078,7 +2098,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(4,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             return false;
@@ -2113,7 +2133,7 @@ public class ConsistensyCheck {
             
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(4,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(4,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2151,7 +2171,7 @@ public class ConsistensyCheck {
             errorArgs.add(descriptor);
             errorArgs.add(newBT);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "'\n'")+"\n");
-            errorMsg.setValue(errorMsg.getValue().concat(translate(4,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(4,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to the preexistance of hierarchical relationships of '" + descriptor + "' and its NTS from/to terms: '" +
             //        getStringList_Of_Set(set_3, "'\n'") + "'";
@@ -2176,7 +2196,7 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(newBT);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "'\n'")+"\n");
-            errorMsg.setValue(errorMsg.getValue().concat(translate(4,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(4,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to the preexistance of associative relationships of ''" + descriptor + "' and its NTS from/to terms: '" +
@@ -2196,7 +2216,7 @@ public class ConsistensyCheck {
         return true;        
     }
     
-    public boolean move_To_Hierarchy_Consistency_Test_5(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_5(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix, final String uiLang){
         //Applies to moveActions: CONNECT_NODE_AND_SUBTREE
 
         //set_0 includes targetObj only
@@ -2221,7 +2241,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( targetObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(5,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database.";
             return false;
         }
@@ -2236,7 +2256,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(5,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(5,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.";
             Q.free_set( set_0);
             return false;
@@ -2272,7 +2292,7 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_2, "'\n'")+"\n");
-            errorMsg.setValue(errorMsg.getValue().concat(translate(5,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(5,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
@@ -2299,7 +2319,7 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_3, "'\n'")+"\n");
-            errorMsg.setValue(errorMsg.getValue().concat(translate(5,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(5,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting relationships of '" + newBT + "' and its NTS, From/to terms: '" +
@@ -2320,7 +2340,7 @@ public class ConsistensyCheck {
         return true;        
     }
     
-    public boolean move_To_Hierarchy_Consistency_Test_6(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix){
+    public boolean move_To_Hierarchy_Consistency_Test_6(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, String newBT,String prefix, final String uiLang){
         //Applies to moveAction: CONNECT_NODE_AND_SUBTREE  similar to check 4 
 
         // set_0: includes source
@@ -2354,7 +2374,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(6,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
@@ -2381,7 +2401,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( targetObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(newBT);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(6,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(6,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
             Q.free_set( set_1);
             Q.free_set( set_2);
@@ -2416,7 +2436,7 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "'\n'")+"\n");
-            errorMsg.setValue(errorMsg.getValue().concat(translate(6,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(6,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting hierarchical relationships of '" + descriptor + "' and its NTS, From/to terms:  '" +
@@ -2444,7 +2464,7 @@ public class ConsistensyCheck {
             errorArgs.add(newBT);
             errorArgs.add(descriptor);
             errorArgs.add(getStringList_Of_Set(Q,sis_session,dbGen,set_4, "', '"));
-            errorMsg.setValue(errorMsg.getValue().concat(translate(6,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(6,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term: '" + descriptor +
             //        "' cannot be moved under the BT: '" + newBT + "'\ndue to preexisting associative relationships of '" + descriptor + "' and its NTS, From/to terms: '" +
@@ -2465,7 +2485,7 @@ public class ConsistensyCheck {
     }
     
     
-    public boolean move_To_Hierarchy_Consistency_Test_7(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean move_To_Hierarchy_Consistency_Test_7(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang){
         //Applies to moveActions: CONNECT_NODE_AND_SUBTREE similar to cc 5 except that source node's bts are now passed as parameters
 
         //in each loop set_0 includes targetObj  only
@@ -2497,7 +2517,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(7,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
         }
@@ -2515,7 +2535,7 @@ public class ConsistensyCheck {
             if (Q.set_current_node( targetObj) == QClass.APIFail) {
                 ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
-                errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
                 Q.free_set(set_1);
                 return false;
@@ -2544,7 +2564,7 @@ public class ConsistensyCheck {
             if (Q.set_current_node( targetObj) == QClass.APIFail) {
                 ArrayList<String> errorArgs=new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
-                errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(7,2,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
                 //errorMsg.setValue(errorMsg.getValue().concat("Term " + newBT + " was not found in the database."));
                 Q.free_set(set_0);
                 Q.free_set(set_1);
@@ -2633,19 +2653,19 @@ public class ConsistensyCheck {
                         logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
                         if(errorArgs.get(2)!=null && errorArgs.get(2).length()>0){
-                            logFileWriter.append("<reason>" +translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" +translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         else{
-                            logFileWriter.append("<reason>" +translate(7, 5, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" +translate(7, 5, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         logFileWriter.append("</targetTerm>\r\n");
                         continue;
                     } else {
-                        errorMsg.setValue(errorMsg.getValue().concat(translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                         return false;
                     }
                 } catch (IOException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "\n" + ex.getMessage());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(7, 3, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                     Utils.StaticClass.handleException(ex);
                 }
                 
@@ -2706,20 +2726,20 @@ public class ConsistensyCheck {
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
 
                         if(errorArgs.get(2)!=null && errorArgs.get(2).length()>0){
-                            logFileWriter.append("<reason>" +translate(7, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" +translate(7, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         else{
-                            logFileWriter.append("<reason>" +translate(7, 6, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" +translate(7, 6, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         
                         logFileWriter.append("</targetTerm>\r\n");
                         continue;
                     } else {
-                        errorMsg.setValue(errorMsg.getValue().concat(translate(7,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(7,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
                         return false;
                     }
                 } catch (IOException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(7,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML) + "\n" + ex.getMessage());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(7,4,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                     Utils.StaticClass.handleException(ex);
                 }
             }
@@ -2752,7 +2772,7 @@ public class ConsistensyCheck {
     }
     
     
-    public boolean move_To_Hierarchy_Consistency_Test_8(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter){
+    public boolean move_To_Hierarchy_Consistency_Test_8(String selectedThesaurus,QClass Q, IntegerObject sis_session, DBGeneral dbGen,StringObject errorMsg,String pathToErrorsXML,String descriptor, ArrayList<String> decodedValues,String prefix, boolean resolveError, OutputStreamWriter logFileWriter, final String uiLang){
         //Applies to moveAction: CONNECT_NODE_AND_SUBTREE  similar to check 6 but decodedValues will declare source Nodes bts
         // thus set_1 should change and so that it does not include sourceObj and set 2 should be appended with nodes defined from decoded values 
 
@@ -2794,7 +2814,7 @@ public class ConsistensyCheck {
         if (Q.set_current_node( sourceObj) == QClass.APIFail) {
             ArrayList<String> errorArgs=new ArrayList<String>();
             errorArgs.add(descriptor);
-            errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+            errorMsg.setValue(errorMsg.getValue().concat(translate(8,1,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
             
             //errorMsg.setValue(errorMsg.getValue().concat("Term " + descriptor + " was not found in the database.");
             return false;
@@ -2832,7 +2852,7 @@ public class ConsistensyCheck {
             if (Q.set_current_node( newBTObj) == QClass.APIFail) {
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
-                errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                 Q.free_set(set_1);
                 Q.free_set(set_2);
                 Q.free_set(set_allBts);
@@ -2860,7 +2880,7 @@ public class ConsistensyCheck {
             if (Q.set_current_node( newBTObj) == QClass.APIFail) {
                 ArrayList<String> errorArgs = new ArrayList<String>();
                 errorArgs.add(decodedValues.get(i));
-                errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
+                errorMsg.setValue(errorMsg.getValue().concat(translate(8, 2, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                 Q.free_set(set_1);
                 Q.free_set(set_2);
                 Q.free_set(set_3);
@@ -2956,20 +2976,20 @@ public class ConsistensyCheck {
                         logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
                         if(errorArgs.get(2)!=null && errorArgs.get(2).length()>0){
-                            logFileWriter.append("<reason>" + translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang) + "</reason>");
                         }
                         else{
-                            logFileWriter.append("<reason>" + translate(8,5,MoveToHier_XML_STR,errorArgs,pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(8,5,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang) + "</reason>");
                         }
                         
                         logFileWriter.append("</targetTerm>\r\n");
                         continue;
                     } else {
-                        errorMsg.setValue(errorMsg.getValue().concat(translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML)));
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
                         return false;
                     }
                 } catch (IOException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML) + "\n" + ex.getMessage());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(8,3,MoveToHier_XML_STR,errorArgs,pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                     Utils.StaticClass.handleException(ex);
                 }
                 
@@ -3026,20 +3046,20 @@ public class ConsistensyCheck {
                         logFileWriter.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
                         if(errorArgs.get(2)!=null && errorArgs.get(2).length()>0){
-                            logFileWriter.append("<reason>" + translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         else{
-                            logFileWriter.append("<reason>" + translate(8, 6, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "</reason>");
+                            logFileWriter.append("<reason>" + translate(8, 6, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "</reason>");
                         }
                         
                         logFileWriter.append("</targetTerm>\r\n");
                         continue;
                     } else {
-                        errorMsg.setValue(errorMsg.getValue().concat(translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML)));
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang)));
                         return false;
                     }
                 } catch (IOException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML) + "\n" + ex.getMessage());
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Failed in writing: " + translate(8, 4, MoveToHier_XML_STR, errorArgs, pathToErrorsXML, uiLang) + "\n" + ex.getMessage());
                     Utils.StaticClass.handleException(ex);
                 }
             }
@@ -3096,7 +3116,7 @@ public class ConsistensyCheck {
         long retL = Q.set_current_node(targetFacetObj);
         if(retL==QClass.APIFail){
             Utilities u = new Utilities();
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet}, SessionUserInfo.UILang));
             //errorMsg.setValue("Facet " + targetFacet + " was not found.");
             return false;
         }
@@ -3139,7 +3159,7 @@ public class ConsistensyCheck {
             errorHierNames = errorHierNames.substring(0, errorHierNames.length()-2);
             
             Utilities u = new Utilities();
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/LastFacetForHierarchies", new String[]{targetFacet,errorHierNames}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/LastFacetForHierarchies", new String[]{targetFacet,errorHierNames}, SessionUserInfo.UILang));
             //errorMsg.setValue("Facet " + targetFacet +" is the only one under which heirarchies: " + errorHierNames + " are classifiesd. Facet deletion action was cancelled in order to maintain these hierarchies under at least one facet.");
             return false;
         }
@@ -3208,13 +3228,11 @@ public class ConsistensyCheck {
 
     }
 
-    public String translate(int errCode, int errorCase, String groupMode, ArrayList<String> args,String pathToErrorsXML){
+    public String translate(int errCode, int errorCase, String groupMode, ArrayList<String> args,String pathToErrorsXML, final String uiLang){
 
         Utilities u = new Utilities();
         
-        String lang = Parameters.UILang.toLowerCase();                        
-
-        String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='"+lang+"']";        
+        String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='"+uiLang+"']";        
         //String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']";
 
         return u.translate(expressionBasePath, args, pathToErrorsXML);

@@ -67,13 +67,13 @@ public class DBConnect_Facet {
     }	
  
     
-    public String ConnectFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  StringObject targetFacet, boolean errorIfExists, String pathToErrorsXML) {
+    public String ConnectFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  StringObject targetFacet, boolean errorIfExists, String pathToErrorsXML, final String uiLang) {
         CMValue cmv = new CMValue();
         cmv.assign_node(targetFacet.getValue(),-1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
-        return ConnectFacetCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,errorIfExists,pathToErrorsXML);
+        return ConnectFacetCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,errorIfExists,pathToErrorsXML,uiLang);
     }
     
-    public String ConnectFacetCMValue(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  CMValue targetFacetCmv, boolean errorIfExists, String pathToErrorsXML) {
+    public String ConnectFacetCMValue(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  CMValue targetFacetCmv, boolean errorIfExists, String pathToErrorsXML, final String uiLang) {
         String errorMSG = new String("");
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -82,7 +82,7 @@ public class DBConnect_Facet {
 
         
         if (targetFacetCmv.getString().trim().equals(prefix)) {
-            return  u.translateFromMessagesXML("root/EditFacet/Creation/EmptyName", null);
+            return  u.translateFromMessagesXML("root/EditFacet/Creation/EmptyName", null, uiLang);
         }
 
         if (dbGen.checkCMV_exist(targetFacetCmv,Q,sis_session) == false) {
@@ -98,7 +98,7 @@ public class DBConnect_Facet {
             if(errorIfExists){
                 
                 errorMSG = errorMSG.concat(/*"<tr><td>" +*/ dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,
-                        u.translateFromMessagesXML("root/EditFacet/Creation/FacetExists", new String[]{dbGen.removePrefix(targetFacetCmv.getString())})
+                        u.translateFromMessagesXML("root/EditFacet/Creation/FacetExists", new String[]{dbGen.removePrefix(targetFacetCmv.getString())}, uiLang)
                         /*"Facet " + dbGen.removePrefix(targetFacet.getValue()) + " already exists in the database."*/
                         ,tms_session)/* +
                         "</td></tr>"*/);

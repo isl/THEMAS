@@ -110,9 +110,9 @@ public class DBMergeThesauri {
         // initialize DB if chekbox was selected or DB is not initiali
         Boolean DBInitializationSucceded = true;
         if (DataBaseIsInitialized == false) {
-            boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, mergedThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded);
+            boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, mergedThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded, refSessionUserInfo.UILang);
             if (DBCanBeInitialized == true) {
-                DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage);
+                DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage, refSessionUserInfo.UILang);
                 // clear the vector with the existing Thesaurus in DB after DB initialization
                 thesauriNames.clear();
             }
@@ -123,7 +123,7 @@ public class DBMergeThesauri {
         Boolean CreateThesaurusSucceded = true;
         if (DBInitializationSucceded == true) {
             // check if the given NewThesaurusName exists
-            boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesauriNames, mergedThesaurusName, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded);
+            boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesauriNames, mergedThesaurusName, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded,refSessionUserInfo.UILang);
             if (GivenThesaurusCanBeCreated == true) {
                 CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(refSessionUserInfo, common_utils, mergedThesaurusNameDBformatted, CreateThesaurusResultMessage, backUpDescription, DBbackupFileNameCreated);
                 // after finishing the job and in case SIS server is not running, restart it
@@ -136,7 +136,7 @@ public class DBMergeThesauri {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Reached Here 5");
                 if (serverStarted == false) {
 
-                    String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
+                    String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure",refSessionUserInfo.UILang);
                     CreateThesaurusResultMessage.setValue(StartServerFailure);
                     common_utils.RestartDatabaseIfNeeded();
                 }
@@ -333,7 +333,7 @@ public class DBMergeThesauri {
                                 + "<errorType>" + ConstantParameters.guide_term_kwd + "</errorType>"
                                 + "<errorValue>" + Utilities.escapeXML(valueThatWillBeIgnored) + "</errorValue>"
                                 
-                                +"<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipNodeLabel", new String[] { Utilities.escapeXML(targetTerm),Utilities.escapeXML(targetSortItem.getLogName()),valueThatWillBeKept,Utilities.escapeXML(valueThatWillBeIgnored)})+"</reason>"
+                                +"<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipNodeLabel", new String[] { Utilities.escapeXML(targetTerm),Utilities.escapeXML(targetSortItem.getLogName()),valueThatWillBeKept,Utilities.escapeXML(valueThatWillBeIgnored)},refSessionUserInfo.UILang)+"</reason>"
                                 //+"<reason>Term: '" + Utilities.escapeXML(targetTerm) + "' has an already defined NT relationship with term: '" + Utilities.escapeXML(targetSortItem.getLogName())
                                 //+ "' and node label: '" + valueThatWillBeKept + "'. There was also detected though another NT relationship among them with node label: '" + Utilities.escapeXML(valueThatWillBeIgnored)
                                 //+ "' which was skipped.</reason>"
@@ -386,7 +386,7 @@ public class DBMergeThesauri {
                 }
             }
 
-            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj) == false) {
+            if (dbEdit_Guide_Terms.addGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, allGuideTerms.get(i), resultObj, SessionUserInfo.UILang) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create guide term / node lable: " + allGuideTerms.get(i) + ".\r\n" + resultObj.getValue());
                 return false;
             }
@@ -427,7 +427,7 @@ public class DBMergeThesauri {
             }
 
             //edit guide term code reusage
-            creation_modificationOfTerm.performGuideTermEditing(SessionUserInfo.selectedThesaurus, Q, sis_session, resultObj, targetTerm, ntsDecodedValues, GuideTermsDecodedValues);
+            creation_modificationOfTerm.performGuideTermEditing(SessionUserInfo.selectedThesaurus, Q, sis_session, resultObj, targetTerm, ntsDecodedValues, GuideTermsDecodedValues, SessionUserInfo.UILang);
 
             //error detection
             if (resultObj.getValue() != null && resultObj.getValue().length() > 0) {
@@ -474,11 +474,11 @@ public class DBMergeThesauri {
         }
 
         return CreateFacets(mergedThesaurusName, Q, TA, sis_session, tms_session,
-                merged_thesaurus_NEW_facets, resultObj);
+                merged_thesaurus_NEW_facets, resultObj, refSessionUserInfo.UILang);
 
     }
 
-    public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, ArrayList<String> merged_thesaurus_NEW_facets, StringObject resultObj) {
+    public boolean CreateFacets(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, ArrayList<String> merged_thesaurus_NEW_facets, StringObject resultObj,final String uiLang) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
         String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
@@ -489,7 +489,7 @@ public class DBMergeThesauri {
 
         for (int i = 0; i < merged_thesaurus_NEW_facets.size(); i++) {
             Q.reset_name_scope();
-            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false);
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacet(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, merged_thesaurus_NEW_facets.get(i), "create", null, resultObj, false,uiLang);
 
             if (FacetAdditionSucceded == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
@@ -510,7 +510,8 @@ public class DBMergeThesauri {
                                                    StringObject resultObj,
                                                    boolean resolveError,
                                                    OutputStreamWriter logFileWriter,
-                                                   int ConsistencyPolicy) {
+                                                   int ConsistencyPolicy,
+                                                   final String uiLang) {
         
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start of creating Facets. Time: " + Utilities.GetNow());
         DBGeneral dbGen = new DBGeneral();
@@ -521,7 +522,7 @@ public class DBMergeThesauri {
 
         for (SortItem newFacet: merged_thesaurus_NEW_facets) {
             Q.reset_name_scope();
-            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacetSortItem(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, newFacet, "create", null, resultObj, false, resolveError,logFileWriter, ConsistencyPolicy);
+            FacetAdditionSucceded = creationModificationOfFacet.Create_Or_ModifyFacetSortItem(selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, newFacet, "create", null, resultObj, false, resolveError,logFileWriter, ConsistencyPolicy, uiLang);
 
             if (FacetAdditionSucceded == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create FACETS: " + resultObj.getValue() + ".");
@@ -638,7 +639,7 @@ public class DBMergeThesauri {
                 if (underFacets.size() == 0) {
 
                     logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchy) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacet) + "</errorValue>");
-                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchy),Utilities.escapeXML(defaultFacet)}) + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchy),Utilities.escapeXML(defaultFacet)}, SessionUserInfo.UILang) + "</reason>");
                     //logFileWriter.append("<reason>Hierarchy: " + Utilities.escapeXML(hierarchy) + " was found without being classified under any Facet. It is therefore by default classified under the default Facet: " + Utilities.escapeXML(defaultFacet) + ".</reason>");
                     logFileWriter.append("</targetHierarchy>\r\n");
                     underFacets.add(defaultFacet);
@@ -737,7 +738,7 @@ public class DBMergeThesauri {
                 if (underFacets.size() == 0) {
 
                     logFileWriter.append("\r\n<targetHierarchy><name>" + Utilities.escapeXML(hierarchyNameWithoutPrefix) + "</name><errorType>facet</errorType><errorValue>" + Utilities.escapeXML(defaultFacetNameWithoutPrefix) + "</errorValue>");
-                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchyNameWithoutPrefix),Utilities.escapeXML(defaultFacetNameWithoutPrefix)}) + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateHierarchies/WrongHierarchyPosition", new String[]{Utilities.escapeXML(hierarchyNameWithoutPrefix),Utilities.escapeXML(defaultFacetNameWithoutPrefix)}, SessionUserInfo.UILang) + "</reason>");
                     //logFileWriter.append("<reason>Hierarchy: " + Utilities.escapeXML(hierarchy) + " was found without being classified under any Facet. It is therefore by default classified under the default Facet: " + Utilities.escapeXML(defaultFacet) + ".</reason>");
                     logFileWriter.append("</targetHierarchy>\r\n");
                     underFacets.add(defaultFacet.getLogName());
@@ -2808,7 +2809,7 @@ public class DBMergeThesauri {
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
            
             //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             
@@ -2864,7 +2865,7 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             if (Q.set_current_node(topTermObj) == QClass.APIFail) {
                 //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[]{thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
@@ -2941,7 +2942,7 @@ public class DBMergeThesauri {
         Q.reset_name_scope();
         if (Q.set_current_node(topTermObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[] {sourceThesaurus}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyTermsLevelByLevel/TopTermReferenceFailed", new String[] {sourceThesaurus},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to reference at TopTerm Class of Thesaurus: " + sourceThesaurus + ".");
             //logFileWriter.append("<!--Failed to reference at TopTerm Class of Thesaurus: " + thesaurusName1 + ".-->\r\n");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
@@ -3206,7 +3207,7 @@ public class DBMergeThesauri {
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termSortItem.getLogName()) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(termSortItem.getLogName()) + "1</errorValue>");
-                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(termSortItem.getLogName()),thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())}) + "1.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[] {Utilities.escapeXML(termSortItem.getLogName()),thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())},SessionUserInfo.UILang) + "1.</reason>");
                             //logFileWriter.append("<reason>Term " + Utilities.escapeXML(term) + " found as a TT in Thesaurus '" + thesaurusName2 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "1.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             termSortItem.setLogName(termSortItem.getLogName()+ "1"); 
@@ -3247,7 +3248,7 @@ public class DBMergeThesauri {
                     if (resultObj.getValue().length() > 0) {
                         
 
-                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())}) + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure", new String[] {thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())},SessionUserInfo.UILang) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus: " + thesaurusName1 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
@@ -3316,7 +3317,7 @@ public class DBMergeThesauri {
                             logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termSortItem.getLogName()) + "</name>");
                             logFileWriter.append("<errorType>name</errorType>");
                             logFileWriter.append("<errorValue>" + Utilities.escapeXML(termSortItem.getLogName()) + "2</errorValue>");
-                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(termSortItem.getLogName()),thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())}) + "2.</reason>");
+                            logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateTermsLevelByLevel/TermFoundAsTopTerm", new String[]{Utilities.escapeXML(termSortItem.getLogName()),thesaurusName1,Utilities.escapeXML(termSortItem.getLogName())},SessionUserInfo.UILang) + "2.</reason>");
                             //logFileWriter.append("<reason>Term ' " + Utilities.escapeXML(term) + "' found as a TT in Thesaurus '" + thesaurusName1 + "'. For the successful insertion renamed to " + Utilities.escapeXML(term) + "2.</reason>");
                             logFileWriter.append("</targetTerm>\r\n");
                             termSortItem.setLogName((termSortItem.getLogName() + "2"));
@@ -3354,7 +3355,7 @@ public class DBMergeThesauri {
 
                     if (resultObj.getValue().length() > 0) {
                         
-                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())}) + resultObj.getValue());
+                        resultObj.setValue(u.translateFromMessagesXML("root/CreateTermsLevelByLevel/CopyTermFailure",new String[]{thesaurusName2,Utilities.escapeXML(termSortItem.getLogName())},SessionUserInfo.UILang) + resultObj.getValue());
                         //resultObj.setValue("Term copy failure from Thesaurus " + thesaurusName2 + ". " + resultObj.getValue());
                         //Q.free_set(set_next_level_links);
                         // Q.free_set(set_top_terms);
@@ -3402,7 +3403,7 @@ public class DBMergeThesauri {
         Q.reset_name_scope();
         if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(),thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(),thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus : " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
@@ -3410,7 +3411,7 @@ public class DBMergeThesauri {
 
         if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
             return false;
@@ -3438,7 +3439,7 @@ public class DBMergeThesauri {
                     rtsToThemSelves.add(term1Name);
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName1}) + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName1},SessionUserInfo.UILang) + "</reason>");
                     //logFileWriter.append("<reason>" + Utilities.escapeXML(term1Name) + " found to have Link RT with itself at Thesaurus: ' " + thesaurusName1 + "' . This Relationship will be bypassed.</reason>");
                     logFileWriter.append("</targetTerm>/r/n");
                     continue; //ignore from reading
@@ -3538,7 +3539,7 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             if (Q.set_current_node(rtFromClassObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed_2_Param", new String[]{rtFromClassObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Class: " + rtFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
@@ -3546,7 +3547,7 @@ public class DBMergeThesauri {
 
             if (Q.set_current_node(rtLinkObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyRTs/CategoryReferenceFailed", new String[]{rtFromClassObj.getValue(),rtLinkObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Category: " + rtFromClassObj.getValue() + "->" + rtLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 return false;
@@ -3575,7 +3576,7 @@ public class DBMergeThesauri {
                         rtsToThemSelves.add(term2Name);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term1Name) + "</name><errorType>" + ConstantParameters.rt_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(term1Name) + "</errorValue>");
-                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName2}) + "</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CopyRTs/TermLinkToRT", new String[]{Utilities.escapeXML(term1Name), thesaurusName2},SessionUserInfo.UILang) + "</reason>");
                         //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term1Name) + " was found to have RT relationship with himself in thesaurus: " + thesaurusName2 + ". This relation will be ignored.</reason>");
                         logFileWriter.append("</targetTerm>/r/n");
                         continue; //ignore from reading
@@ -4040,7 +4041,7 @@ public class DBMergeThesauri {
                     
                     logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + StatusThes2StrGR + "</errorValue>");
-                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
+                    logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR},SessionUserInfo.UILang) + "</reason>");
                     //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes1StrGR + "' was chosen.</reason>");
                     logFileWriter.append("</targetTerm>\r\n");
                     logFileWriter.flush();
@@ -4073,7 +4074,7 @@ public class DBMergeThesauri {
                         
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(term) + "</name><errorType>" + ConstantParameters.status_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + StatusThes1StrGR + "</errorValue>");
-                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR}) + "</reason>");
+                        logFileWriter.append("<reason>" + u.translateFromMessagesXML("root/CreateStatuses/FoundInStatus", new String[]{Utilities.escapeXML(term), StatusThes1StrGR, StatusThes2StrGR, StatusThes1StrGR},SessionUserInfo.UILang) + "</reason>");
                         //logFileWriter.append("<reason>Term: " + Utilities.escapeXML(term) + " was found with statusues: '" + StatusThes1StrGR + "' and '" + StatusThes2StrGR + "'.\r\n\t\tStatus: '" + StatusThes2StrGR + "' was chosen.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4086,7 +4087,7 @@ public class DBMergeThesauri {
 
             if (ret == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to update status of term: " + term);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
                 Q.free_set(statusesSet);
@@ -4107,7 +4108,7 @@ public class DBMergeThesauri {
 
                 if (termIDL == QClass.APIFail) {
                     
-                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/TermReferenceFailed", new String[]{term,mergedThesaurusName}));
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/TermReferenceFailed", new String[]{term,mergedThesaurusName},SessionUserInfo.UILang));
                     //resultObj.setValue("Failed to refer to " + term + " of thesaurus: " + mergedThesaurusName);
                     Q.free_set(statusesSet);
                     return false;
@@ -4125,7 +4126,7 @@ public class DBMergeThesauri {
 
                 if (ret == QClass.APIFail) {
 
-                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term}));
+                    resultObj.setValue(u.translateFromMessagesXML("root/CreateStatuses/FailedToUpdateTermStatus", new String[]{term},SessionUserInfo.UILang));
                     //resultObj.setValue("Failed to update status of term: " + term);
                     Q.free_set(statusesSet);
                     return false;
@@ -4279,7 +4280,7 @@ public class DBMergeThesauri {
                         firstScopeNote = firstScopeNote.concat(" ### " + scopeNote.get(0));
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.scope_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstScopeNote) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermSNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermSNs", new String[] { Utilities.escapeXML(termNames.get(i))},SessionUserInfo.UILang)+"</reason>");
                         //logFileWriter.append("<reason>Two SNs were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4298,7 +4299,7 @@ public class DBMergeThesauri {
                         firstScopeNoteEN = firstScopeNoteEN.concat(" ### " + secondScopenoteEN);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.translations_scope_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstScopeNoteEN) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTerm_trSNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTerm_trSNs", new String[] { Utilities.escapeXML(termNames.get(i))},SessionUserInfo.UILang)+"</reason>");
                         //logFileWriter.append("<reason>Two SNs (Tra.) were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4319,7 +4320,7 @@ public class DBMergeThesauri {
                         firstHistoricalNote = firstHistoricalNote.concat(" ### " + secondHistoricalNote);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.historical_note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstHistoricalNote) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermHNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermHNs", new String[] { Utilities.escapeXML(termNames.get(i))},SessionUserInfo.UILang)+"</reason>");
                         //logFileWriter.append("<reason>Two HNs were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4339,7 +4340,7 @@ public class DBMergeThesauri {
                         firstCommentNote = firstCommentNote.concat(" ### " + secondCommentNote);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.comment_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstCommentNote) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermCNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermCNs", new String[] { Utilities.escapeXML(termNames.get(i))},SessionUserInfo.UILang)+"</reason>");
                         //logFileWriter.append("<reason>Two Comments were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4359,7 +4360,7 @@ public class DBMergeThesauri {
                         firstNote = firstNote.concat(" ### " + secondNote);
                         logFileWriter.append("\r\n<targetTerm><name>" + Utilities.escapeXML(termNames.get(i)) + "</name><errorType>" + ConstantParameters.note_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(firstNote) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermNs", new String[] { Utilities.escapeXML(termNames.get(i))})+"</reason>");
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/MergeTermNs", new String[] { Utilities.escapeXML(termNames.get(i))},SessionUserInfo.UILang)+"</reason>");
                         //logFileWriter.append("<reason>Two Comments were found for term: '" + Utilities.escapeXML(termNames.get(i)) + "'. Both will be kept with delimeter: ' ### '.</reason>");
                         logFileWriter.append("</targetTerm>\r\n");
                         logFileWriter.flush();
@@ -4622,14 +4623,14 @@ public class DBMergeThesauri {
         Q.reset_name_scope();
         if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -4685,14 +4686,14 @@ public class DBMergeThesauri {
         Q.reset_name_scope();
         if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -4757,14 +4758,14 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             if (Q.set_current_node(editorFromClassObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(),thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {editorFromClassObj.getValue(),thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Class: " + editorFromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(editorLinkObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {editorFromClassObj.getValue(),editorLinkObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Category: " + editorFromClassObj.getValue() + "->" + editorLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
@@ -4819,14 +4820,14 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             if (Q.set_current_node(dateFromClassObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/ClassReferenceFailure", new String[] {dateFromClassObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Class: " + dateFromClassObj.getValue() + " of thesaurus : " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(dateLinkObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopyDatesAndEditors/CategoryReferenceFailure", new String[] {dateFromClassObj.getValue(), dateLinkObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Category: " + dateFromClassObj.getValue() + "->" + dateLinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
@@ -5129,14 +5130,14 @@ public class DBMergeThesauri {
         Q.reset_name_scope();
         if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
 
         if (Q.set_current_node(LinkObj) == QClass.APIFail) {
             
-            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(),LinkObj.getValue(), thesaurusName1}));
+            resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(),LinkObj.getValue(), thesaurusName1},SessionUserInfo.UILang));
             //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName1 + ".");
             return false;
         }
@@ -5205,14 +5206,14 @@ public class DBMergeThesauri {
             Q.reset_name_scope();
             if (Q.set_current_node(fromClassObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/ClassReferenceFailure", new String[] {fromClassObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Class: " + fromClassObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
 
             if (Q.set_current_node(LinkObj) == QClass.APIFail) {
                 
-                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(), LinkObj.getValue(), thesaurusName2}));
+                resultObj.setValue(u.translateFromMessagesXML("root/CopySimpleLinks/CategoryReferenceFailure", new String[] {fromClassObj.getValue(), LinkObj.getValue(), thesaurusName2},SessionUserInfo.UILang));
                 //resultObj.setValue("Failed to refer to Category: " + fromClassObj.getValue() + "->" + LinkObj.getValue() + " of thesaurus: " + thesaurusName2 + ".");
                 return false;
             }
@@ -5485,7 +5486,7 @@ public class DBMergeThesauri {
                 logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(results.get(i)) + "</errorValue>");
                 
-                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName1})+"</reason>");                
+                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName1},SessionUserInfo.UILang)+"</reason>");                
                 //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName1 + ". This name is already used as a translation of thesaurus " + thesaurusName1 + " and cannot be used as a UF term in the new thesaurus.</reason>");                
                 logFileWriter.append("</targetTerm>\r\n");
             }
@@ -5549,7 +5550,7 @@ public class DBMergeThesauri {
                     logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                     logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(results2.get(i)) + "</errorValue>");
-                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName2})+"</reason>");                
+                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName2},SessionUserInfo.UILang)+"</reason>");                
                     //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results2.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName2 + ". This name is already used as a translation of thesaurus " + thesaurusName2 + " and cannot be used as a UF term in the new thesaurus.</reason>");                
                     logFileWriter.append("</targetTerm>\r\n");
                 }
@@ -5588,7 +5589,7 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName1})+"</reason>");                
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2, thesaurusName1},SessionUserInfo.UILang)+"</reason>");                
                         //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName2 + ". This name is already used as a translation of thesaurus " + thesaurusName1 + " and cannot be used as a UF (Tra.) term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
@@ -5628,7 +5629,7 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_translations_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName2})+"</reason>");                
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFTrLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1, thesaurusName2},SessionUserInfo.UILang)+"</reason>");                
                         //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + " from thesaurus: " + thesaurusName1 + ". This name is already used as a translation of thesaurus " + thesaurusName2 + " and cannot be used as a UF (Tra.) term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
@@ -5719,7 +5720,7 @@ public class DBMergeThesauri {
                 logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                 logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                 logFileWriter.append("<errorValue>" + Utilities.escapeXML(results.get(i)) + "</errorValue>");
-                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1})+"</reason>");                
+                logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1},SessionUserInfo.UILang)+"</reason>");                
                 //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName1 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                 logFileWriter.append("</targetTerm>\r\n");
             }
@@ -5781,7 +5782,7 @@ public class DBMergeThesauri {
                     logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                     logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                     logFileWriter.append("<errorValue>" + Utilities.escapeXML(results2.get(i)) + "</errorValue>");
-                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2})+"</reason>");                
+                    logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(results2.get(i)),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2},SessionUserInfo.UILang)+"</reason>");                
                     //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(results2.get(i)) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName2 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                     logFileWriter.append("</targetTerm>\r\n");
                 }
@@ -5822,7 +5823,7 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1})+"</reason>");                
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName1},SessionUserInfo.UILang)+"</reason>");                
                         //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName1 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }
@@ -5863,7 +5864,7 @@ public class DBMergeThesauri {
                         logFileWriter.append("<name>" + Utilities.escapeXML(referencesToNode.get(k)) + "</name>");
                         logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
                         logFileWriter.append("<errorValue>" + Utilities.escapeXML(SearchKwd) + "</errorValue>");
-                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2})+"</reason>");                
+                        logFileWriter.append("<reason>"+u.translateFromMessagesXML("root/MergeThesauri/SkipUFLink", new String[] { Utilities.escapeXML(SearchKwd),Utilities.escapeXML(referencesToNode.get(k)), thesaurusName2},SessionUserInfo.UILang)+"</reason>");                
                         //logFileWriter.append("<reason>Skipping copying of UF link: '" + Utilities.escapeXML(SearchKwd) + "' for term: " + Utilities.escapeXML(referencesToNode.get(k)) + ". This name is already used as a term of thesaurus " + thesaurusName2 + " and cannot be used as a non-preferred term in the new thesaurus.</reason>");                
                         logFileWriter.append("</targetTerm>\r\n");
                     }

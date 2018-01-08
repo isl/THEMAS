@@ -100,7 +100,7 @@ public class Statistics extends ApplicationBasicServlet {
 
             Utilities u = new Utilities();
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_STATISTICS));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_STATISTICS, SessionUserInfo.UILang));  
             xml.append(getXMLMiddle(CurrentShownDIV, XMLStatisticResults));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -174,15 +174,16 @@ public class Statistics extends ApplicationBasicServlet {
               
         OutputStreamWriter out = null;
         try {
+            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
             OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
             OutputStream bout = new BufferedOutputStream(fout);
             out = new OutputStreamWriter(bout, "UTF-8");
             String temp = ConstantParameters.xmlHeader;
-            temp += "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">";
+            temp += "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">";
             temp += "<title>" + title + "</title>";
             temp += "<windowTitle>" + windowTitle + "</windowTitle>";
             temp += "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>";
-            UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+            
             temp += "<selectedThesaurus>" + SessionUserInfo.selectedThesaurus + "</selectedThesaurus>";
             out.write(temp);
             out.write("<results>");

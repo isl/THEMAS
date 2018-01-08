@@ -312,7 +312,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                         baseURL,
                         webAppSaveResults_AbsolutePath.toString(),
                         webAppSaveResults_temporary_filesAbsolutePath,
-                        pathToSaveScriptingAndLocale, targetLocale);
+                        pathToSaveScriptingAndLocale, targetLocale,
+                        SessionUserInfo.UILang);
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in Hierarchy terms PrimarytoTranslations and TranslationstoPrimary: " + elapsedTimeSec);
 
@@ -329,7 +330,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 String pathToLabels = context.getRealPath("/translations/labels.xml");
 
                 String XSL = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Alphabetical.xsl").toString();
-                String resultsInfo = "<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\"><title>" + time + "</title><query>"
+                String resultsInfo = "<page language=\"" + SessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\"><title>" + time + "</title><query>"
                         //+ "<base>Alphabetical display of terms of Hierarchy: </base>"
                         + "<arg1>" + Utilities.escapeXML(hierarchy)
                         + "</arg1>" + "</query>" + u.getXMLUserInfo(SessionUserInfo) + "<pathToLabels>" + pathToLabels
@@ -430,7 +431,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                         //"<base>Systematic display of terms belonging to hierarchy: </base>"+
                         "<arg1>" + Utilities.escapeXML(hierarchy) + "</arg1>",
                         webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml",
-                        pathToSaveScriptingAndLocale);
+                        pathToSaveScriptingAndLocale,
+                        SessionUserInfo.UILang);
 
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml",
                         XSL,
@@ -565,7 +567,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                         + "<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>"
                         //+ "<base>Herarchical Presentation of terms of hierarchy: </base>"
                         + "<arg1>" + Utilities.escapeXML(hierarchy) + "</arg1>",
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale);
+                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale,
+                        SessionUserInfo.UILang);
 
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                         XSL1,
@@ -729,7 +732,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                             time,
                             "<typicalHierarchicalLocation>" + typicalLocation + "</typicalHierarchicalLocation>"
                             + "<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>",
-                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale);
+                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale
+                            ,SessionUserInfo.UILang);
 
                 } else {
                     writeThesarusGlobalViewResultsInXMLFile(null, facetToHierarhchies,
@@ -742,7 +746,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                             time,
                             "<typicalHierarchicalLocation>" + typicalLocation + "</typicalHierarchicalLocation>"
                             + "<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>",
-                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale);
+                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale
+                            ,SessionUserInfo.UILang);
 
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                             XSL1,
@@ -799,7 +804,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             String query,
             String fileName,
             String pathToSaveScriptingAndLocale,
-            Locale targetLocale) {
+            Locale targetLocale,
+            final String uiLang) {
 
         boolean streamOutput = false;
         if (outStream != null) {
@@ -810,7 +816,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         OutputStreamWriter out = null;
 
         String appendVal = ConstantParameters.xmlHeader
-                + "<page thesaurus=\""+targetThesaurus+"\" language=\"" + Parameters.UILang + "\">\n"
+                + "<page thesaurus=\""+targetThesaurus+"\" language=\"" + uiLang + "\">\n"
                 + (facetInstradOfThesaurus ? ("\t<targetFacet>" + targetFacet + "</targetFacet>\n") : ("\t<targetThesaurus>" + targetThesaurus + "</targetThesaurus>\n"))
                 + "\t<title>" + title + "</title>\n" +
                 (streamOutput? "": ("\t<query>\n" + query + "\t</query>\n\t<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\n") )+
@@ -953,7 +959,8 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             String baseURL,
             String xslBasePath,
             String temporaryfolderFullPath,
-            String pathToSaveScriptingAndLocale, Locale targetLocale) {
+            String pathToSaveScriptingAndLocale, Locale targetLocale,
+            final String uiLang) {
 
         SortItemComparator linkClassTransliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
@@ -973,7 +980,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             //out.write(xml_header);
             //out.write(xslLink);
             // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
-            out.write("<page language='" + Parameters.UILang + "'>\n"
+            out.write("<page language='" + uiLang + "'>\n"
                     + "<title>" + title + "</title>"
                     + "<query>" + query + "</query>"
                     + "<primary2transaltionsLocation>" + baseURL.concat(Primary2TranslationsHtmlOutputPath) + "</primary2transaltionsLocation>"
@@ -1096,7 +1103,14 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         return temporaryfolderFullPath + File.separator + Primary2TranslationsHtmlOutputPath;
     }
 
-    public void writeSystematicResultsInXMLFile(ArrayList<TaxonomicCodeItem> allTerms, Utilities u, String title, String query,/*String xslLink,*/ String fileName, String pathToSaveScriptingAndLocale) {
+    public void writeSystematicResultsInXMLFile(ArrayList<TaxonomicCodeItem> allTerms, 
+            Utilities u, 
+            String title, 
+            String query,
+            /*String xslLink,*/ 
+            String fileName, 
+            String pathToSaveScriptingAndLocale,
+            final String uiLang) {
 
         String Full_Save_Results_file_name = fileName;
 
@@ -1109,7 +1123,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             out.write(ConstantParameters.xmlHeader);
             //out.write(xslLink);
-            out.write("<page title=\"" + title + "\" language='" + Parameters.UILang + "' mode=\"insert\">");
+            out.write("<page title=\"" + title + "\" language='" + uiLang + "' mode=\"insert\">");
 
             out.write("<query>");
             out.write(query);
@@ -1159,7 +1173,17 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
     }
 
-    public void writeHierarchicalResultsInXMLFile(ArrayList<String> all_hier_terms_vec, HashMap<String, ArrayList<String>> ntsOfHierDesciptor, String hierarchy, Utilities u, String title, String query,/*String xslLink,*/ String fileName, String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    public void writeHierarchicalResultsInXMLFile(ArrayList<String> all_hier_terms_vec, 
+            HashMap<String, ArrayList<String>> ntsOfHierDesciptor, 
+            String hierarchy, 
+            Utilities u, 
+            String title, 
+            String query,
+            /*String xslLink,*/ 
+            String fileName, 
+            String pathToSaveScriptingAndLocale, 
+            Locale targetLocale,
+            final String uiLang) {
 
         String Full_Save_Results_file_name = fileName;
 
@@ -1174,7 +1198,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             out.write(ConstantParameters.xmlHeader);
             //out.write(xslLink);
             // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
-            out.write("<page language=\"" + Parameters.UILang + "\">\n"
+            out.write("<page language=\"" + uiLang + "\">\n"
                     + "<title>" + title + "</title>"
                     + //"<query>" + "Hierarchical presentation of terms of hierarchy: " + hierarchy + "</query>" +
                     "<query>" + query + "</query>"

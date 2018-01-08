@@ -159,8 +159,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(targetTerm==null || targetTerm.length()==0){
                 
                 //dbGen.Translate(resultMessageObj, "root/CardOfTerm/NoTermSelected", null, pathToMessagesXML);
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/NoTermSelected", null)+"</errorMsg>";                
-                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/NoTermSelected", null, SessionUserInfo.UILang)+"</errorMsg>";                
+                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode, SessionUserInfo.UILang);
                 
                 return;
             }
@@ -227,9 +227,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_name_scope();
             if(Q.set_current_node(targetTermObj)==QClass.APIFail){
 
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/TermNotFound", new String[]{targetTerm})+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfTerm/TermNotFound", new String[]{targetTerm}, SessionUserInfo.UILang)+"</errorMsg>";
                 
-                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
+                prepareErrorMsg(errorMsg,out,sessionInstance,outputMode, SessionUserInfo.UILang);
                 Q.free_all_sets();
                 Q.TEST_end_query();
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
@@ -286,12 +286,12 @@ public class CardOf_Term extends ApplicationBasicServlet {
            
             if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
                 if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS,true));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS,true, SessionUserInfo.UILang));
                     xml.append(xmlResults);
                     xml.append(u.getXMLEnd());
                 }
                 else{
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
                     xml.append(xmlResults);
                     xml.append(u.getXMLMiddle("", "Details"));
                     xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -305,7 +305,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
                     u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
                 }
             } else if(outputMode==null){
-                xml.append(ConstantParameters.xmlHeader + "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append(ConstantParameters.xmlHeader + "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 xml.append(xmlResults);
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append("</page>");
@@ -330,10 +330,10 @@ public class CardOf_Term extends ApplicationBasicServlet {
         }
     } 
     
-    void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode){
+    void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode, final String uiLang){
         StringBuffer xml = new StringBuffer();
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, uiLang));
         xml.append(u.getXMLMiddle(errorMsg, "Details"));
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());

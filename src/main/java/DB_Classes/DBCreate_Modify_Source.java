@@ -61,7 +61,7 @@ public class DBCreate_Modify_Source {
     }
 
     public boolean createNewSource(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,
-            String targetSource, String source_note, StringObject errorMsg) {
+            String targetSource, String source_note, StringObject errorMsg, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -112,7 +112,7 @@ public class DBCreate_Modify_Source {
 
 
         if (targetSource.length() == 0) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/EmptyName", null));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/EmptyName", null, uiLang));
             //errorMsg.setValue("A name must be specified for the new source.");
             return false;
         }
@@ -121,7 +121,7 @@ public class DBCreate_Modify_Source {
 
         Q.reset_name_scope();
         if (Q.set_current_node(sourceObj) != QClass.APIFail) {
-            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/AlreadyinDB", new String[] {targetSource}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Creation/AlreadyinDB", new String[] {targetSource}, uiLang));
             //errorMsg.setValue("Source with name " + targetSource + " already exists in the database.");
             return false;
         }
@@ -181,7 +181,7 @@ public class DBCreate_Modify_Source {
             //<editor-fold defaultstate="collapsed" desc="Delete Source...">
 
             if (targetSource == null || targetSource.trim().length() == 0) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/EmptyName", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/EmptyName", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("No name is specified for the deletion source. Deletion cancelled.");
                 return false;
             }
@@ -189,7 +189,7 @@ public class DBCreate_Modify_Source {
             Q.reset_name_scope();
             long sourceIDL = Q.set_current_node(targetSourceObj);
             if (sourceIDL == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/NotFound", new String[] {targetSource}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/NotFound", new String[] {targetSource}, SessionUserInfo.UILang));
                 //errorMsg.setValue("Source given for deletion: "+targetSource+" was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
@@ -199,7 +199,7 @@ public class DBCreate_Modify_Source {
             int howmanyRefs = Q.set_get_card(set_links_to_source);
             Q.free_set(set_links_to_source);
             if (howmanyRefs > 0 && deleteCurrentThesaurusReferences == null) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/HasReferences", new String[] {targetSource}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/HasReferences", new String[] {targetSource}, SessionUserInfo.UILang));
                 //errorMsg.setValue("Source " + targetSource + " is referenced from the current or other thesauri of the database and can not be deleted. Deletion cancelled.");
                 return false;
 
@@ -257,7 +257,7 @@ public class DBCreate_Modify_Source {
                 for (int k = 0; k < targetTerms.size(); k++) {
                     ret = TA.CHECK_DeleteNewDescriptorAttribute(targetTermsLinkIdL.get(k), new StringObject(targetTerms.get(k)));
                     if (ret == QClass.APIFail) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/ReferenceDeletionError", new String[] {targetTerms.get(k)}));
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/ReferenceDeletionError", new String[] {targetTerms.get(k)}, SessionUserInfo.UILang));
                         //errorMsg.setValue("Deletion error occurred while deleting source references for term "+ dbGen.removePrefix(targetTerms.get(k))+". Deletion cancelled.");
                         //reset to previous thesaurus name if needed
                         if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
@@ -271,7 +271,7 @@ public class DBCreate_Modify_Source {
                 }
 
                 if (howmanyfromCurrent != howmanyRefs) {
-                    errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/OtherThesauriReferences", null));
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Deletion/OtherThesauriReferences", null, SessionUserInfo.UILang));
                     //errorMsg.setValue("Source references from current thesaurus were deleted successfully. The source could not be though deleted due to references from other thesauri of the database.");
                     Q.TEST_end_transaction();
                     return false;
@@ -319,14 +319,14 @@ public class DBCreate_Modify_Source {
         } else if (targetField.compareTo(source_rename_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Source Rename...">
             if (targetSource == null || targetSource.trim().length() == 0) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyName", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyName", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("No name is specified for the source to rename. Renaming operation cancelled.");
                 return false;
             }
 
 
             if (newValue == null || newValue.trim().length() == 0) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyNewName", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/EmptyNewName", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("No new name is specified for the source to rename. Renaming operation cancelled.");
                 return false;
             }
@@ -352,7 +352,7 @@ public class DBCreate_Modify_Source {
             Q.reset_name_scope();
             long currentSourceIdL = Q.set_current_node(targetSourceObj);
             if (currentSourceIdL == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/NotFound", new String[]{targetSource}));                
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/NotFound", new String[]{targetSource}, SessionUserInfo.UILang));                
                 //errorMsg.setValue("Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.");
                 return false;
             }
@@ -363,7 +363,7 @@ public class DBCreate_Modify_Source {
 
             Q.reset_name_scope();
             if (Q.set_current_node(newSourceNameObj) != QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/AlreadyInDB", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/AlreadyInDB", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("New source name selected already exists in the database. Please select another source name.");
                 return false;
             }
@@ -382,7 +382,7 @@ public class DBCreate_Modify_Source {
 
             //check result
             if (ret == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("Rename Failure.");
                 return false;
             }
@@ -399,7 +399,7 @@ public class DBCreate_Modify_Source {
 
             //check result of rename source note node if it existed
             if (ret == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/Rename/RenameFailure", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("Rename Failure.");
                 return false;
             } else {
@@ -596,7 +596,7 @@ public class DBCreate_Modify_Source {
 
             Q.reset_name_scope();
             if (Q.set_current_node(targetSourceObj) == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/MoveReferences/NotFound", new String[]{targetSource}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditSource/MoveReferences/NotFound", new String[]{targetSource}, SessionUserInfo.UILang));
                 //errorMsg.setValue("Source " + targetSource + " was not found in the database. Please refresh the source's search results.");
                 return false;
             }
@@ -757,7 +757,7 @@ public class DBCreate_Modify_Source {
                     if (addNewET) {
                         ArrayList<String> newValues = new ArrayList<String>();
                         newValues.add(newValue);
-                        errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_translations_found_in, Q, sis_session, dbGen, TA, tms_session));
+                        errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_translations_found_in, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                         if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                             return false;
                         }
@@ -909,7 +909,7 @@ public class DBCreate_Modify_Source {
                     if (addNewGT) {
                         ArrayList<String> newValues = new ArrayList<String>();
                         newValues.add(newValue);
-                        errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_PRIMARY_FOUND_IN, Q, sis_session, dbGen, TA, tms_session));
+                        errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetTermObj, newValues, DBConnect_Term.CATEGORY_PRIMARY_FOUND_IN, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                         if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                             return false;
                         }

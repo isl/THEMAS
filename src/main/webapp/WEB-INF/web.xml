@@ -42,7 +42,7 @@
     </context-param>
     <context-param>
         <param-name>UILanguage</param-name>
-        <param-value>en</param-value>
+        <param-value>el</param-value>
         <!--<param-value>el</param-value>-->
     </context-param>
     

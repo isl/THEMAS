@@ -66,6 +66,16 @@
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
 
+    <SupportedUILangCodes>
+        <!-- mapcode should exist as lang code in the XML files contained in translations folder -->
+        <!-- text of langcode refers to the acceptable language parameter that will be mapped to mapcode -->
+        <!-- for greek both el and gr language parameters lead to el lang code that is used in the XML files of translations folder-->
+        <!-- display attribute determines whether this will be shown to the available language options of user -->
+        <langcode mapcode="en" display="yes" displayText="English (en)">en</langcode>
+        <langcode mapcode="el" display="no" displayText="Ελληνικά (gr)">gr</langcode>
+        <langcode mapcode="el" display="yes"  displayText="Ελληνικά (el)">el</langcode>        
+    </SupportedUILangCodes>
+    
     <BehaviorConfigs>
         <AtRenameStoreOldNameAsUf>true</AtRenameStoreOldNameAsUf>  
         <Transliterations toLowerCase="true">

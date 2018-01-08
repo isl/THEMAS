@@ -121,7 +121,7 @@ public class DBadmin extends ApplicationBasicServlet {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));  
             xml.append(getXMLMiddle());
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

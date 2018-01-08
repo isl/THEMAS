@@ -124,7 +124,7 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             }
                   
             
-            String outPutAnswer = u.translateFromMessagesXML("root/EditHierarchy/Edit/AvailableFacets", null)+
+            String outPutAnswer = u.translateFromMessagesXML("root/EditHierarchy/Edit/AvailableFacets", null,SessionUserInfo.UILang)+
                     " <select id=\"new_Hier_FacetID\" name=\"new_Hier_Facet\" size=\"5\" style=\"min-width:100px;\" onchange=\"hierarchyFacetName.value=new_Hier_Facet.options[new_Hier_Facet.selectedIndex].value;\"  >";
             
             for(int i=0;i<availableFacets.size();i++){

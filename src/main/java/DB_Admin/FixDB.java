@@ -99,10 +99,10 @@ public class FixDB extends ApplicationBasicServlet {
             FixDBResultMessage_Global = new StringObject("");
             FixDBSucceded = true;
             // do the fixinf of the DB
-            FixDBSucceded = common_utils_global.FixDB(true, FixDBResultMessage_Global);
+            FixDBSucceded = common_utils_global.FixDB(true, FixDBResultMessage_Global,SessionUserInfo.UILang);
 
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));  
             //xml.append(u.getDBAdminHierarchiesAndStatusesXML(allHierarcies, dbGen));  
             xml.append(getXMLMiddle());
             xml.append(u.getXMLUserInfo(SessionUserInfo));

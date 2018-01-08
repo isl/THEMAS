@@ -137,8 +137,8 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
     ----------------------------------------------------------------------*/
     public void DisplaySystemIsUnderMaintenancePage(PrintWriter out, SessionWrapperClass sessionInstance) {
         StringBuffer xml = new StringBuffer();
-
-        xml.append(getXMLLoginStart("SystemIsUnderMaintenance.xsl"));
+        UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        xml.append(getXMLLoginStart("SystemIsUnderMaintenance.xsl",SessionUserInfo.UILang));
         xml.append(getXMLEnd());
         xslTransform(out, xml,sessionInstance.path + "/xml-xsl/SystemIsUnderMaintenance.xsl");
     }
@@ -165,7 +165,7 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
     OUTPUT: - String XMLLoginStart: an XML string
     CALLED BY: Index and Links servlets
     ----------------------------------------------------------------------*/
-    public String getXMLLoginStart(String xsl) {
+    public String getXMLLoginStart(String xsl,final String uiLang) {
         /*DBGeneral dbGen = new DBGeneral();
         StringObject trMessage1 = new StringObject("");
         StringObject trMessage2 = new StringObject("");
@@ -177,7 +177,7 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
                 "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 //"<page title=\"Thesarus Creator\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
                 //"<page title=\""+trMessage1.getValue()+"\" language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
-                "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
+                "<page language=\""+uiLang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\" mode=\"insert\">" +                
                 "<header>" +
                 //"<name>Thesarus Creator</name>" +
                 //"<name>"+trMessage2.getValue()+"</name>" +                
