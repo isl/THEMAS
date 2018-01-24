@@ -2371,7 +2371,7 @@ public class Utilities {
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
         dataNeeded.append("<availableHierarchies>");
         for (int i = 0; i < allHierarcies.size(); i++) {
-            dataNeeded.append("<hierarchy>" + allHierarcies.get(i) + "</hierarchy>");
+            dataNeeded.append("<hierarchy>" + escapeXML(allHierarcies.get(i)) + "</hierarchy>");
         }
         dataNeeded.append("</availableHierarchies>");
 
