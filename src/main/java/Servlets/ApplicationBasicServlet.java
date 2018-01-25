@@ -105,9 +105,9 @@ public class ApplicationBasicServlet extends HttpServlet {
                 if(checkIfXMLStream==null || checkIfXMLStream.length()==0){
                     checkIfXMLStream = request.getParameter("mode");
                 }
-                if(checkIfXMLStream!=null || checkIfXMLStream.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
+                if(checkIfXMLStream!=null || (checkIfXMLStream!=null && checkIfXMLStream.compareTo(Utils.ConstantParameters.XMLSTREAM)==0)){
                     skipSessionUpdate = true;
-                }
+                }                
                 
                 tmsUsers.Authenticate(request, session, sessionInstance,external_user, "", external_thesaurus);
                 Parameters.initParams(getServletContext());

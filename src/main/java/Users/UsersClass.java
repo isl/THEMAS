@@ -1625,6 +1625,12 @@ public class UsersClass {
         CLASS_SET_INCLUDE.trimToSize();        
         SessionUserInfo.CLASS_SET_INCLUDE = CLASS_SET_INCLUDE;
         
+        
+        if(SessionUserInfo.UILang==null || SessionUserInfo.UILang.length()==0){
+            SessionUserInfo.UILang = context.getInitParameter("UILanguage");
+        }
+        
+            
         // set the session attribute
         sessionInstance.setAttribute("SessionUser", SessionUserInfo);        
     }    
