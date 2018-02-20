@@ -43,6 +43,7 @@ import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
 import Utils.Utilities;
+import static Utils.Utilities.escapeXML;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -110,7 +111,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
 
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
 
-            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+term_decoded+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
+            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+Utilities.escapeXML(term_decoded)+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
 

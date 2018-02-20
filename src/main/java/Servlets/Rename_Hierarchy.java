@@ -273,7 +273,7 @@ public class Rename_Hierarchy extends ApplicationBasicServlet {
             if (ret1 == TMSAPIClass.TMS_APISucc && retAllowContinue == TMSAPIClass.TMS_APISucc) {
 
                 out.print("Success");
-                out.print("<newName>" + newName + "</newName>");
+                out.print("<newName>" + /*Utilities.escapeXML(newName)*/ newName + "</newName>");
                 out.println(RenameResult);
                 
                 //commit transaction and close connection

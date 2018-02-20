@@ -1675,6 +1675,8 @@ public class Utilities {
         returnVal = returnVal.replaceAll("'", "&apos;");
         returnVal = returnVal.replaceAll("\"", "&quot;");
         returnVal = returnVal.replaceAll(" +", " ");
+        //escaping double hyphen that may cause an error in comments
+        
 
 
         /*
@@ -1687,7 +1689,17 @@ public class Utilities {
         }*/
         return returnVal;
     }
+    
+    public static String escapeXMLComment(String target) {
+        if (target == null) {
+            return "";
+        }
+        String returnVal = escapeXML(target);
+        returnVal = returnVal.replaceAll("--", "&#x002D;&#x002D;");
+        return returnVal;
+    }
 
+    
     /*---------------------------------------------------------------------
     InformSearchOperatorsAndValuesWithSpecialCharacters()
     -----------------------------------------------------------------------

@@ -145,12 +145,12 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
                     xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
-                    xml.append(availableFacets.get(i));
+                    xml.append(Utilities.escapeXML(availableFacets.get(i)));
                     xml.append("</name>");
                 }
 
                 xml.append("</availableFacets>");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
             }
@@ -170,19 +170,19 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
                     xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
-                    xml.append(availableFacets.get(i));
+                    xml.append(Utilities.escapeXML(availableFacets.get(i)));
                     xml.append("</name>");
                 }
 
                 xml.append("</availableFacets>");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
                 
             }
             else{
                 xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
             }

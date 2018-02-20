@@ -338,8 +338,10 @@ public class DBGeneral {
         CMValue ptrn = new CMValue();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        ptrn.assign_string(prefix.concat(str) + "*");
+        //String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        //ptrn.assign_string(prefix.concat(str) + "*");
+        //ptrn.assign_string(prefix.concat(str));
+        ptrn.assign_string(str+"*");
 
         String term_split[];
         ArrayList<String> vec = new ArrayList<String>();
@@ -395,6 +397,7 @@ public class DBGeneral {
          }*/
 
         removed = removePrefix(v_results);
+        
 
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
 
@@ -418,18 +421,19 @@ public class DBGeneral {
 
         int set_f, set_of, set_match, set_result;
         //StringObject results_name = new StringObject();
-        ArrayList<String> v_results = new ArrayList<String>();
+        ArrayList<String> v_results = new ArrayList<>();
         StringObject Facet = new StringObject();
         StringObject ObsoleteFacet = new StringObject();
 
         CMValue ptrn = new CMValue();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        ptrn.assign_string(prefix.concat(str));
+        //String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        //ptrn.assign_string(prefix.concat(str));
+        ptrn.assign_string(str+"*");
 
-        ArrayList<String> removed = new ArrayList<String>();
-        ArrayList<String> options = new ArrayList<String>();
+        ArrayList<String> removed = new ArrayList<>();
+        ArrayList<String> options = new ArrayList<>();
 
         dbtr.getThesaurusClass_Facet(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), Facet);
         dbtr.getThesaurusClass_Facet(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), ObsoleteFacet);
@@ -498,8 +502,9 @@ public class DBGeneral {
         CMValue ptrn = new CMValue();
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        ptrn.assign_string(prefix.concat(str));
+        //String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        //ptrn.assign_string(prefix.concat(str));
+        ptrn.assign_string(str+"*");
 
         ArrayList<String> removed = new ArrayList<String>();
         ArrayList<String> options = new ArrayList<String>();
@@ -597,7 +602,8 @@ public class DBGeneral {
         // in case of prefix given != "", use the get_matched() mechanism
         if (prefix != null) {
             CMValue ptrn = new CMValue();
-            ptrn.assign_string(prefix.concat(str));
+            //ptrn.assign_string(prefix.concat(str));
+            ptrn.assign_string(str+"*");
             int set_match = Q.set_get_new();
             Q.set_put_prm(set_match, ptrn);
             int set_result = Q.get_matched(instancesSet, set_match);
@@ -707,7 +713,8 @@ public class DBGeneral {
             Q.reset_name_scope();
             String prefix = validPrefixes.get(i);
             CMValue ptrn = new CMValue();
-            ptrn.assign_string(prefix.concat(str));
+            //ptrn.assign_string(prefix.concat(str));
+            ptrn.assign_string(str+"*");
             Q.set_put_prm(set_match, ptrn);
         }
 
@@ -810,7 +817,8 @@ public class DBGeneral {
             Q.reset_name_scope();
             String prefix = validPrefixes.get(i);
             CMValue ptrn = new CMValue();
-            ptrn.assign_string(prefix.concat(str));
+            //ptrn.assign_string(prefix.concat(str));
+            ptrn.assign_string(str+"*");
             Q.set_put_prm(set_match, ptrn);
         }
 
@@ -6167,7 +6175,7 @@ public class DBGeneral {
             }
         }
         /*
-         while(Q.retur_full_nodes(set_results, resultIdObj, resultNodeObj, resultClassObj)!=QClass.APIFail){
+        while(Q.retur_full_nodes(set_results, resultIdObj, resultNodeObj, resultClassObj)!=QClass.APIFail){
          int targetTermId = resultIdObj.getValue();
          resultNodesIds.add(targetTermId);
          String targetTerm = removePrefix(resultNodeObj.getValue());

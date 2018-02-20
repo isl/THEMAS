@@ -252,7 +252,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 session.setAttribute("currentFacet", newName);
                 }*/
                 out.print("Success");
-                out.print("<newName>" + newName + "</newName>");
+                out.print("<newName>" + /*Utilities.escapeXML(newName)*/ newName + "</newName>");
                 out.println(RenameResult.trim());
             }
 
