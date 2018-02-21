@@ -44,8 +44,8 @@ public class SortItem extends Object {
     public String log_name_transliteration;
 
     public SortItem() {
-        log_name = new String();
-        linkClass = new String();
+        log_name = "";
+        linkClass = "";
         sysid = -1;
         thesarurusReferenceId = -1;
         log_name_transliteration = "";
@@ -53,54 +53,54 @@ public class SortItem extends Object {
 
     public SortItem(String name) {
         this();
-        log_name = name;
+        log_name = name==null?"":name;
     }
     
     public SortItem(String name, String transliterationVal, long refIdVal) {
         this();
-        log_name = name;
-        thesarurusReferenceId = refIdVal;
-        log_name_transliteration = transliterationVal;
+        log_name = name==null?"":name;
+        thesarurusReferenceId = refIdVal>0?refIdVal:-1;
+        log_name_transliteration = transliterationVal==null?"":transliterationVal;
     }
 
     public SortItem(String name, long sys_id) {
         this();
-        log_name = name;
-        sysid = sys_id;
+        log_name = name==null?"":name;
+        sysid = sys_id>0?sys_id:-1;
     }
     
     public SortItem(String name, long sys_id, String transliterationVal, long refIdVal) {
         this();
-        log_name = name;
-        sysid = sys_id;
-        thesarurusReferenceId = refIdVal;
-        log_name_transliteration = transliterationVal;
+        log_name = name==null?"":name;
+        sysid = sys_id>0?sys_id:-1;
+        thesarurusReferenceId = refIdVal>0?refIdVal:-1;
+        log_name_transliteration = transliterationVal==null?"":transliterationVal;
     }
 
     public SortItem(String name, long sys_id, String linkClassName) {
         this();
-        log_name = name;
-        linkClass = linkClassName;
-        sysid = sys_id;
+        log_name = name==null?"":name;
+        linkClass = linkClassName==null?"":linkClassName;
+        sysid = sys_id>0?sys_id:-1;
     }
     
     public SortItem(String name, long sys_id, String linkClassName, String transliterationVal, long refIdVal) {
         this();
-        log_name = name;
-        linkClass = linkClassName;
-        sysid = sys_id;
-        thesarurusReferenceId = refIdVal;
-        log_name_transliteration = transliterationVal;
+        log_name = name==null?"":name;
+        linkClass = linkClassName==null?"":linkClassName;
+        sysid = sys_id>0?sys_id:-1;
+        thesarurusReferenceId = refIdVal>0?refIdVal:-1;
+        log_name_transliteration = transliterationVal==null?"":transliterationVal;
     }
     
      public SortItem(CMValue cmv) {
         this();
         if(cmv!=null){
-            log_name = cmv.getString();
+            log_name = cmv.getString() ==null? "": cmv.getString();
             linkClass = "";
-            sysid = cmv.getSysid();
-            thesarurusReferenceId = cmv.getRefid();
-            log_name_transliteration = cmv.getTransliterationString();
+            sysid = cmv.getSysid()>0?cmv.getSysid():-1;
+            thesarurusReferenceId = cmv.getRefid()>0?cmv.getRefid():-1;
+            log_name_transliteration = cmv.getTransliterationString() ==null?"":cmv.getTransliterationString();
         }
     }
 
