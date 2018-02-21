@@ -117,7 +117,7 @@ public class ConstantParameters {
     public static final String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
     public static boolean DEVELOPING = true;
-    
+    public static String TypeAheadSeparator = "";// "###";
     //Group_Reader --> i.e. READER. This user can see only the published part of the thesaurus without creation/modfication data
     public static final String AllThesauriIndicator = "*";
     public static final String Group_Reader = "READER";

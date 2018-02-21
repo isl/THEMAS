@@ -403,7 +403,7 @@ public class DBGeneral {
 
         for (int i = 0; i < removed.size(); i++) {
             //options = options.concat((String)removed.get(i) + "###");
-            options.add((String) removed.get(i) + "###");
+            options.add((String) removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
 
         Q.free_set(set_descriptor);
@@ -478,7 +478,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
         for (int i = 0; i < removed.size(); i++) {
-            options.add((String) removed.get(i) + "###");
+            options.add((String) removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
 
         Q.free_set(set_f);
@@ -551,7 +551,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(LocaleLanguage, LocaleCountry);
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
         for (int i = 0; i < removed.size(); i++) {
-            options.add((String) removed.get(i) + "###");
+            options.add((String) removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
 
         Q.free_set(set_h);
@@ -642,7 +642,7 @@ public class DBGeneral {
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
         ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
-            options.add((String) removed.get(i) + "###");
+            options.add((String) removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
         Q.free_set(instancesSet);
 
@@ -746,7 +746,7 @@ public class DBGeneral {
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
         ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
-            options.add(removed.get(i) + "###");
+            options.add(removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
         Q.free_set(instancesSet);//free set2
 
@@ -850,7 +850,7 @@ public class DBGeneral {
         Collections.sort(removed, new StringLocaleComparator(targetLocale));
         ArrayList<String> options = new ArrayList<String>();
         for (int i = 0; i < removed.size(); i++) {
-            options.add(removed.get(i) + "###");
+            options.add(removed.get(i) + Utils.ConstantParameters.TypeAheadSeparator);
         }
         Q.free_set(instancesSet);//free set2
 

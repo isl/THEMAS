@@ -173,27 +173,33 @@ public class nicajax extends ApplicationBasicServlet {
              else if(inputType.equals("inputvalue_Status")==true) { // Status suggestion                
                 if (inputvalue.length() == 1) {
                     
-                    Search_result.add(Parameters.Status_For_Insertion + "###");
-                    Search_result.add(Parameters.Status_Approved + "###");
-                    Search_result.add(Parameters.Status_For_Approval + "###");
-                    Search_result.add(Parameters.Status_Under_Construction + "###");
+                    Search_result.add(Parameters.Status_For_Insertion + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.Status_Approved + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.Status_For_Approval + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.Status_Under_Construction + Utils.ConstantParameters.TypeAheadSeparator);
                 }
             }  
             
-            String[] options = new String[Search_result.size()];
-            Search_result.toArray(options);
+            //String[] options = new String[Search_result.size()];
+            //Search_result.toArray(options);
 
             //end query and close connection
             Q.free_all_sets();
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
+            out.println("<results>");
+            for(String option : Search_result){
+                out.println("<option>"+Utilities.escapeXML(option)+"</option>");
+            }
+            /*
             for (int i = 0; i < options.length; i++) {
                 // BIG KOYLAMARA!!! (karam bug fix 16/12/2008)
                 //out.println(options[i]);
                 out.print(options[i]);
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"AJAX----------- " + options[i]);
-            }
+            }*/
+            out.println("</results>");
 
 
         } catch (Exception e) {
