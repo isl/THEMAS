@@ -170,6 +170,14 @@
                                 <include name="**/*.xsl"/>
                                 <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
                             </replace> 
+                            <replace dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays" encoding="UTF-8" >
+                                <include name="**/*.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
+                            </replace> 
+                            <replace dir="${project.build.directory}/${project.build.finalName}/SVGproducer" encoding="UTF-8" >
+                                <include name="**/*.xsl"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
+                            </replace> 
                             <!--<replace dir="${project.build.directory}/${project.build.finalName}/xml-xsl/HiddenActions" >
                                 <include name="LoginAdmin.xsl"/>
                                 <replacefilter token="@DeploymentTimestamp@" value="${timestamp}"/>
