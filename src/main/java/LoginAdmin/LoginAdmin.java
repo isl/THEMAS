@@ -96,8 +96,15 @@ public class LoginAdmin extends HttpServlet {
                     session.invalidate();
                 }
             }
-
-            DisplayLoginPage(out, sessionInstance,SessionUserInfo.UILang);
+            String uiLang = SessionUserInfo.UILang;
+            if(uiLang == null || uiLang.trim().length()==0){
+                uiLang = Parameters.UILang;
+                
+                if(uiLang == null || uiLang.trim().length()==0){
+                    uiLang = getServletContext().getInitParameter("UILanguage");
+                }
+            }
+            DisplayLoginPage(out, sessionInstance,uiLang);
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+".Exception catched in servlet " +getServletName()+". Message:" +e.getMessage());
             Utils.StaticClass.handleException(e);
