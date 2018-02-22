@@ -96,8 +96,11 @@ public class LoginAdmin extends HttpServlet {
                     session.invalidate();
                 }
             }
-            String uiLang = SessionUserInfo.UILang;
-            if(uiLang == null || uiLang.trim().length()==0){
+            String uiLang = "";
+            if(SessionUserInfo!=null && SessionUserInfo.UILang!=null && SessionUserInfo.UILang.trim().length()>0){
+                uiLang = SessionUserInfo.UILang;
+            }
+            else /*if(uiLang == null || uiLang.trim().length()==0)*/{
                 uiLang = Parameters.UILang;
                 
                 if(uiLang == null || uiLang.trim().length()==0){
