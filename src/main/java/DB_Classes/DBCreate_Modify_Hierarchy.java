@@ -493,7 +493,7 @@ public class DBCreate_Modify_Hierarchy {
                 // FILTER default status for term creation depending on user group
                 DBFilters dbf = new DBFilters();
                 
-                dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, targetTopTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, errorMsg);
+                dbCon.CreateModifyStatus(SessionUserInfo, targetTopTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, errorMsg);
 
 
                 //Also update creation info of top terms

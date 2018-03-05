@@ -145,7 +145,8 @@ public class FixAdminData extends ApplicationBasicServlet {
             dbGen.GetExistingThesaurus(true, thesaurusVector, Q, sis_session);
             if(thesaurusVector.contains(selectedThesaurus)){
                 UsersClass wtmsUsers = new UsersClass();
-                wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, getServletContext(), SessionUserInfo.name, SessionUserInfo.password, selectedThesaurus, SessionUserInfo.userGroup);
+                String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+                wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, getServletContext(), SessionUserInfo.name, SessionUserInfo.password, selectedThesaurus, SessionUserInfo.userGroup, targetLang);
                 SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             }
             else{

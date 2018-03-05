@@ -767,7 +767,8 @@ public class UsersClass {
             
             int commitActionResult = mergeEditorsTargetOverFormer(sessionInstance,context,targetUser,olderUserName);
             //reset selected thesaurus to initiallly selected
-            wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initialThesaurus, SessionUserInfo.userGroup);
+            String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+            wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initialThesaurus, SessionUserInfo.userGroup, targetLang);
         
             if(commitActionResult==TMS_USER_OPERATION_SUCCEDED){
                 //else continue with writing back to XML
@@ -1438,7 +1439,8 @@ public class UsersClass {
             if (selectedThesaurusAuthenticationSucceded == true) {
                 // set the session attribute "SessionUser" to an instance of class 
                 // UserInfoClass filled with the full information of the authenticated user
-                SetSessionAttributeSessionUser(sessionInstance, context, username, password, selectedThesaurus, userGroup);
+                String targetLang = (userInfo ==null || userInfo.UILang==null) ? Parameters.UILang : userInfo.UILang;
+                SetSessionAttributeSessionUser(sessionInstance, context, username, password, selectedThesaurus, userGroup,targetLang);
                 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Welcome user: " + username + " with password: " + password + " to thesaurus: " + selectedThesaurus + " under the group:" + userGroup);
                 
@@ -1545,7 +1547,7 @@ public class UsersClass {
     }
 
     
-    public synchronized void SetSessionAttributeSessionUser(SessionWrapperClass sessionInstance,ServletContext context,  String username, String password, String selectedThesaurus, String userGroup) {
+    public synchronized void SetSessionAttributeSessionUser(SessionWrapperClass sessionInstance,ServletContext context, String username, String password, String selectedThesaurus, String userGroup, String uiLang) {
         // construct an instance of class UserInfoClass
         UserInfoClass SessionUserInfo = new UserInfoClass();
         
@@ -1554,6 +1556,7 @@ public class UsersClass {
         SessionUserInfo.password = password;
         SessionUserInfo.selectedThesaurus = selectedThesaurus;
         SessionUserInfo.userGroup = userGroup;
+        SessionUserInfo.UILang = uiLang;
         
         // fill it with the configuration values for SVG mechanism
         // SVG_CategoriesFrom_for_traverse (replace keywords "%THES%" with g.e. "AAA" and "%thes%" with g.e. "aaa")
@@ -1921,7 +1924,7 @@ public class UsersClass {
         //This is the case where both old and new Editor nodes have links pointing to them.
         //No simple solution for this case. Must traverse all thesaurus categories, Delete links from
         //old and add links to new if needed.
-        
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
         // walk through all thesauri. THEMASAPIClass uses sessionInstance 
         // in order to find out classes thus it should always be set to the correct thesaurus
         for(int p=0 ; p<thesaurusVector.size(); p++){
@@ -1932,7 +1935,8 @@ public class UsersClass {
             ArrayList<Long> oldTermModiifedLinkIds = new ArrayList<Long>();
             
             String currentThes = thesaurusVector.get(p);
-            wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, currentThes, SessionUserInfo.userGroup);
+            
+            wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, currentThes, SessionUserInfo.userGroup,targetLang);
             
             //find out category links of interest for Person to be renamed (here: created_by and modified_by)
             dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.created_by_kwd, createdByClassObj, createdByLinkObj, Q, sis_session);

@@ -145,7 +145,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval--------------------------
             if (updateSourceCriteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", updateSourceCriteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", updateSourceCriteria, request, u);
                 if(searchCriteria.input.size()!=searchCriteria.value.size()){
                     Utils.StaticClass.webAppSystemOutPrintln("Search Sources Input Error");
                 }
@@ -156,13 +156,13 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Sources", searchCriteria);
                 
             }
             
             if(usePreviousCriteria==false){ // used for view alla sources from edit term's SN, SN_TR or HN in order not to modify previously defined criteria
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", "*", request, u);
             }
             
             if (startRecord == null) { //read paging criteria

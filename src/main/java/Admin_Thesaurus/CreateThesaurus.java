@@ -203,7 +203,8 @@ public class CreateThesaurus extends ApplicationBasicServlet {
                     // inform current user's rights with the new thesaurus 
                     UsersClass tmsUsers = new UsersClass();
                     tmsUsers.AddNewThesaurusForCurrentTMSUser(WebAppUsersFileName, sessionInstance, NewThesaurusName);
-                    tmsUsers.SetSessionAttributeSessionUser(sessionInstance,this.getServletContext(), SessionUserInfo.name, SessionUserInfo.password, NewThesaurusNameDBformatted, SessionUserInfo.userGroup);
+                    String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+                    tmsUsers.SetSessionAttributeSessionUser(sessionInstance,this.getServletContext(), SessionUserInfo.name, SessionUserInfo.password, NewThesaurusNameDBformatted, SessionUserInfo.userGroup,targetLang);
                     tmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, NewThesaurusName);
                     
                 }
@@ -255,7 +256,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
          
             // write the XML results
             xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, NewThesaurusName, InitializeDBResultMessage, CreateThesaurusResultMessage, CreateThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

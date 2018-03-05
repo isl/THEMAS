@@ -119,7 +119,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
             //tab pressed without any criteria set
             if(searchCriteria == null ){
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Terms", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Terms", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Terms", searchCriteria);
                 
             }

@@ -59,7 +59,28 @@ function setLangCode(selectBoxId, targetLangId){
         if(inputBox){
             inputBox.value = selectBox.options[selectBox.selectedIndex].value;
         }
+        
+        var currentLocation = window.location.href;
+        var newLocation = '';
+        var newValue = 'lang='+selectBox.options[selectBox.selectedIndex].value;
+        if(currentLocation.indexOf('lang=')>0){
+            
+            newLocation  = currentLocation.replace(/lang=[a-z]+/mg, newValue)
+        }
+        else{
+            if(currentLocation.indexOf('?')>0){
+                newLocation = currentLocation+'&'+newValue;
+            }
+            else{
+                newLocation = currentLocation+'?'+newValue;
+            }        
+
+        }
+        
+        window.location.href = newLocation;
     }
+    
+    
 }
 
 /*-----------------------------------------------------

@@ -1939,7 +1939,7 @@ public class DBGeneral {
         } else if (output.equals("accepted")) {
             return get_accepted_status(SessionUserInfo.selectedThesaurus, term, Q, sis_session);
         } else if (output.equals("status")) {
-            return get_term_status(SessionUserInfo.selectedThesaurus, term, Q, sis_session);
+            return get_term_status(SessionUserInfo, term, Q, sis_session);
         } else if (output.equals(ConstantParameters.comment_kwd) ||
                 output.equals(ConstantParameters.scope_note_kwd) || 
                 output.equals(ConstantParameters.translations_scope_note_kwd) ||
@@ -2003,7 +2003,7 @@ public class DBGeneral {
         return acceptedOrNot;
     }
 
-    ArrayList<String> get_term_status(String selectedThesaurus, String term, QClass Q, IntegerObject sis_session) {
+    ArrayList<String> get_term_status(Users.UserInfoClass SessionUserInfo, String term, QClass Q, IntegerObject sis_session) {
 
         ArrayList<String> termStatus = new ArrayList<String>();
 
@@ -2016,13 +2016,13 @@ public class DBGeneral {
         StringObject statusApprovedObj = new StringObject();
         StringObject termObj = new StringObject();
 
-        dbtr.getThesaurusClass_StatusUnderConstruction(selectedThesaurus, statusUnderConstructionObj);
-        dbtr.getThesaurusClass_StatusForApproval(selectedThesaurus, statusForApprovalObj);
-        dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus, statusForInsertionObj);
-        dbtr.getThesaurusClass_StatusForReinspection(selectedThesaurus, statusForReinspectionObj);
-        dbtr.getThesaurusClass_StatusApproved(selectedThesaurus, statusApprovedObj);
+        dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus, statusUnderConstructionObj);
+        dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus, statusForApprovalObj);
+        dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus, statusForInsertionObj);
+        dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus, statusForReinspectionObj);
+        dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus, statusApprovedObj);
 
-        String prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
+        String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         termObj.setValue(prefix.concat(term));
 
         Q.reset_name_scope();
@@ -2034,15 +2034,15 @@ public class DBGeneral {
         Q.free_set(set_classes);
 
         if (ClassNames.contains(statusUnderConstructionObj.getValue())) {
-            termStatus.add(Parameters.Status_Under_Construction);
+            termStatus.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo));
         } else if (ClassNames.contains(statusForApprovalObj.getValue())) {
-            termStatus.add(Parameters.Status_For_Approval);
+            termStatus.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo));
         } else if (ClassNames.contains(statusForInsertionObj.getValue())) {
-            termStatus.add(Parameters.Status_For_Insertion);
+            termStatus.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo));
         } else if (ClassNames.contains(statusForReinspectionObj.getValue())) {
-            termStatus.add(Parameters.Status_For_Reinspection);
+            termStatus.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Reinspection, SessionUserInfo));
         } else if (ClassNames.contains(statusApprovedObj.getValue())) {
-            termStatus.add(Parameters.Status_Approved);
+            termStatus.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo));
         }
 
         return termStatus;
@@ -3416,7 +3416,8 @@ public class DBGeneral {
 
                 } else if (input[i].toString().equalsIgnoreCase(ConstantParameters.status_kwd)) {
 
-                    set_partial_descriptor_results = filterLinksByStatus(SessionUserInfo.selectedThesaurus, sisSessionId, operators[i].toString(), searchVal, Q, sis_session);
+                    
+                    set_partial_descriptor_results = filterLinksByStatus(SessionUserInfo, sisSessionId, operators[i].toString(), searchVal, Q, sis_session);
                     Q.reset_set(set_partial_descriptor_results);
 
                 }
@@ -3940,7 +3941,7 @@ public class DBGeneral {
         return set_from_results;
     }
 
-    public int filterLinksByStatus(String selectedThesaurus, int sisSessionId, String operator, String searchVal, QClass Q, IntegerObject sis_session) {
+    public int filterLinksByStatus(UserInfoClass SessionUserInfo, int sisSessionId, String operator, String searchVal, QClass Q, IntegerObject sis_session) {
 
         int set_results = Q.set_get_new();
 
@@ -3951,19 +3952,19 @@ public class DBGeneral {
         StringObject statusForReinspectionObj = new StringObject();
         StringObject statusApprovedObj = new StringObject();
 
-        dbtr.getThesaurusClass_StatusUnderConstruction(selectedThesaurus, statusUnderConstructionObj);
-        dbtr.getThesaurusClass_StatusForApproval(selectedThesaurus, statusForApprovalObj);
-        dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus, statusForInsertionObj);
-        dbtr.getThesaurusClass_StatusForReinspection(selectedThesaurus, statusForReinspectionObj);
-        dbtr.getThesaurusClass_StatusApproved(selectedThesaurus, statusApprovedObj);
+        dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus, statusUnderConstructionObj);
+        dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus, statusForApprovalObj);
+        dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus, statusForInsertionObj);
+        dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus, statusForReinspectionObj);
+        dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus, statusApprovedObj);
 
         HashMap<String, StringObject> all_statuses = new HashMap<String, StringObject>();
 
-        all_statuses.put(Parameters.Status_Under_Construction, statusUnderConstructionObj);
-        all_statuses.put(Parameters.Status_For_Approval, statusForApprovalObj);
-        all_statuses.put(Parameters.Status_For_Insertion, statusForInsertionObj);
-        all_statuses.put(Parameters.Status_For_Reinspection, statusForReinspectionObj);
-        all_statuses.put(Parameters.Status_Approved, statusApprovedObj);
+        all_statuses.put(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo), statusUnderConstructionObj);
+        all_statuses.put(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo), statusForApprovalObj);
+        all_statuses.put(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo), statusForInsertionObj);
+        all_statuses.put(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Reinspection, SessionUserInfo), statusForReinspectionObj);
+        all_statuses.put(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo), statusApprovedObj);
 
         ArrayList<StringObject> filtered_Status_Vec = new ArrayList<>();
 

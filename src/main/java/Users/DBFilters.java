@@ -181,13 +181,13 @@ public class DBFilters {
         
             
         if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam) == true) {
-            return Parameters.Status_Under_Construction;
+            return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo);
         }
         if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusCommittee) == true) {
-            return Parameters.Status_Under_Construction;
+            return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo);
         }        
                 
-        return Parameters.Status_For_Insertion;
+        return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion,SessionUserInfo);
     }                                        
 }
 

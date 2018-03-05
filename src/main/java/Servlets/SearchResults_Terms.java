@@ -138,7 +138,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             int termsPagingQueryResultsCount = 0;
 
             if (updateTermsCriteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Terms", updateTermsCriteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Terms", updateTermsCriteria, request, u);
 
                 if (searchCriteria.input.size() == searchCriteria.value.size()) {
                     /*
@@ -273,7 +273,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Terms", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Terms", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Terms", searchCriteria);
             }
 
@@ -320,7 +320,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 output.add(ConstantParameters.system_transliteration_kwd);
             }
 
-            // handle search operators (not) starts / ends with
+            // handle search operators (not) starts / ends with and statuses (may be defined in different language)
             u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,false);
 
             //--------------------end of paging info And criteria retrieval--------------------------
@@ -374,10 +374,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 }
 
                 if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
-                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,true,false);
+                    u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo,true,false);
                 }
                 else{
-                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo.selectedThesaurus,false,false);
+                    u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo,false,false);
                 }
                 // timer end
                 elapsedTimeSec = Utilities.stopTimer(startTime);
@@ -466,7 +466,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             ArrayList<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
             Collections.sort(resultsTermsInSortItems,transliterationComparator);
             
-            u.getResultsInXml_ForTableLayout(resultsTermsInSortItems, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
+            u.getResultsInXml_ForTableLayout(SessionUserInfo,resultsTermsInSortItems, termsInfo, output, xmlResults, Q, sis_session, targetLocale);
 
             
             Q.free_set(set_paging_results);

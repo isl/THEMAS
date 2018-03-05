@@ -376,7 +376,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
 
                 //Write XML file
-                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIdsL, targetLocale, SessionUserInfo.selectedThesaurus, false, false);
+                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIdsL, targetLocale, SessionUserInfo, false, false);
 
                 //end query and close connection
                 Q.free_all_sets();

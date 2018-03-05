@@ -244,7 +244,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
             
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
-            u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo.selectedThesaurus,skipOutput,skipOutput);
+            u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo,skipOutput,skipOutput);
             
             
             // in case of LIBRARY user group, mark term as (un)editable

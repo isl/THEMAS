@@ -125,7 +125,7 @@ public class DBCreate_Modify_Term {
 
             // FILTER default status for term creation depending on user group
             DBFilters dbf = new DBFilters();
-            dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, newNameObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q,TA, sis_session, tms_session, dbGen, errorMsg);
+            dbCon.CreateModifyStatus(SessionUserInfo, newNameObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q,TA, sis_session, tms_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
@@ -452,7 +452,7 @@ public class DBCreate_Modify_Term {
             modifiedNodes = new String[1];
             modifiedNodes[0] = targetTermWithoutPrefix.trim();
 
-            dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), Q, TA, sis_session, tms_session, dbGen, errorMsg);
+            dbCon.CreateModifyStatus(SessionUserInfo, targetDescriptorObj, decodedValues.get(0), Q, TA, sis_session, tms_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }

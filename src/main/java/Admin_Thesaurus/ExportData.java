@@ -215,7 +215,7 @@ public class ExportData extends ApplicationBasicServlet {
                         xml.append("<skosBaseNameSpace>"+SkosExportBaseNameSpace+"</skosBaseNameSpace>");
             }
             
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
             xml.append(getXMLMiddle(thesauriNames, Filename));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

@@ -129,7 +129,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             int hierarchiesPagingQueryResultsCount = 0;
 
             if (updateTermsCirteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Hierarchies", updateTermsCirteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Hierarchies", updateTermsCirteria, request, u);
                 if(searchCriteria.input.size()==searchCriteria.value.size()){
                     /*
                     for(int k=0; k<searchCriteria.input.size(); k++){
@@ -163,7 +163,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Hierarchies", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Hierarchies", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Hierarchies", searchCriteria);
 
             }

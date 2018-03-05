@@ -132,7 +132,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             int facetsPagingQueryResultsCount = 0;
 
             if (updateTermsCirteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Facets", updateTermsCirteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Facets", updateTermsCirteria, request, u);
 
                 if (searchCriteria.input.size() == searchCriteria.value.size()) {
                     /*
@@ -177,7 +177,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Facets", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Facets", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Facets", searchCriteria);
             }
 

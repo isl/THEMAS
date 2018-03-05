@@ -36,6 +36,7 @@ package DB_Classes;
 
 
 
+import Users.UserInfoClass;
 import Utils.ConstantParameters;
 
 import Utils.Parameters;
@@ -2118,9 +2119,15 @@ public class DBConnect_Term {
         }
     }
     
-    public void CreateModifyStatus(String selectedThesaurus,StringObject targetDescriptorObj, String status,
+    public void CreateModifyStatus(UserInfoClass SessionUserInfo,StringObject targetDescriptorObj, String status,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,IntegerObject tms_session,  DBGeneral dbGen,StringObject errorMsg){
        
+        String displayStatusFor_UC = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo);
+        String displayStatusFor_FI = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo);
+        String displayStatusFor_FA = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo);
+        String displayStatusFor_FR = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Reinspection, SessionUserInfo);
+        String displayStatus_Approved = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo);
+        
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject statusUnderConstructionObj = new StringObject();
         StringObject statusForApprovalObj       = new StringObject();
@@ -2128,11 +2135,11 @@ public class DBConnect_Term {
         StringObject statusForReinspectionObj   = new StringObject();
         StringObject statusApprovedObj          = new StringObject();
         
-        dbtr.getThesaurusClass_StatusUnderConstruction(selectedThesaurus,statusUnderConstructionObj);
-        dbtr.getThesaurusClass_StatusForApproval(selectedThesaurus,statusForApprovalObj);
-        dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus,statusForInsertionObj);
-        dbtr.getThesaurusClass_StatusForReinspection(selectedThesaurus,statusForReinspectionObj);
-        dbtr.getThesaurusClass_StatusApproved(selectedThesaurus,statusApprovedObj);
+        dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus,statusUnderConstructionObj);
+        dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus,statusForApprovalObj);
+        dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus,statusForInsertionObj);
+        dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus,statusForReinspectionObj);
+        dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus,statusApprovedObj);
         
         //Get Sys_IDs and create Identifiers for all above Retrieved classes and target term
         Q.reset_name_scope();
@@ -2167,7 +2174,7 @@ public class DBConnect_Term {
         Identifier I_Term = new Identifier(termIdL);
         int ret = QClass.APISucc;
             
-        if(status.compareTo(Parameters.Status_Under_Construction)==0){
+        if(status.compareTo(displayStatusFor_UC)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusForApprovalObj.getValue()))
@@ -2211,7 +2218,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_For_Approval)==0){
+        if(status.compareTo(displayStatusFor_FA)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2254,7 +2261,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_For_Insertion)==0){
+        if(status.compareTo(displayStatusFor_FI)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2297,7 +2304,7 @@ public class DBConnect_Term {
             }
         }
         else
-        if(status.compareTo(Parameters.Status_For_Reinspection)==0){
+        if(status.compareTo(displayStatusFor_FR)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2340,7 +2347,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_Approved)==0){
+        if(status.compareTo(displayStatus_Approved)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2377,11 +2384,10 @@ public class DBConnect_Term {
             
             if(ret == QClass.APIFail){
                 errorMsg.setValue(errorMsg.getValue().concat(dbGen.check_success(ret, TA, null,tms_session)));
-            }            
-            
+            }
         }
     }
-     /* CreateModify_Finalization()
+    /* CreateModify_Finalization()
      * Handles created/modified info of each node affected.
      * Affected Nodes are target Node and all nodes in String otherModifiedNodes in a comma seperated list
      */

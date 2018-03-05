@@ -198,7 +198,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             //dbAdminUtils.RefreshThesaurusVector(sessionInstance, Q, TA, sis_session, tms_session, dbGen, thesaurusVector);
             // in case of succesful deletion of the thesaurus inform user's rights for the deletion of the thesaurus (todo)
             
-            
+            String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
             StringObject resultMessageObj = new StringObject();
             if (DeleteThesaurusSucceded == true) {
             
@@ -209,7 +209,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
                 UsersClass tmsUsers = new UsersClass();
                 synchronized (sessionInstance) {
                     if (thesaurusVector.size() > 0) {
-                        tmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, thesaurusVector.get(0).toString(), SessionUserInfo.userGroup);
+                        tmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, thesaurusVector.get(0).toString(), SessionUserInfo.userGroup, targetLang);
                         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Setting current thesaurus to " + thesaurusVector.get(0).toString());
                     }
                 }
@@ -247,7 +247,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             // write the XML results
             StringBuffer xml = new StringBuffer();
             xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI,SessionUserInfo.UILang));
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, ThesaurusName, DeleteThesaurusResultMessage, DeleteThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

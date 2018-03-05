@@ -219,7 +219,7 @@ public class ImportData extends ApplicationBasicServlet {
 
                         StringBuffer xml = new StringBuffer();
                         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-                        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+                        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
 
                         xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/ImportData/ImportFunctionFailure", null, SessionUserInfo.UILang) + resultObj.getValue(), importMethodChoice));
                         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -254,7 +254,7 @@ public class ImportData extends ApplicationBasicServlet {
 
                         StringBuffer xml = new StringBuffer();
                         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-                        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+                        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
 
                         resultMessageObj_2.setValue(u.translateFromMessagesXML("root/ImportData/InsertionFailure", null, SessionUserInfo.UILang));
                         xml.append(getXMLMiddle(thesauriNames, resultMessageObj_2.getValue() + resultObj.getValue(), importMethodChoice));
@@ -450,7 +450,8 @@ public class ImportData extends ApplicationBasicServlet {
         if (importMethodChoice.compareTo("bulkImport") == 0) {
             resultFileTagName = "bulkImportReportFile";
         }
-        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, importThesaurusName, SessionUserInfo.userGroup);
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, importThesaurusName, SessionUserInfo.userGroup,targetLang);
 
         dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
         dbGen.GetExistingThesaurus(false, thesauriNames, Q, sis_session);
@@ -465,7 +466,7 @@ public class ImportData extends ApplicationBasicServlet {
         wtmsUsers.AddNewThesaurusForCurrentTMSUser(WebAppUsersFileName, sessionInstance, importThesaurusName);
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append("<" + resultFileTagName + ">");
         xml.append(reportFile);
         xml.append("</" + resultFileTagName + ">");
@@ -503,8 +504,8 @@ public class ImportData extends ApplicationBasicServlet {
         StringObject result = new StringObject("");
 
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-
-        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup);
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup, targetLang);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + DBbackupFileNameCreated.getValue());
 
         boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, SessionUserInfo.UILang);
@@ -536,7 +537,7 @@ public class ImportData extends ApplicationBasicServlet {
         }
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         StringObject resultMessageObj_2 = new StringObject();
 
         xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActions/InsertionFailure", null, SessionUserInfo.UILang) + resultObj.getValue(), importMethodChoice));

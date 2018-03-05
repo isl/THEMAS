@@ -234,8 +234,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
 
         StringObject result = new StringObject("");
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-
-        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup);
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup, targetLang);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + DBbackupFileNameCreated.getValue());
 
         boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, SessionUserInfo.UILang);
@@ -259,7 +259,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         }
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         
         xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null, SessionUserInfo.UILang) + resultObj.getValue()));
         
@@ -302,7 +302,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append("<mergewarnings>");
         xml.append(mergeNotes);
         xml.append("</mergewarnings>");

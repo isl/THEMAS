@@ -59,7 +59,7 @@ public class SearchCriteria {
     public ArrayList<Integer> pagingValues;
 
     //following fields are initialized with Parameters
-    public static String[][] inputStrs = null; 
+    public static HashMap<String,HashMap<String,String>> inputStrs = null; 
     public static String[] termsDefaultOutput = null;
     public static String[] quickSearchInputStrs = null;
     public static String[] quickSearchOutput = null;
@@ -71,10 +71,16 @@ public class SearchCriteria {
     public static String showAllString = "";
     public static String andDisplayOperator = "";
     public static String orDisplayOperator = "";
-    public static HashMap<String,String> termSpecialInputs = null;
-    public static HashMap<String,String> hierarchySpecialInputs = null;
-    public static HashMap<String,String> facetSpecialInputs = null;
-    public static HashMap<String,String> sourceSpecialInputs = null;
+    
+    public static HashMap<String,String> Lang_DefinitionsFor_SearchCriteria_ShowAll = new HashMap<>();
+    public static HashMap<String,String> Lang_DefinitionsFor_SearchCriteria_And = new HashMap<>();
+    public static HashMap<String,String> Lang_DefinitionsFor_SearchCriteria_Or = new HashMap<>();
+    
+    //for each keyword (first level key) Hold all translations with lang as second level key
+    public static HashMap<String,HashMap<String,String>> termSpecialInputs = null;
+    public static HashMap<String,HashMap<String,String>> hierarchySpecialInputs = null;
+    public static HashMap<String,HashMap<String,String>> facetSpecialInputs = null;
+    public static HashMap<String,HashMap<String,String>> sourceSpecialInputs = null;
 
     String QueryString;
     
@@ -93,12 +99,45 @@ public class SearchCriteria {
 
     }
     
+    private String getAndOperatroDisplayString(String targetLang){
+        String retVal = "";
+        if(Lang_DefinitionsFor_SearchCriteria_And.containsKey(targetLang)){
+            retVal = Lang_DefinitionsFor_SearchCriteria_And.get(targetLang);
+        }
+        else{
+            retVal = SearchCriteria.andDisplayOperator;
+        }
+        return retVal;
+    }
     
-    public static SearchCriteria createSearchCriteriaObject(String targetSearchCriteriaMode, String targetSearchCriteriaValue,HttpServletRequest request,Utilities u) {
+    private String getOrOperatroDisplayString(String targetLang){
+        String retVal = "";
+        if(Lang_DefinitionsFor_SearchCriteria_Or.containsKey(targetLang)){
+            retVal = Lang_DefinitionsFor_SearchCriteria_Or.get(targetLang);
+        }
+        else{
+            retVal = SearchCriteria.orDisplayOperator;
+        }
+        return retVal;
+    }
+    
+    
+    private String getShowAllString(String targetLang){
+        String retVal = "";
+        if(Lang_DefinitionsFor_SearchCriteria_ShowAll.containsKey(targetLang)){
+            retVal = Lang_DefinitionsFor_SearchCriteria_ShowAll.get(targetLang);
+        }
+        else{
+            retVal = SearchCriteria.showAllString;
+        }
+        return retVal;
+    }
+    
+    public static SearchCriteria createSearchCriteriaObject(UserInfoClass SessionUserInfo, String targetSearchCriteriaMode, String targetSearchCriteriaValue,HttpServletRequest request,Utilities u) {
 
         SearchCriteria sc = new SearchCriteria();               
         
-
+        String targetLang = (SessionUserInfo!=null && SessionUserInfo.UILang!=null)?SessionUserInfo.UILang : Parameters.UILang;
 
         try{
             String showAll = u.getDecodedParameterValue(request.getParameter("showAll")); 
@@ -256,7 +295,7 @@ public class SearchCriteria {
                 sc.pagingNames.add("termsResults");
                 sc.pagingValues.add(1);
                 
-                sc.setQueryString("term");
+                sc.setQueryString("term", targetLang);
 
             } 
             else 
@@ -312,7 +351,7 @@ public class SearchCriteria {
 
                 sc.pagingNames.add("hierarchiesResults");
                 sc.pagingValues.add(1);
-                sc.setQueryString("hierarchy");
+                sc.setQueryString("hierarchy", targetLang);
             } 
             else 
             if (targetSearchCriteriaMode.equals("SearchCriteria_Facets")) {
@@ -368,7 +407,7 @@ public class SearchCriteria {
                 sc.pagingNames.add("facetsResults");
                 sc.pagingValues.add(1);
 
-                sc.setQueryString("facet");
+                sc.setQueryString("facet", targetLang);
             }
             else 
             if (targetSearchCriteriaMode.equals("SearchCriteria_Sources")) {
@@ -441,7 +480,7 @@ public class SearchCriteria {
                 sc.pagingNames.add("sourcesResults");
                 sc.pagingValues.add(1);
                 
-                sc.setQueryString("source");
+                sc.setQueryString("source", targetLang);
 
             } 
             else 
@@ -465,8 +504,7 @@ public class SearchCriteria {
                     //sc.output.add("thesaurusName");
                     //sc.output.add("description");
                 }                 
-                else
-                if(showAll!= null && showAll.compareTo("all")==0){ // user selected Proboli olwn apo to interface twn kritiriwn kai meta epelekse output
+                else if(showAll!= null && showAll.compareTo("all")==0){ // user selected Proboli olwn apo to interface twn kritiriwn kai meta epelekse output
 
                     sc.CombineOperator="all";
                     
@@ -503,8 +541,8 @@ public class SearchCriteria {
                 sc.pagingNames.add("usersResults");
                 sc.pagingValues.add(1);
 
-                sc.setQueryString("user");
-            }            
+                sc.setQueryString("user", targetLang);
+            }    
         }
         catch(java.io.UnsupportedEncodingException ex){
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Update Search Criteria Error : " + ex.getMessage());
@@ -520,15 +558,27 @@ public class SearchCriteria {
                      
        return Utilities.escapeXML(QueryString);
     }
+    
 
-    public void setQueryString(String mode) {
+    private String getInputStrLangVariant(String targetInput, String targetLang){
+        String retVal = "";
+        if(inputStrs.containsKey(targetInput.toLowerCase()) && inputStrs.get(targetInput.toLowerCase()).containsKey(targetLang)){
+            retVal = inputStrs.get(targetInput.toLowerCase()).get(targetLang);
+        }
+        if(retVal==null || retVal.length()==0){
+            retVal = targetInput;
+        }
+        return retVal;
+    }
+    
+    public void setQueryString(String mode, String targetLang) {
         
         String Query = "";
 
         if (CombineOperator.equals("*")||CombineOperator.equals("all")) {
 
             //Query = "Show all";
-            Query = SearchCriteria.showAllString;
+            Query = getShowAllString(targetLang);// SearchCriteria.showAllString;
 
         } else {
 
@@ -541,49 +591,49 @@ public class SearchCriteria {
                 String inputStr_UI = input.get(i);
                 //Query += " " + input.get(i) + " ";
                 
-                for(int j=0;j< inputStrs.length;j++){
+                //for(int j=0;j< inputStrs.size();j++){
 
-                    if(inputStrs[j][0].equalsIgnoreCase(inputStr)){
+                    if(inputStrs.containsKey(inputStr.toLowerCase())){
                         if(mode.compareTo("term")==0){
-                            if(termSpecialInputs.containsKey(inputStr)){
-                                inputStr_UI = " " + termSpecialInputs.get(inputStr);
+                            if(termSpecialInputs.containsKey(inputStr) && termSpecialInputs.get(inputStr).containsKey(targetLang)){
+                                inputStr_UI = " " + termSpecialInputs.get(inputStr).get(targetLang);
                             }
                             else{
-                                inputStr_UI = " " + inputStrs[j][1];
+                                inputStr_UI = " " + getInputStrLangVariant(inputStr,targetLang);
                             }
 
                         }
                         else if(mode.compareTo("hierarchy")==0){
-                            if(hierarchySpecialInputs.containsKey(inputStr)){
-                                inputStr_UI = " " + hierarchySpecialInputs.get(inputStr);
+                            if(hierarchySpecialInputs.containsKey(inputStr) && hierarchySpecialInputs.get(inputStr).containsKey(targetLang)){
+                                inputStr_UI = " " + hierarchySpecialInputs.get(inputStr).get(targetLang);
                             }
                             else{
-                                inputStr_UI = " " + inputStrs[j][1];
+                                inputStr_UI = " " + getInputStrLangVariant(inputStr,targetLang);
                             }
 
                         }
                         else if(mode.compareTo("facet")==0){
-                            if(facetSpecialInputs.containsKey(inputStr)){
-                                inputStr_UI = " " + facetSpecialInputs.get(inputStr);
+                            if(facetSpecialInputs.containsKey(inputStr)&& facetSpecialInputs.get(inputStr).containsKey(targetLang)){
+                                inputStr_UI = " " + facetSpecialInputs.get(inputStr).get(targetLang);
                             }
                             else{
-                                inputStr_UI = " " + inputStrs[j][1];
+                                inputStr_UI = " " + getInputStrLangVariant(inputStr,targetLang);
                             }
                         }
                         else if(mode.compareTo("source")==0){
 
-                            if(sourceSpecialInputs.containsKey(inputStr)){
-                                inputStr_UI = " " + sourceSpecialInputs.get(inputStr);
+                            if(sourceSpecialInputs.containsKey(inputStr)&& sourceSpecialInputs.get(inputStr).containsKey(targetLang)){
+                                inputStr_UI = " " + sourceSpecialInputs.get(inputStr).get(targetLang);
                             }
                             else{
-                                inputStr_UI = " " + inputStrs[j][1];
+                                inputStr_UI = " " + getInputStrLangVariant(inputStr,targetLang);
                             }
                         }
                         else{
-                            inputStr_UI = " " + inputStrs[j][1];
+                            inputStr_UI = " " + getInputStrLangVariant(inputStr,targetLang);
                         }
 
-                        break;
+                        //break;
                     }
 
                     /*
@@ -628,7 +678,7 @@ public class SearchCriteria {
                         
                         break;
                     }*/
-                }
+                //}
                 
                 Query += " "+inputStr_UI+" ";
                 
@@ -656,9 +706,9 @@ public class SearchCriteria {
                 
                 if (i < input.size() - 1) {
                     if(CombineOperator.toUpperCase().matches("AND"))
-                        Query += " "+andDisplayOperator+" " ;
+                        Query += " "+getAndOperatroDisplayString(targetLang)+" " ;
                     if(CombineOperator.toUpperCase().matches("OR"))
-                        Query += " "+orDisplayOperator+" "  ;
+                        Query += " "+getOrOperatroDisplayString(targetLang)+" "  ;
                 }
             }
 

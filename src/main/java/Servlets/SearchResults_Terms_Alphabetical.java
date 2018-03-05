@@ -122,7 +122,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             
             //tab pressed without any criteria set
             if(searchCriteria == null ){
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Terms", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Terms", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Terms", searchCriteria);
                 
             }
@@ -237,7 +237,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 //Collections.sort(resultUFNodes, new SortItemLocaleComparator(targetLocale)); 
                 
                 //Write XML file
-                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo.selectedThesaurus,false,true);
+                u.writeResultsInXMLFile(null, allTerms, resultsInfo, output, webAppSaveResults_temporary_filesAbsolutePath,  Save_Results_file_name, Q, sis_session ,termsInfo,resultNodesIdsL,targetLocale,SessionUserInfo,false,true);
                 
                 //end query and close connection
                 Q.free_all_sets();
@@ -307,7 +307,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             resultsTerms.addAll(Utilities.getStringVectorFromSortItemVector(resultsTermsInSortItems));
             
             
-            u.getResultsInXmlGuideTermSorting(resultsTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo.selectedThesaurus,false,false);
+            u.getResultsInXmlGuideTermSorting(resultsTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo,false,false);
             
             //end query and close connection
             Q.free_all_sets();

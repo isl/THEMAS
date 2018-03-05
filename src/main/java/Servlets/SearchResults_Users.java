@@ -102,7 +102,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             int usersPagingQueryResultsCount = 0;
 
             if (updateUsersCriteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Users", updateUsersCriteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Users", updateUsersCriteria, request, u);
                 sessionInstance.setAttribute("SearchCriteria_Users", searchCriteria);
 
             } else {  //else try to read criteria for this user
@@ -110,7 +110,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Users", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Users", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Users", searchCriteria);
 
             }

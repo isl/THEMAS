@@ -338,8 +338,9 @@ public class ScheduledBackups extends TimerTask {
                 break;
             }
 
+            String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
             //set thesauric values to Parameters
-            WTMSUsers.SetSessionAttributeSessionUser(sessionInstance,context, SessionUserInfo.name, SessionUserInfo.password, exprortThesaurus, SessionUserInfo.userGroup);
+            WTMSUsers.SetSessionAttributeSessionUser(sessionInstance,context, SessionUserInfo.name, SessionUserInfo.password, exprortThesaurus, SessionUserInfo.userGroup,targetLang);
 
             //exporting Data
 

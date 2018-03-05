@@ -280,14 +280,19 @@ public class Utilities {
     }
 
     //ALMOST IDENTICAL TO getResultsInXml_ForTableLayout
-    public void getResultsInXmlGuideTermSorting(ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale, String selectedThesaurus, boolean skipOutput, boolean skipIds) {
+    public void getResultsInXmlGuideTermSorting(ArrayList<String> allTerms, 
+                      HashMap<String, NodeInfoSortItemContainer> termsInfo, 
+                      ArrayList<String> output, StringBuffer xmlResults, 
+                      QClass Q, IntegerObject sis_session, 
+                      Locale targetLocale, 
+                      UserInfoClass SessionUserInfo, boolean skipOutput, boolean skipIds) {
         //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
         SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
         SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
 
         
-        xmlResults.append("<data thesaurus=\"").append(selectedThesaurus.toUpperCase()).append("\" translationsSeperator=\"").append(Parameters.TRANSLATION_SEPERATOR).append("\" displayCreatorInAlphabetical=\"").append(Parameters.CreatorInAlphabeticalTermDisplay).append("\">");
+        xmlResults.append("<data thesaurus=\"").append(SessionUserInfo.selectedThesaurus.toUpperCase()).append("\" translationsSeperator=\"").append(Parameters.TRANSLATION_SEPERATOR).append("\" displayCreatorInAlphabetical=\"").append(Parameters.CreatorInAlphabeticalTermDisplay).append("\">");
         if(!skipOutput){
             xmlResults.append("<output>");
             for (int m = 0; m < output.size(); m++) {
@@ -336,7 +341,7 @@ public class Utilities {
             if(refIdL>0){
                 xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
                 if(Parameters.ShowReferenceURIalso){
-                    xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
+                    xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
                 }
             }
             /*
@@ -396,7 +401,7 @@ public class Utilities {
                         if(linkRefIdL>0){
                           xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefIdL+"\"");
                           if(Parameters.ShowReferenceURIalso){
-                              xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), whatKind, linkRefIdL)+"\"");
+                              xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), whatKind, linkRefIdL)+"\"");
                           } 
                         }
                         if(Parameters.ShowTransliterationInAllXMLStream){
@@ -430,7 +435,14 @@ public class Utilities {
                         }
                     }
 
-                } else {
+                } else if (category.compareTo(ConstantParameters.status_kwd) == 0) {
+                    for (SortItem valueSortItem : values) {
+                        xmlResults.append("<" + category + ">");
+                        xmlResults.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo)));
+                        xmlResults.append("</" + category + ">");
+                    }
+                }
+                else {
                     for (SortItem valueSortItem : values) {
                         xmlResults.append("<" + category + ">");
                         xmlResults.append(escapeXML(valueSortItem.getLogName()));
@@ -456,7 +468,7 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public void getResultsInXml_ForTableLayout(ArrayList<SortItem> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public void getResultsInXml_ForTableLayout(UserInfoClass SessionUserInfo, ArrayList<SortItem> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
         
         //SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
         SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
@@ -558,7 +570,13 @@ public class Utilities {
                         xmlResults.append("</" + category + ">");
                     }
 
-                } else {
+                }else if (category.compareTo(ConstantParameters.status_kwd) == 0) {
+                    for (int k = 0; k < values.size(); k++) {
+                        xmlResults.append("<" + category + ">");
+                        xmlResults.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(values.get(k).getLogName(), SessionUserInfo)));
+                        xmlResults.append("</" + category + ">");
+                    }
+                }else {
                     for (int k = 0; k < values.size(); k++) {
                         xmlResults.append("<" + category + ">");
                         xmlResults.append(escapeXML(values.get(k).getLogName()));
@@ -1713,6 +1731,7 @@ public class Utilities {
     public void InformSearchOperatorsAndValuesWithSpecialCharacters(String[] input,String[] searchOperators, String[] searchInputValues, boolean nameRefersToSource) {
         int len = searchOperators.length;
         for (int i = 0; i < len; i++) {
+            
             if (searchOperators[i].compareTo("~*") == 0) { // starts with
                 searchOperators[i] = ConstantParameters.searchOperatorContains;
                 searchInputValues[i] = searchInputValues[i] + "*";
@@ -2043,7 +2062,12 @@ public class Utilities {
                     for (int k = 0; k < v.size(); k++) {
 
                         sb.append("<name>");
-                        sb.append(escapeXML(v.get(k).toString()));
+                        /*if (output[j].equals(ConstantParameters.status_kwd)){
+                           sb.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(v.get(k).toString(), SessionUserInfo)));
+                        }
+                        else{*/
+                                sb.append(escapeXML(v.get(k).toString()));
+                        //}
                         sb.append("</name>");
 
                         /*if (v.size() > 1 && k < v.size() - 1) {
@@ -2377,7 +2401,7 @@ public class Utilities {
 
     }
 
-    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
 
         StringBuffer dataNeeded = new StringBuffer();
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
@@ -2388,11 +2412,11 @@ public class Utilities {
         dataNeeded.append("</availableHierarchies>");
 
         dataNeeded.append("<availableStatuses>");
-        dataNeeded.append("<status>" + Parameters.Status_Under_Construction + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_For_Approval + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_For_Insertion + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo) + "</status>");
         //dataNeeded.append("<status>" + dbGen.Status_For_Reinspection + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_Approved + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo) + "</status>");
         dataNeeded.append("</availableStatuses>");
 
         Collections.sort(allGuideTerms, new StringLocaleComparator(targetLocale));
@@ -2412,7 +2436,7 @@ public class Utilities {
     public void writeResultsInXMLFile(PrintWriter outStream, ArrayList<String> allTerms, String startXML, ArrayList<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
             QClass Q, IntegerObject sis_session, HashMap<String, NodeInfoSortItemContainer> termsInfo, 
-            ArrayList<Long> resultNodesIds, Locale targetLocale, String selectedThesaurus, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
+            ArrayList<Long> resultNodesIds, Locale targetLocale, UserInfoClass SessionUserInfo, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
 
 
 
@@ -2449,7 +2473,7 @@ public class Utilities {
         
         try {
             
-            appendVal = "<data thesaurus=\"" +selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\" displayCreatorInAlphabetical=\""+Parameters.CreatorInAlphabeticalTermDisplay+"\">";
+            appendVal = "<data thesaurus=\"" +SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\" displayCreatorInAlphabetical=\""+Parameters.CreatorInAlphabeticalTermDisplay+"\">";
             if(!streamOutput){
                 //not of interest in xmlstream
                 appendVal+="<output>";
@@ -2558,7 +2582,7 @@ public class Utilities {
                 if(refIdL>0){
                     appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"";
                     if(Parameters.ShowReferenceURIalso){
-                        appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\"";
+                        appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\"";
                     }
                  }
                 /*
@@ -2604,7 +2628,7 @@ public class Utilities {
                     */
                     ArrayList<SortItem> values = new ArrayList<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get(category));
-                    if (    (category.compareTo(ConstantParameters.nt_kwd) == 0  && sortNtsViaLinkClassFirst) || //no need to sort nts by link class as this xml will only be shown in table - simple list format
+                    if ( (category.compareTo(ConstantParameters.nt_kwd) == 0  && sortNtsViaLinkClassFirst) || //no need to sort nts by link class as this xml will only be shown in table - simple list format
                             category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                         Collections.sort(values, guideTermComparator);
                     } else {
@@ -2657,7 +2681,7 @@ public class Utilities {
                                 if(linkRefId>0){
                                        appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefId+"\"";
                                        if(Parameters.ShowReferenceURIalso){
-                                            appendVal +=" " +ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(selectedThesaurus.toUpperCase(), whatKind, linkRefId)+"\""; 
+                                            appendVal +=" " +ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), whatKind, linkRefId)+"\""; 
                                        }
                                 }
                                 if(Parameters.ShowTransliterationInAllXMLStream)
@@ -2713,7 +2737,19 @@ public class Utilities {
                         }
 
 
-                    } else {
+                    } else if(category.compareTo(ConstantParameters.status_kwd)==0){
+
+                        for (SortItem valueSortItem : values) {
+                            if(streamOutput){
+                                outStream.append("<" + category + ">"+ escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo)) +"</" + category + ">");                            
+                            }
+                            else{
+                                out.append("<" + category + ">"+escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo))+"</" + category + ">");                            
+                            }                            
+                        }
+
+                    }
+                    else {
 
                         for (SortItem valueSortItem : values) {
                             if(streamOutput){

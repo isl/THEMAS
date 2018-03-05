@@ -109,7 +109,8 @@ public class DBImportData {
         String importThesaurusNameDBformatted = importThesaurusName;
 
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-        wtmsusers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, importThesaurusNameDBformatted, SessionUserInfo.userGroup);
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+        wtmsusers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, importThesaurusNameDBformatted, SessionUserInfo.userGroup, targetLang);
 
         //read terms from XML and import under targetHierarchy
         return importTermsUnderHierarchy(sessionInstance, importHierarchyName, xmlFilePath, pathToErrorsXML, logFileWriter, resultObj);
@@ -1268,7 +1269,7 @@ public class DBImportData {
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
         
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         //xml.append("<mergewarnings>");
         //xml.append(mergeNotes);
         //xml.append("</mergewarnings>");
@@ -1316,7 +1317,7 @@ public class DBImportData {
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);     
         
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append("<copyReportFile>");
         xml.append(reportFile);
         xml.append("</copyReportFile>");
@@ -1387,7 +1388,7 @@ public class DBImportData {
 
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, u.translateFromMessagesXML("root/MergeThesauri/FailureMessage", null, SessionUserInfo.UILang)+" " + resultObj.getValue()));
         //xml.append(getXMLMiddleForMergeThesaurus(common_utils, thesauriNames, "Failure of merge thesauri operation: " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -1457,7 +1458,7 @@ public class DBImportData {
         }
 
         xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject(u.translateFromMessagesXML("root/CopyThesauri/FailureMessage",null, SessionUserInfo.UILang)+" " + resultObj.getValue()), false));
         //xml.append(getXMLMiddleForCopyThesaurus(common_utils, thesauriNames, new StringObject("Failure of copy thesaurus operation: " + resultObj.getValue()), false));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -2708,7 +2709,7 @@ public class DBImportData {
         // FILTER default status for term creation depending on user group
         String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject orphanTermObj = new StringObject(prefix.concat(Parameters.UnclassifiedTermsLogicalname));
-        dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, orphanTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, resultObj);
+        dbCon.CreateModifyStatus(SessionUserInfo, orphanTermObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q, TA, sis_session, tms_session, dbGen, resultObj);
 
     }
     
@@ -3210,7 +3211,7 @@ public class DBImportData {
 */
             ArrayList<String> targetStatuses = termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.status_kwd);
             if (targetStatuses.size() > 0) {
-                String targetStatus = statusGRtoDBmapping(SessionUserInfo, targetStatuses.get(0));
+                String targetStatus = Parameters.getStatusRepresentation_ForDB(targetStatuses.get(0), SessionUserInfo);// statusGRtoDBmapping(SessionUserInfo, targetStatuses.get(0));
                 thesaurus1_statuses.put(targetTerm, targetStatus);
             }
 
@@ -3218,7 +3219,7 @@ public class DBImportData {
 
         //for all other terms just set status to its default values for user
         String defaultStatusForUser = dbF.GetDefaultStatusForTermCreation(SessionUserInfo);
-        defaultStatusForUser = statusGRtoDBmapping(SessionUserInfo, defaultStatusForUser);
+        defaultStatusForUser = Parameters.getStatusRepresentation_ForDB(defaultStatusForUser,SessionUserInfo );
 
 
         Q.reset_name_scope();
@@ -3460,6 +3461,7 @@ public class DBImportData {
                 term_Editor_Links_THES1_HASH, term_Date_Links_THES1_HASH, new HashMap<String, ArrayList<String>>(), new HashMap<String, ArrayList<String>>(), editorKeyWordStr, resultObj);
     }
 
+    /* replaced by Parameters.getStatusRepresentation_ForDB
     public String statusGRtoDBmapping(UserInfoClass SessionUserInfo, String greekStatus) {
 
         DBFilters dbF = new DBFilters();
@@ -3486,6 +3488,7 @@ public class DBImportData {
             return dbF.GetDefaultStatusForTermCreation(SessionUserInfo);
         }
     }
+    */
 
     public String readXMLTag(String test) {
         if (test == null) {

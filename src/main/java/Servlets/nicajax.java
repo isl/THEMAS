@@ -68,6 +68,8 @@ public class nicajax extends ApplicationBasicServlet {
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             
+            
+            
             QClass Q = new QClass();            
             IntegerObject sis_session = new IntegerObject();
             
@@ -173,10 +175,10 @@ public class nicajax extends ApplicationBasicServlet {
              else if(inputType.equals("inputvalue_Status")==true) { // Status suggestion                
                 if (inputvalue.length() == 1) {
                     
-                    Search_result.add(Parameters.Status_For_Insertion + Utils.ConstantParameters.TypeAheadSeparator);
-                    Search_result.add(Parameters.Status_Approved + Utils.ConstantParameters.TypeAheadSeparator);
-                    Search_result.add(Parameters.Status_For_Approval + Utils.ConstantParameters.TypeAheadSeparator);
-                    Search_result.add(Parameters.Status_Under_Construction + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);                    
                 }
             }  
             

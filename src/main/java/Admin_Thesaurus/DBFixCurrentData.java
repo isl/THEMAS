@@ -74,7 +74,7 @@ public class DBFixCurrentData {
         //<editor-fold defaultstate="collapsed" desc="HierarchyStatuses...">  
         if (functionallity.compareTo("HierarchyStatuses") == 0 && mode.compareTo("Fix") == 0) { // no preview mode supported
 
-            ChangeStatus(SessionUserInfo.selectedThesaurus, targetHierarchy, targetStatus, fixed, SessionUserInfo.UILang);
+            ChangeStatus(SessionUserInfo, targetHierarchy, targetStatus, fixed, SessionUserInfo.UILang);
         } else //</editor-fold>   
         //<editor-fold defaultstate="collapsed" desc="Prefixes...">      
         if (functionallity.compareTo("Prefixes") == 0) {
@@ -973,7 +973,7 @@ public class DBFixCurrentData {
 
     }
 
-    void ChangeStatus(String selectedThesaurus, String targetHierarchy, String targetStatus, Boolean fixed, final String uiLang) {
+    void ChangeStatus(UserInfoClass SessionUserInfo, String targetHierarchy, String targetStatus, Boolean fixed, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -986,7 +986,7 @@ public class DBFixCurrentData {
         IntegerObject tms_session = new IntegerObject();
 
         //open connection and start Transaction
-        if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, selectedThesaurus, false) == QClass.APIFail) {
+        if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, SessionUserInfo.selectedThesaurus, false) == QClass.APIFail) {
             Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ ChangeStatus ");
             return;
         }
@@ -994,7 +994,7 @@ public class DBFixCurrentData {
         Q.TEST_begin_transaction();
 
         StringObject errorMsg = new StringObject("");
-        String prefixClass = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
+        String prefixClass = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
         StringObject targetHier = new StringObject(prefixClass + targetHierarchy);
         Q.reset_name_scope();
@@ -1015,7 +1015,7 @@ public class DBFixCurrentData {
         fixed = false;
         for (int i = 0; i < hierarchyNodes.size(); i++) {
             StringObject targetTermObj = new StringObject(hierarchyNodes.get(i));
-            dbCon.CreateModifyStatus(selectedThesaurus, targetTermObj, targetStatus, Q, TA, sis_session, tms_session, dbGen, errorMsg);
+            dbCon.CreateModifyStatus(SessionUserInfo, targetTermObj, targetStatus, Q, TA, sis_session, tms_session, dbGen, errorMsg);
             if (errorMsg != null && errorMsg.getValue().length() > 0) {
                 Q.TEST_abort_transaction();
                 dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
