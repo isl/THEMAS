@@ -97,13 +97,13 @@
                                 
                             </xsl:for-each>
                             
-                            <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> 
+                            <!--<xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> -->
                                 <td>
                                     <strong>
                                         <xsl:value-of select="$facetslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
                                     </strong>
                                 </td>
-                            </xsl:if>
+                            <!--</xsl:if>-->
                             
                         </xsl:otherwise>
                         
