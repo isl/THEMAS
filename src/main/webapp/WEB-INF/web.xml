@@ -45,7 +45,6 @@
         <param-value>el</param-value>
         <!--<param-value>el</param-value>-->
     </context-param>
-    
     <!-- adding filter mechanism that will clean urls of skos export e.g. 
     skos uri:
     http://139.91.183.91:8084/THEMAS/BBT/Facet/6
@@ -66,7 +65,6 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-
     <!-- ||||||||||||||||||||||||||||||||||||||||| -->
     <context-param>
         <param-name>ListStep</param-name>
@@ -390,6 +388,10 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>NewServlet</servlet-name>
         <servlet-class>Servlets.NewServlet</servlet-class>
     </servlet>-->
+    <servlet>
+        <servlet-name>Thesaurus_ReferenceId_Info</servlet-name>
+        <servlet-class>Servlets.Thesaurus_ReferenceId_Info</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>FixCurrentData</servlet-name>
         <url-pattern>/FixCurrentData</url-pattern>
@@ -795,6 +797,10 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <servlet-name>NewServlet</servlet-name>
         <url-pattern>/NewServlet</url-pattern>
     </servlet-mapping>-->
+    <servlet-mapping>
+        <servlet-name>Thesaurus_ReferenceId_Info</servlet-name>
+        <url-pattern>/Thesaurus_ReferenceId_Info</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>200</session-timeout>
     </session-config>
@@ -805,9 +811,9 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
     <filter>
         <filter-name>CorsFilter</filter-name>
         <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-      </filter>
-      <filter-mapping>
+    </filter>
+    <filter-mapping>
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/*</url-pattern>
-      </filter-mapping>
+    </filter-mapping>
 </web-app>

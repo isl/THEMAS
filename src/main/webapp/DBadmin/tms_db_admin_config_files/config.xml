@@ -255,6 +255,7 @@
             <!--<ClassName>Servlets.SearchResults_Users</ClassName>-->
             <ClassName>Servlets.Statistics</ClassName>
             <ClassName>Servlets.SystemIsUnderMaintenance</ClassName>
+            <ClassName>Servlets.Thesaurus_ReferenceId_Info</ClassName>
             <!--<ClassName>Servlets.UndoRenameResults</ClassName>-->
             <ClassName>Servlets.WaitForDownload</ClassName>
         </ReaderPermittedServlets>        

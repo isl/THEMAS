@@ -163,6 +163,18 @@ public class DBexportData {
             //read terms
             dbImport.processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacetsStrFormat, topTerms, allLevelsOfImportThes);
 
+            
+            if(Parameters.createSKOSHierarchicalUris){
+                //create term uris (exact match terms) that resemble their hierarchical status
+                for(String str : termsInfo.keySet()){
+
+                    ArrayList<String> hierarchicalUris = new ArrayList<>();
+                    hierarchicalUris.add(str);
+                    recursivelyConstructHierarchicalUri(str,hierarchicalUris, termsInfo);    
+                    termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd).clear();
+                    termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd).addAll(hierarchicalUris);   
+                }
+            }
             //read sources
             dbMerge.ReadThesaurusSources(SessionUserInfo, Q,TA, sis_session, XMLsources);
 
@@ -218,6 +230,56 @@ public class DBexportData {
             }
 
 
+    }
+    
+    private void recursivelyConstructHierarchicalUri(String str, ArrayList<String> hierarchicalUrls, HashMap<String, NodeInfoStringContainer> termsInfo)
+    {
+        if(termsInfo!=null && str!=null && str.length()>0 && termsInfo.containsKey(str)){
+     
+            ArrayList<String> bts = termsInfo.get(str).descriptorInfo.get(ConstantParameters.bt_kwd);                    
+            if(bts.size()>0){
+                //if it has bts then prepend to hierarchicalUrls if the string contained starts with str 
+                //ArrayList<String> urls = termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd);
+                ArrayList<String> newUrls  = new ArrayList<>();
+                for(String bt : bts){
+                    
+                    for(String url : hierarchicalUrls){
+                        if(url.startsWith(str)){
+                            
+                            if(!newUrls.contains(bt+"/"+url)){
+                                newUrls.add(bt+"/"+url);
+                            }
+                        }
+                        else{
+                            if(!newUrls.contains(url)){
+                                newUrls.add(url);
+                            }
+                        }
+                    }
+                }
+                //hierarchicalUrls
+                hierarchicalUrls.clear();
+                hierarchicalUrls.addAll(newUrls);
+                
+                for(String bt : bts){
+                    recursivelyConstructHierarchicalUri(bt, hierarchicalUrls, termsInfo);
+                }
+                
+            }
+            else{
+                //no need to do so
+                
+                /*
+                //top term reached just add the prefix / to each url produced
+                
+                for(int i=0; i<hierarchicalUrls.size();i++){
+                    if(hierarchicalUrls.get(i).startsWith(str)){
+                        hierarchicalUrls.set(i, "/"+hierarchicalUrls.get(i));
+                    }
+                }*/
+                
+            }
+        }        
     }
     
     public void ReadTermStatuses(String selectedThesaurus, QClass Q, IntegerObject sis_session, 

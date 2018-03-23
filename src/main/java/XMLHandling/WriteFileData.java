@@ -101,6 +101,7 @@ public class WriteFileData {
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
                     + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n"
                     + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\r\n"
+                    + "\txmlns:owl=\"http://www.w3.org/2002/07/owl#\"\r\n"                    
                     + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n"
                     + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\""
                     +">\r\n\r\n");
@@ -682,7 +683,7 @@ public class WriteFileData {
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -955,6 +956,28 @@ public class WriteFileData {
         }
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+        
+        ArrayList<String> exactMatchNodes = new ArrayList<>();
+        if(Parameters.createSKOSHierarchicalUris){
+            exactMatchNodes.addAll(targetTermInfo.descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd));
+        }
+        if(Parameters.replaceExactMatchLastPartWithId){
+            for(int i=0; i< exactMatchNodes.size(); i++){
+                String initialString =exactMatchNodes.get(i);
+                String testString = "/"+targetSortItem.getLogName();
+                String replaceString = "/"+targetSortItem.getThesaurusReferenceId();
+
+                if(initialString.endsWith(testString)){
+                    int lastIndex = initialString.lastIndexOf(testString);
+                    if(lastIndex>0){
+                        exactMatchNodes.set(i, initialString.substring(0, lastIndex) + replaceString);
+                    }
+                    else{
+                        exactMatchNodes.set(i, replaceString);
+                    }
+                }
+            }
+        }
         ArrayList<String> ufs = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
         ArrayList<String> ufTranslations = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
         ArrayList<String> translations = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
@@ -1159,7 +1182,7 @@ public class WriteFileData {
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -1374,9 +1397,11 @@ public class WriteFileData {
                 if (value != null && value.length() > 0) {
                     logFileWriter.append("\t\t<dcterms:modified>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:modified >\r\n");
+                    logFileWriter.append("</dcterms:modified>\r\n");
                 }
             }
+            
+            
 
             if (isTopConcept) {
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
@@ -1384,6 +1409,17 @@ public class WriteFileData {
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_inScheme+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
             }
             logFileWriter.append("\t</rdf:Description>\r\n");
+            
+            Collections.sort(exactMatchNodes);
+            for (int j = 0; j < exactMatchNodes.size(); j++) {
+                String value = exactMatchNodes.get(j);
+                if (value != null && value.length() > 0) {
+                    logFileWriter.append("\r\n\t<rdf:Description rdf:about=\"" + Utilities.escapeXML(schemePrefix+ value) + "\">\r\n");
+                    
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_owlSameAs+" rdf:resource=\""+targetTermId+"\"/>\r\n");
+                    logFileWriter.append("\t</rdf:Description>\r\n");
+                }
+            }
         }
     }
 
@@ -2060,8 +2096,9 @@ public class WriteFileData {
         } // simple exception handling, please review it     }
     }
     
-    private String Skos_Facet = "Facet";
-    private String Skos_Concept = "Concept";
+    public static String Skos_Facet = "Facet";
+    public static String Skos_Concept = "Concept";
+    
     private String getSkosUri(boolean isFacet, String prefix, long id){
         String retVal = prefix;
         if(isFacet){

@@ -61,9 +61,15 @@ public class Parameters {
     public static final boolean OnlyTopTermsHoldReferenceId = true;
     public static boolean TransliterationAsAttribute = false;
     public static boolean ShowTransliterationInAllXMLStream = false;
+    
     public static boolean ShowReferenceURIalso = false;
     public static String UnclassifiedTermsLogicalname = "" ; 
     public static String UnclassifiedTermsFacetLogicalname = "" ; 
+    
+    //the following 2 are related to the trials on production of hierarchical uris in skos export as same as links
+    public static final boolean createSKOSHierarchicalUris = false;
+    public static final boolean replaceExactMatchLastPartWithId = false;
+    
     // SVG graphs configuration
     public static boolean DEBUG = false;
     public static String PrimaryLang =""; //Prefix Of main Language

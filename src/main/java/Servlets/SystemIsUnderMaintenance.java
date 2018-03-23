@@ -138,7 +138,16 @@ public class SystemIsUnderMaintenance extends ApplicationBasicServlet {
     public void DisplaySystemIsUnderMaintenancePage(PrintWriter out, SessionWrapperClass sessionInstance) {
         StringBuffer xml = new StringBuffer();
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-        xml.append(getXMLLoginStart("SystemIsUnderMaintenance.xsl",SessionUserInfo.UILang));
+        String uiLang = Parameters.UILang;
+        if(SessionUserInfo!=null && SessionUserInfo.UILang!=null && SessionUserInfo.UILang.length()>0){
+            uiLang = SessionUserInfo.UILang;
+        }
+        else{
+            if(uiLang==null || uiLang.length()==0){
+                uiLang = getServletContext().getInitParameter("UILanguage");
+            }
+        }
+        xml.append(getXMLLoginStart("SystemIsUnderMaintenance.xsl",uiLang));
         xml.append(getXMLEnd());
         xslTransform(out, xml,sessionInstance.path + "/xml-xsl/SystemIsUnderMaintenance.xsl");
     }

@@ -214,6 +214,7 @@ public class ConstantParameters {
     public static final String status_kwd   ="status";
     
     public static final String system_referenceUri_kwd   ="ReferenceUri";
+    public static final String system_allHierarchicalUris_kwd = "HierarchicalReferenceUri";
     public static final String system_referenceIdAttribute_kwd   ="referenceId";
     public static final String system_transliteration_kwd   ="transliteration";
 
@@ -317,6 +318,8 @@ public class ConstantParameters {
     public static final String XML_skos_concept = "skos:Concept";
     public static final String XML_rdf_about = "rdf:about";
     public static final String XML_skos_topConceptOf ="skos:topConceptOf";
+    public static final String XML_skos_exactMatch ="skos:exactMatch";
+    public static final String XML_owlSameAs = "owl:sameAs";
 
     public static final String XML_skos_member = "skos:member";
     public static final String XML_rdf_resource = "rdf:resource";

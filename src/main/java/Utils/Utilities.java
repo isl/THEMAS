@@ -2963,65 +2963,50 @@ public class Utilities {
     }
 
     public static String[] getSortedTermAllOutputArray(){
-        String[] output = {
-            ConstantParameters.bt_kwd, 
-            ConstantParameters.nt_kwd, 
-            ConstantParameters.rt_kwd,
-            ConstantParameters.uf_kwd, 
-            ConstantParameters.tc_kwd,
-            ConstantParameters.translation_kwd, 
-            ConstantParameters.status_kwd, 
-            ConstantParameters.uf_translations_kwd,
-            ConstantParameters.primary_found_in_kwd,
-            ConstantParameters.translations_found_in_kwd,             
-            ConstantParameters.created_by_kwd, 
-            ConstantParameters.created_on_kwd, 
-            ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, 
-            ConstantParameters.scope_note_kwd,
-            ConstantParameters.translations_scope_note_kwd, 
-            ConstantParameters.historical_note_kwd, 
-            ConstantParameters.comment_kwd, 
-            ConstantParameters.note_kwd, 
-            ConstantParameters.system_referenceUri_kwd, 
-            ConstantParameters.system_transliteration_kwd
-        };
-        return output;
-    }
-
-    public static String[] getSortedTermAllOutputArray(String[] selectedOutput){
-
-
-        ArrayList<String> initiallySelected = new ArrayList<String>();
-        for(int k=0;k<selectedOutput.length;k++){
-            initiallySelected.add(selectedOutput[k]);
+        String[] commonOutput = {
+                ConstantParameters.bt_kwd, 
+                ConstantParameters.nt_kwd, 
+                ConstantParameters.rt_kwd,
+                ConstantParameters.uf_kwd, 
+                ConstantParameters.tc_kwd,
+                ConstantParameters.translation_kwd, 
+                ConstantParameters.status_kwd, 
+                ConstantParameters.uf_translations_kwd,
+                ConstantParameters.primary_found_in_kwd,
+                ConstantParameters.translations_found_in_kwd,             
+                ConstantParameters.created_by_kwd, 
+                ConstantParameters.created_on_kwd, 
+                ConstantParameters.modified_by_kwd,
+                ConstantParameters.modified_on_kwd, 
+                ConstantParameters.scope_note_kwd,
+                ConstantParameters.translations_scope_note_kwd, 
+                ConstantParameters.historical_note_kwd, 
+                ConstantParameters.comment_kwd, 
+                ConstantParameters.note_kwd, 
+                ConstantParameters.system_referenceUri_kwd, 
+                ConstantParameters.system_allHierarchicalUris_kwd, 
+                ConstantParameters.system_transliteration_kwd
+            };
+        
+        if(Parameters.createSKOSHierarchicalUris){
+            String[] output = new String[commonOutput.length+1];
+            System.arraycopy(commonOutput, 0, output, 0, commonOutput.length);            
+            output[commonOutput.length] = ConstantParameters.system_allHierarchicalUris_kwd;
+                
+            return output;
         }
-
-        String[] output = getSortedTermAllOutputArray();
-        ArrayList<String> filteredOutput = new ArrayList<String>();
-        for(int k=0;k<output.length;k++){
-            String targetOutput = output[k];
-            if(targetOutput!=null && targetOutput.length()>0 &&
-                    initiallySelected.contains(targetOutput) &&
-                    filteredOutput.contains(targetOutput) == false){
-                filteredOutput.add(targetOutput);
-            }
+        else{
+            return commonOutput;
         }
-
-        String[] returnArray = new String[filteredOutput.size()];
-        for(int k=0;k<filteredOutput.size();k++){
-            returnArray[k] = filteredOutput.get(k);
-        }
-
-
-        return returnArray;
     }
 
     public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TOPTERM,TERM /*,SOURCE*/};
 
     public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
         String retVal ="";
-        retVal="/"+thesaurusName+"/"+kind.name()+"/"+referenceId;
+        retVal="/"+thesaurusName+"/"+((kind == ReferenceUriKind.FACET) ? XMLHandling.WriteFileData.Skos_Facet :  XMLHandling.WriteFileData.Skos_Concept)+"/"+referenceId;
+        
+        
         /*
         switch(kind){
             case FACET:{
