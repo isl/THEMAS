@@ -51,6 +51,10 @@ body{
     
 }
 
+.thesaurusFieldWidth{
+    width:200px;
+}
+
 #loginwrapper {
     position:relative;
     height:497px;

@@ -39,8 +39,13 @@ THEMAS new version Release Notes
 - Skos Export Adaptations to be more close to the BBT and to be able to define concept scheme and target namespace
 - Adding note field in Terms
 - Adding scope note and note in Facets
+- Transliteration search enabled in UFs and Translation terms
 - THEMAS Users may be applied access to all thesauri via * instead of thesarus name
-
+- ability to change UIlanguage at login Page
+- Created servlet that receives a Thesaurus Name and Thesaurus Reference Id and responds with metadata such as name and Type (Facet / TOP TERM / TERM) + responseCode (success / not found /unauthorized access etc.)
+- increased thesaurus field width
+- GDPR texts (Conditions of Use + Privacy policy added) 
+###- Started the feature to create hierarchical symbolic links at skos export ###
 
 =============================================================================
 THEMAS 1.2.1 Release Notes

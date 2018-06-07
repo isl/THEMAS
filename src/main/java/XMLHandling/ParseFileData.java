@@ -2594,7 +2594,7 @@ public class ParseFileData {
                             if (insideConcept) {
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
 
-                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower) || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)) {
+                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower) /* || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)*/) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
@@ -3566,7 +3566,7 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="broder - bts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader) || openingTagName.equals(ConstantParameters.XML_skos_broaderTransitive)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader)/* || openingTagName.equals(ConstantParameters.XML_skos_broaderTransitive)*/) {
 
                                     
                                     String broaderId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
@@ -3618,7 +3618,7 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower) || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower) /*|| openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)*/) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {

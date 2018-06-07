@@ -163,14 +163,15 @@
                         </legend>
                         <br/>
                         <form name="loginForm" method="post" action="Links">
-                            <table width="295" cellspacing="0" cellpadding="5" align="center">
+                            <table width="320" cellspacing="0" cellpadding="5" align="center">
                                 <!-- User name -->
                                 <tr style="width:100%; background-color:#FFFFFF;">
                                     <td align="right">
                                         <xsl:value-of select="$locale/loginpage/username/option[@lang=$lang]"/>
                                     </td>
                                     <td>
-                                        <input type="text" name="username" style="width:160px;" onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
+                                        <input type="text" name="username" 
+                                               class="thesaurusFieldWidth" onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
                                     </td>
                                 </tr>
                                 <!-- Password -->
@@ -179,7 +180,8 @@
                                         <xsl:value-of select="$locale/loginpage/password/option[@lang=$lang]"/>
                                     </td>
                                     <td>
-                                        <input type="password" name="password" style="width:160px;" onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
+                                        <input type="password" name="password" class="thesaurusFieldWidth"
+                                               onfocus="this.style.border='1px solid #000000'" onblur="this.style.border='1px solid #999966'"/>
                                     </td>
                                 </tr>
                                 <!-- Thesaurus Selection -->
@@ -188,7 +190,9 @@
                                         <xsl:value-of select="$locale/loginpage/thesaurus/option[@lang=$lang]"/>                                            
                                     </td>
                                     <td>
-                                        <select id="selectedThesaurusID" name="selectedThesaurusNAME" size="1" style="width:160px;" onkeypress="if (event.keyCode == 13) document.forms['loginForm'].submit();">
+                                        <select id="selectedThesaurusID" name="selectedThesaurusNAME" size="1" 
+                                                class="thesaurusFieldWidth"
+                                                onkeypress="if (event.keyCode == 13) document.forms['loginForm'].submit();">
                                             <xsl:for-each select="//existingThesaurus/Thesaurus">
                                                 <option>
                                                     <xsl:if test=". = ../Thesaurus[1] ">

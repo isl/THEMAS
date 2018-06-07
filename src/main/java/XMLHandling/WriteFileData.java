@@ -588,7 +588,7 @@ public class WriteFileData {
                     termId = schemePrefix + "/" + termId;
                 }
 
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broaderTransitive+" rdf:resource=\"" + termId + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + termId + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
 
             }
 
@@ -674,14 +674,14 @@ public class WriteFileData {
                             ntId = schemePrefix + "/" + ntId;
                         }
 
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+" rdf:resource=\"" + ntId + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+" rdf:resource=\"" + ntId + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
                     }
 
                 } else {
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
                         logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
@@ -714,7 +714,7 @@ public class WriteFileData {
                         }
 
                         logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\r\n");
                     }
 
                 }
@@ -1082,7 +1082,7 @@ public class WriteFileData {
                     uriVal = getSkosUri(false,schemePrefix,termId) ;
                 }
 
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broaderTransitive+" rdf:resource=\"" + uriVal + "\"/> <!-- " + Utilities.escapeXMLComment(btTermName) + " -->\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + uriVal + "\"/> <!-- " + Utilities.escapeXMLComment(btTermName) + " -->\n");
 
             }
 
@@ -1173,14 +1173,14 @@ public class WriteFileData {
                             ntUriVal = getSkosUri(false,schemePrefix,ntId) ;
                         }
 
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+" rdf:resource=\"" + ntUriVal + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+" rdf:resource=\"" + ntUriVal + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
                     }
 
                 } else {
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
                         logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
@@ -1218,12 +1218,11 @@ public class WriteFileData {
                         }
 
                         logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrowerTransitive+">\r\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\r\n");
                     }
 
                 }
             }
-
             Collections.sort(rts);
             for (int j = 0; j < rts.size(); j++) {
                 String termName = rts.get(j);

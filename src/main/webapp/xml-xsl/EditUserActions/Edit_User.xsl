@@ -189,13 +189,13 @@ _____________________________________________________________________________ --
                     <!-- header -->
                     <tr class="contentHeadText" align="center">
                         <td bgcolor="#FFFFFF"></td>
-                        <td style="width:160px;">
+                        <td class="thesaurusFieldWidth">
                             <b>
                                 <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
                             </b>
                         </td>
                         
-                        <td style="width:160px;">
+                        <td class="thesaurusFieldWidth">
                             <b>
                                 <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
                             </b>
@@ -633,17 +633,17 @@ _____________________________________________________________________________ --
                                 <xsl:variable name="existingThesaurusName" select="//existingThesaurus/existingThesaurusName"/>
                                 <xsl:variable name="THEMASUsersGroupName" select="//THEMASUsersGroups/THEMASUsersGroupName"/>
                                 
-                                <table border="0" align="center" id="thesaurusGroupTable" style="width: 450px;">
+                                <table border="0" align="center" id="thesaurusGroupTable" style="width: 500px;">
                                     <tbody id="thesaurusGroupBody">
                                         <!-- header labels -->
                                         <tr class="contentHeadText" align="center">
-                                            <td style="width:160px;">
+                                            <td class="thesaurusFieldWidth">
                                                 <b>
                                                     <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
                                                 </b>
                                             </td>
                                             
-                                            <td style="width:160px;">
+                                            <td class="thesaurusFieldWidth">
                                                 <b>
                                                     <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
                                                 </b>
@@ -655,8 +655,8 @@ _____________________________________________________________________________ --
                                         <!-- HIDDEN row in case there is none role has been assigned to this user. This row will be used for the add button functionality. -->
                                         <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName" class="hiddenInput" style="visibility:collapse;">
                                             <!-- Thesaurus -->
-                                            <td style="width:150px;">
-                                                <select id="selectThesaurus_ID" name="selectThesaurus" style="width:160px;" size="1" disabled="disabled">
+                                            <td  class="thesaurusFieldWidth">
+                                                <select id="selectThesaurus_ID" name="selectThesaurus" class="thesaurusFieldWidth" size="1" disabled="disabled">
                                                     <xsl:for-each select="$existingThesaurusName">
                                                         <xsl:sort select="."/>
                                                         <option>
@@ -710,7 +710,7 @@ _____________________________________________________________________________ --
                                                 <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName">
                                                     
                                                     <td>
-                                                        <select id="selectThesaurus_ID" name="selectThesaurus" style="width:160px;">
+                                                        <select id="selectThesaurus_ID" name="selectThesaurus" class="thesaurusFieldWidth">
                                                             <xsl:for-each select="$existingThesaurusName">
                                                                 <xsl:sort select="."/>
                                                                 <option>
@@ -1455,7 +1455,7 @@ _____________________________________________________________________________ --
                         </b>
                     </td>
                     <td>
-                        <select id="selectThesaurus_ID" name="selectThesaurus" size="1" style="width:160px;">
+                        <select id="selectThesaurus_ID" name="selectThesaurus" size="1" class="thesaurusFieldWidth">
                             <xsl:for-each select="//userForEditingThesaurusInfo/thesaurusOfUser/thesaurus">
                                 <xsl:sort select="."/>
                                 <option>

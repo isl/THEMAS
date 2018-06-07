@@ -61,23 +61,23 @@ public class Parameters {
     public static final boolean OnlyTopTermsHoldReferenceId = true;
     public static boolean TransliterationAsAttribute = false;
     public static boolean ShowTransliterationInAllXMLStream = false;
-    
+
     public static boolean ShowReferenceURIalso = false;
-    public static String UnclassifiedTermsLogicalname = "" ; 
-    public static String UnclassifiedTermsFacetLogicalname = "" ; 
-    
+    public static String UnclassifiedTermsLogicalname = "";
+    public static String UnclassifiedTermsFacetLogicalname = "";
+
     //the following 2 are related to the trials on production of hierarchical uris in skos export as same as links
     public static final boolean createSKOSHierarchicalUris = false;
     public static final boolean replaceExactMatchLastPartWithId = false;
-    
+
     // SVG graphs configuration
     public static boolean DEBUG = false;
-    public static String PrimaryLang =""; //Prefix Of main Language
-    public static String UILang =""; // el/en
-    
+    public static String PrimaryLang = ""; //Prefix Of main Language
+    public static String UILang = ""; // el/en
+
     public static String TargetLocaleLang = "";
     public static String TargetLocaleCountry = "";//Prefix Of main Language
-    
+
     public static String SVG_temporary_filesPath;
     public static String SVG_navbar_enabled;
     public static String SVG_CategoriesDirections_for_traverse;
@@ -89,7 +89,7 @@ public class Parameters {
     public static String SVG_CategoriesNames_for_legend;
     public static String Save_Results_Temp_Folder;
     public static String Save_Results_Folder;
-    
+
     public static boolean AtRenameSaveOldNameAsUf = false;
     
     public static boolean ThesTeamEditOnlyCreatedByTerms = false;
@@ -99,19 +99,18 @@ public class Parameters {
     public static ArrayList<String> CLASS_SET;
     public static String DELIMITER1;
     public static String DELIMITER2;
-    
+
     public static String[] alphabetical_mode;
     public static String[] alphabetical_ignored_nodes;
     public static ArrayList<String> alphabetical_mode_PAGING_COUNT_NODES;
-    
+
     public static boolean TransliterationsToLowerCase = false;
-    public static HashMap<String,String> TransliterationsReplacements = new HashMap<>();
-    
-    public static HashMap<String,String> SupportedUILangCodes = new HashMap<>();
-    
-    
+    public static HashMap<String, String> TransliterationsReplacements = new HashMap<>();
+
+    public static HashMap<String, String> SupportedUILangCodes = new HashMap<>();
+
     public static ArrayList<Integer> TermModificationChecks;
-    
+
     //split in 2 
     //public static boolean SEARCH_MODE_TONE_INSENSITIVE = false;
     public static boolean SEARCH_MODE_CASE_INSENSITIVE = false; // true in case the system's searches are done in tone and case insensitive mode
@@ -123,51 +122,45 @@ public class Parameters {
     public static int AUTOMATIC_BACKUPS_HOURS_INTERVAL;
     public static String AUTOMATIC_BACKUPS_DESCRIPTION;
 
-    
     public static String ApplicationName = "";
     public static String LogFilePrefix = "";
     //public static String[] mailList;
     //public static String mailHost ="";
-    public static String TaxonomicalCodeFormat="";
-
+    public static String TaxonomicalCodeFormat = "";
 
 //    public static int RestartTransactions = 20;
     public static boolean SkipAutomaticBackups = false;
 
+    public static String Status_Under_Construction = "";
+    public static String Status_For_Approval = "";
+    public static String Status_For_Insertion = "";
+    public static String Status_For_Reinspection = ""; // not used
+    public static String Status_Approved = "";
 
-    public static String Status_Under_Construction ="";
-    public static String Status_For_Approval ="";
-    public static String Status_For_Insertion ="";
-    public static String Status_For_Reinspection =""; // not used
-    public static String Status_Approved ="";
-    
     //the following structures will hold the language variants of status in all languages defined in SaveAll_Locale_And_Scripting.xml
     //key will be the lang code while value will be the specified by key language of the status.
-    private static HashMap<String,String> Lang_DefinitionsForStatus_Under_Construction = new HashMap<>();
-    private static HashMap<String,String> Lang_DefinitionsForStatus_For_Approval = new HashMap<>();
-    private static HashMap<String,String> Lang_DefinitionsForStatus_For_Insertion = new HashMap<>();
-    private static HashMap<String,String> Lang_DefinitionsForStatus_For_Reinspection = new HashMap<>();
-    private static HashMap<String,String> Lang_DefinitionsForStatus_Approved = new HashMap<>();
-    
-    
+    private static HashMap<String, String> Lang_DefinitionsForStatus_Under_Construction = new HashMap<>();
+    private static HashMap<String, String> Lang_DefinitionsForStatus_For_Approval = new HashMap<>();
+    private static HashMap<String, String> Lang_DefinitionsForStatus_For_Insertion = new HashMap<>();
+    private static HashMap<String, String> Lang_DefinitionsForStatus_For_Reinspection = new HashMap<>();
+    private static HashMap<String, String> Lang_DefinitionsForStatus_Approved = new HashMap<>();
 
     public static boolean FormatXML = true;
 
-    public static String BaseRealPath ="";
-    public static String SVG_CategoriesFrom_for_traverse="";
+    public static String BaseRealPath = "";
+    public static String SVG_CategoriesFrom_for_traverse = "";
     public static String SVG_CategoriesNames_for_traverse = "";
-    public static String alphabetical_From_Class ="";
-    public static String alphabetical_Links ="";
-    public static String CLASS_SET_INCLUDE ="";
+    public static String alphabetical_From_Class = "";
+    public static String alphabetical_Links = "";
+    public static String CLASS_SET_INCLUDE = "";
 
     //public static Timer timer = null;
-    
     /*---------------------------------------------------------------------
                             initParams()
     -----------------------------------------------------------------------
     INPUT: - ServletContext context: the context of the current servlet
     CALLED BY: all servlets in order to get the application's context Parameters defined in web.xml
-    ----------------------------------------------------------------------*/                    
+    ----------------------------------------------------------------------*/
     public static void initParams(ServletContext context) {
 
         BaseRealPath = context.getRealPath("");
@@ -190,51 +183,50 @@ public class Parameters {
         HashMap<String, String> retVals = new HashMap<>();
         try {
 
-                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document document = builder.parse(new File(pathToXMLForPrimaryLang));
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.parse(new File(pathToXMLForPrimaryLang));
 
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                NodeList SupportedUILangCodesList = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document,XPathConstants.NODESET);
-                if(SupportedUILangCodesList!=null){
-                    int howmanyItems = SupportedUILangCodesList.getLength();
-                    for(int i=0; i< howmanyItems; i++){
-                        
-                        String langcode = xpath.evaluate("./text()", SupportedUILangCodesList.item(i));
-                        String mapcode = xpath.evaluate("./@mapcode", SupportedUILangCodesList.item(i));
-                        String displayStr = xpath.evaluate("./@display", SupportedUILangCodesList.item(i));
-                        
-                        
-                        if(displayOnly == false ){
-                                                
-                            if(mapcode!=null && mapcode.trim().length()>0){
-                                mapcode = mapcode.trim().toLowerCase();
-                            }
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            NodeList SupportedUILangCodesList = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document, XPathConstants.NODESET);
+            if (SupportedUILangCodesList != null) {
+                int howmanyItems = SupportedUILangCodesList.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
 
-                            if(langcode!=null && langcode.trim().length()>0){
-                                langcode = langcode.trim().toLowerCase();
-                            }                        
-                            retVals.put(langcode, mapcode);
+                    String langcode = xpath.evaluate("./text()", SupportedUILangCodesList.item(i));
+                    String mapcode = xpath.evaluate("./@mapcode", SupportedUILangCodesList.item(i));
+                    String displayStr = xpath.evaluate("./@display", SupportedUILangCodesList.item(i));
+
+                    if (displayOnly == false) {
+
+                        if (mapcode != null && mapcode.trim().length() > 0) {
+                            mapcode = mapcode.trim().toLowerCase();
                         }
-                        else if(displayStr!=null && displayStr.trim().toLowerCase().equals("yes")){
-                            String displayTextStr = xpath.evaluate("./@displayText", SupportedUILangCodesList.item(i));
-                            retVals.put(displayTextStr, mapcode);
+
+                        if (langcode != null && langcode.trim().length() > 0) {
+                            langcode = langcode.trim().toLowerCase();
                         }
+                        retVals.put(langcode, mapcode);
+                    } else if (displayStr != null && displayStr.trim().toLowerCase().equals("yes")) {
+                        String displayTextStr = xpath.evaluate("./@displayText", SupportedUILangCodesList.item(i));
+                        retVals.put(displayTextStr, mapcode);
                     }
                 }
-        }catch (Exception e) {
+            }
+        } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
             Utils.StaticClass.handleException(e);
         }
         return retVals;
     }
-    
-    public static void initParams(String basePathString){
+
+    public static void initParams(String basePathString) {
         Path basePath = Paths.get(basePathString);
         try {
 
             BaseRealPath = basePathString;
 
             String pathToXMLForPrimaryLang = basePath.resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
+            // <editor-fold defaultstate="collapsed" desc="First Pass of Config.xml file.">
             try {
 
                 DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -257,106 +249,95 @@ public class Parameters {
                 
                 Parameters.CreatorInAlphabeticalTermDisplay = false;
                 String boolValStr_2 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/CreatorInAlphabeticalTerm/DisplayCreator[1]", document);
-                
-                if(boolValStr_2.toLowerCase().equals("true")||boolValStr_2.toLowerCase().equals("yes")){
+
+                if (boolValStr_2.toLowerCase().equals("true") || boolValStr_2.toLowerCase().equals("yes")) {
                     Parameters.CreatorInAlphabeticalTermDisplay = true;
-                }
-                else{
+                } else {
                     Parameters.CreatorInAlphabeticalTermDisplay = false;
                 }
-                
+
                 String boolValStr_3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
-                if(boolValStr_3.toLowerCase().equals("true")||boolValStr_3.toLowerCase().equals("yes")){
+                if (boolValStr_3.toLowerCase().equals("true") || boolValStr_3.toLowerCase().equals("yes")) {
                     Parameters.AtRenameSaveOldNameAsUf = true;
-                }
-                else{
+                } else {
                     Parameters.AtRenameSaveOldNameAsUf = false;
                 }
-                
+
                 UnclassifiedTermsLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsHierarchyName[1]", document);
-                
+
                 UnclassifiedTermsFacetLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsFacetName[1]", document);
-                
-                
+
                 String boolValStr_4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/@toLowerCase[1]", document);
-                if(boolValStr_4.toLowerCase().equals("true")||boolValStr_4.toLowerCase().equals("yes")){
+                if (boolValStr_4.toLowerCase().equals("true") || boolValStr_4.toLowerCase().equals("yes")) {
                     Parameters.TransliterationsToLowerCase = true;
-                }
-                else{
+                } else {
                     Parameters.TransliterationsToLowerCase = false;
                 }
-                
-                
-                NodeList TransltiterationGroups = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/ReplacementGroup", document,XPathConstants.NODESET);
-                if(TransltiterationGroups!=null){
+
+                NodeList TransltiterationGroups = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/ReplacementGroup", document, XPathConstants.NODESET);
+                if (TransltiterationGroups != null) {
                     int howmanyGroups = TransltiterationGroups.getLength();
-                    for(int i=0; i< howmanyGroups; i++){
-                        
-                        
+                    for (int i = 0; i < howmanyGroups; i++) {
+
                         String delimeter = xpath.evaluate("./Source/@delimeterChar", TransltiterationGroups.item(i));
                         String replaceWhat = xpath.evaluate("./Source", TransltiterationGroups.item(i));
-                        String replaceWith =xpath.evaluate("./Replacement", TransltiterationGroups.item(i));
-                        
-                        Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith==null?"":replaceWith);
+                        String replaceWith = xpath.evaluate("./Replacement", TransltiterationGroups.item(i));
+
+                        Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith == null ? "" : replaceWith);
                     }
                 }
-                
-                NodeList SupportedUILangCodesList = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document,XPathConstants.NODESET);
-                if(SupportedUILangCodesList!=null){
+
+                NodeList SupportedUILangCodesList = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document, XPathConstants.NODESET);
+                if (SupportedUILangCodesList != null) {
                     int howmanyItems = SupportedUILangCodesList.getLength();
-                    for(int i=0; i< howmanyItems; i++){
-                        
+                    for (int i = 0; i < howmanyItems; i++) {
+
                         String langcode = xpath.evaluate("./text()", SupportedUILangCodesList.item(i));
                         String mapcode = xpath.evaluate("./@mapcode", SupportedUILangCodesList.item(i));
-                                                
-                        if(mapcode!=null && mapcode.trim().length()>0){
+
+                        if (mapcode != null && mapcode.trim().length() > 0) {
                             mapcode = mapcode.trim().toLowerCase();
                         }
-                        
-                        if(langcode!=null && langcode.trim().length()>0){
+
+                        if (langcode != null && langcode.trim().length() > 0) {
                             langcode = langcode.trim().toLowerCase();
                         }
-                        
+
                         Parameters.SupportedUILangCodes.put(langcode, mapcode);
                     }
                 }
-                
-                
+
                 ArrayList<String> permittedClassesFromXml = new ArrayList<>();
-                NodeList classesPermitted = (NodeList)xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document,XPathConstants.NODESET);
-                if(classesPermitted!=null){
+                NodeList classesPermitted = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ReaderPermittedServlets/ClassName", document, XPathConstants.NODESET);
+                if (classesPermitted != null) {
                     int howmanyClasses = classesPermitted.getLength();
-                    for(int i=0; i< howmanyClasses; i++){
+                    for (int i = 0; i < howmanyClasses; i++) {
                         permittedClassesFromXml.add(classesPermitted.item(i).getTextContent());
                     }
                 }
                 Users.UserInfoClass.initializeAccessControlStructures(permittedClassesFromXml);
-                
-                
-                
 
             } catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
                 Utils.StaticClass.handleException(e);
             }
 
+            //</editor-fold>
             String webXMLPath = basePath.resolve("WEB-INF").resolve("web.xml").toString();
-            
+            // <editor-fold defaultstate="collapsed" desc="Read Web.xml file.">
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new File(webXMLPath));
 
             XPath xpath = XPathFactory.newInstance().newXPath();
 
-            
-            SVG_CategoriesFrom_for_traverse=xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesFrom_for_traverse']/param-value[1]", document);
+            SVG_CategoriesFrom_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesFrom_for_traverse']/param-value[1]", document);
             SVG_CategoriesNames_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesNames_for_traverse']/param-value[1]", document);
-            alphabetical_From_Class =xpath.evaluate("web-app/context-param[param-name='alphabetical_From_Class']/param-value[1]", document);
-            alphabetical_Links =xpath.evaluate("web-app/context-param[param-name='alphabetical_Links']/param-value[1]", document);
-            CLASS_SET_INCLUDE =xpath.evaluate("web-app/context-param[param-name='CLASS_SET_INCLUDE']/param-value[1]", document);
-            
+            alphabetical_From_Class = xpath.evaluate("web-app/context-param[param-name='alphabetical_From_Class']/param-value[1]", document);
+            alphabetical_Links = xpath.evaluate("web-app/context-param[param-name='alphabetical_Links']/param-value[1]", document);
+            CLASS_SET_INCLUDE = xpath.evaluate("web-app/context-param[param-name='CLASS_SET_INCLUDE']/param-value[1]", document);
+
             UILang = xpath.evaluate("web-app/context-param[param-name='UILanguage']/param-value[1]", document);
 
-            
             TargetLocaleLang = xpath.evaluate("web-app/context-param[param-name='LocaleLanguage']/param-value[1]", document);
             TargetLocaleCountry = xpath.evaluate("web-app/context-param[param-name='LocaleCountry']/param-value[1]", document);
             //TargetLocale = new Locale(targetLocaleLang, targetLocaleCountry);
@@ -365,13 +346,12 @@ public class Parameters {
             //ApplicationName = xpath.evaluate("web-app/display-name", document);
             ApplicationName = xpath.evaluate("web-app/context-param[param-name='appname']/param-value[1]", document);
             LogFilePrefix = ApplicationName + " Logs: ";
-            
-            
+
             // SVG graphs configuration
             SVG_temporary_filesPath = xpath.evaluate("web-app/context-param[param-name='SVG_temporary_filesPath']/param-value[1]", document);
             SVG_navbar_enabled = xpath.evaluate("web-app/context-param[param-name='SVG_navbar_enabled']/param-value[1]", document);
             SVG_CategoriesDirections_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesDirections_for_traverse']/param-value[1]", document);
-            SVG_CategoriesNames_for_traverse =  xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesNames_for_traverse']/param-value[1]", document);
+            SVG_CategoriesNames_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesNames_for_traverse']/param-value[1]", document);
             SVG_CategoriesFrom_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesFrom_for_traverse']/param-value[1]", document);
             SVG_CategoriesLanguages_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesLanguages_for_traverse']/param-value[1]", document);
             SVG_CategoriesStyles_for_traverse = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesStyles_for_traverse']/param-value[1]", document);
@@ -380,12 +360,10 @@ public class Parameters {
             SVG_ISA_scope = xpath.evaluate("web-app/context-param[param-name='SVG_ISA_scope']/param-value[1]", document);
             SVG_CategoriesNames_for_legend = xpath.evaluate("web-app/context-param[param-name='SVG_CategoriesNames_for_legend']/param-value[1]", document);
 
-
             Save_Results_Folder = xpath.evaluate("web-app/context-param[param-name='Save_Results_Folder']/param-value[1]", document);
             Save_Results_Temp_Folder = xpath.evaluate("web-app/context-param[param-name='Save_Results_Temp_Folder']/param-value[1]", document);
             TRANSLATION_SEPERATOR = xpath.evaluate("web-app/context-param[param-name='TRANSLATION_SEPERATOR']/param-value[1]", document);
 
-            
             DELIMITER1 = xpath.evaluate("web-app/context-param[param-name='DELIMITER1']/param-value[1]", document);
             DELIMITER2 = xpath.evaluate("web-app/context-param[param-name='DELIMITER2']/param-value[1]", document);
 
@@ -460,7 +438,6 @@ public class Parameters {
             AUTOMATIC_BACKUPS_HOURS_INTERVAL = Integer.parseInt(xpath.evaluate("web-app/context-param[param-name='Automatic_Backups_Hours_Interval']/param-value[1]", document));
             AUTOMATIC_BACKUPS_DESCRIPTION = xpath.evaluate("web-app/context-param[param-name='Automatic_Backups_Description']/param-value[1]", document);
 
-
             String SkipAutomaticBackupsStr = xpath.evaluate("web-app/context-param[param-name='SkipAutomaticBackups']/param-value[1]", document);
             if (SkipAutomaticBackupsStr.compareTo("true") == 0) {
                 SkipAutomaticBackups = true;
@@ -490,18 +467,14 @@ public class Parameters {
              */
             TaxonomicalCodeFormat = xpath.evaluate("web-app/context-param[param-name='TaxonomicalCodeFormat']/param-value[1]", document);
 
-
-
-
-
+            // </editor-fold>
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
             Utils.StaticClass.handleException(e);
         }
 
-
-
         String pathToXMLForStatuses = basePath.resolve("translations").resolve("SaveAll_Locale_And_Scripting.xml").toString();
+        // <editor-fold defaultstate="collapsed" desc="Read SaveAll_Locale_And_Scripting.xml including Statuses">
         try {
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -516,11 +489,10 @@ public class Parameters {
             Parameters.Status_For_Reinspection = xpath.evaluate("root/common/statuses/forreinspection/option[@lang='" + lang + "']", document);
             Parameters.Status_Approved = xpath.evaluate("root/common/statuses/approved/option[@lang='" + lang + "']", document);
 
-
-            NodeList LangsFor_StautsFI = (NodeList)xpath.evaluate("root/common/statuses/forinsertion/option", document,XPathConstants.NODESET);
-            if(LangsFor_StautsFI!=null){
+            NodeList LangsFor_StautsFI = (NodeList) xpath.evaluate("root/common/statuses/forinsertion/option", document, XPathConstants.NODESET);
+            if (LangsFor_StautsFI != null) {
                 int howmanyItems = LangsFor_StautsFI.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_StautsFI.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_StautsFI.item(i));
@@ -528,11 +500,11 @@ public class Parameters {
                     Parameters.Lang_DefinitionsForStatus_For_Insertion.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_StautsUC = (NodeList)xpath.evaluate("root/common/statuses/underconstruction/option", document,XPathConstants.NODESET);
-            if(LangsFor_StautsUC!=null){
+
+            NodeList LangsFor_StautsUC = (NodeList) xpath.evaluate("root/common/statuses/underconstruction/option", document, XPathConstants.NODESET);
+            if (LangsFor_StautsUC != null) {
                 int howmanyItems = LangsFor_StautsUC.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_StautsUC.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_StautsUC.item(i));
@@ -540,11 +512,11 @@ public class Parameters {
                     Parameters.Lang_DefinitionsForStatus_Under_Construction.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_StautsFA = (NodeList)xpath.evaluate("root/common/statuses/underapproval/option", document,XPathConstants.NODESET);
-            if(LangsFor_StautsFA!=null){
+
+            NodeList LangsFor_StautsFA = (NodeList) xpath.evaluate("root/common/statuses/underapproval/option", document, XPathConstants.NODESET);
+            if (LangsFor_StautsFA != null) {
                 int howmanyItems = LangsFor_StautsFA.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_StautsFA.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_StautsFA.item(i));
@@ -552,11 +524,11 @@ public class Parameters {
                     Parameters.Lang_DefinitionsForStatus_For_Approval.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_StautsFR = (NodeList)xpath.evaluate("root/common/statuses/forreinspection/option", document,XPathConstants.NODESET);
-            if(LangsFor_StautsFR!=null){
+
+            NodeList LangsFor_StautsFR = (NodeList) xpath.evaluate("root/common/statuses/forreinspection/option", document, XPathConstants.NODESET);
+            if (LangsFor_StautsFR != null) {
                 int howmanyItems = LangsFor_StautsFR.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_StautsFR.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_StautsFR.item(i));
@@ -564,11 +536,11 @@ public class Parameters {
                     Parameters.Lang_DefinitionsForStatus_For_Reinspection.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_StautsApproved = (NodeList)xpath.evaluate("root/common/statuses/approved/option", document,XPathConstants.NODESET);
-            if(LangsFor_StautsApproved!=null){
+
+            NodeList LangsFor_StautsApproved = (NodeList) xpath.evaluate("root/common/statuses/approved/option", document, XPathConstants.NODESET);
+            if (LangsFor_StautsApproved != null) {
                 int howmanyItems = LangsFor_StautsApproved.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_StautsApproved.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_StautsApproved.item(i));
@@ -582,10 +554,11 @@ public class Parameters {
             Utils.StaticClass.handleException(e);
         }
 
-
-
+        //</editor-fold>
+        
         String pathToXMLForSearchCriteria = basePath.resolve("translations").resolve("searchcriteria.xml").toString();
-        try{
+        // <editor-fold defaultstate="collapsed" desc="Read searchcriteria.xml">
+        try {
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new File(pathToXMLForSearchCriteria));
@@ -595,31 +568,28 @@ public class Parameters {
 
             //XPathExpression expr = xpath.compile("/locale/searchcriteria/inputstrs/*");
             //Object result = expr.evaluate(document, XPathConstants.NODESET);
-
-
-            
             SearchCriteria.inputStrs = new HashMap<>();
-            
-            NodeList LangsFor_Inputs = (NodeList)xpath.evaluate("/locale/searchcriteria/inputstrs/*", document,XPathConstants.NODESET);
-            if(LangsFor_Inputs!=null){
+
+            NodeList LangsFor_Inputs = (NodeList) xpath.evaluate("/locale/searchcriteria/inputstrs/*", document, XPathConstants.NODESET);
+            if (LangsFor_Inputs != null) {
                 int howmanyItems = LangsFor_Inputs.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String keyword = LangsFor_Inputs.item(i).getNodeName().toLowerCase();
                     SearchCriteria.inputStrs.put(keyword, new HashMap<>());
-                    NodeList LangsFor_CurrentKeyword = (NodeList)xpath.evaluate("./option", LangsFor_Inputs.item(i),XPathConstants.NODESET);
+                    NodeList LangsFor_CurrentKeyword = (NodeList) xpath.evaluate("./option", LangsFor_Inputs.item(i), XPathConstants.NODESET);
                     int howmanyLangs = LangsFor_CurrentKeyword.getLength();
-                    
-                    for(int k=0; k< howmanyLangs; k++){
+
+                    for (int k = 0; k < howmanyLangs; k++) {
                         String langcode = xpath.evaluate("./@lang", LangsFor_CurrentKeyword.item(k));
                         String displayVal = xpath.evaluate("./text()", LangsFor_CurrentKeyword.item(k));
-                        SearchCriteria.inputStrs.get(keyword).put(langcode,displayVal);
-                    }                    
+                        SearchCriteria.inputStrs.get(keyword).put(langcode, displayVal);
+                    }
                 }
             }
-            
-            int howmany= 0;
-            
+
+            int howmany = 0;
+
             XPathExpression expr = xpath.compile("/locale/searchcriteria/termDefaultOutputs/keyword");
             Object result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -630,10 +600,10 @@ public class Parameters {
                 SearchCriteria.termsDefaultOutput[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/quicksearch/inputStrs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -644,10 +614,10 @@ public class Parameters {
                 SearchCriteria.quickSearchInputStrs[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/quicksearch/outputs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -658,10 +628,10 @@ public class Parameters {
                 SearchCriteria.quickSearchOutput[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/hierarchyDefaultOutputs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -672,10 +642,10 @@ public class Parameters {
                 SearchCriteria.hierarchyDefaultOutput[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/facetDefaultOutputs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -686,10 +656,10 @@ public class Parameters {
                 SearchCriteria.facetDefaultOutput[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/sourcesDefaultOutputs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -700,10 +670,10 @@ public class Parameters {
                 SearchCriteria.sourcesDefaultOutput[i] = nodes.item(i).getTextContent();
             }
 
-            expr=null;
+            expr = null;
             result = null;
             nodes = null;
-            howmany= 0;
+            howmany = 0;
             expr = xpath.compile("/locale/searchcriteria/usersDefaultOutputs/keyword");
             result = expr.evaluate(document, XPathConstants.NODESET);
 
@@ -714,93 +684,91 @@ public class Parameters {
                 SearchCriteria.userssDefaultOutput[i] = nodes.item(i).getTextContent();
             }
 
-            
             SearchCriteria.termSpecialInputs = new HashMap<>();
-            NodeList LangsFor_TermSpecialInputs = (NodeList)xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/term/input", document,XPathConstants.NODESET);
-            if(LangsFor_TermSpecialInputs!=null){
+            NodeList LangsFor_TermSpecialInputs = (NodeList) xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/term/input", document, XPathConstants.NODESET);
+            if (LangsFor_TermSpecialInputs != null) {
                 int howmanyItems = LangsFor_TermSpecialInputs.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String keyword = xpath.evaluate("./@keyword", LangsFor_TermSpecialInputs.item(i));
-                    SearchCriteria.termSpecialInputs.put(keyword,new HashMap<>());
-                    NodeList LangsFor_CurrentKeyword = (NodeList)xpath.evaluate("./option", LangsFor_TermSpecialInputs.item(i),XPathConstants.NODESET);
+                    SearchCriteria.termSpecialInputs.put(keyword, new HashMap<>());
+                    NodeList LangsFor_CurrentKeyword = (NodeList) xpath.evaluate("./option", LangsFor_TermSpecialInputs.item(i), XPathConstants.NODESET);
                     int howmanyLangs = LangsFor_CurrentKeyword.getLength();
-                    
-                    for(int k=0; k< howmanyLangs; k++){
+
+                    for (int k = 0; k < howmanyLangs; k++) {
                         String langcode = xpath.evaluate("./@lang", LangsFor_CurrentKeyword.item(k));
                         String displayVal = xpath.evaluate("./text()", LangsFor_CurrentKeyword.item(k));
-                        SearchCriteria.termSpecialInputs.get(keyword).put(langcode,displayVal);
-                    }                    
+                        SearchCriteria.termSpecialInputs.get(keyword).put(langcode, displayVal);
+                    }
                 }
             }
-            
+
             SearchCriteria.hierarchySpecialInputs = new HashMap<>();
-            NodeList LangsFor_HierarchySpecialInputs = (NodeList)xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/hierarchy/input", document,XPathConstants.NODESET);
-            if(LangsFor_HierarchySpecialInputs!=null){
+            NodeList LangsFor_HierarchySpecialInputs = (NodeList) xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/hierarchy/input", document, XPathConstants.NODESET);
+            if (LangsFor_HierarchySpecialInputs != null) {
                 int howmanyItems = LangsFor_HierarchySpecialInputs.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String keyword = xpath.evaluate("./@keyword", LangsFor_HierarchySpecialInputs.item(i));
-                    SearchCriteria.hierarchySpecialInputs.put(keyword,new HashMap<>());
-                    NodeList LangsFor_CurrentKeyword = (NodeList)xpath.evaluate("./option", LangsFor_HierarchySpecialInputs.item(i),XPathConstants.NODESET);
+                    SearchCriteria.hierarchySpecialInputs.put(keyword, new HashMap<>());
+                    NodeList LangsFor_CurrentKeyword = (NodeList) xpath.evaluate("./option", LangsFor_HierarchySpecialInputs.item(i), XPathConstants.NODESET);
                     int howmanyLangs = LangsFor_CurrentKeyword.getLength();
-                    
-                    for(int k=0; k< howmanyLangs; k++){
+
+                    for (int k = 0; k < howmanyLangs; k++) {
                         String langcode = xpath.evaluate("./@lang", LangsFor_CurrentKeyword.item(k));
                         String displayVal = xpath.evaluate("./text()", LangsFor_CurrentKeyword.item(k));
-                        SearchCriteria.hierarchySpecialInputs.get(keyword).put(langcode,displayVal);
-                    }                    
+                        SearchCriteria.hierarchySpecialInputs.get(keyword).put(langcode, displayVal);
+                    }
                 }
             }
-            
+
             SearchCriteria.facetSpecialInputs = new HashMap<>();
-            NodeList LangsFor_FacetSpecialInputs = (NodeList)xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/facet/input", document,XPathConstants.NODESET);
-            if(LangsFor_FacetSpecialInputs!=null){
+            NodeList LangsFor_FacetSpecialInputs = (NodeList) xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/facet/input", document, XPathConstants.NODESET);
+            if (LangsFor_FacetSpecialInputs != null) {
                 int howmanyItems = LangsFor_FacetSpecialInputs.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String keyword = xpath.evaluate("./@keyword", LangsFor_FacetSpecialInputs.item(i));
-                    SearchCriteria.facetSpecialInputs.put(keyword,new HashMap<>());
-                    NodeList LangsFor_CurrentKeyword = (NodeList)xpath.evaluate("./option", LangsFor_FacetSpecialInputs.item(i),XPathConstants.NODESET);
+                    SearchCriteria.facetSpecialInputs.put(keyword, new HashMap<>());
+                    NodeList LangsFor_CurrentKeyword = (NodeList) xpath.evaluate("./option", LangsFor_FacetSpecialInputs.item(i), XPathConstants.NODESET);
                     int howmanyLangs = LangsFor_CurrentKeyword.getLength();
-                    
-                    for(int k=0; k< howmanyLangs; k++){
+
+                    for (int k = 0; k < howmanyLangs; k++) {
                         String langcode = xpath.evaluate("./@lang", LangsFor_CurrentKeyword.item(k));
                         String displayVal = xpath.evaluate("./text()", LangsFor_CurrentKeyword.item(k));
-                        SearchCriteria.facetSpecialInputs.get(keyword).put(langcode,displayVal);
-                    }                    
+                        SearchCriteria.facetSpecialInputs.get(keyword).put(langcode, displayVal);
+                    }
                 }
             }
 
             SearchCriteria.sourceSpecialInputs = new HashMap<>();
-            NodeList LangsFor_SourceSpecialInputs = (NodeList)xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/source/input", document,XPathConstants.NODESET);
-            if(LangsFor_SourceSpecialInputs!=null){
+            NodeList LangsFor_SourceSpecialInputs = (NodeList) xpath.evaluate("/locale/searchreport/inputUIDifferentiations/mode/source/input", document, XPathConstants.NODESET);
+            if (LangsFor_SourceSpecialInputs != null) {
                 int howmanyItems = LangsFor_SourceSpecialInputs.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String keyword = xpath.evaluate("./@keyword", LangsFor_SourceSpecialInputs.item(i));
-                    SearchCriteria.sourceSpecialInputs.put(keyword,new HashMap<>());
-                    NodeList LangsFor_CurrentKeyword = (NodeList)xpath.evaluate("./option", LangsFor_SourceSpecialInputs.item(i),XPathConstants.NODESET);
+                    SearchCriteria.sourceSpecialInputs.put(keyword, new HashMap<>());
+                    NodeList LangsFor_CurrentKeyword = (NodeList) xpath.evaluate("./option", LangsFor_SourceSpecialInputs.item(i), XPathConstants.NODESET);
                     int howmanyLangs = LangsFor_CurrentKeyword.getLength();
-                    
-                    for(int k=0; k< howmanyLangs; k++){
+
+                    for (int k = 0; k < howmanyLangs; k++) {
                         String langcode = xpath.evaluate("./@lang", LangsFor_CurrentKeyword.item(k));
                         String displayVal = xpath.evaluate("./text()", LangsFor_CurrentKeyword.item(k));
-                        SearchCriteria.sourceSpecialInputs.get(keyword).put(langcode,displayVal);
-                    }                    
+                        SearchCriteria.sourceSpecialInputs.get(keyword).put(langcode, displayVal);
+                    }
                 }
             }
-            
-            SearchCriteria.showAllString =  xpath.evaluate("locale/searchreport/showall/option[@lang='"+lang+"']", document);
 
-            SearchCriteria.andDisplayOperator =  xpath.evaluate("locale/searchreport/andDisplayOperator/option[@lang='"+lang+"']", document);
-            SearchCriteria.orDisplayOperator  =  xpath.evaluate("locale/searchreport/orDisplayOperator/option[@lang='"+lang+"']", document);
-            
-            
-            NodeList LangsFor_ShowAllString = (NodeList)xpath.evaluate("locale/searchreport/showall/option", document,XPathConstants.NODESET);
-            if(LangsFor_ShowAllString!=null){
+            SearchCriteria.showAllString = xpath.evaluate("locale/searchreport/showall/option[@lang='" + lang + "']", document);
+
+            SearchCriteria.andDisplayOperator = xpath.evaluate("locale/searchreport/andDisplayOperator/option[@lang='" + lang + "']", document);
+            SearchCriteria.orDisplayOperator = xpath.evaluate("locale/searchreport/orDisplayOperator/option[@lang='" + lang + "']", document);
+
+            NodeList LangsFor_ShowAllString = (NodeList) xpath.evaluate("locale/searchreport/showall/option", document, XPathConstants.NODESET);
+            if (LangsFor_ShowAllString != null) {
                 int howmanyItems = LangsFor_ShowAllString.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_ShowAllString.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_ShowAllString.item(i));
@@ -808,11 +776,11 @@ public class Parameters {
                     SearchCriteria.Lang_DefinitionsFor_SearchCriteria_ShowAll.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_AndOperator = (NodeList)xpath.evaluate("locale/searchreport/andDisplayOperator/option", document,XPathConstants.NODESET);
-            if(LangsFor_AndOperator!=null){
+
+            NodeList LangsFor_AndOperator = (NodeList) xpath.evaluate("locale/searchreport/andDisplayOperator/option", document, XPathConstants.NODESET);
+            if (LangsFor_AndOperator != null) {
                 int howmanyItems = LangsFor_AndOperator.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_AndOperator.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_AndOperator.item(i));
@@ -820,11 +788,11 @@ public class Parameters {
                     SearchCriteria.Lang_DefinitionsFor_SearchCriteria_And.put(langcode, displayVal);
                 }
             }
-            
-            NodeList LangsFor_OROperator = (NodeList)xpath.evaluate("locale/searchreport/orDisplayOperator/option", document,XPathConstants.NODESET);
-            if(LangsFor_OROperator!=null){
+
+            NodeList LangsFor_OROperator = (NodeList) xpath.evaluate("locale/searchreport/orDisplayOperator/option", document, XPathConstants.NODESET);
+            if (LangsFor_OROperator != null) {
                 int howmanyItems = LangsFor_OROperator.getLength();
-                for(int i=0; i< howmanyItems; i++){
+                for (int i = 0; i < howmanyItems; i++) {
 
                     String langcode = xpath.evaluate("./@lang", LangsFor_OROperator.item(i));
                     String displayVal = xpath.evaluate("./text()", LangsFor_OROperator.item(i));
@@ -832,97 +800,123 @@ public class Parameters {
                     SearchCriteria.Lang_DefinitionsFor_SearchCriteria_Or.put(langcode, displayVal);
                 }
             }
-        }
-        catch(Exception e){
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Translate Error: " + e.getMessage());
+        } catch (Exception e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
             Utils.StaticClass.handleException(e);
         }
+        // </editor-fold>
     }
-    
-    public static String getStatusRepresentation_ForDisplay(String targetStatus, UserInfoClass SessionUserInfo){
-     
-        String targetLang = (SessionUserInfo!=null && SessionUserInfo.UILang!=null)?SessionUserInfo.UILang : Parameters.UILang;
+
+    /**
+     * Function created when editing status ability was requested for library
+     * users. As a quick-fix a new configuration was created in config.xml where
+     * allowed status codes were written with abbreviations FI, UF, FA etc.
+     *
+     * This function maps these abbreviations to the specific status keywords
+     * used in the system.
+     *
+     * @param statusCode
+     * @return
+     */
+    private static String getStatusKeywordFromStatusCodeConfiguration(String statusCode) {
         String retVal = "";
-        
-        if(targetStatus.equals(Parameters.Status_Under_Construction)){
-            retVal = Parameters.Lang_DefinitionsForStatus_Under_Construction.containsKey(targetLang)? Parameters.Lang_DefinitionsForStatus_Under_Construction.get(targetLang) :  Parameters.Status_Under_Construction;
+        if (statusCode != null) {
+            String codeToCheck = statusCode.toUpperCase();
+            switch (codeToCheck) {
+                case "FI": {
+                    retVal = Parameters.Status_For_Insertion;
+                    break;
+                }
+                case "UC": {
+                    retVal = Parameters.Status_Under_Construction;
+                    break;
+                }
+                case "FA": {
+                    retVal = Parameters.Status_For_Approval;
+                    break;
+                }
+                case "AP": {
+                    retVal = Parameters.Status_Approved;
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
         }
-        else if(targetStatus.equals(Parameters.Status_Approved)){         
-            retVal = Parameters.Lang_DefinitionsForStatus_Approved.containsKey(targetLang)? Parameters.Lang_DefinitionsForStatus_Approved.get(targetLang) :  Parameters.Status_Approved;
-        }
-        else if(targetStatus.equals(Parameters.Status_For_Approval)){
-            retVal = Parameters.Lang_DefinitionsForStatus_For_Approval.containsKey(targetLang)? Parameters.Lang_DefinitionsForStatus_For_Approval.get(targetLang) :  Parameters.Status_For_Approval;
-        }
-        else if(targetStatus.equals(Parameters.Status_For_Insertion)){
-            retVal = Parameters.Lang_DefinitionsForStatus_For_Insertion.containsKey(targetLang)? Parameters.Lang_DefinitionsForStatus_For_Insertion.get(targetLang) :  Parameters.Status_For_Insertion;
-        }
-        else if(targetStatus.equals(Parameters.Status_For_Reinspection)){
-            retVal = Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsKey(targetLang)? Parameters.Lang_DefinitionsForStatus_For_Reinspection.get(targetLang) :  Parameters.Status_For_Reinspection;
-        }
-        
         return retVal;
-                
     }
-    
-    public static String getStatusRepresentation_ForDB(String targetDisplayStatus, UserInfoClass SessionUserInfo){
-     
-        String targetLang = (SessionUserInfo!=null && SessionUserInfo.UILang!=null)?SessionUserInfo.UILang : Parameters.UILang;
+
+    public static String getStatusRepresentation_ForDisplay(String targetStatus, UserInfoClass SessionUserInfo) {
+
+        String targetLang = (SessionUserInfo != null && SessionUserInfo.UILang != null) ? SessionUserInfo.UILang : Parameters.UILang;
+        String retVal = "";
+
+        if (targetStatus.equals(Parameters.Status_Under_Construction)) {
+            retVal = Parameters.Lang_DefinitionsForStatus_Under_Construction.containsKey(targetLang) ? Parameters.Lang_DefinitionsForStatus_Under_Construction.get(targetLang) : Parameters.Status_Under_Construction;
+        } else if (targetStatus.equals(Parameters.Status_Approved)) {
+            retVal = Parameters.Lang_DefinitionsForStatus_Approved.containsKey(targetLang) ? Parameters.Lang_DefinitionsForStatus_Approved.get(targetLang) : Parameters.Status_Approved;
+        } else if (targetStatus.equals(Parameters.Status_For_Approval)) {
+            retVal = Parameters.Lang_DefinitionsForStatus_For_Approval.containsKey(targetLang) ? Parameters.Lang_DefinitionsForStatus_For_Approval.get(targetLang) : Parameters.Status_For_Approval;
+        } else if (targetStatus.equals(Parameters.Status_For_Insertion)) {
+            retVal = Parameters.Lang_DefinitionsForStatus_For_Insertion.containsKey(targetLang) ? Parameters.Lang_DefinitionsForStatus_For_Insertion.get(targetLang) : Parameters.Status_For_Insertion;
+        } else if (targetStatus.equals(Parameters.Status_For_Reinspection)) {
+            retVal = Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsKey(targetLang) ? Parameters.Lang_DefinitionsForStatus_For_Reinspection.get(targetLang) : Parameters.Status_For_Reinspection;
+        }
+
+        return retVal;
+
+    }
+
+    public static String getStatusRepresentation_ForDB(String targetDisplayStatus, UserInfoClass SessionUserInfo) {
+
+        String targetLang = (SessionUserInfo != null && SessionUserInfo.UILang != null) ? SessionUserInfo.UILang : Parameters.UILang;
         String retVal = "";
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject statusObj = new StringObject();
-        if(targetDisplayStatus!=null && targetDisplayStatus.length()>0){
-            if(Parameters.Lang_DefinitionsForStatus_Under_Construction.containsKey(targetLang)  && Parameters.Lang_DefinitionsForStatus_Under_Construction.get(targetLang).equals(targetDisplayStatus)){
+        if (targetDisplayStatus != null && targetDisplayStatus.length() > 0) {
+            if (Parameters.Lang_DefinitionsForStatus_Under_Construction.containsKey(targetLang) && Parameters.Lang_DefinitionsForStatus_Under_Construction.get(targetLang).equals(targetDisplayStatus)) {
                 //retVal = Parameters.Status_Under_Construction;
                 dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus, statusObj);
                 return statusObj.getValue();
-            }
-            else if(Parameters.Lang_DefinitionsForStatus_Approved.containsKey(targetLang)  && Parameters.Lang_DefinitionsForStatus_Approved.get(targetLang).equals(targetDisplayStatus)){     
+            } else if (Parameters.Lang_DefinitionsForStatus_Approved.containsKey(targetLang) && Parameters.Lang_DefinitionsForStatus_Approved.get(targetLang).equals(targetDisplayStatus)) {
                 dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus, statusObj);
                 return statusObj.getValue();
-            }
-            else if(Parameters.Lang_DefinitionsForStatus_For_Approval.containsKey(targetLang)  && Parameters.Lang_DefinitionsForStatus_For_Approval.get(targetLang).equals(targetDisplayStatus)){     
+            } else if (Parameters.Lang_DefinitionsForStatus_For_Approval.containsKey(targetLang) && Parameters.Lang_DefinitionsForStatus_For_Approval.get(targetLang).equals(targetDisplayStatus)) {
                 dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus, statusObj);
                 return statusObj.getValue();
-            }
-            else if(Parameters.Lang_DefinitionsForStatus_For_Insertion.containsKey(targetLang)  && Parameters.Lang_DefinitionsForStatus_For_Insertion.get(targetLang).equals(targetDisplayStatus)){     
+            } else if (Parameters.Lang_DefinitionsForStatus_For_Insertion.containsKey(targetLang) && Parameters.Lang_DefinitionsForStatus_For_Insertion.get(targetLang).equals(targetDisplayStatus)) {
                 dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus, statusObj);
                 return statusObj.getValue();
-            }
-            else if(Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsKey(targetLang)  && Parameters.Lang_DefinitionsForStatus_For_Reinspection.get(targetLang).equals(targetDisplayStatus)){     
+            } else if (Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsKey(targetLang) && Parameters.Lang_DefinitionsForStatus_For_Reinspection.get(targetLang).equals(targetDisplayStatus)) {
                 dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus, statusObj);
                 return statusObj.getValue();
-            }
-            else {
+            } else {
                 //check other languages                
-                if(Parameters.Lang_DefinitionsForStatus_Under_Construction.containsValue(targetDisplayStatus)){
+                if (Parameters.Lang_DefinitionsForStatus_Under_Construction.containsValue(targetDisplayStatus)) {
                     //retVal = Parameters.Status_Under_Construction;
                     dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus, statusObj);
                     return statusObj.getValue();
-                }
-                else if(Parameters.Lang_DefinitionsForStatus_Approved.containsValue(targetDisplayStatus)){     
+                } else if (Parameters.Lang_DefinitionsForStatus_Approved.containsValue(targetDisplayStatus)) {
                     dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus, statusObj);
                     return statusObj.getValue();
-                }
-                else if(Parameters.Lang_DefinitionsForStatus_For_Approval.containsValue(targetDisplayStatus)){     
+                } else if (Parameters.Lang_DefinitionsForStatus_For_Approval.containsValue(targetDisplayStatus)) {
                     dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus, statusObj);
                     return statusObj.getValue();
-                }
-                else if(Parameters.Lang_DefinitionsForStatus_For_Insertion.containsValue(targetDisplayStatus)){     
+                } else if (Parameters.Lang_DefinitionsForStatus_For_Insertion.containsValue(targetDisplayStatus)) {
                     dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus, statusObj);
                     return statusObj.getValue();
-                }
-                else if(Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsValue(targetDisplayStatus)){     
+                } else if (Parameters.Lang_DefinitionsForStatus_For_Reinspection.containsValue(targetDisplayStatus)) {
                     dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus, statusObj);
                     return statusObj.getValue();
-                }
-                else{
+                } else {
                     //nothing find return the same value
                     retVal = targetDisplayStatus;
                 }
-            }            
+            }
         }
-        
-        return retVal;                
+
+        return retVal;
     }
 
 }

@@ -156,7 +156,7 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             else if(targetField.compareTo(DBCreate_Modify_Hierarchy.hierarchy_delete_kwd)==0){
                 //creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(session, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  decodedValues,"modify", "delete",SessionUserInfo.name, targetLocale,  errorMsg,true);                
                 // replaced by karam with new method: DeleteHierarchy()
-                creation_modificationOfHierarchy.DeleteHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  errorMsg);
+                creation_modificationOfHierarchy.DeleteHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  errorMsg);                
             }
             
             //check result of transaction. Prepend with Success or Failure any message returned and write it to PrintWriter out for ajax handling

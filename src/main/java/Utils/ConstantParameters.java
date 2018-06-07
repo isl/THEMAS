@@ -181,6 +181,7 @@ public class ConstantParameters {
     public static final String topterm_kwd = "topterm";
     public static final String translation_kwd = "translations";
     public static final String bt_kwd = "bt";
+    public static final String externalUri_kwd = "externalUri";
     public static final String nt_kwd = "nt";
     //addition standing for output of recursive bts
     public static final String rbt_kwd = "rbt";

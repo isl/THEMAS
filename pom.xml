@@ -170,6 +170,10 @@
                                 <include name="**/*.xsl"/>
                                 <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
                             </replace> 
+                            <replace dir="${project.build.directory}/${project.build.finalName}/help-files" encoding="UTF-8" >                                
+                                <include name="**/*.html"/>
+                                <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />
+                            </replace> 
                             <replace dir="${project.build.directory}/${project.build.finalName}/Save_Results_Displays" encoding="UTF-8" >
                                 <include name="**/*.xsl"/>
                                 <replacefilter token="@DeploymentTimestamp@" value="${timestamp}" />

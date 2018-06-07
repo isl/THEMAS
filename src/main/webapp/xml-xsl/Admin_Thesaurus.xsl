@@ -391,7 +391,7 @@
                             <xsl:value-of select="$specificlocale/chooseinputthesaurus/option[@lang=$lang]"/>
                         </td>
                         <td>
-                            <input type="text" id="Import_Thesaurus_NewName_ID" name="Import_Thesaurus_NewName_NAME" size="17" onkeypress="if (event.keyCode == 13) return false;"/>
+                            <input type="text" id="Import_Thesaurus_NewName_ID" name="Import_Thesaurus_NewName_NAME" class="thesaurusFieldWidth" size="17" onkeypress="if (event.keyCode == 13) return false;"/>
                             <xsl:text> </xsl:text>
                             <input class="button" type="submit" onClick="Import_DataButtonPressed('thesaurusImport');">
                                 <xsl:attribute name="value">
@@ -574,11 +574,11 @@
             <form style="margin-top:10px;" method="post" id="Export_DataForm" action="">
                 <table>
                     <tr style="width:800px;">
-                        <td style="width:230px; text-align:right;">
+                        <td style="width:250px; text-align:right;">
                             <xsl:value-of select="$specificlocale/selectexportthesaurus/option[@lang=$lang]"/>
                         </td>
                         <td align="left">
-                            <select id="exportThesaurus_ID" name="exportThesaurus" style="width:160px;" onchange="checkSkosConfiguration();">
+                            <select id="exportThesaurus_ID" name="exportThesaurus" class="thesaurusFieldWidth" onchange="checkSkosConfiguration();">
                                 <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
                                     <xsl:sort select="."/>
                                     <option>
@@ -919,7 +919,7 @@
             <br/>
             <table border="0" width="100%">
                 <tr>
-                    <td>
+                    <td colspan="2">
                         <!-- List of Thesaurus -->
                         <xsl:value-of select="$specificlocale/dbthesauri/option[@lang=$lang]"/>
                         <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
@@ -927,19 +927,18 @@
                             <xsl:if test="name(./following-sibling::*[1]) = 'Thesaurus' ">
                                 <xsl:text>, </xsl:text>
                             </xsl:if>
-                        </xsl:for-each>
-                        <br/>
+                        </xsl:for-each>                        
                     </td>
                 </tr>
-            </table>
-            <table border="0" width="100%">
                 <tr valign="top">
                     <td width="420">
+                        <br/>
                         <form method="post" id="Create_ThesaurusForm" action="" >
                             
                             <!-- Thesaurus name - OK button -->
                             <xsl:value-of select="$specificlocale/newthesname/option[@lang=$lang]"/>
-                            <input type="text" id="Create_Thesaurus_NewName_ID" name="Create_Thesaurus_NewName_NAME" style="width:140px;" onkeypress="if (event.keyCode == 13) return false;">
+                            <input type="text" id="Create_Thesaurus_NewName_ID" name="Create_Thesaurus_NewName_NAME"
+                                   class="thesaurusFieldWidth" onkeypress="if (event.keyCode == 13) return false;">
                                 <!-- disable ENTER key-->
                                 <xsl:attribute name="value">
                                     <xsl:value-of select="//page/content_Admin_Thesaurus/CreateThesaurusResult/NewThesaurusName"/>
@@ -957,11 +956,12 @@
                             <input type="checkbox" name="InitDB"/>
                         </form>
                     </td>
-                    <td>
-                        <xsl:value-of select="$specificlocale/createresult/option[@lang=$lang]"/>
-                    </td>
                     <td valign="top">
-                        <textarea id="Create_Thesaurus_result_textarea_ID" name="Create_Thesaurus_result_textarea_NAME" class="thesaurustextarea" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'">
+                        <br/>
+                        <xsl:value-of select="$specificlocale/createresult/option[@lang=$lang]"/>
+                        
+                        <textarea id="Create_Thesaurus_result_textarea_ID" name="Create_Thesaurus_result_textarea_NAME"
+                                  class="thesaurustextarea" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'">
                             <xsl:value-of select="//page/content_Admin_Thesaurus/CreateThesaurusResult/InitializeDBResultMessage"/>
                             <xsl:value-of select="//page/content_Admin_Thesaurus/CreateThesaurusResult/CreateThesaurusResultMessage"/>
                         </textarea>
@@ -969,7 +969,7 @@
                 </tr>
             </table>
         </fieldset>
-        <!-- ___________________________ Αντιγραφή Θησαυρού ___________________________ -->
+        <!-- ___________________________ Copy Thesaurus Action  ___________________________ -->
         <fieldset style="width:810px; margin-top:10px;">
             <legend>
                 <xsl:value-of select="$specificlocale/copythes/option[@lang=$lang]"/>
@@ -978,10 +978,31 @@
             <form  width="100%" method="post" id="Copy_ThesaurusForm" action="">
                 <table  width="100%" cellspacing="0">
                     <tr valign="top">
-                        <td width="370">
-                            <!-- List of Thesaurus -->
+                        <td style="widht:50%; text-align: center; vertical-alignment: top;">
                             <xsl:value-of select="$specificlocale/copydbthesauri/option[@lang=$lang]"/>
-                            <select id="sourceThesaurus_ID" name="sourceThesaurus" style="width:160px;">
+                            <!-- added this in order to align fields correctly -->
+                            <xsl:text> </xsl:text>
+                            <input class="button" type="button" style="visibility: hidden; height:5px;">
+                                <xsl:attribute name="value">
+                                    <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                            </input> 
+                        </td>
+                        <td style="widht:50%; text-align: center; vertical-alignment: top;">
+                            <xsl:value-of select="$specificlocale/copynewname/option[@lang=$lang]"/>
+                            <!-- added this in order to align fields correctly -->
+                            <xsl:text> </xsl:text>
+                            <input class="button" type="button" style="visibility: hidden; height:5px;">
+                                <xsl:attribute name="value">
+                                    <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                            </input> 
+                        </td>                        
+                    </tr>                    
+                    <tr valign="top">
+                        <td style="widht:50%; text-align: center; vertical-alignment: top;" >
+                            <!-- List of Thesaurus -->
+                            <select id="sourceThesaurus_ID" name="sourceThesaurus" class="thesaurusFieldWidth">
                                 <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
                                     <xsl:sort select="."/>
                                     <option>
@@ -991,15 +1012,18 @@
                                         <xsl:value-of select="."/>
                                     </option>
                                 </xsl:for-each>
-                            </select>
+                            </select>        
+                            <!-- added this in order to align fields correctly -->
+                            <xsl:text> </xsl:text>
+                            <input class="button" type="button" style="visibility: hidden;">
+                                <xsl:attribute name="value">
+                                    <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                            </input>                    
                         </td>
-                        <td align="right" valign="middle" width="160">
-                            <!-- Thesaurus name - OK button -->
-                            <xsl:value-of select="$specificlocale/copynewname/option[@lang=$lang]"/>
-                        </td>
-                        <td width="175" >
-                        &#160;
-                            <input type="text" style="width:140px;" id="Copy_Thesaurus_NewName_ID" name="Copy_Thesaurus_NewName_NAME"  onkeypress="if (event.keyCode == 13) return false;">
+                        
+                        <td style="widht:50%; text-align: center; vertical-alignment: top;" >
+                            <input type="text" class="thesaurusFieldWidth" id="Copy_Thesaurus_NewName_ID" name="Copy_Thesaurus_NewName_NAME"  onkeypress="if (event.keyCode == 13) return false;">
                                 <!-- disable ENTER key-->
                                 <xsl:attribute name="value">
                                     <xsl:value-of select="//page/content_Admin_Thesaurus/CopyThesaurusResult/CopyThesaurusName"/>
@@ -1014,7 +1038,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="width:545px;">
+                        <td style="width:545px;">
                             <xsl:choose>
                                 <xsl:when test="//copyReportFile or //copyThesaurusResult != ''" >
                                 </xsl:when>
@@ -1058,7 +1082,7 @@
                 </table>
             </form>
         </fieldset>
-            <!-- ___________________________ Συγχώνευση θησαυρών ___________________________ -->
+        <!-- ___________________________ Merge Thesauri Action ___________________________ -->
         <fieldset style="width:810px; margin-top:10px;">
             <legend>
                 <xsl:value-of select="$specificlocale/mergethesauri/option[@lang=$lang]"/>
@@ -1075,38 +1099,84 @@
                     </table>
                 </xsl:when>
                 <xsl:otherwise>
+                    
                     <form method="post" id="Merge_ThesauriForm" action="">
-                        <table >
-                            <tr valign="top" >
-                                <td valign="middle">
+                        <table style="width:100%;">
+                            <tr style="width:100%;">
+                                <td style="text-align: center; vertical-alignment: top; width:30%;">
                                     <xsl:value-of select="$specificlocale/thesaurus1/option[@lang=$lang]"/>
-                                    <select name="thesaurus1" id="thesaurus_1_ID" style="width:150px;">
-                                        <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
-                                            <xsl:sort select="."/>
-                                            <option>
-                                                <xsl:attribute name="value">
-                                                    <xsl:value-of select="."/>
-                                                </xsl:attribute>
-                                                <xsl:value-of select="."/>
-                                            </option>
-                                        </xsl:for-each>
-                                    </select>
-                                    <xsl:value-of select="$specificlocale/thesaurus2/option[@lang=$lang]"/>
-                                    <select name="thesaurus2"  id="thesaurus_2_ID" style="width:150px;">
-                                        <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
-                                            <xsl:sort select="."/>
-                                            <option>
-                                                <xsl:attribute name="value">
-                                                    <xsl:value-of select="."/>
-                                                </xsl:attribute>
-                                                <xsl:value-of select="."/>
-                                            </option>
-                                        </xsl:for-each>
-                                    </select>
-                                    <xsl:value-of select="$specificlocale/mergenewthes/option[@lang=$lang]"/>
+                                    <!-- added this in order to align fields correctly -->
+                                    <xsl:text> </xsl:text>
+                                    <input class="button" type="button" style="visibility: hidden; height:5px;">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                    </input> 
                                 </td>
-                                <td align="right">
-                                    <input id="thesaurus_merged_ID" name="mergedThesaurusName" type="text" style="width:140px;" />
+                                <td>
+                                   
+                                </td>
+                                <td style="text-align: center; vertical-alignment: top; width:30%;">
+                                    <xsl:value-of select="$specificlocale/thesaurus2/option[@lang=$lang]"/>
+                                    <!-- added this in order to align fields correctly -->
+                                    <xsl:text> </xsl:text>
+                                    <input class="button" type="button" style="visibility: hidden; height:5px;">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                    </input> 
+                                </td>
+                                <td>
+                                   
+                                </td>
+                                <td style="text-align: center; vertical-alignment: top; ">
+                                    <xsl:value-of select="$specificlocale/mergenewthes/option[@lang=$lang]"/>
+                                    <!-- added this in order to align fields correctly -->
+                                    <xsl:text> </xsl:text>
+                                    <input class="button" type="button" style="visibility: hidden; height:5px;">
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                        </xsl:attribute>
+                                    </input> 
+                                </td>                                
+                            </tr>
+                            <tr style="vertical-alignment:middle;">
+                                <td  style="text-align: center; vertical-alignment: top; width:30%;">
+                                    <select name="thesaurus1" id="thesaurus_1_ID" class="thesaurusFieldWidth">
+                                        <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
+                                            <xsl:sort select="."/>
+                                            <option>
+                                                <xsl:attribute name="value">
+                                                    <xsl:value-of select="."/>
+                                                </xsl:attribute>
+                                                <xsl:value-of select="."/>
+                                            </option>
+                                        </xsl:for-each>
+                                    </select>
+                                </td>
+                                <td >
+                                    <xsl:text> + </xsl:text>
+                                </td>
+                                <td  style="text-align: center; vertical-alignment: top; width:30%;">
+                                    <select name="thesaurus2"  id="thesaurus_2_ID"  class="thesaurusFieldWidth">
+                                        <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
+                                            <xsl:sort select="."/>
+                                            <option>
+                                                <xsl:attribute name="value">
+                                                    <xsl:value-of select="."/>
+                                                </xsl:attribute>
+                                                <xsl:value-of select="."/>
+                                            </option>
+                                        </xsl:for-each>
+                                    </select>
+                                    
+                                </td>
+                                <td>
+                                    <xsl:text> = </xsl:text>
+                                </td>
+                                <td  style="text-align: center; vertical-alignment: top;">
+                                    <input id="thesaurus_merged_ID" name="mergedThesaurusName" type="text"  class="thesaurusFieldWidth" />
+                                    
                                     <xsl:text> </xsl:text>
                                     <input type="submit" class="button" onclick="Merge_ThesauriButtonPressed();" >
                                         <xsl:attribute name="value">
@@ -1116,7 +1186,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">
+                                <td colspan="5">
                                     <table border="0" >
                                         <tr>
                                             <td style="width:600px;">
@@ -1168,7 +1238,7 @@
                 </xsl:otherwise>
             </xsl:choose>
         </fieldset>
-		<!-- ___________________________ Διαγραφή Θησαυρού ___________________________ -->
+        <!-- ___________________________ Delete Tehsaurus Action ___________________________ -->
         <fieldset style="width:810px; margin-top:10px;">
             <legend>
                 <xsl:value-of select="$specificlocale/deletethesaurus/option[@lang=$lang]"/>
@@ -1180,7 +1250,7 @@
                         <form method="post" id="Delete_ThesaurusForm" action="">
 							<!-- List of Thesaurus -->
                             <xsl:value-of select="$specificlocale/selectdeletethesaurus/option[@lang=$lang]"/>
-                            <select id="deleteThesaurus_ID" name="deleteThesaurus" style="width:150px;">
+                            <select id="deleteThesaurus_ID" name="deleteThesaurus"  class="thesaurusFieldWidth">
                                 <xsl:for-each select="//content_Admin_Thesaurus/existingThesaurus/Thesaurus">
                                     <xsl:sort select="."/>
                                     <option>

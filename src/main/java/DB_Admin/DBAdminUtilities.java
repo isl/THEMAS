@@ -905,8 +905,10 @@ public class DBAdminUtilities {
         Q.free_set(hierarchiesSetWithoutOrphansHierarchy);
         // b. delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms}
         DBCreate_Modify_Hierarchy creation_modificationOfHierarchy = new DBCreate_Modify_Hierarchy();
+        
         int hierarchiesToBeDeletedSize = hierarchiesToBeDeleted.size();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting " + hierarchiesToBeDeletedSize + " hierarchies...");
+        
         for (int i = 0; i < hierarchiesToBeDeletedSize; i++) {
             String hierarchyToBeDeleted = (String) hierarchiesToBeDeleted.get(i);
             String hierarchyToBeDeletedUIWithoutPrefix = dbGen.removePrefix(hierarchyToBeDeleted);
