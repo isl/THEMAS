@@ -277,6 +277,10 @@
             <option lang="en">Hierarchical display of terms of hierarchy: </option>
             <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
         </baselabel>
+        <baselabelformultiple>
+            <option lang="en">Hierarchical display of terms of hierarchies: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων των ιεραρχιών: </option>
+        </baselabelformultiple>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
@@ -296,6 +300,10 @@
             <option lang="en">Hierarchical display of terms of hierarchy: </option>
             <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
         </baselabel>
+        <baselabelformultiple>
+            <option lang="en">Hierarchical display of terms of hierarchies: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων των ιεραρχιών: </option>
+        </baselabelformultiple>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>

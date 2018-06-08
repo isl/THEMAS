@@ -45,6 +45,7 @@ THEMAS new version Release Notes
 - Created servlet that receives a Thesaurus Name and Thesaurus Reference Id and responds with metadata such as name and Type (Facet / TOP TERM / TERM) + responseCode (success / not found /unauthorized access etc.)
 - increased thesaurus field width
 - GDPR texts (Conditions of Use + Privacy policy added) 
+- Added the XMLStream ability for the hierarchical representation of multiple hierarchies
 ###- Started the feature to create hierarchical symbolic links at skos export ###
 
 =============================================================================

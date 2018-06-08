@@ -86,6 +86,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
 
         try {
+            System.out.println(request.getQueryString());
 
             // check for previous logon but because of ajax usage respond with Session Invalidate str
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
@@ -115,42 +116,51 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-            
-            String hierarchy = u.getDecodedParameterValue(request.getParameter("hierarchy"));
-            String refIdVal = request.getParameter("referenceId");
+            ArrayList<String> hierarchiesStringList = new ArrayList<>();
+            ArrayList<SortItem> hierarchiesSortItemList = new ArrayList<>();
+            String singleHierarchyValue = u.getDecodedParameterValue(request.getParameter("hierarchy"));
+            ArrayList<String> refIdVals = u.getDecodedParameterValues(request.getParameterValues("referenceId"));
             String action = u.getDecodedParameterValue(request.getParameter("action"));
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             
             
-            if(hierarchy==null || hierarchy.trim().length()==0){
+            if(singleHierarchyValue==null || singleHierarchyValue.trim().length()==0){
                         
-                if(refIdVal!=null && refIdVal.length()>0){
-                    long refId = -1;
-                    try{
-                        refId = Long.parseLong(refIdVal);
-                    }
-                    catch(NumberFormatException ex){
-                        Utils.StaticClass.handleException(ex);
-                    }
+                if(refIdVals!=null && refIdVals.size()>0){
+                    for(String str : refIdVals){
+                        if(str!=null && str.length()>0){
+                            long refId = -1;
+                            try{
+                                refId = Long.parseLong(str);
+                            }
+                            catch(NumberFormatException ex){
+                                Utils.StaticClass.handleException(ex);
+                            }
 
-                    if(refId>0){
-                        Q.reset_name_scope();
-                        hierarchy = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, refId));
+                            if(refId>0){
+                                Q.reset_name_scope();
+                                singleHierarchyValue = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(SessionUserInfo.selectedThesaurus, refId));
+                                if(singleHierarchyValue!=null && singleHierarchyValue.length()>0 && !hierarchiesStringList.contains(singleHierarchyValue)){
+                                    hierarchiesStringList.add(singleHierarchyValue);
+                                }
+                            }
+                        }
                     }
                 }
             }
+            else{
+                hierarchiesStringList.add(singleHierarchyValue);
+            }
+            
             
             String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
             //StringObject cls = new StringObject();
             //StringObject label = new StringObject();
             //CMValue cmv = new CMValue();
-            StringObject hierarchyObj = null;
-            if (hierarchy != null && hierarchy.length() > 0) {
-                hierarchyObj = new StringObject(prefix_class.concat(hierarchy));
-            }
+            
 
             //save ALL code                
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
@@ -164,6 +174,13 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             if (action.compareTo("translations2primary") == 0 || action.compareTo("primary2translations") == 0) {
 
+                //Only single Hierarchy supported                
+                StringObject hierarchyObj = null;
+                String hierarchy = "";
+                if (hierarchiesStringList.size()>0) {
+                    hierarchyObj = new StringObject(prefix_class.concat(hierarchiesStringList.get(0)));
+                    hierarchy = hierarchiesStringList.get(0);
+                }
                 //<editor-fold defaultstate="collapsed" desc="Primary 2 Translations Index display computations...">
                 StringObject TranslationsClassObj = new StringObject();
                 StringObject TranslationsLinkObj = new StringObject();
@@ -324,6 +341,13 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
             } else if (action.compareTo("alphabetical") == 0) {
 
+                //Only single Hierarchy supported
+                StringObject hierarchyObj = null;
+                String hierarchy = "";
+                if (hierarchiesStringList.size()>0) {
+                    hierarchyObj = new StringObject(prefix_class.concat(hierarchiesStringList.get(0)));
+                    hierarchy = hierarchiesStringList.get(0);
+                }
                 //<editor-fold defaultstate="collapsed" desc="alphabetical display computations..."> 
                 String Save_Results_file_name = "SearchResults_Terms_Of_Hierarchy_Alphabetical_" + time;
                 String XML = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
@@ -398,6 +422,13 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 //</editor-fold>
             } else if (action.compareTo("systematic") == 0) {
 
+                //Only single Hierarchy supported
+                StringObject hierarchyObj = null;
+                String hierarchy = "";
+                if (hierarchiesStringList.size()>0) {
+                    hierarchyObj = new StringObject(prefix_class.concat(hierarchiesStringList.get(0)));
+                    hierarchy = hierarchiesStringList.get(0);
+                }
                 //<editor-fold defaultstate="collapsed" desc="systematic display computations..."> 
                 Q.reset_name_scope();
                 Q.set_current_node(hierarchyObj);
@@ -449,6 +480,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 //</editor-fold>
 
             } else if (action.compareTo("hierarchical") == 0) {
+                                
                 //<editor-fold defaultstate="collapsed" desc="hierarchical display computations..."> 
 
                 StringObject BT_NTClassObj = new StringObject();
@@ -456,141 +488,228 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.nt_kwd, BT_NTClassObj, BT_NTLinkObj, Q, sis_session);
                 Q.reset_name_scope();
 
-                Q.set_current_node(hierarchyObj);
-                int set_all_hier_terms = Q.get_all_instances(0);
-                Q.reset_set(set_all_hier_terms);
+                String xmlQueryArguments = "";
+                
+                HashMap<SortItem, ArrayList<SortItem>> ntsOfHierDesciptor = new HashMap<>();
 
-                //find all bt/nt relations among terms of current hierarchy
-                int set_bt_labels_from = Q.get_link_from_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
-                Q.reset_set(set_bt_labels_from);
+                String prefix_term = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+                
+                StringObject belongsToHierClass = new StringObject();
+                StringObject belongsToHierarchyLink = new StringObject();
+                dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+        
+                int targetHierarchiesSet = Q.set_get_new();
+                if (hierarchiesStringList.size()>0) {
+                    for(String str : hierarchiesStringList){
+                        StringObject hierarchyObj = null;
+                        
+                        // it points to the hierarchy class not the topterm and
+                        // reference id is always -1 (ref id exists in topterm only not the class also)
+                        hierarchyObj = new StringObject(prefix_class.concat(str));
+                        
+                        xmlQueryArguments+="\n\t\t<arg1>"+Utilities.escapeXML(str)+"</arg1>";
+                        Q.reset_name_scope();
+                        
+                        
+                        long ret = Q.set_current_node(hierarchyObj);
+                        if(ret!=QClass.APIFail){
+                            
+                            // Hierarchy Class does not contain the reference Id we should search at the top term
+                            Q.set_put(targetHierarchiesSet);
+                            Q.reset_set(targetHierarchiesSet);   
+                            
+                            
+                            int set_topterm = Q.get_from_node_by_category(0, belongsToHierClass, belongsToHierarchyLink);
+                            
 
-                int set_bt_labels_to = Q.get_link_to_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
-                Q.reset_set(set_bt_labels_to);
-
-                //this should preserve all bt links established between terms of the selected hierarchy
-                Q.set_intersect(set_bt_labels_from, set_bt_labels_to);
-                Q.reset_set(set_bt_labels_from);
-
-                // FILTER bt links set depending on user group
-                DBFilters dbf = new DBFilters();
-                set_bt_labels_from = dbf.FilterBTLinksSet(SessionUserInfo, set_bt_labels_from, Q, sis_session);
-
-                HashMap<String, ArrayList<String>> ntsOfHierDesciptor = new HashMap<String, ArrayList<String>>();
-
-                ArrayList<String> newTopTermNtsVec = new ArrayList<String>();
-                String topterm = dbGen.removePrefix(hierarchyObj.getValue());
-                ntsOfHierDesciptor.put(topterm, newTopTermNtsVec);
-
-                ArrayList<String> allHierTermsVec = new ArrayList<String>();
-                ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
-                Q.reset_set(set_bt_labels_from);
-                if (Q.bulk_return_link(set_bt_labels_from, retVals) != QClass.APIFail) {
-                    for (Return_Link_Row row : retVals) {
-                        //while (Q.retur_link(set_bt_labels_from, cls, label, cmv) != QClass.APIFail) {
-
-                        String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
-                        String nt = dbGen.removePrefix(row.get_v1_cls());
-                        if (allHierTermsVec.contains(bt) == false) {
-                            allHierTermsVec.add(bt);
-                        }
-                        if (allHierTermsVec.contains(nt) == false) {
-                            allHierTermsVec.add(nt);
-                        }
-                        ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
-                        if (btNts == null) {
-                            ArrayList<String> newNtsVec = new ArrayList<String>();
-                            newNtsVec.add(nt);
-                            ntsOfHierDesciptor.put(bt, newNtsVec);
-                        } else {
-                            if (btNts.contains(nt) == false) {
-
-                                btNts.add(nt);
-                                ntsOfHierDesciptor.put(bt, btNts);
-                            }
-                        }
-
-                        if (ntsOfHierDesciptor.containsKey(nt) == false) {
-                            ArrayList<String> newNtsVec = new ArrayList<String>();
-                            ntsOfHierDesciptor.put(nt, newNtsVec);
+                            ArrayList<SortItem> topTerms = dbGen.get_Node_Names_Of_Set_In_SortItems(set_topterm, true, Q, sis_session);
+                            if(topTerms!=null && topTerms.size()==1){
+                                SortItem ttSortItem = topTerms.get(0);
+                                ttSortItem.sysid = -1;
+                                ArrayList<SortItem> newTopTermNtsVec = new ArrayList<>();
+                                hierarchiesSortItemList.add(ttSortItem);
+                                ntsOfHierDesciptor.put(ttSortItem, newTopTermNtsVec);
+                            }                            
                         }
                     }
                 }
-                /*
-                 while (Q.retur_link(set_bt_labels_from, cls, label, cmv) != QClass.APIFail) {
+                        
+                if(Q.set_get_card(targetHierarchiesSet)>0){
+                                    
+                    int set_all_hier_terms = Q.get_all_instances(targetHierarchiesSet);
+                    Q.reset_set(set_all_hier_terms);
 
-                 String bt = dbGen.removePrefix(cmv.getString());
-                 String nt = dbGen.removePrefix(cls.getValue());
-                 if (allHierTermsVec.contains(bt) == false) {
-                 allHierTermsVec.add(bt);
-                 }
-                 if (allHierTermsVec.contains(nt) == false) {
-                 allHierTermsVec.add(nt);
-                 }                    
-                 ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
-                 if (btNts == null) {
-                 ArrayList<String> newNtsVec = new ArrayList<String>();
-                 newNtsVec.add(nt);
-                 ntsOfHierDesciptor.put(bt, newNtsVec);
-                 } else {
-                 if (btNts.contains(nt) == false) {
+                    //find all bt/nt relations among terms of current hierarchy
+                    int set_bt_labels_from = Q.get_link_from_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
+                    Q.reset_set(set_bt_labels_from);
 
-                 btNts.add(nt);
-                 ntsOfHierDesciptor.put(bt, btNts);
-                 }
-                 }
+                    int set_bt_labels_to = Q.get_link_to_by_category(set_all_hier_terms, BT_NTClassObj, BT_NTLinkObj);
+                    Q.reset_set(set_bt_labels_to);
 
-                 if (ntsOfHierDesciptor.containsKey(nt) == false) {
-                 ArrayList<String> newNtsVec = new ArrayList<String>();
-                 ntsOfHierDesciptor.put(nt, newNtsVec);
-                 }
+                    //this should preserve all bt links established between terms of the selected hierarchy
+                    Q.set_intersect(set_bt_labels_from, set_bt_labels_to);
+                    Q.reset_set(set_bt_labels_from);
 
+                    // FILTER bt links set depending on user group
+                    DBFilters dbf = new DBFilters();
+                    set_bt_labels_from = dbf.FilterBTLinksSet(SessionUserInfo, set_bt_labels_from, Q, sis_session);
 
-                 }
-                 */
-                Collections.sort(allHierTermsVec, new StringLocaleComparator(targetLocale));
+                    ArrayList<SortItem> allHierTermsVec = new ArrayList<>();
+                    ArrayList<Return_Link_Row> retVals = new ArrayList<>();
+                    Q.reset_set(set_bt_labels_from);
+                    if (Q.bulk_return_link(set_bt_labels_from, retVals) != QClass.APIFail) {
+                        
+                        for (Return_Link_Row row : retVals) {
+                            /*
+                            //while (Q.retur_link(set_bt_labels_from, cls, label, cmv) != QClass.APIFail) {
 
-                //end query and close connection
-                Q.free_all_sets();
-                Q.TEST_end_query();
-                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+                            String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
+                            String nt = dbGen.removePrefix(row.get_v1_cls());
+                            if (allHierTermsVec.contains(bt) == false) {
+                                allHierTermsVec.add(bt);
+                            }
+                            if (allHierTermsVec.contains(nt) == false) {
+                                allHierTermsVec.add(nt);
+                            }
+                            ArrayList<String> btNts = ntsOfHierDesciptor.get(bt);
+                            if (btNts == null) {
+                                ArrayList<String> newNtsVec = new ArrayList<>();
+                                newNtsVec.add(nt);
+                                ntsOfHierDesciptor.put(bt, newNtsVec);
+                            } else {
+                                if (btNts.contains(nt) == false) {
 
-                String Save_Results_file_name1 = "SearchResults_Terms_Of_Hierarchy_Hierarchical_Typical_" + time;
-                String Save_Results_file_name2 = "SearchResults_Terms_Of_Hierarchy_Hierarchical_Tree_" + time;
-                //String xslLink = "<?xml-stylesheet type=\"text/xsl\" href=\"" + path + "/" + webAppSaveResults_Folder + "/SaveAll_Terms_Of_Hierarchy_Hierarchical.xsl" + "\"?>" ;
-                String XSL1 = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Of_Hierarchy_Hierarchical.xsl").toString();
-                String XSL2 = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Of_Hierarchy_Hierarchical_tree_view.xsl").toString();
+                                    btNts.add(nt);
+                                    ntsOfHierDesciptor.put(bt, btNts);
+                                }
+                            }
 
-                String typicalLocation = Save_Results_file_name1.concat(".html");
-                String treeLocation = Save_Results_file_name2.concat(".html");
-                writeHierarchicalResultsInXMLFile(allHierTermsVec, ntsOfHierDesciptor, hierarchy, u,
-                        time, "<typicalHierarchicalLocation>" + typicalLocation + "</typicalHierarchicalLocation>"
-                        + "<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>"
-                        //+ "<base>Herarchical Presentation of terms of hierarchy: </base>"
-                        + "<arg1>" + Utilities.escapeXML(hierarchy) + "</arg1>",
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", pathToSaveScriptingAndLocale, targetLocale,
-                        SessionUserInfo.UILang);
+                            if (ntsOfHierDesciptor.containsKey(nt) == false) {
+                                ArrayList<String> newNtsVec = new ArrayList<>();
+                                ntsOfHierDesciptor.put(nt, newNtsVec);
+                            }
+                            
+                            */
+                        
+                        
+                        //while (Q.retur_link(set_bt_labels_from, cls, label, cmv) != QClass.APIFail) {
 
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
-                        XSL1,
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"));
+                            //String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
+                            SortItem btSortItem = new SortItem(row.get_v3_cmv());
+                            btSortItem.setLogName(dbGen.removePrefix(btSortItem.getLogName()));
+                            btSortItem.sysid = -1;
 
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
-                        XSL2,
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"));
+                            SortItem ntSortItem = new SortItem(dbGen.removePrefix(row.get_v1_cls()), -1, row.get_v4_clsTransliteration(), row.get_v5_clsRefid());
+                            //String nt = dbGen.removePrefix(row.get_v1_cls());
+                            if (allHierTermsVec.contains(btSortItem) == false) {
+                                allHierTermsVec.add(btSortItem);
+                            }
+                            if (allHierTermsVec.contains(ntSortItem) == false) {
+                                allHierTermsVec.add(ntSortItem);
+                            }
 
-                //response.sendRedirect("DownloadFile?targetFile="+ Save_Results_file_name1.concat(".html"));
-                out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name1.concat(".html"));
+                            ArrayList<SortItem> btNts = ntsOfHierDesciptor.get(btSortItem);
+                            if (btNts == null) {
+                                ArrayList<SortItem> newNtsVec = new ArrayList<>();
+                                newNtsVec.add(ntSortItem);
+                                ntsOfHierDesciptor.put(btSortItem, newNtsVec);
+                            } else {
+                                if (btNts.contains(ntSortItem) == false) {
 
-                float elapsedTimeSec = Utilities.stopTimer(startTime);
-                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in Hierarchy terms Hierarchical: " + elapsedTimeSec);
-                //out.println(path + "/" + webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name );
-                out.flush();
+                                    btNts.add(ntSortItem);
+                                    ntsOfHierDesciptor.put(btSortItem, btNts);
+                                }
+                            }
+
+                            if (ntsOfHierDesciptor.containsKey(ntSortItem) == false) {
+                                ArrayList<SortItem> newNtsVec = new ArrayList<>();
+                                ntsOfHierDesciptor.put(ntSortItem, newNtsVec);
+                            }
+                          
+                        }
+                    }
+
+                    Collections.sort(allHierTermsVec, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+                    //Collections.sort(allHierTermsVec, new StringLocaleComparator(targetLocale));
+
+                    //end query and close connection
+                    Q.free_all_sets();
+                    Q.TEST_end_query();
+                    dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+
+                    String Save_Results_file_name1 = "SearchResults_Terms_Of_Hierarchy_Hierarchical_Typical_" + time;
+                    String Save_Results_file_name2 = "SearchResults_Terms_Of_Hierarchy_Hierarchical_Tree_" + time;
+                    //String xslLink = "<?xml-stylesheet type=\"text/xsl\" href=\"" + path + "/" + webAppSaveResults_Folder + "/SaveAll_Terms_Of_Hierarchy_Hierarchical.xsl" + "\"?>" ;
+                    String XSL1 = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Of_Hierarchy_Hierarchical.xsl").toString();
+                    String XSL2 = webAppSaveResults_AbsolutePath.resolve("SaveAll_Terms_Of_Hierarchy_Hierarchical_tree_view.xsl").toString();
+
+                    String typicalLocation = Save_Results_file_name1.concat(".html");
+                    String treeLocation = Save_Results_file_name2.concat(".html");
+                    
+                    if (outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+                        writeHierarchicalResultsInXMLFile(out, 
+                                allHierTermsVec, 
+                                ntsOfHierDesciptor, 
+                                hierarchiesSortItemList, 
+                                u,
+                                time, 
+                                "\n\t\t<typicalHierarchicalLocation>" + typicalLocation + "</typicalHierarchicalLocation>" + 
+                                "\n\t\t<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>" +
+                                xmlQueryArguments,
+                                webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", 
+                                pathToSaveScriptingAndLocale, 
+                                targetLocale,
+                                SessionUserInfo.UILang);
+
+                    } else {
+                        writeHierarchicalResultsInXMLFile(null, 
+                                allHierTermsVec, 
+                                ntsOfHierDesciptor, 
+                                hierarchiesSortItemList, 
+                                u,
+                                time, 
+                                "<typicalHierarchicalLocation>" + typicalLocation + "</typicalHierarchicalLocation>" + 
+                                "<treeHierarchicalLocation>" + treeLocation + "</treeHierarchicalLocation>" +
+                                xmlQueryArguments,
+                                webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml", 
+                                pathToSaveScriptingAndLocale, 
+                                targetLocale,
+                                SessionUserInfo.UILang);
+
+                        u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
+                                       XSL1,
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"));
+
+                        u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
+                                           XSL2,
+                                           webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"));
+
+                        //response.sendRedirect("DownloadFile?targetFile="+ Save_Results_file_name1.concat(".html"));
+                        out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name1.concat(".html"));
+                    }
+                    
+                    float elapsedTimeSec = Utilities.stopTimer(startTime);
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Search results in Hierarchy terms Hierarchical: " + elapsedTimeSec);
+                    //out.println(path + "/" + webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name );
+                    out.flush();
+                        
+                    
+                }
                 return;
                 //</editor-fold>    
+                
             } else if (action.compareTo("GlobalThesarusHierarchical") == 0 || action.compareTo("facethierarchical") == 0) {
                 //DISPLAY FACETS AND HIERARCHIES
                 //<editor-fold defaultstate="collapsed" desc="GlobalThesarusHierarchical display computations..."> 
 
+                //Only single Hierarchy supported
+                //StringObject hierarchyObj = null;
+                String hierarchy = "";
+                if (hierarchiesStringList.size()>0) {
+                    //hierarchyObj = new StringObject(prefix_class.concat(hierarchiesList.get(0)));
+                    hierarchy = hierarchiesStringList.get(0);
+                }
+                
                 ArrayList<String> facetNames = new ArrayList<>();
                 boolean facetViewInsteadOfThesaurus = false;
                 if (action.compareTo("facethierarchical") == 0) {
@@ -1173,9 +1292,10 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
     }
 
-    public void writeHierarchicalResultsInXMLFile(ArrayList<String> all_hier_terms_vec, 
-            HashMap<String, ArrayList<String>> ntsOfHierDesciptor, 
-            String hierarchy, 
+    public void writeHierarchicalResultsInXMLFile(PrintWriter outStream,
+            ArrayList<SortItem> all_hier_terms_vec, 
+            HashMap<SortItem, ArrayList<SortItem>> ntsOfHierDesciptor, 
+            ArrayList<SortItem> targetHierarchies, 
             Utilities u, 
             String title, 
             String query,
@@ -1185,92 +1305,179 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
             Locale targetLocale,
             final String uiLang) {
 
-        String Full_Save_Results_file_name = fileName;
-
-        OutputStreamWriter out = null;
-        try {
-            //OutputStream fout = new FileOutputStream(webAppSaveResults_temporary_filesAbsolutePath + "/"+ Save_Results_file_name);
-            OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
-
-            OutputStream bout = new BufferedOutputStream(fout);
-            out = new OutputStreamWriter(bout, "UTF-8");
-
-            out.write(ConstantParameters.xmlHeader);
-            //out.write(xslLink);
-            // Fw = new FileWriter(Save_Results_file_nameWithoutExtension);
-            out.write("<page language=\"" + uiLang + "\">\n"
-                    + "<title>" + title + "</title>"
-                    + //"<query>" + "Hierarchical presentation of terms of hierarchy: " + hierarchy + "</query>" +
-                    "<query>" + query + "</query>"
-                    + "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>");
-
-        } catch (Exception exc) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
-            Utils.StaticClass.handleException(exc);
+        
+        boolean streamOutput = false;
+        if (outStream != null) {
+            streamOutput = true;
         }
 
+        String Full_Save_Results_file_name = fileName;
+        OutputStreamWriter out = null;
+
+        String appendVal = ConstantParameters.xmlHeader
+                + "<page language=\"" + uiLang + "\">\n"
+                + "\t<title>" + title + "</title>\n"
+                //+ "<query>" + "Hierarchical presentation of terms of hierarchy: " + hierarchy + "</query>" 
+                + "\t<query>" + query + "</query>\n"
+                + "\t<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>\n"
+                + "\t<results>\n";
+                
+        if (streamOutput) {
+            outStream.append(appendVal);
+        } else {
+
+            try {
+                //OutputStream fout = new FileOutputStream(webAppSaveResults_temporary_filesAbsolutePath + "/"+ Save_Results_file_name);
+                OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
+
+                OutputStream bout = new BufferedOutputStream(fout);
+                out = new OutputStreamWriter(bout, "UTF-8");
+
+                out.write(appendVal);
+            } catch (Exception exc) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+                Utils.StaticClass.handleException(exc);
+            }
+        }
+        
         try {
-            out.write("<results>");
-            out.write("<topterm>");
+            
+            SortItemComparator transliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+            Collections.sort(targetHierarchies, transliterationComparator);
+            for(SortItem hier : targetHierarchies){
+                //appendVal = "\t\t<topterm>\n"+"\t\t\t<name>"+Utilities.escapeXML(str)+"</name>\n";
+                
+                appendVal = "\t<topterm>\r\n\t\t<name";
+                
+                if (hier.getThesaurusReferenceId() > 0) {
+                    appendVal+=" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"" + hier.getThesaurusReferenceId() + "\"";
+                }
+                appendVal+=">" + Utilities.escapeXML(hier.getLogName());
+                appendVal+="</name>\r\n";
+                
+                if (streamOutput) {
+                    outStream.append(appendVal);
+                } else {
+                    out.append(appendVal);
+                }
+                /*
+                out.write("\t\t<topterm>");
+                out.write("\t\t\t<name>");
+                out.write(Utilities.escapeXML(str));
+                out.write("</name>\n");
+                */
 
-            out.write("<name>");
-            out.write(Utilities.escapeXML(hierarchy));
-            out.write("</name>");
+                ArrayList<SortItem> toptermNts = ntsOfHierDesciptor.get(hier);
+                Collections.sort(toptermNts, transliterationComparator);
 
-            ArrayList<String> toptermNts = ntsOfHierDesciptor.get(hierarchy);
-            Collections.sort(toptermNts, new StringLocaleComparator(targetLocale));
+                for (int i = 0; i < toptermNts.size(); i++) {
+                    appendVal = "\t\t<nt";
+                    if (toptermNts.get(i).getThesaurusReferenceId() > 0) {
+                        appendVal+=" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"" + toptermNts.get(i).getThesaurusReferenceId() + "\"";
+                    }
+                    appendVal+=">" + Utilities.escapeXML(toptermNts.get(i).getLogName());
+                    appendVal+="</nt>\r\n";
+                    
+                    //appendVal = "\t\t\t<nt>"+Utilities.escapeXML(toptermNts.get(i))+"</nt>\n";
+                    if (streamOutput) {
+                        outStream.append(appendVal);
+                    } else {
+                        out.append(appendVal);
+                    }
+                }
+                if (streamOutput) {
+                    outStream.append("\t\t</topterm>\n");
+                } else {
+                    out.append("\t\t</topterm>\n");
+                }
+                //out.write("\t\t</topterm>\n");
 
-            for (int i = 0; i < toptermNts.size(); i++) {
-
-                out.write("<nt>");
-                out.write(Utilities.escapeXML(toptermNts.get(i)));
-                out.write("</nt>");
-
+                ntsOfHierDesciptor.remove(hier);
+                all_hier_terms_vec.remove(hier);
             }
-            out.write("</topterm>");
-
-            ntsOfHierDesciptor.remove(hierarchy);
-            all_hier_terms_vec.remove(hierarchy);
-
+            
             int all_hier_terms_vecSize = all_hier_terms_vec.size();
-            for (int i = 0; i < all_hier_terms_vecSize; i++) {
-                String term = all_hier_terms_vec.get(i);
-                ArrayList<String> termNts = new ArrayList<String>();
-                termNts.addAll(ntsOfHierDesciptor.get(term));
-                if (termNts.size() > 0) {
-                    Collections.sort(termNts, new StringLocaleComparator(targetLocale));
+            
+            for (SortItem termItem : all_hier_terms_vec) {
+                
+                ArrayList<SortItem> termNts = new ArrayList<>();
+                termNts.addAll(ntsOfHierDesciptor.get(termItem));
+                if (!termNts.isEmpty()) {
+                    Collections.sort(termNts, transliterationComparator);
+                }
+                appendVal = "\t<term>\r\n\t\t<name";
+                if (termItem.getThesaurusReferenceId() > 0) {
+                    appendVal +=" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"" + termItem.getThesaurusReferenceId() + "\"";
+                }
+                appendVal +=">" + Utilities.escapeXML(termItem.getLogName());
+                appendVal +="</name>\r\n";
+                
+                //appendVal = "\t\t<term>\n"+"\t\t\t<name>"+Utilities.escapeXML(term)+"</name>\n";
+                if (streamOutput) {
+                    outStream.append(appendVal);
+                } else {
+                    out.append(appendVal);
                 }
 
-                out.write("<term>");
+                /*
+                out.write("\t\t<term>\n");
 
-                out.write("<name>");
+                out.write("\t\t\t<name>");
                 out.write(Utilities.escapeXML(term));
-                out.write("</name>");
+                out.write("</name>\n");
+                */
 
-                for (int k = 0; k < termNts.size(); k++) {
+                for (SortItem ntItem : termNts) {
 
-                    out.write("<nt>");
+                    //appendVal = "\t\t\t<nt>"+Utilities.escapeXML(termNts.get(k))+"</nt>\n";
+                    appendVal = "\t\t<nt";
+                    
+                    if (ntItem.getThesaurusReferenceId() > 0) {
+                        appendVal += " " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"" + ntItem.getThesaurusReferenceId() + "\"";
+                    }
+                    appendVal += ">" + Utilities.escapeXML(ntItem.getLogName());
+                    appendVal += "</nt>\r\n";
+                    if (streamOutput) {
+                        outStream.append(appendVal);
+                    } else {
+                        out.append(appendVal);
+                    }
+                    /*
+                    out.write("\t\t\t<nt>");
                     out.write(Utilities.escapeXML(termNts.get(k)));
-                    out.write("</nt>");
+                    out.write("</nt>\n");
+                    */
 
                 }
 
-                out.write("</term>");
+                if (streamOutput) {
+                    outStream.append("\t\t</term>\n");
+                } else {
+                    out.append("\t\t</term>\n");
+                }
+                //out.write("\t\t</term>\n");
             }
 
-            out.write("</results>");
+            if (streamOutput) {
+                outStream.append("\t</results>\n</page>");
+            } else {
+                out.append("\t</results>\n</page>");
+            }
+
+            //out.write("\t</results>\n");
         } catch (Exception exc) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in writing results " + exc.getMessage());
             Utils.StaticClass.handleException(exc);
         }
 
-        try {
-            out.write("</page>");
-            out.close();
-        } catch (Exception exc) {
-            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
-            Utils.StaticClass.handleException(exc);
-        }
+        if(!streamOutput){
+            try {
+                out.close();
+            } catch (Exception exc) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
+                Utils.StaticClass.handleException(exc);
+            }
+        }        
 
     }
 

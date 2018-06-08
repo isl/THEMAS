@@ -99,8 +99,7 @@
                             </xsl:attribute>                                
                             <xsl:value-of select="$locale/footer/privacypolicy/option[@lang=$lang]"/>
                         </a>
-                    </u>
-                        
+                    </u>                        
                     
                     <xsl:text> | </xsl:text>
                     <!--<xsl:text>© 2015 - &lt;span id="currentYearId"&gt;2018&lt;/span&gt;</xsl:text>-->

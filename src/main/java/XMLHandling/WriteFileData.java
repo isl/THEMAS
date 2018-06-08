@@ -114,7 +114,7 @@ public class WriteFileData {
             logFileWriter.append("\t<rdf:Description rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
                     + "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\r\n"
                     + "\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + Utilities.escapeXML(importThesaurusName) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n"
-                    + "\t\t<dc:date>" + Utilities.GetNow() + "</dc:date>\r\n"
+                    + "\t\t<dcterms:date>" + Utilities.GetNow() + "</dcterms:date>\r\n"
                     + "\t</rdf:Description>\r\n");
 
             /*
@@ -443,10 +443,10 @@ public class WriteFileData {
         //should add sources
         /*
          * for (int i = 0; i < pack.getSourceEn().size(); i++) {
-         temp += "  <dc:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
+         temp += "  <dcterms:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
          }
          for (int i = 0; i < pack.getSourceGr().size(); i++) {
-         temp += "  <dc:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
+         temp += "  <dcterms:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
          }
          */
         ArrayList<String> termsFilter = new ArrayList<String>();
@@ -906,10 +906,10 @@ public class WriteFileData {
         //should add sources
         /*
          * for (int i = 0; i < pack.getSourceEn().size(); i++) {
-         temp += "  <dc:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
+         temp += "  <dcterms:source xml:lang=\"" + "en" + '"' + " rdf:resource=" + '"' + pack.getSourceEn().keySet().toArray()[i].toString() + '"' + "/>\n";
          }
          for (int i = 0; i < pack.getSourceGr().size(); i++) {
-         temp += "  <dc:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
+         temp += "  <dcterms:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
          }
          */
         

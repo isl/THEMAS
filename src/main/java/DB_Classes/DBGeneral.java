@@ -5491,7 +5491,7 @@ public class DBGeneral {
 
                 Q.reset_name_scope();
 
-                //<editor-fold defaultstate="collapsed" desc="Case Of Source Name criteria">
+                
                 if (input[i].equalsIgnoreCase("name")) {
 
                     if (operators[i].equals(ConstantParameters.searchOperatorEquals)) {
@@ -5505,7 +5505,7 @@ public class DBGeneral {
                         }
 
                     } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
-                        // <editor-fold defaultstate="collapsed" desc="Code for Contains">
+                        
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
                         //int ptrn_set = Q.set_get_new();
@@ -5525,9 +5525,9 @@ public class DBGeneral {
                         }
                         Q.reset_set(set_partial_source_results);
                         //Q.free_set(ptrn_set);
-                        // </editor-fold>
+                        
                     } else if (operators[i].equals(ConstantParameters.searchOperatorTransliterationContains)) {
-                        // <editor-fold defaultstate="collapsed" desc="Code for Transliteration Contains">
+                        
                         Q.reset_set(set_s);
                         Q.free_set(set_partial_source_results);
 
@@ -5535,10 +5535,10 @@ public class DBGeneral {
 
                         Q.reset_set(set_partial_source_results);
                         //Q.free_set(ptrn_set);
-                        //</editor-fold>
+                        
 
                     } else if (operators[i].equals("!")) {
-                        // <editor-fold defaultstate="collapsed" desc="Code for Not equal">
+                        
                         int set_exclude_sources = Q.set_get_new();
 
                         if (Q.set_current_node(new StringObject(prefixSource.concat(searchVal))) != QClass.APIFail) {
@@ -5555,9 +5555,9 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-                        // </editor-fold>
+                        
                     } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
-                        // <editor-fold defaultstate="collapsed" desc="Code for Not Contains">
+                        
                         //int set_exclude_sources = Q.set_get_new();
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
@@ -5587,10 +5587,10 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-                        // </editor-fold>
+                        
                     }                    
                     else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
-                        // <editor-fold defaultstate="collapsed" desc="Code for Not Transliteration Contains">
+                        
                         
                         Q.reset_set(set_s);
                         
@@ -5607,12 +5607,12 @@ public class DBGeneral {
                         Q.set_difference(set_partial_source_results, set_exclude_sources);
                         Q.reset_set(set_partial_source_results);
                         Q.free_set(set_exclude_sources);
-                        // </editor-fold>
+                        
                     }                    
                 }
-                //</editor-fold>
+                
 
-                //<editor-fold defaultstate="collapsed" desc="Case Of Primary or Trnalsation found in criteria">
+                
                 if (input[i].equalsIgnoreCase(ConstantParameters.primary_found_in_kwd) || input[i].equalsIgnoreCase(ConstantParameters.translations_found_in_kwd)) {
                     String[] term_field = {"name"};
                     String[] term_operator = new String[1];
@@ -5641,9 +5641,9 @@ public class DBGeneral {
                     Q.reset_set(set_partial_source_results);
 
                 }
-                //</editor-fold>.
+                
 
-                //<editor-fold defaultstate="collapsed" desc="Case Of source_note criteria">
+                
                 if (input[i].equalsIgnoreCase(ConstantParameters.source_note_kwd)) {
                     //SourceClassObj
                     StringObject sourceNoteLinkObj = new StringObject(ConstantParameters.source_note_kwd);
@@ -5780,7 +5780,7 @@ public class DBGeneral {
                         }
                     }
                 }
-                //</editor-fold>
+                
 
                 //merge results of each loop. All first loop's results are included
                 if (i == 0) {
@@ -6940,7 +6940,7 @@ public class DBGeneral {
         int ret = -1;
         boolean OneTransaction = true;
 
-        // <editor-fold defaultstate="collapsed" desc="Collect Identifiers">
+        
         if (startTransactionAndConnection) {
 
             //open connection and start Transaction
@@ -7038,10 +7038,10 @@ public class DBGeneral {
         Q.set_current_node(thesaurusHierarchyTermStrObj);
         long thesaurusUFTranslation_IdL = Q.set_current_node(thesaurusUFTranslationStrObj);
         Identifier thesaurusUFTranslationIdentifier = new Identifier(thesaurusUFTranslation_IdL);
-        // </editor-fold>
+        
 
         //STEP 1 Create New Language Words and New Language Prefixes i.e. ItalianWord and IT`
-        // <editor-fold defaultstate="collapsed" desc="STEP 1">
+        
         Iterator<String> languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
         while (languagesEnumeration.hasNext()) {
             String languageWord = languagesEnumeration.next();
@@ -7109,10 +7109,10 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         // STEP 2 Connect New Language Words with New Language Prefixes i.e. ItalianWord -> has_prefix --> IT`
-        // <editor-fold defaultstate="collapsed" desc="STEP 2">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -7169,10 +7169,10 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         // STEP 3 Create the new translation Categories i.e. to_IT
-        // <editor-fold defaultstate="collapsed" desc="STEP 3">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -7239,10 +7239,10 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         // STEP 4 Create thesauric translation categories i.e AAA_translation, to_IT and uf translation categories i.e AAA_uf_translation, to_IT
-        // <editor-fold defaultstate="collapsed" desc="STEP 4">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -7257,7 +7257,7 @@ public class DBGeneral {
             String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
-            // <editor-fold defaultstate="collapsed" desc="Translations Section">
+            
             /*
              *  RETELL Attribute (AAA_translation, to_IT)
              *      from  :  (AAATerm)
@@ -7310,9 +7310,9 @@ public class DBGeneral {
 
             Q.CHECK_Add_IsA(thesaurusTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
             Q.CHECK_Add_IsA(thesaurusTranslationCategoryIdentifier, thesaurusTranslationIdentifier);
-            // </editor-fold>
+            
 
-            // <editor-fold defaultstate="collapsed" desc="UF Translations Section">
+            
 
             /*
              *  RETELL Attribute (AAA_uf_translation, to_IT)
@@ -7354,7 +7354,7 @@ public class DBGeneral {
              */
             Q.CHECK_Add_IsA(thesaurusUFTranslationCategoryIdentifier, currentToLanguageCategoryIdentifier);
             Q.CHECK_Add_IsA(thesaurusUFTranslationCategoryIdentifier, thesaurusUFTranslationIdentifier);
-            // </editor-fold>
+            
         }
 
         if (startTransactionAndConnection) {
@@ -7362,7 +7362,7 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         return true;
     }
@@ -7396,7 +7396,7 @@ public class DBGeneral {
         Utilities u = new Utilities();
         int ret = -1;
         boolean OneTransaction = true;
-        // <editor-fold defaultstate="collapsed" desc="Create Common Identifier Objects">
+        
         //begin transaction
         //open connection and begin transaction
         if (startTransactionAndConnection) {
@@ -7495,16 +7495,16 @@ public class DBGeneral {
         long thesaurusUFTranslation_IdL = Q.set_current_node(thesaurusUFTranslationStrObj);
         Identifier thesaurusUFTranslationIdentifier = new Identifier(thesaurusUFTranslation_IdL);
 
-        // </editor-fold>
+        
         // Reverse STEP 4 Delete thesauric translation categories i.e AAA_translation, to_IT and AAA_uf_translation, to_IT
-        // <editor-fold defaultstate="collapsed" desc="Reverse STEP 4">
+        
         //traverse all words
         Iterator<String> languagesEnumeration = LanguageWordsAndIds.keySet().iterator();
         while (languagesEnumeration.hasNext()) {
             String languageWord = languagesEnumeration.next();
             String languageId = LanguageWordsAndIds.get(languageWord);
 
-            // <editor-fold defaultstate="collapsed" desc="translations section">
+            
             //create a string object and an identifer for the new Translation Category i.e. AAA_translation, to_IT
             StringObject thesaurusTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursTranslationCategorysubString).concat(languageId));
 
@@ -7599,9 +7599,9 @@ public class DBGeneral {
                 Q.reset_set(set_instances);
                 Q.free_set(set_instances);
             }
-            // </editor-fold>
+            
 
-            // <editor-fold defaultstate="collapsed" desc="uf_translations section">
+            
             //create a string object and an identifer for the new Translation Category i.e. AAA_uf_translation, to_IT
             StringObject thesaurusUFTranslationCategoryStrObj = new StringObject(targetThesaurus.concat(ConstantParameters.thesaursUFTranslationCategorysubString).concat(languageId));
             errorArgs[2] = thesaurusUFTranslationCategoryStrObj.getValue();
@@ -7691,7 +7691,7 @@ public class DBGeneral {
                 Q.reset_set(set_instances);
                 Q.free_set(set_instances);
             }
-            // </editor-fold>
+            
 
         }
 
@@ -7699,7 +7699,7 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         //check if other thesauri use this translation category
         if (OneTransaction == false) {
@@ -7759,7 +7759,7 @@ public class DBGeneral {
         }
 
         // Reverse STEP 3 Delete the translation Categories i.e. to_IT
-        // <editor-fold defaultstate="collapsed" desc="Reverse STEP 3">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -7844,10 +7844,10 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         // Reverse STEP 2 Delete Connections of Language Words with Language Prefixes i.e. ItalianWord -> has_prefix --> IT`
-        // <editor-fold defaultstate="collapsed" desc="Reverse STEP 2">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -7958,10 +7958,10 @@ public class DBGeneral {
             Q.TEST_end_transaction();
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
-        // </editor-fold>
+        
 
         // Reverse STEP 1 Delete Language Words and Language Prefixes i.e. ItalianWord and IT`
-        // <editor-fold defaultstate="collapsed" desc="Reverse STEP 1">
+        
         if (OneTransaction == false) {
             //open connection and start Transaction
             if (openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, targetThesaurus, false) == QClass.APIFail) {
@@ -8099,7 +8099,7 @@ public class DBGeneral {
             CloseDBConnection(Q, TA, sis_session, tms_session, true);
         }
 
-        // </editor-fold>
+        
         return true;
     }
 

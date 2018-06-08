@@ -30,8 +30,8 @@
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 
 <!--
     Document   : SaveAll_Terms_Of_Hierarchy_Hierarchical.xsl
@@ -42,18 +42,18 @@
 -->
 
 <xsl:stylesheet version="2.0" 
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:fo="http://www.w3.org/1999/XSL/Format" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-    xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
-    xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes" 
-    exclude-result-prefixes="xsl fo xs fn xdt">
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+                xmlns:fo="http://www.w3.org/1999/XSL/Format" 
+                xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+                xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
+                xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes" 
+                exclude-result-prefixes="xsl fo xs fn xdt">
     <xsl:output method="html"  
-            encoding="UTF-8"  
-            indent="yes" 
-            doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
-            doctype-system="http://www.w3.org/TR/html4/loose.dtd"
-            version="4.0" />
+                encoding="UTF-8"  
+                indent="yes" 
+                doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
+                doctype-system="http://www.w3.org/TR/html4/loose.dtd"
+                version="4.0" />
     <xsl:template match="/" > 
         <xsl:variable name="onMouseOverColor">
             <!-- #D9EDFC -->
@@ -67,71 +67,77 @@
             <!-- #FFFFFF -->
             <xsl:text>#FFFFFF</xsl:text>
         </xsl:variable>    
-    <xsl:variable name="numOfIndent">0</xsl:variable> 
-    <xsl:variable name="pathToSaveScriptingAndLocale" select="//pathToSaveScriptingAndLocale"/>
-    <xsl:variable name="localecommon" select="document($pathToSaveScriptingAndLocale)/root/common"/>
-    <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/GlobalThesaurusSimpleHierarchicalView"/>        
-    <xsl:variable name="lang" select="/page/@language"/>
-    <xsl:variable name="pageTitle">
-        <xsl:choose>
-                         <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
-                            <xsl:value-of select="$localespecific/facettitleprefix/option[@lang=$lang]"/>
-                            <xsl:value-of select="/page/targetFacet"/>
-                            <xsl:text> </xsl:text>
-                            <xsl:value-of select="/page/title"/>
-                         </xsl:when>
-                         <xsl:otherwise>
-                             <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
-                            <xsl:value-of select="/page/targetThesaurus"/>
-                            <xsl:text> </xsl:text>
-                            <xsl:value-of select="/page/title"/>
-                         </xsl:otherwise>                         
-                     </xsl:choose>
-    </xsl:variable>
+        <xsl:variable name="numOfIndent">0</xsl:variable> 
+        <xsl:variable name="pathToSaveScriptingAndLocale" select="//pathToSaveScriptingAndLocale"/>
+        <xsl:variable name="localecommon" select="document($pathToSaveScriptingAndLocale)/root/common"/>
+        <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/GlobalThesaurusSimpleHierarchicalView"/>        
+        <xsl:variable name="lang" select="/page/@language"/>
+        <xsl:variable name="pageTitle">
+            <xsl:choose>
+                <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                    <xsl:value-of select="$localespecific/facettitleprefix/option[@lang=$lang]"/>
+                    <xsl:value-of select="/page/targetFacet"/>
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="/page/title"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
+                    <xsl:value-of select="/page/targetThesaurus"/>
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="/page/title"/>
+                </xsl:otherwise>                         
+            </xsl:choose>
+        </xsl:variable>
         <html>
             <head>
-                 <style rel="stylesheet" type="text/css">
+                <style rel="stylesheet" type="text/css">
                     td {font-size: 12px; font-family: verdana, arial, helvetica, sans-serif; text-decoration:none; color:black;}
                     .row {font-size: 12px; font-family: verdana, arial, helvetica, sans-serif; text-decoration:none; color:black;}
                     a.SaveAsAndPrintLinks { font-size: 11px; font-family: verdana, arial, helvetica, sans-serif; font-style:italic; 
-                                           text-decoration:underline; color:black; }
+                    text-decoration:underline; color:black; }
                 </style>
-                 <title>
-                     <xsl:value-of select="$pageTitle"/>
+                <title>
+                    <xsl:value-of select="$pageTitle"/>
                 </title>
-                 <script type="text/javascript"><xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/></script>
+                <script type="text/javascript">
+                    <xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/>
+                </script>
             </head>
             <body style="background-color: #FFFFFF;" >
              
-            <table width="100%"> 
-                <tr>
-                    <td class="criteriaInSaves">
-                        <!--<xsl:value-of disable-output-escaping="yes" select="$localecommon/searchcriteria/option[@lang=$lang]"/>
-                        <br/> -->
+                <table width="100%"> 
+                    <tr>
+                        <td class="criteriaInSaves">
+                            <!--<xsl:value-of disable-output-escaping="yes" select="$localecommon/searchcriteria/option[@lang=$lang]"/>
+                            <br/> -->
                         
-                        <xsl:choose>
-                            <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
-                               <xsl:value-of select="$localespecific/facetbaselabel/option[@lang=$lang]"/>
-                                <b><xsl:value-of select="/page/targetFacet"/></b>.
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
-                                <b><xsl:value-of select="/page/targetThesaurus"/></b>.
-                            </xsl:otherwise>                         
-                           </xsl:choose>
+                            <xsl:choose>
+                                <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                                    <xsl:value-of select="$localespecific/facetbaselabel/option[@lang=$lang]"/>
+                                    <b>
+                                        <xsl:value-of select="/page/targetFacet"/>
+                                    </b>.
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
+                                    <b>
+                                        <xsl:value-of select="/page/targetThesaurus"/>
+                                    </b>.
+                                </xsl:otherwise>                         
+                            </xsl:choose>
                        
                         
-                    </td>
+                        </td>
                        
-                       <td align="right">
+                        <td align="right">
                             <a href="#" class="SaveAsAndPrintLinks">
-                               <xsl:attribute name="onclick">
+                                <xsl:attribute name="onclick">
                                     <xsl:text>saveAscode('SaveAs',null, '</xsl:text>
                                     <xsl:value-of select="$pageTitle"/>
                                     <xsl:text>');</xsl:text>
                                 </xsl:attribute>
-                               <xsl:value-of select="$localecommon/saveas/option[@lang=$lang]"/>
-                           </a>                          
+                                <xsl:value-of select="$localecommon/saveas/option[@lang=$lang]"/>
+                            </a>                          
                             &#160;                           
                             <a href="#" class="SaveAsAndPrintLinks" onclick="print()">
                                 <xsl:value-of select="$localecommon/print/option[@lang=$lang]"/>
@@ -141,56 +147,64 @@
                             <td colspan="2" align="left">
                                 <br/>
                                 
-                                    <xsl:choose>
-                            <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
-                                <a>
+                                <xsl:choose>
+                                    <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                                        <a>
 
-                               <xsl:attribute name="href"><xsl:value-of select="/page/query/treeHierarchicalLocation"/></xsl:attribute>
-                                    <xsl:value-of select="$localespecific/facetlinktotree/option[@lang=$lang]"/>
-                                </a>
+                                            <xsl:attribute name="href">
+                                                <xsl:value-of select="/page/query/treeHierarchicalLocation"/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="$localespecific/facetlinktotree/option[@lang=$lang]"/>
+                                        </a>
                                     
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <a>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <a>
 
-                               <xsl:attribute name="href"><xsl:value-of select="/page/query/treeHierarchicalLocation"/></xsl:attribute>
-                                    <xsl:value-of select="$localespecific/linktotree/option[@lang=$lang]"/>
-                                </a>
-                            </xsl:otherwise>                         
-                                    </xsl:choose>
-                                
-                                    
+                                            <xsl:attribute name="href">
+                                                <xsl:value-of select="/page/query/treeHierarchicalLocation"/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="$localespecific/linktotree/option[@lang=$lang]"/>
+                                        </a>
+                                    </xsl:otherwise>                         
+                                </xsl:choose>
                                 <br/>
                                 <br/>
                             </td>
                         </tr>
-                </tr>
-             </table>
-            <xsl:choose>
-                <xsl:when test="count(//topterm)=0 ">
-                    <table><tr>
-                    <td align="left" valign="top" colspan="5">
-                        <strong>
-                            <xsl:value-of select="$localespecific/noterms/option[@lang=$lang]"/>  
-                        </strong>
-                    </td>
-                    </tr></table>
-            </xsl:when>
-            <xsl:otherwise>
+                    </tr>
+                </table>
+                <xsl:choose>
+                    <xsl:when test="count(//topterm)=0 ">
+                        <table>
+                            <tr>
+                                <td align="left" valign="top" colspan="5">
+                                    <strong>
+                                        <xsl:value-of select="$localespecific/noterms/option[@lang=$lang]"/>  
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </xsl:when>
+                    <xsl:otherwise>
                 
-                <xsl:for-each select="//topterm">
+                        <xsl:for-each select="//topterm">
 				
-				<br/>
-				<br/>
-                <strong ><span class="row"><xsl:value-of select="./name"/></span></strong>
+                            <br/>
+                            <br/>
+                            <strong >
+                                <span class="row">
+                                    <xsl:value-of select="./name"/>
+                                </span>
+                            </strong>
 				
-                <xsl:call-template name="list-nts">
-                    <xsl:with-param name="node" select="."/>
-                    <xsl:with-param name="howmany" select="$numOfIndent+1" ></xsl:with-param>
-                </xsl:call-template>
-				</xsl:for-each>
-            </xsl:otherwise>
-            </xsl:choose>
+                            <xsl:call-template name="list-nts">
+                                <xsl:with-param name="node" select="."/>
+                                <xsl:with-param name="howmany" select="$numOfIndent+1" ></xsl:with-param>
+                            </xsl:call-template>
+                        </xsl:for-each>
+                    </xsl:otherwise>
+                </xsl:choose>
             </body>
         </html>
     </xsl:template>
@@ -201,34 +215,35 @@
         
         <xsl:for-each select="$node[1]/nt">
             <!-- <xsl:sort select="."/> -->
-            <span class="row"><br/>
+            <span class="row">
+                <br/>
             
                 <xsl:call-template name="draw-indent">
                     <xsl:with-param name="i" >0</xsl:with-param>
                     <xsl:with-param name="maxTimes" select="$howmany"/>
-                 </xsl:call-template>
-                 <xsl:variable name="currentNode" select="."/>
-                 <xsl:choose>
-                     <xsl:when test="$howmany=1">
+                </xsl:call-template>
+                <xsl:variable name="currentNode" select="."/>
+                <xsl:choose>
+                    <xsl:when test="$howmany=1">
                          
-                             <xsl:value-of select="."/>
+                        <xsl:value-of select="."/>
                          
-                     </xsl:when>
-                     <xsl:otherwise>
-                         <span style="font-style:italic;">
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <span style="font-style:italic;">
                             <xsl:value-of select="."/>
                         </span>
-                     </xsl:otherwise>
-                 </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
                  
-                 <xsl:if test="count(//term[./name=$currentNode]/nt) >0 ">
-                     <xsl:call-template name="list-nts">
+                <xsl:if test="count(//term[./name=$currentNode]/nt) >0 ">
+                    <xsl:call-template name="list-nts">
                         <xsl:with-param name="node" select="//term[./name=$currentNode]" />
                         <xsl:with-param name="howmany" select="$howmany+1" />
-                     </xsl:call-template>
+                    </xsl:call-template>
 
-                 </xsl:if>
-             </span>
+                </xsl:if>
+            </span>
         </xsl:for-each>      
     </xsl:template>
     
