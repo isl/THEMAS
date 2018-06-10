@@ -53,6 +53,7 @@ import Utils.Utilities;
 import Utils.SortItem;
 import Utils.SortItemComparator;
 import Utils.StringLocaleComparator;
+import Utils.UAC_Class;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -142,11 +143,14 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             Q.reset_name_scope();
             String results = "";
             ArrayList<String> currentValues = new ArrayList<>();
+            ArrayList<String> currentCreatorValues = new ArrayList<>();//used in search criteria //also current status
+            
+            
             xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             if(targetField.compareTo(ConstantParameters.term_create_kwd)==0){
                 currentValues.add(Parameters.UnclassifiedTermsLogicalname);
-                xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
-                
+                xml.append("<current>"+
+                        "<term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());                
             }
             else if(targetField.compareTo(ConstantParameters.guide_term_kwd)==0){
                 
@@ -182,6 +186,7 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 skipCurrentValuesInXMLKeywords.add(ConstantParameters.primary_found_in_kwd);
                 skipCurrentValuesInXMLKeywords.add(ConstantParameters.translations_found_in_kwd);
                 skipCurrentValuesInXMLKeywords.add(ConstantParameters.uf_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.status_kwd);
                 if(skipCurrentValuesInXMLKeywords.contains(targetField)){
                     currentValues.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, targetField, Q, TA, sis_session));
                 }
@@ -193,8 +198,14 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 
             }
             
+            if(targetField.compareTo(ConstantParameters.status_kwd)==0){
+                //we need status and currentCreator values in order 
+                //to decide which transitions are available.
+                currentCreatorValues.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.created_by_kwd, Q, TA, sis_session));
+            }
+            
             if(targetField.compareTo(ConstantParameters.delete_term_kwd)!=0){
-                getAvailableValues(SessionUserInfo,currentValues, targetField,Q, sis_session,xml,targetLocale);
+                getAvailableValues(SessionUserInfo,currentValues, currentCreatorValues, targetField,Q, sis_session,xml,targetLocale);
 
                 if(targetField.compareTo(ConstantParameters.translation_kwd)==0 
                         || targetField.compareTo(ConstantParameters.uf_translations_kwd)==0
@@ -258,8 +269,10 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
     }// </editor-fold>
     
     
-    private void getAvailableValues(UserInfoClass SessionUserInfo, ArrayList<String> currentValues, 
-                                    String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
+    private void getAvailableValues(UserInfoClass SessionUserInfo, 
+                                    ArrayList<String> currentValues,
+                                    ArrayList<String> currentCreatorValues, String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
+        
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
 
@@ -426,6 +439,27 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             xml.append("</availableUfs>");
         }
 
+        
+        if (output.matches(ConstantParameters.status_kwd)) {
+
+            UAC_Class uac = new UAC_Class();
+            
+            ArrayList<String> allowedStatuses = uac.getAvailable_Term_StatusChanges(SessionUserInfo.name, 
+                                                                                    SessionUserInfo.userGroup, 
+                                                                                    SessionUserInfo.selectedThesaurus, 
+                                                                                    currentValues.get(0), 
+                                                                                    currentCreatorValues);
+            
+            //Collections.sort(allowedStatuses, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            
+            xml.append("<availableStatuses>");
+            for (String statusName :  allowedStatuses) {
+                xml.append("<name selected=\""+(currentValues.contains(statusName) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(statusName));
+                xml.append("</name>");
+            }
+            xml.append("</availableStatuses>");
+        }
 
 
     }

@@ -45,6 +45,8 @@ import Utils.SessionWrapperClass;
 
 import Utils.NodeInfoSortItemContainer;
 import Utils.Parameters;
+import Utils.SortItem;
+import Utils.UAC_Class;
 import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -246,10 +248,34 @@ public class CardOf_Term extends ApplicationBasicServlet {
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
             u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo,skipOutput,skipOutput);
             
-            
+            String targetStatus = "";
+            ArrayList<String> targetCreators = new ArrayList<>();
+            boolean termIsEditable = false;
+            if(termsInfo.containsKey(targetTerm)){
+                if(termsInfo.get(targetTerm).descriptorInfo!=null && termsInfo.get(targetTerm).descriptorInfo.containsKey(ConstantParameters.status_kwd)){
+                    ArrayList<SortItem> statuses =  termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.status_kwd);
+                    if(statuses!=null && statuses.size()==1){
+                        targetStatus = statuses.get(0).getLogName();
+                    }
+                }
+                
+                if(termsInfo.get(targetTerm).descriptorInfo!=null && termsInfo.get(targetTerm).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                    ArrayList<SortItem> createdByVals =  termsInfo.get(targetTerm).descriptorInfo.get(ConstantParameters.created_by_kwd);
+                    if(createdByVals!=null){
+                        for(SortItem cr : createdByVals){
+                            targetCreators.add(cr.getLogName());
+                        }
+                    }
+                }
+                if(targetStatus.length()>0){
+                    termIsEditable =  UAC_Class.allowTermEdit(SessionUserInfo.name, SessionUserInfo.userGroup,SessionUserInfo.selectedThesaurus, targetStatus, targetCreators);
+                }   
+                
+            }
             // in case of LIBRARY user group, mark term as (un)editable
             //boolean UserOfGroupLIBRARY = (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) == true);            
-            boolean termIsEditable = true;
+            
+            /*
             if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) || 
                     (Parameters.ThesTeamEditOnlyCreatedByTerms && SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam))
                     ) {
@@ -260,7 +286,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
                 userLogicalName = new StringObject(Prefix_Editor + UserName);                        
                 DBFilters dbf = new DBFilters();            
                 termIsEditable = dbf.TermIsEditable(SessionUserInfo, targetTermObj, userLogicalName, Q, sis_session);
-            }
+            }*/
             if(outputMode==null || !outputMode.equals(Utils.ConstantParameters.XMLSTREAM)){
                 xmlResults.append("<termName editable=\"" + termIsEditable + "\">" + Utilities.escapeXML(targetTerm) + "</termName>");
                 xmlResults.append("<current>" + "<term>" + "<isTopTerm>");

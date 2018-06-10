@@ -153,7 +153,7 @@ public class DBFilters {
     
     /*---------------------------------------------------------------------
                     TermIsEditable()
-    ----------------------------------------------------------------------*/
+    ----------------------------------------------------------------------
     public boolean TermIsEditable(UserInfoClass SessionUserInfo, StringObject targetTerm, StringObject userLogicalName, QClass Q, IntegerObject sis_session) {
         
         boolean termIsEditable = true;
@@ -172,7 +172,7 @@ public class DBFilters {
         }
         
         return termIsEditable;
-    }                                    
+    }       */                             
     
     /*---------------------------------------------------------------------
                     GetDefaultStatusForTermCreation()

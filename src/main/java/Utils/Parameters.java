@@ -57,7 +57,10 @@ class responsible for the collection of the application's context
 Parameters defined in web.xml
 ----------------------------------------------------------------------*/
 public class Parameters {
-    
+
+    static ArrayList<UAC_StatusChanges_ConfigurationClass> Override_RoleConfigurations = new ArrayList<>();
+    static ArrayList<UAC_AllowEdit_ConfigurationClass> Override_AllowEditConfigurations = new ArrayList<>();
+
     public static final boolean OnlyTopTermsHoldReferenceId = true;
     public static boolean TransliterationAsAttribute = false;
     public static boolean ShowTransliterationInAllXMLStream = false;
@@ -91,8 +94,8 @@ public class Parameters {
     public static String Save_Results_Folder;
 
     public static boolean AtRenameSaveOldNameAsUf = false;
-    
-    public static boolean ThesTeamEditOnlyCreatedByTerms = false;
+
+    //public static boolean ThesTeamEditOnlyCreatedByTerms = false;
     public static boolean CreatorInAlphabeticalTermDisplay = false;
 
     public static String TRANSLATION_SEPERATOR;
@@ -166,17 +169,16 @@ public class Parameters {
         BaseRealPath = context.getRealPath("");
         initParams(BaseRealPath);
     }
-    
-    public static String getXmlElementForConfigAtRenameSaveOldNameAsUf(){
-        if(Parameters.AtRenameSaveOldNameAsUf){
+
+    public static String getXmlElementForConfigAtRenameSaveOldNameAsUf() {
+        if (Parameters.AtRenameSaveOldNameAsUf) {
             return "<SaveOldNameAsUF>yes</SaveOldNameAsUF>";
-        }
-        else{
+        } else {
             return "<SaveOldNameAsUF>no</SaveOldNameAsUF>";
         }
     }
-    
-    public static HashMap<String, String> getAvailableUICodes(ServletContext context, boolean displayOnly){
+
+    public static HashMap<String, String> getAvailableUICodes(ServletContext context, boolean displayOnly) {
         String rootPathString = context.getRealPath("");
         Path rootPath = Paths.get(rootPathString);
         String pathToXMLForPrimaryLang = rootPath.resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
@@ -235,18 +237,16 @@ public class Parameters {
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 Parameters.PrimaryLang = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/PrimaryLanguagePrefix[1]", document);
 
-                
+                /*
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;
                 String boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms[1]", document);
-                
-                if(boolValStr.toLowerCase().equals("true")||boolValStr.toLowerCase().equals("yes")){
+
+                if (boolValStr.toLowerCase().equals("true") || boolValStr.toLowerCase().equals("yes")) {
                     Parameters.ThesTeamEditOnlyCreatedByTerms = true;
-                }
-                else{
+                } else {
                     Parameters.ThesTeamEditOnlyCreatedByTerms = false;
-                }
-                
-                
+                }*/
+
                 Parameters.CreatorInAlphabeticalTermDisplay = false;
                 String boolValStr_2 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/CreatorInAlphabeticalTerm/DisplayCreator[1]", document);
 
@@ -548,7 +548,215 @@ public class Parameters {
                     Parameters.Lang_DefinitionsForStatus_Approved.put(langcode, displayVal);
                 }
             }
+
+        } catch (Exception e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
+            Utils.StaticClass.handleException(e);
+        }
+        //</editor-fold>
+
+        //statuses have been read now check for user role configs in config.xml
+        String secondPassPathToXMLForPrimaryLang = basePath.resolve("DBadmin").resolve("tms_db_admin_config_files").resolve("config.xml").toString();
+        // <editor-fold defaultstate="collapsed" desc="Second Pass of Config.xml file for user access control configurations.">
+        try {
+
+
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.parse(new File(secondPassPathToXMLForPrimaryLang));
+
+            XPath xpath = XPathFactory.newInstance().newXPath();
             
+            NodeList allowedCommitteeEdits = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusCommittee/EditPriviledge", document, XPathConstants.NODESET);
+            if (allowedCommitteeEdits != null) {
+                int howmanyItems = allowedCommitteeEdits.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+                    String targetRole = ConstantParameters.Group_ThesaurusCommittee;
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedCommitteeEdits.item(i));
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    
+                    String boolStrForAllowEdit = xpath.evaluate("./@allow", allowedCommitteeEdits.item(i));
+                    boolean allowEdit = false;
+                    if (boolStrForAllowEdit != null && (boolStrForAllowEdit.equalsIgnoreCase("true") || boolStrForAllowEdit.equalsIgnoreCase("yes"))) {
+                        allowEdit = true;
+                    }
+                    
+                    
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedCommitteeEdits.item(i));
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    
+
+                    UAC_AllowEdit_ConfigurationClass newUac = new UAC_AllowEdit_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, allowEdit);
+                    Parameters.Override_AllowEditConfigurations.add(newUac);
+
+                }
+            }
+            
+            NodeList allowedTeamEdits = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditPriviledge", document, XPathConstants.NODESET);
+            if (allowedTeamEdits != null) {
+                int howmanyItems = allowedTeamEdits.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+
+                    String targetRole = ConstantParameters.Group_ThesaurusTeam;
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedTeamEdits.item(i));
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    
+                    String boolStrForAllowEdit = xpath.evaluate("./@allow", allowedTeamEdits.item(i));
+                    boolean allowEdit = false;
+                    if (boolStrForAllowEdit != null && (boolStrForAllowEdit.equalsIgnoreCase("true") || boolStrForAllowEdit.equalsIgnoreCase("yes"))) {
+                        allowEdit = true;
+                    }
+                    
+                    
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedTeamEdits.item(i));
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    
+
+                    UAC_AllowEdit_ConfigurationClass newUac = new UAC_AllowEdit_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, allowEdit);
+                    Parameters.Override_AllowEditConfigurations.add(newUac);
+
+                }
+            }
+            
+            NodeList allowedLibraryEdits = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/LibraryTeam/EditPriviledge", document, XPathConstants.NODESET);
+            if (allowedLibraryEdits != null) {
+                int howmanyItems = allowedLibraryEdits.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+                    String targetRole = ConstantParameters.Group_Library;
+                    
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedLibraryEdits.item(i));
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    
+                    String boolStrForAllowEdit = xpath.evaluate("./@allow", allowedLibraryEdits.item(i));
+                    boolean allowEdit = false;
+                    if (boolStrForAllowEdit != null && (boolStrForAllowEdit.equalsIgnoreCase("true") || boolStrForAllowEdit.equalsIgnoreCase("yes"))) {
+                        allowEdit = true;
+                    }
+                    
+                    
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedLibraryEdits.item(i));
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    
+
+                    UAC_AllowEdit_ConfigurationClass newUac = new UAC_AllowEdit_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, allowEdit);
+                    Parameters.Override_AllowEditConfigurations.add(newUac);
+
+                }
+            }
+            
+            
+            NodeList allowedLibraryStatusChanges = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/LibraryTeam/AllowedStatusChange", document, XPathConstants.NODESET);
+            if (allowedLibraryStatusChanges != null) {
+                int howmanyItems = allowedLibraryStatusChanges.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedLibraryStatusChanges.item(i));
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedLibraryStatusChanges.item(i));
+
+                    String targetRole = ConstantParameters.Group_Library;
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    ArrayList<String> acceptableStatusChanges = new ArrayList<>();
+
+                    NodeList statusChanges = (NodeList) xpath.evaluate("./status", allowedLibraryStatusChanges.item(i), XPathConstants.NODESET);
+                    if (statusChanges != null) {
+                        int howmanyStatusItems = statusChanges.getLength();
+                        for (int j = 0; j < howmanyStatusItems; j++) {
+                            String statusCode = xpath.evaluate("./text()", statusChanges.item(j));
+                            String status = Parameters.getStatusKeywordFromStatusCodeConfiguration(statusCode);
+                            if (status != null && status.length() > 0 && !acceptableStatusChanges.contains(status)) {
+                                acceptableStatusChanges.add(status);
+                            }
+                        }
+                    }
+
+                    UAC_StatusChanges_ConfigurationClass newUac = new UAC_StatusChanges_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, acceptableStatusChanges);
+                    Parameters.Override_RoleConfigurations.add(newUac);
+
+                }
+            }
+            
+            NodeList allowedCommitteeStatusChanges = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusCommittee/AllowedStatusChange", document, XPathConstants.NODESET);
+            if (allowedCommitteeStatusChanges != null) {
+                int howmanyItems = allowedCommitteeStatusChanges.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedCommitteeStatusChanges.item(i));
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedCommitteeStatusChanges.item(i));
+
+                    String targetRole = ConstantParameters.Group_ThesaurusCommittee;
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    ArrayList<String> acceptableStatusChanges = new ArrayList<>();
+
+                    NodeList statusChanges = (NodeList) xpath.evaluate("./status", allowedCommitteeStatusChanges.item(i), XPathConstants.NODESET);
+                    if (statusChanges != null) {
+                        int howmanyStatusItems = statusChanges.getLength();
+                        for (int j = 0; j < howmanyStatusItems; j++) {
+                            String statusCode = xpath.evaluate("./text()", statusChanges.item(j));
+                            String status = Parameters.getStatusKeywordFromStatusCodeConfiguration(statusCode);
+                            if (status != null && status.length() > 0 && !acceptableStatusChanges.contains(status)) {
+                                acceptableStatusChanges.add(status);
+                            }
+                        }
+                    }
+
+                    UAC_StatusChanges_ConfigurationClass newUac = new UAC_StatusChanges_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, acceptableStatusChanges);
+                    Parameters.Override_RoleConfigurations.add(newUac);
+
+                }
+            }
+            
+            NodeList allowedTeamStatusChanges = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/AllowedStatusChange", document, XPathConstants.NODESET);
+            if (allowedTeamStatusChanges != null) {
+                int howmanyItems = allowedTeamStatusChanges.getLength();
+                for (int i = 0; i < howmanyItems; i++) {
+
+                    String initialStatusCode = xpath.evaluate("./@initialStatus", allowedTeamStatusChanges.item(i));
+                    String boolStrForRequiresCreatedBySameUser = xpath.evaluate("./@requiresCreatedBySameUser", allowedTeamStatusChanges.item(i));
+
+                    String targetRole = ConstantParameters.Group_ThesaurusTeam;
+                    String targetStatus = Parameters.getStatusKeywordFromStatusCodeConfiguration(initialStatusCode);
+                    boolean requiresCreatedBySameUser = false;
+                    if (boolStrForRequiresCreatedBySameUser != null && (boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("true") || boolStrForRequiresCreatedBySameUser.equalsIgnoreCase("yes"))) {
+                        requiresCreatedBySameUser = true;
+                    }
+                    ArrayList<String> acceptableStatusChanges = new ArrayList<>();
+
+                    NodeList statusChanges = (NodeList) xpath.evaluate("./status", allowedTeamStatusChanges.item(i), XPathConstants.NODESET);
+                    if (statusChanges != null) {
+                        int howmanyStatusItems = statusChanges.getLength();
+                        for (int j = 0; j < howmanyStatusItems; j++) {
+                            String statusCode = xpath.evaluate("./text()", statusChanges.item(j));
+                            String status = Parameters.getStatusKeywordFromStatusCodeConfiguration(statusCode);
+                            if (status != null && status.length() > 0 && !acceptableStatusChanges.contains(status)) {
+                                acceptableStatusChanges.add(status);
+                            }
+                        }
+                    }
+
+                    UAC_StatusChanges_ConfigurationClass newUac = new UAC_StatusChanges_ConfigurationClass(targetStatus, targetRole, requiresCreatedBySameUser, acceptableStatusChanges);
+                    Parameters.Override_RoleConfigurations.add(newUac);
+
+                }
+            }
         } catch (Exception e) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Translate Error: " + e.getMessage());
             Utils.StaticClass.handleException(e);

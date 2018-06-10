@@ -190,11 +190,115 @@
     <CreatorInAlphabeticalTerm>
         <DisplayCreator>false</DisplayCreator>  
     </CreatorInAlphabeticalTerm>
-    
+    <CustomProperties>
+        <Term>
+            <seeAlsoLinks>
+                <name>externalUri</name>
+                <label lang="en">See Also</label>
+                <label lang="el">See Also</label>
+                <fieldKeyword>seeAlsoUri</fieldKeyword>
+                <fieldMultiplicity>multiple</fieldMultiplicity>
+            </seeAlsoLinks>
+        </Term>
+    </CustomProperties>
     <UserRolesConfigs>
+        <!-- default committee configuration
+        <ThesaurusCommittee>
+            <EditPriviledge initialStatus="FI" requiresCreatedBySameUser="false" allow="true"/>
+            <EditPriviledge initialStatus="UC" requiresCreatedBySameUser="false" allow="true"/>
+            <EditPriviledge initialStatus="FA" requiresCreatedBySameUser="false" allow="true"/> 
+            <EditPriviledge initialStatus="AP" requiresCreatedBySameUser="false" allow="true"/> 
+            <AllowedStatusChange initialStatus="FI" requiresCreatedBySameUser="false">
+                <status>FI</status>
+                <status>UC</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="UC" requiresCreatedBySameUser="false">
+                <status>UC</status>
+                <status>FA</status>
+                <status>AP</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="FA" requiresCreatedBySameUser="false">
+                <status>UC</status>
+                <status>FA</status>
+                <status>AP</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="AP" requiresCreatedBySameUser="false">
+                <status>UC</status>
+                <status>AP</status>
+            </AllowedStatusChange>
+        </ThesaurusCommittee>
+        -->
+        <!-- Default Team Configuration
+                                        
         <ThesaurusTeam>
-            <EditOnlyCreatedByTerms>false</EditOnlyCreatedByTerms>
+            <EditPriviledge initialStatus="FI" requiresCreatedBySameUser="false" allow="true"/>
+            <EditPriviledge initialStatus="UC" requiresCreatedBySameUser="false" allow="true"/>
+            <EditPriviledge initialStatus="FA" requiresCreatedBySameUser="false" allow="true"/>
+            <AllowedStatusChange initialStatus="FI" requiresCreatedBySameUser="false">
+                <status>FI</status>
+                <status>UC</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="UC" requiresCreatedBySameUser="false">
+                <status>UC</status>
+                <status>FA</status>                
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="FA" requiresCreatedBySameUser="false">
+                <status>UC</status>
+                <status>FA</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="AP" requiresCreatedBySameUser="false">
+                <status>AP</status>
+            </AllowedStatusChange>
+        </ThesaurusTeam>-->
+        <!-- Default Library Team configuration - does not change anything 
+        <LibraryTeam>
+            <EditPriviledge initialStatus="FI" requiresCreatedBySameUser="true" allow="true"/>
+            <AllowedStatusChange initialStatus="FI" requiresCreatedBySameUser="false">
+                <status>FI</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="UC" requiresCreatedBySameUser="false">
+                <status>UC</status>                
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="FA" requiresCreatedBySameUser="false">
+                <status>FA</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="AP" requiresCreatedBySameUser="false">
+                <status>AP</status>
+            </AllowedStatusChange>
+        </LibraryTeam>
+        
+        -->
+        
+        
+        
+        
+        <!--  DYAS Configuration
+        <ThesaurusTeam>
+            <EditPriviledge initialStatus="FI" requiresCreatedBySameUser="true" allow="true"/>
+            <EditPriviledge initialStatus="UC" requiresCreatedBySameUser="true" allow="true"/>
+            <EditPriviledge initialStatus="FA" requiresCreatedBySameUser="true" allow="true"/>            
         </ThesaurusTeam>
+        <LibraryTeam>
+            <EditPriviledge initialStatus="FI" requiresCreatedBySameUser="true" allow="true"/>
+            <EditPriviledge initialStatus="UC" requiresCreatedBySameUser="true" allow="true"/>
+            <EditPriviledge initialStatus="FA" requiresCreatedBySameUser="true" allow="true"/>
+            <AllowedStatusChange initialStatus="FI" requiresCreatedBySameUser="true">
+                <status>FI</status>
+                <status>UC</status>
+                <status>FA</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="UC" requiresCreatedBySameUser="true">
+                <status>FI</status>
+                <status>UC</status>
+                <status>FA</status>
+            </AllowedStatusChange>
+            <AllowedStatusChange initialStatus="FA" requiresCreatedBySameUser="true">
+                <status>FI</status>
+                <status>UC</status>
+                <status>FA</status>
+            </AllowedStatusChange>
+        </LibraryTeam>
+        -->
         <!-- Only the following servlets will be allowed to Reader or External Reader via java filtering -->
         <ReaderPermittedServlets>
             <!--<ClassName>Admin_Thesaurus.Admin_Thesaurus</ClassName>
