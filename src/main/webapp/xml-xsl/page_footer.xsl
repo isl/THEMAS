@@ -102,9 +102,8 @@
                     </u>                        
                     
                     <xsl:text> | </xsl:text>
-                    <!--<xsl:text>© 2015 - &lt;span id="currentYearId"&gt;2018&lt;/span&gt;</xsl:text>-->
-                    <xsl:text>© 2015</xsl:text><script language="javascript" type="text/javascript"> var d = new Date(); document.write('- ' + d.getFullYear()+' ');</script>
                     
+                    <xsl:text>© 2015</xsl:text><span id="untilYear"> - 2018 </span><script language="javascript" type="text/javascript"> var d = new Date(); document.getElementById("demo").innerHTML = ('- ' + d.getFullYear()+' ');</script>
                     <u>
                             <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
                                 <xsl:attribute name="href">
@@ -161,7 +160,7 @@
                         </xsl:choose>                        
                     </i>
                     
-                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=@DeploymentTimestamp@"></script>
+                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=2018-06-11_14_31_58"></script>
                     <!--</b>-->
                 </td>
             </tr>
