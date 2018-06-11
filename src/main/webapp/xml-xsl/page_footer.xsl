@@ -160,7 +160,7 @@
                         </xsl:choose>                        
                     </i>
                     
-                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=2018-06-11_14_31_58"></script>
+                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=@DeploymentTimestamp@"></script>
                     <!--</b>-->
                 </td>
             </tr>
