@@ -573,7 +573,7 @@
             </legend>
             <form style="margin-top:10px;" method="post" id="Export_DataForm" action="">
                 <table>
-                    <tr style="width:800px;">
+                    <tr  width="95%">
                         <td style="width:250px; text-align:right;">
                             <xsl:value-of select="$specificlocale/selectexportthesaurus/option[@lang=$lang]"/>
                         </td>
@@ -590,19 +590,21 @@
                                 </xsl:for-each>
                             </select>
                             <xsl:text> </xsl:text>
-                            <input class="button" type="submit" onClick="Export_DataButtonPressed();" >
+                            
+                             <input class="button" type="submit" onClick="Export_DataButtonPressed();" >
                                 <xsl:attribute name="value">
                                     <xsl:value-of select="$specificlocale/exportbutton/option[@lang=$lang]"/>
                                 </xsl:attribute>
                             </input>
                         </td>
+                           
                         <td/>
                     </tr>
                     <tr width="95%">
                         <td style="text-align:right;">
                             <xsl:value-of select="$specificlocale/selectexportxmlschematype/option[@lang=$lang]"/>
                         </td>
-                        <td>
+                        <td colspan="2">
                            <div style="display:inline-block; vertical-align:middle;"> 
                                 <input type="radio" name="exportschematype" id="radioTHEMAS" value="THEMAS"  
                                        onclick="checkSkosConfiguration();" style="margin-left:0px;margin-right:5px;" checked="checked"/>
@@ -619,9 +621,8 @@
                             </label>                            
                             
                            </div>
-                        </td>
-                        <td>
-                            <xsl:choose>
+                           &#160;&#160;
+                           <xsl:choose>
                                 <xsl:when test="//exportFile != ''">
                                     <input type="button" class="button">
                                         <xsl:attribute name="value">
@@ -648,6 +649,7 @@
                                 <xsl:otherwise></xsl:otherwise>
                             </xsl:choose>
                         </td>
+                        
                     </tr>
                     <tr width="95%" id="skosConceptSchemeConfigurationRowId" style="visibility:hidden;">
                         <td style="text-align:right;">
