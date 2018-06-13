@@ -1562,12 +1562,17 @@ public class DBImportData {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Guide Terms / Node Labels.");
             processSucceded = false;
         }
+        
+        
+        processGuideTermsDeclaredAsTerms(termsInfo, guideTerms);
+        
 
         if (processSucceded == false) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read XML file.");
             return false;
         }
 
+        
 
         /*
          * UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils,
@@ -3519,6 +3524,309 @@ public class DBImportData {
 
     private String getPageContentsXsl() {
         return Parameters.BaseRealPath + File.separator + "xml-xsl" + File.separator + "page_contents.xsl";
+    }
+
+    private void retrieveNonGuideTermNt(String searchNt,ArrayList<String> newNtsList, ArrayList<String> visitedNodes, HashMap<String, NodeInfoStringContainer> termsInfo, ArrayList<String> guideTerms){
+        
+        if(visitedNodes.contains(searchNt)){
+            return;
+        }
+        else{
+            visitedNodes.add(searchNt);
+        }
+        if(!guideTerms.contains(searchNt)){
+            if(!newNtsList.contains(searchNt)){
+                newNtsList.add(searchNt);
+            }
+            //not needed just for clarification
+            return;
+        }
+        else{
+             if(termsInfo.containsKey(searchNt)){
+                
+                NodeInfoStringContainer targetGTermInfo = termsInfo.get(searchNt);
+                
+                if(targetGTermInfo!=null && targetGTermInfo.descriptorInfo!=null){
+                        if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.nt_kwd)){
+                            ArrayList<String> ntVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                            if(ntVals!=null ){
+
+                                for(String oldNtVal : ntVals){
+                                    retrieveNonGuideTermNt(oldNtVal,newNtsList,visitedNodes, termsInfo,guideTerms);
+                                }
+                            }
+                        }
+                }
+             }
+        }
+        return;
+    }
+    
+    private void retrieveNonGuideTermBt(String searchBt,ArrayList<String> newBtsList, ArrayList<String> visitedNodes, HashMap<String, NodeInfoStringContainer> termsInfo, ArrayList<String> guideTerms){
+        
+        if(visitedNodes.contains(searchBt)){
+            return;
+        }
+        else{
+            visitedNodes.add(searchBt);
+        }
+        if(!guideTerms.contains(searchBt)){
+            if(!newBtsList.contains(searchBt)){
+                newBtsList.add(searchBt);
+            }
+            //not needed just for clarification
+            return;
+        }
+        else{
+             if(termsInfo.containsKey(searchBt)){
+                
+                NodeInfoStringContainer targetGTermInfo = termsInfo.get(searchBt);
+                
+                if(targetGTermInfo!=null && targetGTermInfo.descriptorInfo!=null){
+                        if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)){
+                            ArrayList<String> btVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                            if(btVals!=null ){
+
+                                for(String oldBtVal : btVals){
+                                    retrieveNonGuideTermBt(oldBtVal,newBtsList,visitedNodes, termsInfo,guideTerms);
+                                }
+                            }
+                        }
+                }
+             }
+        }
+        return;
+    }
+    
+    private void retrieveNonGuideTermRt(String searchRt,ArrayList<String> newRtsList, ArrayList<String> visitedNodes, HashMap<String, NodeInfoStringContainer> termsInfo, ArrayList<String> guideTerms){
+        
+        if(visitedNodes.contains(searchRt)){
+            return;
+        }
+        else{
+            visitedNodes.add(searchRt);
+        }
+        if(!guideTerms.contains(searchRt)){
+            if(!newRtsList.contains(searchRt)){
+                newRtsList.add(searchRt);
+            }
+            //not needed just for clarification
+            return;
+        }
+        else{
+             if(termsInfo.containsKey(searchRt)){
+                
+                NodeInfoStringContainer targetGTermInfo = termsInfo.get(searchRt);
+                
+                if(targetGTermInfo!=null && targetGTermInfo.descriptorInfo!=null){
+                        if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.rt_kwd)){
+                            ArrayList<String> rtVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                            if(rtVals!=null ){
+
+                                for(String oldRtVal : rtVals){
+                                    retrieveNonGuideTermRt(oldRtVal,newRtsList,visitedNodes, termsInfo,guideTerms);
+                                }
+                            }
+                        }
+                }
+             }
+        }
+        return;
+    }
+    
+    private void processGuideTermsDeclaredAsTerms(HashMap<String, NodeInfoStringContainer> termsInfo, ArrayList<String> guideTerms) {
+        
+        
+        if(!Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms){
+            return;
+        }
+        
+        //for each guide term that has been declared already been declared as normal term
+        // find out a list of bts or nts that are not guide terms that will be used in order to
+        //replace its presense in bts/nts relationships of other terms
+        HashMap<String, ArrayList<String>> guideTermsReplacementBts = new HashMap<>();        
+        HashMap<String, ArrayList<String>> guideTermsReplacementNts = new HashMap<>();
+        HashMap<String, ArrayList<String>> guideTermsReplacementRts = new HashMap<>();
+        
+        for(String gTerm : guideTerms){
+            if(termsInfo.containsKey(gTerm)){
+                
+                NodeInfoStringContainer targetGTermInfo = termsInfo.get(gTerm);
+                ArrayList<String> newNtVals  = new ArrayList<>();
+                ArrayList<String> newBtVals  = new ArrayList<>();
+                ArrayList<String> newRtVals  = new ArrayList<>();
+
+                if(targetGTermInfo!=null && targetGTermInfo.descriptorInfo!=null){
+                    if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.nt_kwd)){
+                        ArrayList<String> ntVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                        if(ntVals!=null ){
+
+                            for(String oldNtVal : ntVals){
+                                ArrayList<String> newNtsList = new ArrayList<>();
+                                retrieveNonGuideTermNt(oldNtVal, newNtsList, new ArrayList<String>(), termsInfo, guideTerms);
+
+                                if(newNtsList.size()>0){
+                                    newNtsList.stream().filter((newNt) -> (!newNtVals.contains(newNt))).forEachOrdered((newNt) -> {
+                                        newNtVals.add(newNt);
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)){
+                        ArrayList<String> btVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                        if(btVals!=null ){
+
+                            for(String oldBtVal : btVals){
+                                ArrayList<String> newBtsList = new ArrayList<>();
+                                retrieveNonGuideTermBt(oldBtVal, newBtsList, new ArrayList<String>(), termsInfo, guideTerms);
+
+                                if(newBtsList.size()>0){
+                                    newBtsList.stream().filter((newBt) -> (!newBtVals.contains(newBt))).forEachOrdered((newBt) -> {
+                                        newBtVals.add(newBt);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    if(targetGTermInfo.descriptorInfo.containsKey(ConstantParameters.rt_kwd)){
+                        ArrayList<String> rtVals = targetGTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                        if(rtVals!=null ){
+
+                            for(String oldRtVal : rtVals){
+                                ArrayList<String> newRtsList = new ArrayList<>();
+                                retrieveNonGuideTermRt(oldRtVal, newRtsList, new ArrayList<String>(), termsInfo, guideTerms);
+
+                                if(newRtsList.size()>0){
+                                    newRtsList.stream().filter((newRt) -> (!newRtVals.contains(newRt))).forEachOrdered((newRt) -> {
+                                        newRtVals.add(newRt);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }            
+                guideTermsReplacementNts.put(gTerm, newNtVals);
+                guideTermsReplacementBts.put(gTerm, newBtVals);
+                guideTermsReplacementRts.put(gTerm, newRtVals);
+            }
+        }
+        
+        ArrayList<String> guideTermsForRemoval = new ArrayList<>();
+                
+        //remove guide terms from terms info
+        HashMap<String, NodeInfoStringContainer> guideTermsInfo = new HashMap<>();
+        for(String str : guideTerms){
+            if(termsInfo.containsKey(str)){
+                guideTermsInfo.put(str,termsInfo.get(str));
+                termsInfo.remove(str);
+                guideTermsForRemoval.add(str);
+            }
+        }
+        
+        
+        
+        Iterator<String> updateTermsInfo = termsInfo.keySet().iterator();
+        while (updateTermsInfo.hasNext()) {
+            
+            String targetTerm = updateTermsInfo.next();
+            NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
+            
+            if(targetInfo!=null && targetInfo.descriptorInfo!=null){
+                if(targetInfo.descriptorInfo.containsKey(ConstantParameters.nt_kwd)){
+                    ArrayList<String> ntVals = targetInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                    ArrayList<String> newNtVals = new ArrayList<>();
+                    if(ntVals!=null ){
+                        
+                        for(String oldNtVal : ntVals){
+                            if(guideTerms.contains(oldNtVal)){
+                                ArrayList<String> gtNewNtVals = guideTermsReplacementNts.get(oldNtVal);
+                                if(gtNewNtVals!=null && gtNewNtVals.size()>0){
+                                    for(String gtNtVal : gtNewNtVals){
+                                        if(!newNtVals.contains(gtNtVal)){
+                                            newNtVals.add(gtNtVal);
+                                        }
+                                    }   
+                                }                                
+                            }
+                            else{
+                                if(!newNtVals.contains(oldNtVal)){
+                                    newNtVals.add(oldNtVal);
+                                }
+                            }
+                        }
+                    }
+                    termsInfo.get(targetTerm).descriptorInfo.put(ConstantParameters.nt_kwd, newNtVals);
+                            
+                }
+                
+                if(targetInfo.descriptorInfo.containsKey(ConstantParameters.bt_kwd)){
+                    ArrayList<String> btVals = targetInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                    ArrayList<String> newBtVals = new ArrayList<>();
+                    if(btVals!=null ){
+                        
+                        for(String oldBtVal : btVals){
+                            if(guideTerms.contains(oldBtVal)){
+                                ArrayList<String> gtNewBtVals = guideTermsReplacementBts.get(oldBtVal);
+                                if(gtNewBtVals!=null && gtNewBtVals.size()>0){
+                                    for(String gtBtVal : gtNewBtVals){
+                                        if(!newBtVals.contains(gtBtVal)){
+                                            newBtVals.add(gtBtVal);
+                                        }
+                                    }   
+                                }                                
+                            }
+                            else{
+                                if(!newBtVals.contains(oldBtVal)){
+                                    newBtVals.add(oldBtVal);
+                                }
+                            }
+                        }
+                    }
+                    termsInfo.get(targetTerm).descriptorInfo.put(ConstantParameters.bt_kwd, newBtVals);
+                }
+                
+                
+                if(targetInfo.descriptorInfo.containsKey(ConstantParameters.rt_kwd)){
+                    ArrayList<String> rtVals = targetInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                    ArrayList<String> newRtVals = new ArrayList<>();
+                    if(rtVals!=null ){
+                        
+                        for(String oldRtVal : rtVals){
+                            if(guideTerms.contains(oldRtVal)){
+                                ArrayList<String> gtNewRtVals = guideTermsReplacementRts.get(oldRtVal);
+                                if(gtNewRtVals!=null && gtNewRtVals.size()>0){
+                                    for(String gtRtVal : gtNewRtVals){
+                                        if(!newRtVals.contains(gtRtVal)){
+                                            newRtVals.add(gtRtVal);
+                                        }
+                                    }   
+                                }                                
+                            }
+                            else{
+                                if(!newRtVals.contains(oldRtVal)){
+                                    newRtVals.add(oldRtVal);
+                                }
+                            }
+                        }
+                    }
+                    termsInfo.get(targetTerm).descriptorInfo.put(ConstantParameters.rt_kwd, newRtVals);
+                }
+                
+                
+            }
+        }
+        
+        //for each guide term that was not initially declared as term then remove
+        guideTerms.removeAll(guideTermsForRemoval);
+        
+        
+        
+        
+        return;
     }
 }
 

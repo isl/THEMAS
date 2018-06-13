@@ -395,7 +395,7 @@ public class Utilities {
                                 category.compareTo(ConstantParameters.translation_kwd) == 0 ||
                                 category.compareTo(ConstantParameters.uf_translations_kwd)==0  ){
                             if(valueSortItem.getLinkClass()!=null && valueSortItem.getLinkClass().length()>0){
-                                xmlResults.append(" linkClass=\"" + valueSortItem.getLinkClass() + "\"");
+                                xmlResults.append(" linkClass=\"" + escapeXML(valueSortItem.getLinkClass()) + "\"");
                             }
                         }
                         if(linkRefIdL>0){
@@ -429,7 +429,7 @@ public class Utilities {
 
                         for (String linkClass : langcodes) {
                             String val = trSns.get(linkClass);
-                            xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
+                            xmlResults.append("<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">");
                             xmlResults.append(escapeXML(val));
                             xmlResults.append("</" + category + ">");
                         }
@@ -546,7 +546,7 @@ public class Utilities {
                         || category.compareTo(ConstantParameters.translation_kwd) == 0
                         || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) { // add id info in order to add anchors in paging
                     for (int k = 0; k < values.size(); k++) {
-                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + values.get(k).getLinkClass() + "\" >");
+                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + escapeXML(values.get(k).getLinkClass()) + "\" >");
                         xmlResults.append(escapeXML(values.get(k).getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
@@ -565,7 +565,7 @@ public class Utilities {
                     for (int k = 0; k < langcodes.size(); k++) {
                         String linkClass = langcodes.get(k);
                         String val = trSns.get(linkClass);
-                        xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
+                        xmlResults.append("<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">");
                         xmlResults.append(escapeXML(val));
                         xmlResults.append("</" + category + ">");
                     }
@@ -630,7 +630,7 @@ public class Utilities {
                     Collections.sort(vtranslations, guideTermComparator);
                     XMLresults.append("<" + output[j] + ">");
                     for (int k = 0; k < vtranslations.size(); k++) {
-                        XMLresults.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
+                        XMLresults.append("<name linkClass=\"" + escapeXML(vtranslations.get(k).linkClass) + "\">");
                         XMLresults.append(escapeXML(vtranslations.get(k).log_name));
                         XMLresults.append("</name>");
                     }
@@ -1967,7 +1967,7 @@ public class Utilities {
             Collections.sort(btsORnts, sortComparator);
             sb.append("<" + attribute + ">");
             for (SortItem btOrNtSortItem : btsORnts) {
-                sb.append("<name linkClass=\"" + btOrNtSortItem.getLinkClass().replaceFirst(GuideTermPrefix, "") + "\">");
+                sb.append("<name linkClass=\"" + escapeXML(btOrNtSortItem.getLinkClass().replaceFirst(GuideTermPrefix, "")) + "\">");
                 sb.append(escapeXML(btOrNtSortItem.getLogName()));
                 sb.append("</name>");
             }
@@ -1979,7 +1979,7 @@ public class Utilities {
 
         sb.append("<GuideTerms>");
         for (int i = 0; i < existingGuideTermsVec.size(); i++) {
-            sb.append("<GuideTerm>" + existingGuideTermsVec.get(i) + "</GuideTerm>");
+            sb.append("<GuideTerm>" + escapeXML(existingGuideTermsVec.get(i)) + "</GuideTerm>");
         }
         sb.append("</GuideTerms>");
 
@@ -2017,7 +2017,7 @@ public class Utilities {
                 Collections.sort(vtranslations, guideTermComparator);
                 sb.append("<" + output[j] + ">");
                 for (int k = 0; k < vtranslations.size(); k++) {
-                    sb.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
+                    sb.append("<name linkClass=\"" + escapeXML(vtranslations.get(k).linkClass) + "\">");
                     sb.append(escapeXML(vtranslations.get(k).log_name));
                     sb.append("</name>");
                 }
@@ -2252,7 +2252,7 @@ public class Utilities {
         Collections.sort(allGuideTerms, new StringLocaleComparator(targetLocale));
         dataNeeded.append("<availableGuideTerms>");
         for (int i = 0; i < allGuideTerms.size(); i++) {
-            dataNeeded.append("<GuideTerm>" + allGuideTerms.get(i) + "</GuideTerm>");
+            dataNeeded.append("<GuideTerm>" + escapeXML(allGuideTerms.get(i)) + "</GuideTerm>");
         }
         dataNeeded.append("</availableGuideTerms>");
 
@@ -2494,7 +2494,7 @@ public class Utilities {
                                         appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"");// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"")+" linkClass=\"" + linkClass + "\"";
+                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"")+" linkClass=\"" + escapeXML(linkClass) + "\"";
                                     }                                    
                                     
                                 } else {
@@ -2504,7 +2504,7 @@ public class Utilities {
                                         appendVal += "<" + category + "";// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + " linkClass=\"" + linkClass + "\"";
+                                        appendVal += "<" + category + " linkClass=\"" + escapeXML(linkClass) + "\"";
                                     }
                                 }
                                 
@@ -2557,7 +2557,7 @@ public class Utilities {
                         for (int k = 0; k < langcodes.size(); k++) {
                             String linkClass = langcodes.get(k);
                             String val = trSns.get(linkClass);
-                            appendVal = "<" + category + " linkClass=\"" + linkClass + "\">"+escapeXML(val)+"</" + category + ">";
+                            appendVal = "<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">"+escapeXML(val)+"</" + category + ">";
                             if(streamOutput){
                                  outStream.append(appendVal);
                             }

@@ -1135,7 +1135,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
                 out.write("<" + ConstantParameters.translation_kwd + ">");
                 for (int j = 0; j < termTranslations.size(); j++) {
-                    out.write("<translation linkClass=\"" + termTranslations.get(j).linkClass + "\">");
+                    out.write("<translation linkClass=\"" + Utilities.escapeXML(termTranslations.get(j).linkClass) + "\">");
                     out.write(Utilities.escapeXML(termTranslations.get(j).log_name));
                     out.write("</translation>");
                 }
@@ -1176,7 +1176,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
                 out.write("<" + ConstantParameters.translation_kwd + ">");
 
-                out.write("<name linkClass=\"" + translation.linkClass + "\">");
+                out.write("<name linkClass=\"" + Utilities.escapeXML(translation.linkClass) + "\">");
                 out.write(Utilities.escapeXML(translation.log_name));
                 out.write("</name>");
 

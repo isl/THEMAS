@@ -57,6 +57,7 @@ class responsible for the collection of the application's context
 Parameters defined in web.xml
 ----------------------------------------------------------------------*/
 public class Parameters {
+    public static boolean adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
     
     public static final boolean OnlyTopTermsHoldReferenceId = true;
     public static boolean TransliterationAsAttribute = false;
@@ -235,6 +236,17 @@ public class Parameters {
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 Parameters.PrimaryLang = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/PrimaryLanguagePrefix[1]", document);
 
+                Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
+                
+                String boolValStr3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
+                
+                if(boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes")){
+                    Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = true;
+                }
+                else{
+                    Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
+                }
+                
                 
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;
                 String boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms[1]", document);

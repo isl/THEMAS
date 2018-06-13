@@ -683,7 +683,7 @@ public class WriteFileData {
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -1182,7 +1182,7 @@ public class WriteFileData {
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
                         logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + targetGuideTerm + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -1836,7 +1836,7 @@ public class WriteFileData {
                                         noteStr = noteStr.substring(3);
                                         if (noteStr != null && noteStr.trim().length() > 0) {
                                             noteStr = noteStr.trim();
-                                            logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + langCode.toUpperCase() + "\">");
+                                            logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                             logFileWriter.append(Utilities.escapeXML(noteStr));
                                             logFileWriter.append("</" + category + ">\r\n");
                                         }
@@ -1891,7 +1891,7 @@ public class WriteFileData {
                                     }
                                     if (langCode != null && langCode.length() > 0 && val != null && val.length() > 0) {
 
-                                        logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + langCode.toUpperCase() + "\">");
+                                        logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                         logFileWriter.append(Utilities.escapeXML(val));
                                         logFileWriter.append("</" + category + ">\r\n");
                                     }
@@ -2014,7 +2014,7 @@ public class WriteFileData {
                                                     appendVal += " " + ConstantParameters.system_referenceUri_kwd + "=\"" + Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, ntStr.getThesaurusReferenceId())) + "\"";
                                                 }
                                             }
-                                            appendVal += " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + targetGuideTerm + "\">";
+                                            appendVal += " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(targetGuideTerm) + "\">";
                                             logFileWriter.append(appendVal);
                                             logFileWriter.append(Utilities.escapeXML(ntStr.getLogName()));
                                             logFileWriter.append("</" + category + ">\r\n");
