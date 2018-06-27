@@ -961,7 +961,7 @@ public class DBThesaurusReferences {
         Q.reset_name_scope();
         Q.set_current_node(thesThesaurusClass);
         int set = Q.get_link_from_by_category( 0, new StringObject("ThesaurusClassType"), new StringObject("Class`UsesAsPrefix"));
-        Q.reset_set( set);
+        Q.reset_set(set);
 
         StringObject cls = new StringObject();
         StringObject label = new StringObject();

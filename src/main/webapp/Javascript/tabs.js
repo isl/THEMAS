@@ -544,7 +544,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
         }
         fieldSetParams += 'translations_scope_note=' + escape(encodeURIComponent(value)) + '&' ;
     }   
-    else if(targetFieldSetID=='edit_source_source_note'){
+    else if(targetFieldSetID=='edit_source_source_note' || targetFieldSetID=='edit_source_create'){
         var textareas = targetFieldSet.getElementsByTagName('textarea');
         for ( i=0; i< textareas.length; i++) {
 
@@ -565,7 +565,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
             if(textareas[i].name!= '')
                 fieldSetParams += textareas[i].name + '=' + escape(encodeURIComponent(tempval)) + '&' ;
         }
-    }
+    }    
     else if(targetFieldSetID=='edit_term_scope_note'){
         var textareas = targetFieldSet.getElementsByTagName('textarea');
         for ( i=0; i< textareas.length; i++) {
@@ -582,7 +582,6 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
             while(tempval.indexOf("\n")>0){
                 tempval = tempval.replace("\n","");
             }
-
 
             if(textareas[i].name!= '')
                 fieldSetParams += textareas[i].name + '=' + escape(encodeURIComponent(tempval)) + '&' ;
