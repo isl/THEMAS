@@ -40,6 +40,7 @@ package XMLHandling;
 //package XMLHandling;
 import DB_Classes.DBGeneral;
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
 import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
@@ -900,7 +901,9 @@ public class WriteFileData {
     
     public void WriteTHEMASTermToSkosConceptSortItem(OutputStreamWriter logFileWriter, String importThesaurusName,
             SortItem targetSortItem, boolean isTopConcept,
-            HashMap<String, NodeInfoStringContainer> termsInfo, HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, ArrayList<ExternalLink>> termExtLinks,
             ArrayList<String> TermsFilter) throws IOException {
 
         //should add sources
@@ -1022,6 +1025,8 @@ public class WriteFileData {
                 logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
             }
 
+            //targetSortItem.getLogName()
+            
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
                 String translationValue = translations.get(j);
@@ -1155,7 +1160,7 @@ public class WriteFileData {
                             continue;
                         }
 
-                        ArrayList<String> ntReferenceIds = new ArrayList<String>();
+                        ArrayList<String> ntReferenceIds = new ArrayList<>();
                         if (termsInfo.containsKey(ntStr)) {
                             ntReferenceIds.addAll(termsInfo.get(ntStr).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd));
                         }
@@ -1400,6 +1405,25 @@ public class WriteFileData {
                 }
             }
             
+            if(termExtLinks!=null && termExtLinks.containsKey(targetSortItem.getLogName())){
+                ArrayList<ExternalLink> extLinks = termExtLinks.get(targetSortItem.getLogName());
+                for(ExternalLink extLink : extLinks){
+                    if(extLink.linkUri.length()>0){
+                        
+                        String targetMatchElement = ConstantParameters.XML_rdfs_seeAlso;
+                        if(extLink.matchType.length()>0){
+                            if(extLink.matchType.equalsIgnoreCase(ConstantParameters.attr_matchType_exact_match_value)){
+                                targetMatchElement = ConstantParameters.XML_skos_exactMatch;
+                            }
+                            else if(extLink.matchType.equalsIgnoreCase(ConstantParameters.attr_matchType_close_match_value)){
+                                targetMatchElement = ConstantParameters.XML_skos_closeMatch;
+                            }
+                        }
+                        
+                        logFileWriter.append("\t\t<"+targetMatchElement+" rdf:resource=\"" + Utilities.escapeXML(extLink.linkUri) + "\"/>\r\n");                        
+                    }
+                }
+            }
             
 
             if (isTopConcept) {
@@ -1525,6 +1549,7 @@ public class WriteFileData {
     public void WriteHierarchiesFromSortItems(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
             HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, ArrayList<ExternalLink>> termExtLinks,
             ArrayList<String> FacetsFilter,
             ArrayList<String> TermsFilter) throws IOException {
 
@@ -1562,7 +1587,7 @@ public class WriteFileData {
             if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
                 for (SortItem hierarchySortItem : allHierarchies) {                    
-                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, hierarchySortItem, true, termsInfo, XMLguideTermsRelations, termsFilter);
+                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, hierarchySortItem, true, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
                 }
 
             } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
@@ -1649,6 +1674,7 @@ public class WriteFileData {
     public void WriteTerms(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
             HashMap<String, ArrayList<String>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
+            HashMap<String, ArrayList<ExternalLink>> termExtLinks,
             ArrayList<String> TermsFilter) throws IOException {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Terms");
@@ -1679,7 +1705,7 @@ public class WriteFileData {
                     if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                         continue;
                     }
-                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termsFilter);
+                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
                 }
 
             }
@@ -2025,6 +2051,22 @@ public class WriteFileData {
                                 }
                             }
 
+                        }
+                    }
+                    
+                    if(termExtLinks!=null && termExtLinks.containsKey(termName)){
+                        ArrayList<ExternalLink> extLinks = termExtLinks.get(termName);
+                        for(ExternalLink extLink : extLinks){
+                            if(extLink.linkUri.length()>0){
+                                logFileWriter.append("\t\t\t<"+ConstantParameters.externalLink_kwd);
+                                if(extLink.matchType.length()>0){
+                                    logFileWriter.append(" "+ConstantParameters.externalLink_attr_matchType_kwd+"=\""+extLink.matchType+"\"");
+                                }
+                                if(extLink.vocabularyIdentifier.length()>0){
+                                    logFileWriter.append(" "+ConstantParameters.externalLink_attr_vocabId_kwd+"=\""+extLink.vocabularyIdentifier+"\"");
+                                }
+                                logFileWriter.append(">"+Utilities.escapeXML(extLink.linkUri)+"</"+ConstantParameters.externalLink_kwd+">\r\n");
+                            }
                         }
                     }
 

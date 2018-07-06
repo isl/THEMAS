@@ -40,6 +40,8 @@ package XMLHandling;
 import DB_Classes.DBGeneral;
 
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
@@ -61,6 +63,10 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import neo4j_sisapi.CMValue;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -2410,6 +2416,51 @@ public class ParseFileData {
 
     }
 
+    private void readAllExternalVocabularies(String xmlFilePath, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+        XmlPullParserFactory factory;
+        try {
+
+            //<editor-fold defaultstate="collapsed" desc="SKOS Case - NOT CURRENTLY SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+            } //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                int eventType = xpp.getEventType();
+
+                String targetTermId = "";
+                String targetPrefferedName = "";
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName) ){
+                            this.parseExternalVocabularyNodes(xpp, xmlSchemaType, vocabularyIdentifiers);
+                            break;
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            } //</editor-fold>
+        
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+
+        
+        return;
+    }
     private void readAllGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms){
 
         XmlPullParserFactory factory;
@@ -2457,6 +2508,65 @@ public class ParseFileData {
         return;
     }
 
+    
+    public boolean readXMLExternalLinks(String xmlFilePath, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers, HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading External Links from file: " + xmlFilePath + ".");
+
+        readAllExternalVocabularies(xmlFilePath, xmlSchemaType, vocabularyIdentifiers);
+        
+        //read all subjectIds, subjectClass values
+        //read all guide terms by storing values in ArrayList<String> guideTerms
+        //read all term/guideterms - parentSubject Id pairs
+
+
+
+        XmlPullParserFactory factory;
+        try {
+
+
+            //<editor-fold defaultstate="collapsed" desc="SKOS Case - CURRENTLY NOT SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+
+            } //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+
+                factory.setNamespaceAware(true);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+
+                int eventType = xpp.getEventType();
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
+                            this.parseTermsForExternalLinks(xpp, xmlSchemaType, vocabularyIdentifiers, XMLExternalLinksRelations);
+                            break;
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            }
+            //</editor-fold>
+
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading External Links. Found: " + vocabularyIdentifiers.size() + " External Vocabulary Ids.");
+        return true;
+    }
+    
     public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
@@ -3107,7 +3217,7 @@ public class ParseFileData {
                 xpp.next();
                 int eventType = xpp.getEventType();
 
-                // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Source Encountered">
                 if (eventType == xpp.START_TAG) {
                     String currentTagName = this.openingTagEncoutered(xpp, null);
                     if (currentTagName.equals("source")) {
@@ -3374,8 +3484,148 @@ public class ParseFileData {
 
     }
     
-    
-    
+    private void parseTermsForExternalLinks(XmlPullParser xpp, 
+                                            String xmlSchemaType, 
+                                            ArrayList<ExternalVocabulary> vocabularyIdentifiers, 
+                                            HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations) {
+        try {
+
+            // <editor-fold defaultstate="collapsed" desc="Skos Case - CURRENTLY NOT SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+                //all concept nodes are enough
+
+            } // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="THEMAS case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+
+                ArrayList<String> validAttrKeywords = new ArrayList<>();
+                validAttrKeywords.add(ConstantParameters.XMLDescriptorElementName);
+                validAttrKeywords.add(ConstantParameters.externalLink_kwd);
+
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals(ConstantParameters.XMLTermsWrapperElementName) == false) {
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Failed to find XML container element for terms: " + ConstantParameters.XMLTermsWrapperElementName);
+                    return;
+                }
+                //</editor-fold>
+
+
+                String targetTermName = "";
+                ArrayList<ExternalLink> extLinksInfo = new ArrayList<>();//new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Terms Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
+
+                            targetTermName = "";
+                            extLinksInfo = new ArrayList<>();
+                            
+                        } else if (currentTagName.equals(ConstantParameters.XMLDescriptorElementName)) {
+                            
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                targetTermName = this.readXMLTag(targetValue);
+                            }
+                        } else if(currentTagName.equals(ConstantParameters.externalLink_kwd)){
+                                String matchType ="";
+                                String vocabId ="";
+                                //no need to parse the attributes now it is a String container
+                                int howmanyAttributes = xpp.getAttributeCount();
+                                for (int k = 0; k < howmanyAttributes; k++) {
+                                    if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_matchType_kwd)) {
+                                        matchType = xpp.getAttributeValue(k);
+                                    }
+                                    else if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_vocabId_kwd)) {
+                                        vocabId = xpp.getAttributeValue(k);
+                                    }
+                                }
+                            
+                                String parsedValue = this.parseSimpleContentElement(xpp);
+
+
+                                if (parsedValue != null && parsedValue.trim().length() > 0) {
+                                    parsedValue = readXMLTag(parsedValue);
+
+                                    ExternalLink newLink = new ExternalLink(parsedValue);
+                                    newLink.matchType = matchType;
+                                    newLink.vocabularyIdentifier = vocabId;
+
+                                    //some improvement here - avoid dublicates??
+                                    extLinksInfo.add(newLink);
+                                }
+                            }
+                        
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Term Completed. also Check if all terms are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if terms parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
+                            break;
+                        }
+
+                        //Check if currentTerm parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
+                            
+                            if (targetTermName != null && targetTermName.trim().length() > 0 && extLinksInfo!=null && extLinksInfo.size()>0) {
+
+                                if(XMLExternalLinksRelations.containsKey(targetTermName)){
+                                    for(ExternalLink extLink : extLinksInfo){
+                                        XMLExternalLinksRelations.get(targetTermName).add(extLink);
+                                    }
+                                }
+                                else{
+                                    XMLExternalLinksRelations.put(targetTermName, extLinksInfo);
+                                }
+                                
+                                ArrayList<String> vocabIds = new ArrayList<>();
+                                vocabIds.addAll(extLinksInfo.stream().filter(x -> x.vocabularyIdentifier!=null && x.vocabularyIdentifier.trim().length()>0).map(x -> x.vocabularyIdentifier.trim()).collect(Collectors.toList()));
+                                
+                                for(String vocabId : vocabIds){
+                                    
+                                    final String searchId = vocabId.trim().toLowerCase();
+                                    
+                                    //if externalVocabulary info does not exist then add it
+                                    Predicate<ExternalVocabulary> p1 = e -> e.vocabularyIdentifier.toLowerCase().equals(searchId);
+                                    Optional<ExternalVocabulary> exists = vocabularyIdentifiers.stream().filter(p1).findFirst();
+                                    
+                                    ExternalVocabulary newVal = new ExternalVocabulary(vocabId);
+                                    if(!exists.isPresent()){
+                                        vocabularyIdentifiers.add(newVal);
+                                    }
+                                }
+                            }
+                                
+                        }
+
+                    }
+                    //</editor-fold>
+                }
+
+            }
+            // </editor-fold>
+            
+        } catch (XmlPullParserException | IOException ex) {
+            Utils.StaticClass.handleException(ex);
+            return;
+        }
+    }
 
     /**
      * If languageSelections == null then accept all lang codes
@@ -3886,6 +4136,8 @@ public class ParseFileData {
                         }
                         else {
                             String languagePrefix = "";
+                            String matchType ="";
+                            String vocabId ="";
                             if (currentTagName.equals(ConstantParameters.translation_kwd)
                                     || currentTagName.equals(ConstantParameters.uf_translations_kwd)
                                     || currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
@@ -3897,8 +4149,22 @@ public class ParseFileData {
                                     }
                                 }
                             }
+                            else if(currentTagName.equals(ConstantParameters.externalLink_kwd)){
+                                //no need to parse the attributes now it is a String container
+                                int howmanyAttributes = xpp.getAttributeCount();
+                                for (int k = 0; k < howmanyAttributes; k++) {
+                                    if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_matchType_kwd)) {
+                                        matchType = xpp.getAttributeValue(k);
+                                    }
+                                    else if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_vocabId_kwd)) {
+                                        vocabId = xpp.getAttributeValue(k);
+                                    }
+                                }
+                            }
 
                             String parsedValue = this.parseSimpleContentElement(xpp);
+                            
+                            
                             if (parsedValue != null && parsedValue.trim().length() > 0) {
                                 parsedValue = readXMLTag(parsedValue);
                             
@@ -4140,6 +4406,164 @@ public class ParseFileData {
         return returnVal;
     }
 
+    private void parseExternalVocabularyNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+
+        try {
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+            } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName) == false) {
+                    return;
+                }
+                //</editor-fold>
+
+                
+                String identifier = "";
+                ArrayList<String> uri = new ArrayList<>();
+                ArrayList<String> fullname = new ArrayList<>();
+                ArrayList<String> description = new ArrayList<>();
+                String versionstr ="";
+                String releasedate = "";
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Source Encountered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesElementName)) {
+                            identifier = "";
+                            
+                            uri = new ArrayList<>();
+                            fullname = new ArrayList<>();
+                            description = new ArrayList<>();
+                            
+                            versionstr ="";
+                            releasedate = "";
+
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_ShortName)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                identifier = this.readXMLTag(targetValue);
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_FullName)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0 ) {
+                                String fnameStr  = this.readXMLTag(targetValue);
+                                if(!fullname.contains(fnameStr)){
+                                    fullname.add(fnameStr);
+                                }
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Description)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                String descStr  = this.readXMLTag(targetValue);
+                                if(!description.contains(descStr)){
+                                    description.add(descStr);
+                                }
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Version)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                versionstr = this.readXMLTag(targetValue);
+                            }
+                        } 
+                        else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                releasedate = this.readXMLTag(targetValue);
+                            }
+                        } 
+                        else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Uri)) {
+                            
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                String uriStr  = this.readXMLTag(targetValue);
+                                if(!uri.contains(uriStr)){
+                                    uri.add(uriStr);
+                                }
+                            }
+                        }                         
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Source Completed. also Check if all Sources are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if hierarchies parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName)) {
+                            break;
+                        }
+
+                        //Check if currentFacet parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesElementName)) {
+                            if (identifier != null && identifier.trim().length() > 0) {
+
+                                identifier = identifier.trim();
+                                final String searchId = identifier.trim().toLowerCase();
+                                 //if externalVocabulary info does not exist then add it
+                                Predicate<ExternalVocabulary> p1 = e -> e.vocabularyIdentifier.toLowerCase().equals(searchId);
+                                Optional<ExternalVocabulary> exists = vocabularyIdentifiers.stream().filter(p1).findFirst();
+                                
+                                ExternalVocabulary newVal = new ExternalVocabulary(identifier);
+                                newVal.vocabularyUri.addAll(uri);
+                                newVal.vocabularyFullName.addAll(fullname);
+                                newVal.vocabularyDescription.addAll(description);
+                                newVal.vocabularyVersionString = versionstr;
+                                newVal.vocabularyReleaseTimestamp = releasedate;
+                                if(exists.isPresent()){
+                                    //NOT SURE IT UPDATES THE CORRECT REFERENCE
+                                    //Checked and it does work as expected -- updates the vocabularyIdentifiers record
+                                    for(String str : fullname){
+                                        if(!exists.get().vocabularyFullName.contains(str)){
+                                            exists.get().vocabularyFullName.add(str);
+                                        }
+                                    }
+                                    for(String str : uri){
+                                        if(!exists.get().vocabularyUri.contains(str)){
+                                            exists.get().vocabularyUri.add(str);
+                                        }
+                                    }
+                                    for(String str : description){
+                                        if(!exists.get().vocabularyDescription.contains(str)){
+                                            exists.get().vocabularyDescription.add(str);
+                                        }
+                                    }                                    
+                                    exists.get().vocabularyVersionString =versionstr;
+                                    exists.get().vocabularyReleaseTimestamp =releasedate;
+                                }
+                                else{
+                                    vocabularyIdentifiers.add(newVal);
+                                }                                
+                            }
+
+                        }
+                    }
+                    //</editor-fold>
+                }
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+    
+    
     private void parseGuideTermNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<String> xmlGuideTerms) {
 
         try {
@@ -4863,4 +5287,11 @@ public class ParseFileData {
         }
         return "";
     }
+
+
+    
+
+    
+
+    
 }

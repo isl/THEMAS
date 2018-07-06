@@ -168,6 +168,16 @@ public class ConstantParameters {
 
     
     public static final String XMLTermsWrapperElementName = "terms";
+    public static final String XMLExternalVocabulariesWrapperElementName = "external_vocabularies";
+    public static final String XMLExternalVocabulariesElementName = "external_vocabulary";
+    public static final String XMLExternalVocabularies_ShortName = "shortname"; //should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_FullName = "fullname";//should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_Description = "description";//should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_ReleaseTimestamp = "release_timestamp";
+    public static final String XMLExternalVocabularies_Version = "version";
+    
+    public static final String XMLExternalVocabularies_Uri = "uri"; //should be multiple
+    
     public static final String XMLSourcesWrapperElementName = "sources";
     public static final String XMLTermElementName = "term";
     public static final String XMLNodeLabelsWrapperElementName = "nodelabels";
@@ -181,7 +191,6 @@ public class ConstantParameters {
     public static final String topterm_kwd = "topterm";
     public static final String translation_kwd = "translations";
     public static final String bt_kwd = "bt";
-    public static final String externalUri_kwd = "externalUri";
     public static final String nt_kwd = "nt";
     //addition standing for output of recursive bts
     public static final String rbt_kwd = "rbt";
@@ -192,7 +201,12 @@ public class ConstantParameters {
     public static final String uf_translations_kwd ="uf_translations";
     public static final String dn_kwd = "dn";
     public static final String tc_kwd = "tc";
-    public static final String alt_kwd = "alt";    
+    public static final String alt_kwd = "alt"; 
+    public static final String externalLink_kwd = "externalLink";
+    public static final String externalLink_attr_matchType_kwd = "matchtype";
+    public static final String attr_matchType_exact_match_value = "exactMatch";
+    public static final String attr_matchType_close_match_value = "closeMatch";
+    public static final String externalLink_attr_vocabId_kwd = "vocabularyId";
     public static final String primary_found_in_kwd = "primary_found_in";
     public static final String translations_found_in_kwd = "translations_found_in";
     public static final String scope_note_kwd = "scope_note";
@@ -320,8 +334,10 @@ public class ConstantParameters {
     public static final String XML_rdf_about = "rdf:about";
     public static final String XML_skos_topConceptOf ="skos:topConceptOf";
     public static final String XML_skos_exactMatch ="skos:exactMatch";
+    public static final String XML_skos_closeMatch ="skos:closeMatch";
     public static final String XML_owlSameAs = "owl:sameAs";
-
+    public static final String XML_rdfs_seeAlso   ="rdfs:seeAlso";
+    
     public static final String XML_skos_member = "skos:member";
     public static final String XML_rdf_resource = "rdf:resource";
 
@@ -399,5 +415,6 @@ public class ConstantParameters {
     public static final String searchOperatorNotTransliterationContains = "!transliteration~";
     public static final String searchOperatorContains = "~";
     public static final String searchOperatorNotContains = "!~";
+    
     
 }

@@ -702,6 +702,24 @@ public class DBThesaurusReferences {
         int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("Descriptor"), new StringObject("BT"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_relation")), card);
         return ret;
     }
+    
+    public int getThesaurusCategory_externalLink(String SelectedThesaurus, QClass Q, int SISsessionID, StringObject retObject) {
+        
+        Q.reset_name_scope();
+        long retL = Q.set_current_node(new StringObject(SelectedThesaurus.toUpperCase().concat("HierarchyTerm")));
+        if(retL<=0){
+            return QClass.APIFail;
+        }
+        StringObject tempVal = new StringObject(SelectedThesaurus.toUpperCase().concat("has_external_link"));
+        retL = Q.set_current_node(tempVal);
+        if(retL<=0){
+            return QClass.APIFail;
+        }
+        Q.reset_name_scope();
+        retObject.setValue(tempVal.getValue());
+        
+        return QClass.APISucc;
+    }
 
     /*----------------------------------------------------------------------
                          getThesaurusCategory_created()
@@ -1067,8 +1085,6 @@ public class DBThesaurusReferences {
 
         String prefix = cmv.getString();
         return prefix;
-
-
     }
 
     /*----------------------------------------------------------------------

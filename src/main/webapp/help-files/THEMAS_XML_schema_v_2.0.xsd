@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <!-- Version 2.0 Under Construction -->
+	<!-- Version 2.0 Under Construction -->
 	<!-- Is it possible to declare that only one of the facets/hierarchies/terms will be used for the Unclassfied terms? -->
 	<!--  Define thesaurus primary language used. This is just informative - it will not be used during import-->
 	<!-- Status enumeration according to primary thesaurus language (Status nodes in the database are always stored with specific names. The translation used here though is defined in 
@@ -28,6 +28,7 @@
 				<xs:element ref="terms" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="nodelabels" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="sources" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="external_vocabularies" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="thesaurus" type="xs:string" use="required">
 				<xs:annotation>
@@ -123,6 +124,17 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="source" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute ref="count"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="external_vocabularies">
+		<xs:annotation>
+			<xs:documentation>Wrapper element containg the basic information about the external Vocabularies specified in current Thesaurus.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="external_vocabulary" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute ref="count"/>
 		</xs:complexType>
@@ -414,6 +426,52 @@
 						<xs:documentation>Note that is linked to the term providing information about its history in a free text fromat.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="externalLink" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Known URI describing exactly the same or a similar Concept as current term from an external vocabulary.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="matchtype">
+									<xs:simpleType>
+										<xs:annotation>
+											<xs:documentation>This optional attribute contains the specification of the link and in case of existense it should be restricted to values: exactMatch or closeMatch.</xs:documentation>
+										</xs:annotation>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="exactMatch"/>
+											<xs:enumeration value="closeMatch"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="vocabularyId">									
+										<xs:annotation>
+											<xs:documentation>This optional attribute contains the specification of the External Vocabulary resource that this link was retrieved from. More data on this External Vocabulary resource can be defined in an external_vocabulary element.</xs:documentation>
+										</xs:annotation>									
+								</xs:attribute>
+							</xs:extension>
+							<!-- 
+TODO define as a restriction
+<xs:extension base="xs:string">
+								<xs:attribute name="matchtype">
+									<xs:simpleType>
+											<xs:annotation>
+												<xs:documentation>This optional attribute contains the specification of the link and in case of existense it should be restricted to values: exactMatch or closeMatch.</xs:documentation>
+											</xs:annotation>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="exactMatch"/>
+											<xs:enumeration value="closeMatch"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+-->
+							<!-- 
+								<xs:attribute ref="referenceId" use="required"/>
+								-->
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute ref="index"/>
 		</xs:complexType>
@@ -436,6 +494,45 @@
 				<xs:element name="source_note" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>A Rich text note describing current source in more detail.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute ref="index"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="external_vocabulary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="shortname" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>The identifier name of the External Vocabulary that may be used as attribute (named vocabularyId) in term child element named externalLink.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<!-- TODO: should include a language specifier -->
+				<xs:element name="fullname" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The full name - title of the External Vocabulary</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<!-- TODO: should include a language specifier -->
+				<xs:element name="description" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A Rich text note describing the External Vocabulary</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="uri" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>An accessible URI of the External Vocabulary root / home page / description or sparql endpoint</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="version" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>A Text field for the specification of the version of  the data set that this External Vocabulary refers to.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="release_timestamp" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>A Text field for the specification of the release timestamp that this data set refers to (in case no version is applicable).</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>

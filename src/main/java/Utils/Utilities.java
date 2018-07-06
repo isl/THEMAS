@@ -2815,7 +2815,8 @@ public class Utilities {
                 ConstantParameters.note_kwd, 
                 ConstantParameters.system_referenceUri_kwd, 
                 ConstantParameters.system_allHierarchicalUris_kwd, 
-                ConstantParameters.system_transliteration_kwd
+                ConstantParameters.system_transliteration_kwd,
+                ConstantParameters.externalLink_kwd
             };
         
         if(Parameters.createSKOSHierarchicalUris){

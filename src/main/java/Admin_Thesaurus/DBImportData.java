@@ -51,6 +51,8 @@ import Utils.SessionWrapperClass;
 import Utils.SortItem;
 import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 
 import XMLHandling.ParseFileData;
 import java.io.BufferedOutputStream;
@@ -75,6 +77,8 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -284,6 +288,38 @@ public class DBImportData {
 
         
         return retVal;
+    }
+    
+    private boolean writeExternalLinkAndVocabulariesData(UserInfoClass refSessionUserInfo, 
+            CommonUtilsDBadmin common_utils, 
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
+            ArrayList<ExternalVocabulary> voabularyIdentifiers, 
+            HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations,
+            String importThesaurusName,
+            String pathToErrorsXML, 
+            Locale targetLocale,
+            StringObject resultObj, 
+            OutputStreamWriter logFileWriter) {
+        
+        UsersClass webappusers = new UsersClass();
+        
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        webappusers.UpdateSessionUserSessionAttribute(SessionUserInfo, importThesaurusName);
+        
+        Q.reset_name_scope();
+        //common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
+
+        if (CreateVocabularies(importThesaurusName, common_utils,
+                Q, TA, sis_session, tms_session, voabularyIdentifiers, resultObj, logFileWriter, SessionUserInfo.UILang) == false) {
+            return false;
+        }
+        
+        if(CreateExternalLinks(importThesaurusName, common_utils,
+                Q, TA, sis_session, tms_session, voabularyIdentifiers, XMLExternalLinksRelations, resultObj, logFileWriter, SessionUserInfo.UILang)==false){
+            return false;
+        }
+        
+        return true;
     }
     
     public boolean writeThesaurusDataFromSortItems(UserInfoClass refSessionUserInfo, 
@@ -1485,22 +1521,24 @@ public class DBImportData {
         ParseFileData parser = new ParseFileData();
 
         //Structures to fill
-        HashMap<String, SortItem> xmlFacetSortItems = new HashMap<String, SortItem>();
-        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<String, ArrayList<String>>();
+        HashMap<String, SortItem> xmlFacetSortItems = new HashMap<>();
+        HashMap<String, ArrayList<String>> hierarchyFacets = new HashMap<>();
         
-        ArrayList<String> guideTerms = new ArrayList<String>();
-        HashMap<String, String> XMLsources = new HashMap<String, String>();        
-        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<String, ArrayList<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<>();
+        ArrayList<ExternalVocabulary> voabularyIdentifiers = new ArrayList<>();
+        HashMap<String, String> XMLsources = new HashMap<>();        
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
+        HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations = new HashMap<>();
         
         //key should only be string (instead of SortItem) in case we do not have all information about uri and transliteration in every reference in the XML       
-        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<String, NodeInfoStringContainer>();
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<>();
         
         
-        ArrayList<String> userSelectedTranslationWords = new ArrayList<String>();
-        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<String>();
-        HashMap<String, String> userLanguageSelections = new HashMap<String, String>();
+        ArrayList<String> userSelectedTranslationWords = new ArrayList<>();
+        ArrayList<String> userSelectedTranslationIdentifiers = new ArrayList<>();
+        HashMap<String, String> userLanguageSelections = new HashMap<>();
 
-        ArrayList<String> thesaurusVector = new ArrayList<String>();
+        ArrayList<String> thesaurusVector = new ArrayList<>();
         StringObject CreateThesaurusResultMessage = new StringObject("");
 
         //
@@ -1562,6 +1600,12 @@ public class DBImportData {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read Guide Terms / Node Labels.");
             processSucceded = false;
         }
+        
+        if (processSucceded && parser.readXMLExternalLinks(xmlFilePath, inputScheme, voabularyIdentifiers, XMLExternalLinksRelations) == false) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to read External Links.");
+            processSucceded = false;
+        }
+        
         
         
         processGuideTermsDeclaredAsTerms(termsInfo, guideTerms);
@@ -1680,6 +1724,14 @@ public class DBImportData {
                 topTerms, descriptorRts, descriptorUfs,
                 allLevelsOfImportThes, importThesaurusName,
                 pathToErrorsXML, targetLocale, resultObj, logFileWriter);
+        
+            if(returnVal){
+                returnVal = writeExternalLinkAndVocabulariesData(refSessionUserInfo, common_utils,
+                Q, TA, sis_session, tms_session, voabularyIdentifiers, XMLExternalLinksRelations,
+                importThesaurusName,
+                pathToErrorsXML, targetLocale, resultObj, logFileWriter);
+                        
+            }
         }
         finally{
             if(returnVal){
@@ -1698,13 +1750,433 @@ public class DBImportData {
         return returnVal;
     }
     
-    
+    private boolean CreateExternalLinks(String importThesaurusName, CommonUtilsDBadmin common_utils, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, ArrayList<ExternalVocabulary> voabularyIdentifiers, HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations, StringObject resultObj, OutputStreamWriter logFileWriter, String UILang) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of External Links. Time: " + Utilities.GetNow());
+        
+        try{
+            DBGeneral dbGen = new DBGeneral();
+            Utilities u = new Utilities();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
+            StringObject prefixDescriptorObj = new StringObject(dbtr.getThesaurusPrefix_Descriptor(importThesaurusName, Q, sis_session.getValue()));
+            
+            StringObject prefixExternalLinkObj = new StringObject();
+            StringObject prefixExternalVocabularyObj = new StringObject();
+            StringObject TMSApiErrorMsg = new StringObject();
+        
+            int ret = TA.GetPrefix_of_ExternalLink(prefixExternalLinkObj, TMSApiErrorMsg);
+            if(ret == TMSAPIClass.TMS_APIFail){
+                return false;
+            }
+            ret = TA.GetPrefix_of_ExternalVocabulary(prefixExternalVocabularyObj, TMSApiErrorMsg);
+            if(ret == TMSAPIClass.TMS_APIFail){
+                return false;
+            }
+            
+            HashMap<String,CMValue> vocabCMValues = new HashMap<>();
+                        
+            HashMap<String,String> linkToVocabularyLinks = new HashMap<>();
+            XMLExternalLinksRelations.values().forEach( (linkArray) -> {
+                linkArray.forEach((link)->{String linkLogName = "";
+                    String vocabId = "";
+                    
+                    if(link.linkUri!=null && link.linkUri.length()>0){
+                        linkLogName = prefixExternalLinkObj.getValue().concat(link.linkUri);
+                    }
+                    if(link.vocabularyIdentifier!=null && link.vocabularyIdentifier.length()>0){
+                        vocabId = prefixExternalVocabularyObj.getValue().concat(link.vocabularyIdentifier);
+                        if(!vocabCMValues.containsKey(vocabId)){
+                            vocabCMValues.put(vocabId, new CMValue());
+                        }
+                    }
+                    if(linkToVocabularyLinks.containsKey(linkLogName)){
+                        if(vocabId.length()>0){
+                            linkToVocabularyLinks.put(linkLogName,vocabId);
+                        }
+                    }
+                    else{
+                        linkToVocabularyLinks.put(linkLogName,vocabId);
+                    }});                
+            });
+            
+            //update vocabularies with cmvalue
+            ArrayList<String> vocabValues = new ArrayList<>(vocabCMValues.keySet());
+            
+            for(String vocab : vocabValues){
+                Q.reset_name_scope();
+                long vocabL = Q.set_current_node(new StringObject(vocab));
+                if(vocabL<=0){
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create ExternalLink: " + vocab);
+                    Q.free_all_sets();
+                    return false;
+                }
+                vocabCMValues.get(vocab).assign_node(vocab, vocabL);
+            }
+            
+            CMValue labelValue = new CMValue();
+            for(Map.Entry<String, String> entry : linkToVocabularyLinks.entrySet()){
+                Q.reset_name_scope();
+                StringObject nameDBObj = new StringObject(entry.getKey());
+                if (Q.set_current_node(nameDBObj) == QClass.APIFail) {
+                    //external Vocabulary does not exist
+                    Q.reset_name_scope();
+                    ret = TA.CreateExternalLink(nameDBObj);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create ExternalLink: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+                //create the link with the vocabulary
+                if(entry.getValue().length()>0){
+                    CMValue toVal = vocabCMValues.get(entry.getValue());
+                    ret = TA.CreateExternalLink_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalLink.BELONGS_TO_VOCABULARY, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create link between external link: "+nameDBObj.getValue()+" and external Vocabulary: " + toVal.getString());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                    
+                    String lbl =  dbGen.removePrefix(toVal.getString());
+                    String uri = dbGen.removePrefix(nameDBObj.getValue());
+                    if(uri.length()>0 && lbl.length()>0){
+                        lbl += ": ";
+
+                        String  uriStr = URLDecoder.decode(uri.trim(), "UTF-8").trim();
+                        if(uriStr.endsWith("/")){
+                            uriStr = uriStr.substring(0,  uriStr.length()-1);
+                        }
+                        
+                        if(uriStr.contains("/")){
+                            lbl+= uriStr.substring(uriStr.lastIndexOf('/') + 1);
+                            lbl = lbl.replace("_", " ");
+                            
+                            if(lbl.length()>0){
+                                
+                                labelValue.assign_string(lbl);
+                                ret = TA.CreateExternalLink_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalLink.LABEL, labelValue);
+                                if (ret == TMSAPIClass.TMS_APIFail) {
+                                    resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create label for external link: "+nameDBObj.getValue());
+                                    Q.free_all_sets();
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                
+                
+                    
+                    
+                    
+                    
+            }
+            
+            //create a HashMap of link logical name with the 
+            //CMValue to be used in the create Descriptor -> external link 
+            //attrbute towards External link cmValue
+            HashMap<String,CMValue> linkCMValues = new HashMap<>();
+            for(Map.Entry<String, String> entry : linkToVocabularyLinks.entrySet()){
+                StringObject nameDBObj = new StringObject(entry.getKey());
+                Q.reset_name_scope();
+                long linkIdL = Q.set_current_node(nameDBObj);
+                if(linkIdL<=0){
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to reference ExternalLink: " + nameDBObj.getValue());
+                    Q.free_all_sets();
+                    return false;
+                }
+                CMValue cmv = new CMValue();
+                cmv.assign_node(nameDBObj.getValue(), linkIdL);
+                linkCMValues.put(nameDBObj.getValue(), cmv);
+            }
+            
+            
+            ArrayList<String> terms = new ArrayList<String>(XMLExternalLinksRelations.keySet());
+            
+            for(String term : terms){
+                
+                StringObject descrObj = new StringObject(prefixDescriptorObj.getValue().concat(term));
+                
+                ArrayList<ExternalLink> externalLinks = XMLExternalLinksRelations.get(term);
+                for(ExternalLink lnk : externalLinks){
+                    String lbl = lnk.vocabularyIdentifier;
+                    String uri = lnk.linkUri;
+                    if(uri.length()==0){
+                        continue;
+                    }
+                    
+                    
+                    uri = prefixExternalLinkObj.getValue().concat(uri);
+                    if(lnk.vocabularyIdentifier.length()>0){
+                        lbl += ": ";
+                        
+                        
+                        String  uriStr = URLDecoder.decode(lnk.linkUri.trim(), "UTF-8").trim();
+                        
+                        if(uriStr.endsWith("/")){
+                            uriStr = uriStr.substring(0,  uriStr.length()-1);
+                        }
+                        lbl+= uriStr.substring(uriStr.lastIndexOf('/') + 1);
+                        lbl = lbl.replace("_", " ");
+                    }
+                    CMValue toCmv = linkCMValues.get(uri);
+                    String matchType = lnk.matchType.toLowerCase();
+                    
+                    if(matchType.equalsIgnoreCase(ConstantParameters.attr_matchType_exact_match_value)){
+                        ret = TA.CreateHierarchyTerm_Attribute(descrObj, TMSAPIClass.Attributes_For_HierarchyTerms.HAS_EXACT_MATCH_LINK, toCmv);
+                    }
+                    else if(matchType.equalsIgnoreCase(ConstantParameters.attr_matchType_close_match_value)){
+                        ret = TA.CreateHierarchyTerm_Attribute(descrObj, TMSAPIClass.Attributes_For_HierarchyTerms.HAS_CLOSE_MATCH_LINK, toCmv);
+                    }
+                    else{
+                        ret = TA.CreateHierarchyTerm_Attribute(descrObj, TMSAPIClass.Attributes_For_HierarchyTerms.HAS_LINK, toCmv);
+                    }
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create link between descriptor: "+ term +" and external link: "+ lnk.linkUri);
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+            }
+            /*
+            int counter =0;
+            
+            //step 1 create ExternalVocabularies
+            int total = voabularyIdentifiers.size();
+            for(ExternalVocabulary voc : voabularyIdentifiers) {
+                Q.free_all_sets();
+                
+                if (counter % DBMergeThesauri.restartInterval == 0) {
+                    if (common_utils != null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("ExternalVocabularies counter: " + counter + " of " + total + "  ");
+                        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);                        
+                    }
+                }
+                counter++;
+
+              
+                StringObject nameDBObj = new StringObject(prefixExternalLinkObj.getValue().concat(voc.vocabularyIdentifier));
+                Q.reset_name_scope();
+                if (Q.set_current_node(nameDBObj) != QClass.APIFail) {
+                    //external Vocabulary exists should update the rest of its data
+                    continue;
+
+                } else {
+                    //external Vocabulary does not exist
+                    Q.reset_name_scope();
+                    ret = TA.CreateExternalVocabulary(nameDBObj);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+                CMValue toVal = new CMValue();
+                for(String str : voc.vocabularyDescription){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.DESCRIPTION, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create description attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+                for(String str : voc.vocabularyFullName){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.FULLNAME, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create full name attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                for(String str : voc.vocabularyUri){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.URI, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Uri attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                if(voc.vocabularyVersionString!=null && voc.vocabularyVersionString.length()>0){
+                    toVal.assign_string(voc.vocabularyVersionString);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.VERSION, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Version attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                if(voc.vocabularyReleaseTimestamp!=null && voc.vocabularyReleaseTimestamp.length()>0){
+                    toVal.assign_string(voc.vocabularyReleaseTimestamp);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.RELEASETIMESTAMP, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create release Timestamp attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+            }
+            */
+            
+            Q.free_all_sets();
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of External Links creation.");
+        }
+        catch(Exception ex){
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass().toString());
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+            Utils.StaticClass.handleException(ex);                    
+            return false;
+        }
+        return true;
+        
+    }
+    
+    private boolean CreateVocabularies(String importThesaurusName, CommonUtilsDBadmin common_utils, 
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
+            ArrayList<ExternalVocabulary> voabularyIdentifiers, 
+            StringObject resultObj, OutputStreamWriter logFileWriter, String UILang) {
+    
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of External Vocabularies. Time: " + Utilities.GetNow());
+        
+        try{
+            DBGeneral dbGen = new DBGeneral();
+            Utilities u = new Utilities();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
+
+            StringObject prefixExternalVocabularyObj = new StringObject();
+            StringObject TMSApiErrorMsg = new StringObject();
+        
+            int ret = TA.GetPrefix_of_ExternalVocabulary(prefixExternalVocabularyObj, TMSApiErrorMsg);
+            if(ret == TMSAPIClass.TMS_APIFail){
+                return false;
+            }
+            
+            int counter =0;
+            //step 1 create ExternalVocabularies
+            int total = voabularyIdentifiers.size();
+            for(ExternalVocabulary voc : voabularyIdentifiers) {
+                Q.free_all_sets();
+                
+                if (counter % DBMergeThesauri.restartInterval == 0) {
+                    if (common_utils != null) {
+                        Utils.StaticClass.webAppSystemOutPrintln("ExternalVocabularies counter: " + counter + " of " + total + "  ");
+                        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);                        
+                    }
+                }
+                counter++;
+
+              
+                StringObject nameDBObj = new StringObject(prefixExternalVocabularyObj.getValue().concat(voc.vocabularyIdentifier));
+                Q.reset_name_scope();
+                if (Q.set_current_node(nameDBObj) != QClass.APIFail) {
+                    //external Vocabulary exists should update the rest of its data
+                    continue;
+
+                } else {
+                    //external Vocabulary does not exist
+                    Q.reset_name_scope();
+                    ret = TA.CreateExternalVocabulary(nameDBObj);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+                CMValue toVal = new CMValue();
+                for(String str : voc.vocabularyDescription){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.DESCRIPTION, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create description attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                
+                for(String str : voc.vocabularyFullName){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.FULLNAME, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create full name attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                for(String str : voc.vocabularyUri){
+                    
+                    toVal.assign_string(str);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.URI, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Uri attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                if(voc.vocabularyVersionString!=null && voc.vocabularyVersionString.length()>0){
+                    toVal.assign_string(voc.vocabularyVersionString);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.VERSION, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create Version attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+                if(voc.vocabularyReleaseTimestamp!=null && voc.vocabularyReleaseTimestamp.length()>0){
+                    toVal.assign_string(voc.vocabularyReleaseTimestamp);
+                    ret = TA.CreateExternalVocabulary_Attribute(nameDBObj, TMSAPIClass.Attributes_For_ExternalVocabulary.RELEASETIMESTAMP, toVal);
+                    if (ret == TMSAPIClass.TMS_APIFail) {
+                        resultObj.setValue(dbGen.check_success(ret, TA, null, tms_session));
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Failed to create release Timestamp attribute for externalVocabulary: " + nameDBObj.getValue());
+                        Q.free_all_sets();
+                        return false;
+                    }
+                }
+            }
+            Q.free_all_sets();
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of External Vocabularies creation.");
+        }
+        catch(Exception ex){
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass().toString());
+            Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
+            Utils.StaticClass.handleException(ex);                    
+            return false;
+        }
+        return true;
+    }
     public boolean CreateSources(String selectedThesaurus, CommonUtilsDBadmin common_utils, String importThesaurusName,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, 
             HashMap<String, String> XMLsources, StringObject resultObj, OutputStreamWriter logFileWriter, final String uiLang){
         
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Startin creation of SOURCES. Time: " + Utilities.GetNow());
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Starting creation of SOURCES. Time: " + Utilities.GetNow());
 
         try{
             DBGeneral dbGen = new DBGeneral();
@@ -1720,48 +2192,20 @@ public class DBImportData {
 
             int counter = 0;
 
-            //step1 create sources
+            //step 1 create sources
             int total = XMLsources.size();
             for(String nameStr : XMLsources.keySet()) {
                 Q.free_all_sets();
-                //String sourceNoteStr = XMLsources.get(nameStr);
-
-                /*
-                if(counter>=2800 && counter <=3000){
-                    Utils.StaticClass.webAppSystemOutPrintln(counter+".\t" + nameStr);
-                }*/
+                
                 if (counter % DBMergeThesauri.restartInterval == 0) {
                     if (common_utils != null) {
                         Utils.StaticClass.webAppSystemOutPrintln("Sources counter: " + counter + " of " + total + "  ");
-                        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);
-                        //Q.TEST_end_transaction();
-                        //Utils.StaticClass.closeDb();
-                        //if(dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, importThesaurusName, false)==QClass.APIFail){
-                          //  Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ ");
-                            //return false;
-                        //}
-                        
+                        common_utils.restartTransactionAndDatabase(Q, TA, sis_session, tms_session, importThesaurusName);                        
                     }
                 }
                 counter++;
 
-                /*
-                try {
-                    byte[] byteArray = nameStr.getBytes("UTF-8");
-
-
-                    int maxChars = dbtr.getMaxBytesForSource(selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-
-                        Utils.StaticClass.webAppSystemOutPrintln("By passed creation of source " + nameStr + " due to length limitation.");
-                        continue;
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                */
-
+              
                 StringObject nameDBObj = new StringObject(prefixSource.concat(nameStr));
                 Q.reset_name_scope();
                 if (Q.set_current_node(nameDBObj) != QClass.APIFail) {
@@ -2870,7 +3314,6 @@ public class DBImportData {
 
 
         //clear some memory
-
         Iterator<String> termsEnum = termsInfo.keySet().iterator();
         while (termsEnum.hasNext()) {
             String targetTerm = termsEnum.next();
@@ -3828,6 +4271,12 @@ public class DBImportData {
         
         return;
     }
+
+    
+
+    
+
+    
 }
 
 

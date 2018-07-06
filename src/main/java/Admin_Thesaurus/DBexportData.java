@@ -47,6 +47,8 @@ import DB_Classes.DBThesaurusReferences;
 
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.Utilities;
 import Utils.Parameters;
 import Utils.SortItem;
@@ -106,9 +108,12 @@ public class DBexportData {
         HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<>();
         ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<>();
 
-
+        HashMap<String,ArrayList<ExternalLink>> termExtLinks = new HashMap<>();
+        ArrayList<ExternalVocabulary> vocabularyIdentifiers = new ArrayList<>();
+        
+        
         HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<>();
-
+        
 
             //open connection and start Query
             if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, null, true) == QClass.APIFail) {
@@ -153,6 +158,10 @@ public class DBexportData {
             dbMerge.ReadThesaurusTerms(SessionUserInfo, Q,TA, sis_session, exprortThesaurus, null,
                     termsInfo, guideTerms, XMLguideTermsRelations);
 
+            
+        
+            dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
+            
             guideTerms.clear();
             guideTerms.addAll(dbGen.collectGuideLinks(exprortThesaurus, Q, sis_session));
             HashMap<String, ArrayList<String>> hierarchyFacetsStrFormat = new HashMap<>();
@@ -175,6 +184,7 @@ public class DBexportData {
                     termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd).addAll(hierarchicalUris);   
                 }
             }
+            
             //read sources
             dbMerge.ReadThesaurusSources(SessionUserInfo, Q,TA, sis_session, XMLsources);
 
@@ -218,8 +228,8 @@ public class DBexportData {
                 writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
 
                 writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
-                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, null);
-                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations, null);
+                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
                 writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
                 writer.WriteFileEnd(logFileWriter, exportSchemaName);

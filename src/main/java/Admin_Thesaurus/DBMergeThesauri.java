@@ -46,6 +46,8 @@ import Users.DBFilters;
 import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.NodeInfoSortItemContainer;
 import Utils.NodeInfoStringContainer;
 import Utils.Utilities;
@@ -2036,6 +2038,80 @@ public class DBMergeThesauri {
 
     }
 
+    /**
+     * ReadThesaurusExternalLinksAndVocabularies --> reading link of hierarchyTerms with External Links 
+     * and their match Type classification
+     * 
+     * TODO: Read more data on each external link (label, external vocabulary) and 
+     * update also the vocabularyIdentifiers information
+     * 
+     * @param SessionUserInfo
+     * @param Q
+     * @param TA
+     * @param sis_session
+     * @param exprortThesaurus
+     * @param object
+     * @param termExtLinks currently reading only the from, to and link type values of external links specification
+     * @param vocabularyIdentifiers  currently not updated
+     */
+    void ReadThesaurusExternalLinksAndVocabularies(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, String exprortThesaurus, Object object, HashMap<String, ArrayList<ExternalLink>> termExtLinks, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+        
+        DBGeneral dbGen = new DBGeneral();
+        
+        StringObject fromCls = new StringObject(ModelReader.getThesaurusClass_HierarchyTerm(exprortThesaurus));
+        StringObject linkClass = new StringObject(ModelReader.getThesaurusCategory_HierTerm_has_ExtlLink(exprortThesaurus));
+    
+        StringObject exactMatchClass = new StringObject(ModelReader.getThesaurusCategory_HierTerm_has_ExactMatch_ExtLink(exprortThesaurus));
+        StringObject closeMatchClass = new StringObject(ModelReader.getThesaurusCategory_HierTerm_has_CloseMatch_ExtLink(exprortThesaurus));
+        //%THES%HierarchyTerm->has_external_link all instances
+        //check if close or exact
+        Q.reset_name_scope();
+        long retL = Q.set_current_node(fromCls);
+        if(retL<=0){
+            System.out.println("Could not reference class: " + fromCls.getValue());
+            return;
+        }
+        retL = Q.set_current_node(linkClass);
+        
+        if(retL<=0){
+            System.out.println("Could not reference category: " + fromCls.getValue()+"->"+linkClass.getValue());
+            return;
+        }
+    
+        int set_all_instances = Q.get_all_instances(0);
+        //System.out.println("Count: " +Q.set_get_card(set_all_instances));
+        ArrayList<Return_Full_Link_Row> retVals = new ArrayList<>();
+        
+        //int counter = 0;
+        if (Q.bulk_return_full_link(set_all_instances, retVals) != QClass.APIFail) {
+            for (Return_Full_Link_Row row : retVals) {
+                //counter++; System.out.println(counter+".\t"+row.get_v1_cls()+"\t --> ("+row.get_v3_categ() + ") --> " + row.get_v5_cmv().getString());
+                String term = dbGen.removePrefix(row.get_v1_cls());
+                String link = dbGen.removePrefix(row.get_v5_cmv().getString());
+                
+                String categ="";
+                if(row.get_v3_categ().equals(exactMatchClass.getValue())){
+                    categ= ConstantParameters.attr_matchType_exact_match_value;
+                }
+                else if(row.get_v3_categ().equals(closeMatchClass.getValue())){
+                    categ= ConstantParameters.attr_matchType_close_match_value;
+                }
+                
+                if(!termExtLinks.containsKey(term)){
+                    termExtLinks.put(term, new ArrayList<ExternalLink>());
+                }
+                ExternalLink newExtLink = new ExternalLink(link);
+                newExtLink.matchType = categ;
+                
+                termExtLinks.get(term).add(newExtLink);
+                
+            }
+        }
+
+        Q.free_set(set_all_instances);
+        Q.reset_name_scope();
+    }
+    
     public void ReadThesaurusTerms(UserInfoClass refSessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, String thesaurusName1, String thesaurusName2,
             HashMap<String, NodeInfoStringContainer> termsInfo,
@@ -2070,7 +2146,7 @@ public class DBMergeThesauri {
          IntegerObject categID = new IntegerObject();
          */
         StringObject BTLinkObj = new StringObject();
-        HashMap<String, String> kewyWordsMappings = new HashMap<String, String>();
+        HashMap<String, String> kewyWordsMappings = new HashMap<>();
         dbGen.applyKeywordMappings(SessionUserInfo.selectedThesaurus, Q, sis_session, output, kewyWordsMappings);
         dbtr.getThesaurusCategory_BT(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
 
@@ -2190,7 +2266,7 @@ public class DBMergeThesauri {
                     //guide terms
                     if (category.length() > 0) {
                         if (XMLguideTermsRelations.containsKey(value) == false) {
-                            XMLguideTermsRelations.put(value, new ArrayList<SortItem>());
+                            XMLguideTermsRelations.put(value, new ArrayList<>());
                         }
                         ArrayList<SortItem> existingRelations = XMLguideTermsRelations.get(value);
                         existingRelations.add(targetTermSortItem);
@@ -6073,6 +6149,8 @@ public class DBMergeThesauri {
         
         return new SortItem(returnCmv);
     }
+
+    
     
     
 }

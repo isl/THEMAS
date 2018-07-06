@@ -171,9 +171,6 @@ Servlets.WaitForDownload.class.getName(),
         
     }
 
-    /*---------------------------------------------------------------------
-                                    UserInfoClass()
-    ----------------------------------------------------------------------*/                
     public UserInfoClass() {
         name = "";
         password = "";
@@ -245,7 +242,6 @@ Servlets.WaitForDownload.class.getName(),
         }
         return "";
     }
-    
     
     public boolean servletAccessControl(String className){
         boolean returnVal = true;
