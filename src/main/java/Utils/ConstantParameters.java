@@ -360,6 +360,7 @@ public class ConstantParameters {
     public static final String XML_skos_EditorialNote = "skos:editorialNote";//text
     public static final String XML_skos_Note = "skos:note";//text
     public static final String XML_skos_Notation = "skos:notation";//identifier
+    public static final String XML_iso_thes_status ="iso-thes:status";
 
 
     

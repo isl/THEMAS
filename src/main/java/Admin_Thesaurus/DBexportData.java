@@ -232,6 +232,7 @@ public class DBexportData {
                 writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
                 writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
                 writer.WriteFileEnd(logFileWriter, exportSchemaName);
             }catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in DBexportData exportThesaurusActions() Message:" + e.getMessage());

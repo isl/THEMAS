@@ -65,6 +65,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
 import neo4j_sisapi.TMSAPIClass;
@@ -2058,6 +2060,44 @@ public class DBMergeThesauri {
         
         DBGeneral dbGen = new DBGeneral();
         
+        
+        //first retrieve all extLink external vocabularies and create an id index
+        StringObject VocfromCls = new StringObject(ModelReader.getThesaurusClass_ExternalLink(exprortThesaurus));
+        StringObject VoclinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtLink_belongs_to_ExtVoc(exprortThesaurus));
+        // logical name with remove prefix defines the short name for the vocabulary
+        
+        Q.reset_name_scope();
+        long vocretL = Q.set_current_node(VocfromCls);
+        if(vocretL<=0){
+            System.out.println("Could not reference class: " + VocfromCls.getValue());
+            return;
+        }
+        vocretL = Q.set_current_node(VoclinkClass);
+        
+        if(vocretL<=0){
+            System.out.println("Could not reference category: " + VocfromCls.getValue()+"->"+VoclinkClass.getValue());
+            return;
+        }
+    
+        int voc_set_all_instances = Q.get_all_instances(0);
+        //System.out.println("Count: " +Q.set_get_card(set_all_instances));
+        ArrayList<Return_Full_Link_Id_Row> vocretVals = new ArrayList<>();
+        
+        HashMap<Long,String> extLinkVocab = new HashMap<>();
+        //int counter = 0;
+        if (Q.bulk_return_full_link_id(voc_set_all_instances, vocretVals) != QClass.APIFail) {
+            for (Return_Full_Link_Id_Row row : vocretVals) {
+                //counter++; System.out.println(counter+".\t"+row.get_v1_cls()+"\t --> ("+row.get_v3_categ() + ") --> " + row.get_v5_cmv().getString());
+                String extLink = dbGen.removePrefix(row.get_v1_cls());
+                long extLinkId = row.get_v2_clsid();
+                String extVocabulary = dbGen.removePrefix(row.get_v8_cmv().getString());
+                
+                extLinkVocab.put(extLinkId, extVocabulary);
+            }
+        }
+        
+        Q.free_set(voc_set_all_instances);
+        Q.reset_name_scope();
         StringObject fromCls = new StringObject(ModelReader.getThesaurusClass_HierarchyTerm(exprortThesaurus));
         StringObject linkClass = new StringObject(ModelReader.getThesaurusCategory_HierTerm_has_ExtlLink(exprortThesaurus));
     
@@ -2080,27 +2120,31 @@ public class DBMergeThesauri {
     
         int set_all_instances = Q.get_all_instances(0);
         //System.out.println("Count: " +Q.set_get_card(set_all_instances));
-        ArrayList<Return_Full_Link_Row> retVals = new ArrayList<>();
+        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<>();
         
         //int counter = 0;
-        if (Q.bulk_return_full_link(set_all_instances, retVals) != QClass.APIFail) {
-            for (Return_Full_Link_Row row : retVals) {
+        if (Q.bulk_return_full_link_id(set_all_instances, retVals) != QClass.APIFail) {
+            for (Return_Full_Link_Id_Row row : retVals) {
                 //counter++; System.out.println(counter+".\t"+row.get_v1_cls()+"\t --> ("+row.get_v3_categ() + ") --> " + row.get_v5_cmv().getString());
                 String term = dbGen.removePrefix(row.get_v1_cls());
-                String link = dbGen.removePrefix(row.get_v5_cmv().getString());
-                
+                String link = dbGen.removePrefix(row.get_v8_cmv().getString());
+                long extLinkId = row.get_v8_cmv().getSysid();
                 String categ="";
-                if(row.get_v3_categ().equals(exactMatchClass.getValue())){
+                
+                if(row.get_v5_categ().equals(exactMatchClass.getValue())){
                     categ= ConstantParameters.attr_matchType_exact_match_value;
                 }
-                else if(row.get_v3_categ().equals(closeMatchClass.getValue())){
+                else if(row.get_v5_categ().equals(closeMatchClass.getValue())){
                     categ= ConstantParameters.attr_matchType_close_match_value;
                 }
                 
                 if(!termExtLinks.containsKey(term)){
-                    termExtLinks.put(term, new ArrayList<ExternalLink>());
+                    termExtLinks.put(term, new ArrayList<>());
                 }
                 ExternalLink newExtLink = new ExternalLink(link);
+                if(extLinkVocab.containsKey(extLinkId)){
+                    newExtLink.vocabularyIdentifier = extLinkVocab.get(extLinkId);                            
+                }
                 newExtLink.matchType = categ;
                 
                 termExtLinks.get(term).add(newExtLink);
@@ -2110,6 +2154,141 @@ public class DBMergeThesauri {
 
         Q.free_set(set_all_instances);
         Q.reset_name_scope();
+        
+        StringObject vocClass = new StringObject(ModelReader.getThesaurusClass_ExternalVocabulary(exprortThesaurus));
+        Q.set_current_node(vocClass);
+        int vocInstances = Q.get_all_instances(0);
+        
+        ArrayList<Return_Nodes_Row> nodesretVals = new ArrayList<>();
+        
+        //int counter = 0;
+        if (Q.bulk_return_nodes(vocInstances, nodesretVals) != QClass.APIFail) {
+            for (Return_Nodes_Row row : nodesretVals) {
+                ExternalVocabulary extVoc = new ExternalVocabulary(dbGen.removePrefix(row.get_v1_cls_logicalname()));
+                vocabularyIdentifiers.add(extVoc);
+            }
+        }
+        int vocLinks = Q.get_link_from(vocInstances);
+        
+        StringObject fnameLinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtVoc_has_fullname(exprortThesaurus));
+        StringObject descriptionLinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtVoc_has_description(exprortThesaurus));
+        StringObject uriLinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtVoc_has_uri(exprortThesaurus));
+        StringObject versionLinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtVoc_has_version(exprortThesaurus));
+        StringObject relDateLinkClass = new StringObject(ModelReader.getThesaurusCategory_ExtVoc_release_timestamp(exprortThesaurus));
+        
+        HashMap<String,ArrayList<String>> vocFullNames  = new HashMap<>();
+        HashMap<String,ArrayList<String>> vocDescriptions  = new HashMap<>();
+        HashMap<String,ArrayList<String>> vocUris  = new HashMap<>();
+        HashMap<String,String> vocVersion  = new HashMap<>();
+        HashMap<String,String> vocReleaseDates  = new HashMap<>();
+        
+        ArrayList<Return_Full_Link_Row> vocLinkVals = new ArrayList<>();
+        if (Q.bulk_return_full_link(vocLinks, vocLinkVals) != QClass.APIFail) {
+            for (Return_Full_Link_Row row : vocLinkVals) {
+                //counter++; System.out.println(counter+".\t"+row.get_v1_cls()+"\t --> ("+row.get_v3_categ() + ") --> " + row.get_v5_cmv().getString());
+                String voc = dbGen.removePrefix(row.get_v1_cls());
+                String value = row.get_v5_cmv().getString();
+                
+                String categ=row.get_v3_categ();
+                
+                if(categ.equals(fnameLinkClass.getValue())){
+                    if(!vocFullNames.containsKey(voc)){
+                        vocFullNames.put(voc, new ArrayList<>());
+                    }
+                    if(!vocFullNames.get(voc).contains(value)){
+                        vocFullNames.get(voc).add(value);
+                    }
+                }
+                else if(categ.equals(descriptionLinkClass.getValue())){
+                    if(!vocDescriptions.containsKey(voc)){
+                        vocDescriptions.put(voc, new ArrayList<>());
+                    }
+                    if(!vocDescriptions.get(voc).contains(value)){
+                        vocDescriptions.get(voc).add(value);
+                    }                    
+                }
+                else if(categ.equals(uriLinkClass.getValue())){
+                    if(!vocUris.containsKey(voc)){
+                        vocUris.put(voc, new ArrayList<>());
+                    }
+                    if(!vocUris.get(voc).contains(value)){
+                        vocUris.get(voc).add(value);
+                    }                    
+                }
+                else if(categ.equals(versionLinkClass.getValue())){
+                    vocVersion.put(voc, value);
+                }
+                else if(categ.equals(relDateLinkClass.getValue())){
+                    vocReleaseDates.put(voc, value);
+                }
+            }
+        }
+        
+        Q.free_set(vocInstances);
+        Q.free_set(vocLinks);
+        
+        for (Map.Entry<String, ArrayList<String>> item : vocFullNames.entrySet()) {
+            String key = item.getKey();
+            ArrayList<String> value = item.getValue();
+            
+            Optional<ExternalVocabulary> voc = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(key)).findFirst();
+            if(voc.isPresent()){
+                for(String str : value){
+                    if(!voc.get().vocabularyFullName.contains(str)){
+                        voc.get().vocabularyFullName.add(str);
+                    }
+                }                
+            }
+        }
+        
+        for (Map.Entry<String, ArrayList<String>> item : vocDescriptions.entrySet()) {
+            String key = item.getKey();
+            ArrayList<String> value = item.getValue();
+            
+            Optional<ExternalVocabulary> voc = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(key)).findFirst();
+            if(voc.isPresent()){
+                for(String str : value){
+                    if(!voc.get().vocabularyDescription.contains(str)){
+                        voc.get().vocabularyDescription.add(str);
+                    }
+                }                
+            }
+        }
+        
+        for (Map.Entry<String, ArrayList<String>> item : vocUris.entrySet()) {
+            String key = item.getKey();
+            ArrayList<String> value = item.getValue();
+            
+            Optional<ExternalVocabulary> voc = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(key)).findFirst();
+            if(voc.isPresent()){
+                for(String str : value){
+                    if(!voc.get().vocabularyUri.contains(str)){
+                        voc.get().vocabularyUri.add(str);
+                    }
+                }                
+            }
+        }
+        
+        
+        for (Map.Entry<String, String> item : vocVersion.entrySet()) {
+            String key = item.getKey();
+            String value = item.getValue();
+            
+            Optional<ExternalVocabulary> voc = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(key)).findFirst();
+            if(voc.isPresent()){
+                voc.get().vocabularyVersionString = value;                
+            }
+        }
+        
+        for (Map.Entry<String, String> item : vocReleaseDates.entrySet()) {
+            String key = item.getKey();
+            String value = item.getValue();
+            
+            Optional<ExternalVocabulary> voc = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(key)).findFirst();
+            if(voc.isPresent()){
+                voc.get().vocabularyReleaseTimestamp = value;                
+            }
+        }
     }
     
     public void ReadThesaurusTerms(UserInfoClass refSessionUserInfo,

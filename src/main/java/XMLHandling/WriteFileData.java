@@ -41,6 +41,7 @@ package XMLHandling;
 import DB_Classes.DBGeneral;
 import Utils.ConstantParameters;
 import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
@@ -98,13 +99,24 @@ public class WriteFileData {
         logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
                 u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\r\n");
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
+/* could use xml:base=""
+and then all rdfAbouts could just include the concept name
+e.g.
 
+xml:base="http://www.ics.forth.gr/isl/CRM/">
+
+
+<rdfs:Class rdf:about="E21_Person">
+
+*/           
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
                     + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n"
                     + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\r\n"
                     + "\txmlns:owl=\"http://www.w3.org/2002/07/owl#\"\r\n"                    
                     + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n"
-                    + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\""
+                    + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\"\r\n"
+                    + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""
+                    //+ "\r\n\txml:base=\""+ConstantParameters.SchemePrefix+"/\""
                     +">\r\n\r\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\""+ ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\">\r\n"+
@@ -450,7 +462,7 @@ public class WriteFileData {
          temp += "  <dcterms:source xml:lang=\"" + "el" + '"' + " rdf:resource=" + '"' + pack.getSourceGr().keySet().toArray()[i].toString() + '"' + "/>\n";
          }
          */
-        ArrayList<String> termsFilter = new ArrayList<String>();
+        ArrayList<String> termsFilter = new ArrayList<>();
 
         if (TermsFilter != null && TermsFilter.size() > 0) {
             termsFilter.addAll(TermsFilter);
@@ -488,7 +500,20 @@ public class WriteFileData {
             transliterationStr= targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).get(0);
             
         }
-        
+        String targetTermStatus = "";
+        if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.status_kwd) &&
+                targetTermInfo.descriptorInfo.get(ConstantParameters.status_kwd).size()>0){
+            targetTermStatus= targetTermInfo.descriptorInfo.get(ConstantParameters.status_kwd).get(0);
+            
+        }
+        else{
+            if (Parameters.PrimaryLang.toLowerCase().equals("en")) {
+                targetTermStatus = "Under construction";
+            } else {
+                //greek translation of Under construction in hex form
+                targetTermStatus = "\u03A5\u03C0\u03CC \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03af\u03B1";
+            }
+        }        
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
         ArrayList<String> ufs = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
@@ -527,12 +552,18 @@ public class WriteFileData {
             logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetTermName));
             logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            
+            
             if(transliterationStr!=null && transliterationStr.length()>0){
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(transliterationStr));
                 logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
             }
 
+            //status
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
+            
+            
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
                 String translationValue = translations.get(j);
@@ -957,6 +988,21 @@ public class WriteFileData {
         else if(targetSortItem.getLogNameTransliteration()!=null && targetSortItem.getLogNameTransliteration().length()>0){
             transliterationStr = targetSortItem.getLogNameTransliteration();
         }
+        String targetTermStatus = "";
+        if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.status_kwd) &&
+                targetTermInfo.descriptorInfo.get(ConstantParameters.status_kwd).size()>0){
+            targetTermStatus= targetTermInfo.descriptorInfo.get(ConstantParameters.status_kwd).get(0);
+            
+        }
+        else{
+            if (Parameters.PrimaryLang.toLowerCase().equals("en")) {
+                targetTermStatus = "Under construction";
+            } else {
+                //greek translation of Under construction in hex form
+                targetTermStatus = "\u03A5\u03C0\u03CC \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03af\u03B1";
+            }
+        }  
+        
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
         
@@ -1025,6 +1071,8 @@ public class WriteFileData {
                 logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
             }
 
+            //status
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
             //targetSortItem.getLogName()
             
             Collections.sort(translations);
@@ -2151,5 +2199,49 @@ public class WriteFileData {
         //retVal+="?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+id+"&amp;mode="+ConstantParameters.XMLSTREAM;
         retVal+=id;
         return retVal;
+    }
+
+    public void WriteExtVocabularies(OutputStreamWriter logFileWriter, String exportScheme, ArrayList<ExternalVocabulary> vocabularyIdentifiers)  throws IOException {
+        if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
+            Utilities u = new Utilities();
+            if (vocabularyIdentifiers.size() > 0) {
+                logFileWriter.append("\r\n\t<"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+" count=\"" + vocabularyIdentifiers.size() + "\">");
+                
+                ArrayList<String> vocNames = new ArrayList<>();
+                for(ExternalVocabulary extVoc : vocabularyIdentifiers){
+                    vocNames.add(extVoc.vocabularyIdentifier);
+                }
+                
+                Collections.sort(vocNames);
+
+                for (int k = 0; k < vocNames.size(); k++) {
+                    String vocId = vocNames.get(k);
+                    ExternalVocabulary vocObj = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(vocId)).findFirst().get();
+                    //logFileWriter.append("\r\n\t\t<source index=\""+(k+1)+"\">");
+                    logFileWriter.append("\r\n\t\t<"+ConstantParameters.XMLExternalVocabulariesElementName+">");
+                    logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ShortName+">" + u.escapeXML(vocId) + "</"+ConstantParameters.XMLExternalVocabularies_ShortName+">");
+                    
+                    for(String str : vocObj.vocabularyFullName){
+                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_FullName+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_FullName+">");
+                    }
+                    
+                    for(String str : vocObj.vocabularyDescription){
+                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Description+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Description+">");
+                    }
+                    for(String str : vocObj.vocabularyUri){
+                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Uri+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Uri+">");
+                    }
+                    if(vocObj.vocabularyVersionString!=null && vocObj.vocabularyVersionString.length()>0){
+                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Version+">" + u.escapeXML(vocObj.vocabularyVersionString) + "</"+ConstantParameters.XMLExternalVocabularies_Version+">");
+                    }
+                    if(vocObj.vocabularyReleaseTimestamp!=null && vocObj.vocabularyReleaseTimestamp.length()>0){
+                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">" + u.escapeXML(vocObj.vocabularyReleaseTimestamp) + "</"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">");
+                    }
+                    
+                    logFileWriter.append("\r\n\t\t</"+ConstantParameters.XMLExternalVocabulariesElementName+">");
+                }
+                logFileWriter.append("\r\n\t</"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+">\r\n");
+            }
+        }
     }
 }
