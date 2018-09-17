@@ -581,7 +581,7 @@ public class DBCreate_Modify_Term {
                         resolutionSb.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
                         resolutionSb.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
 
-                        resolutionSb.append("<reason>RESOLVING " + Utilities.escapeXML(errorMsg.getValue()) + "</reason>");
+                        resolutionSb.append("<reason>" + Utilities.escapeXML(errorMsg.getValue()) + "</reason>");
 
 
                         resolutionSb.append("</targetTerm>\r\n");
