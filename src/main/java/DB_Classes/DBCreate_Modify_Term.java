@@ -41,11 +41,14 @@ import Utils.ConstantParameters;
 import Utils.Parameters;
 import Utils.SortItem;
 import Utils.Utilities;
+import java.io.IOException;
 
 import java.io.OutputStreamWriter;
 import neo4j_sisapi.*;
 import neo4j_sisapi.TMSAPIClass;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -555,16 +558,55 @@ public class DBCreate_Modify_Term {
                 return;
             }
             Q.reset_name_scope();
+            
             if (consistencyChecks.move_To_Hierarchy_Consistency_Test_8(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues, prefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
 
+            ArrayList<String> resolutionRemovals = new ArrayList<>();
+            StringBuilder resolutionSb = new StringBuilder("");
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 if (consistencyChecks.move_To_Hierarchy_Consistency_Test_4(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues.get(i), prefix, SessionUserInfo.UILang) == false) {
-                    return;
+                    if(!resolveError){
+                        return;
+                    }
+                    else{
+                        
+                        resolutionRemovals.add(decodedValues.get(i));                        
+
+
+                        resolutionSb.append("\r\n<targetTerm>");
+                        resolutionSb.append("<name>" + Utilities.escapeXML(targetTermWithoutPrefix) + "</name>");
+                        resolutionSb.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
+                        resolutionSb.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
+
+                        resolutionSb.append("<reason>RESOLVING " + Utilities.escapeXML(errorMsg.getValue()) + "</reason>");
+
+
+                        resolutionSb.append("</targetTerm>\r\n");
+                        
+                        errorMsg.setValue("");
+                    }
                 }
 
+            }
+            
+            if(resolveError && resolutionRemovals.size()>0){
+                decodedValues.removeAll(resolutionRemovals);
+                if(decodedValues.size()>0){
+                    try {
+                        
+                        logFileWriter.append(resolutionSb);
+                    } catch (IOException ex) {
+                        Logger.getLogger(DBCreate_Modify_Term.class.getName()).log(Level.SEVERE, null, ex);
+                    }                           
+                }
+                else{
+                    //Cannot resolve if everything has been removed
+                    errorMsg.setValue(resolutionSb.toString());
+                    return;
+                }
             }
 
             //first move Node and subtree with first bt declared and then connect rest bts of decodedValues Vector if any more exist

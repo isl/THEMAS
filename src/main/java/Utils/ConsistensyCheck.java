@@ -288,11 +288,20 @@ public class ConsistensyCheck {
         return true;
     }
   
-    
+    /**
+     * Check if name declared is null or empty
+     * @param errorMsg
+     * @param pathToErrorsXML
+     * @param targetDescriptor
+     * @param uiLang
+     * @return 
+     */
     public boolean create_modify_check_01(StringObject errorMsg,String pathToErrorsXML, String targetDescriptor, final String uiLang){
         if(Parameters.TermModificationChecks.contains(1)==false)
             return true;
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_1");
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_1");
+        }
         //Check if name declared is null or empty
         if (targetDescriptor == null || targetDescriptor.trim().length() == 0) {
             errorMsg.setValue(errorMsg.getValue().concat(translate(1,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
@@ -302,12 +311,21 @@ public class ConsistensyCheck {
         return true;
     }
    
+    /**
+     * Check if more than one translations are inserted  
+     * @param translations_Vector
+     * @param errorMsg
+     * @param pathToErrorsXML
+     * @param uiLang
+     * @return 
+     */
     public boolean create_modify_check_03(ArrayList<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML, final String uiLang){
         if(Parameters.TermModificationChecks.contains(3)==false)
             return true;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_3");
-        //Check if more than one english names are inserted   
+        //Check if more than one translations are inserted   
 
+        /* Former code probably not exactly what is 
         translations_Vector.trimToSize();
         if (translations_Vector.size() > 1) {
             
@@ -324,6 +342,13 @@ public class ConsistensyCheck {
             }
         }
         return true;
+        */
+        if(translations_Vector!=null && translations_Vector.stream().filter(x -> x!=null && x.trim().length()>0).count()!=1){
+            errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
+            //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
+            return false;
+        }
+        return true;        
     }
    /*
     public boolean create_modify_check_04(ArrayList<String> tcs_Vector,StringObject errorMsg,String pathToErrorsXML){
@@ -425,7 +450,9 @@ public class ConsistensyCheck {
             final String uiLang){
         if(Parameters.TermModificationChecks.contains(9)==false)
             return true;
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_9");
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_9");
+        }
         int SisSessionId = sis_session.getValue();
         //Check if new term name already exists in db
         if (create_modify.matches("create")) {
@@ -652,11 +679,27 @@ public class ConsistensyCheck {
     }
     */
     
+    /**
+     * Check if RTs declared exist in db and if these RTs or BTS are THES1HierarchyTerms 
+     * @param selectedThesaurus
+     * @param Q
+     * @param sis_session
+     * @param dbGen
+     * @param errorMsg
+     * @param pathToErrorsXML
+     * @param bts_or_rts_Vector
+     * @param prefix
+     * @param errorMsgOffset
+     * @param uiLang
+     * @return 
+     */
     public boolean create_modify_check_15(String selectedThesaurus, QClass Q,IntegerObject sis_session,DBGeneral dbGen, StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_or_rts_Vector,String prefix,int errorMsgOffset, final String uiLang){
         //if bts check --> errorMsgOffset = 2 else if rts check errorMsgOffset = 0
         if(Parameters.TermModificationChecks.contains(15)==false)
             return true;
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_15");
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_15");
+        }
         int SisSessionId = sis_session.getValue();
         //Check if RTs declared exist in db and if these RTs or BTS are THES1HierarchyTerms 
         if (bts_or_rts_Vector.size() > 0) {
@@ -1211,7 +1254,9 @@ public class ConsistensyCheck {
     public boolean create_modify_check_24(StringObject errorMsg,String pathToErrorsXML,ArrayList<String> bts_Vector,String UnclassifiedClass, final String uiLang){
         if(Parameters.TermModificationChecks.contains(24)==false)
             return true;
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_24");  
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_24");  
+        }
         //in case of 2+ bts declared check if unclassifed hierarchy's top term is included --> it should not
 
         if(bts_Vector.size() > 1){
@@ -1230,7 +1275,9 @@ public class ConsistensyCheck {
         if (Parameters.TermModificationChecks.contains(25) == false) {
             return true;
         }
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_25");
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_25");
+        }
         int SisSessionId = sis_session.getValue();
         //in case of 2+ bts declared check if hierarchical dependencies exist among them.
 
@@ -1428,6 +1475,9 @@ public class ConsistensyCheck {
         if(Parameters.TermModificationChecks.contains(27)==false)
             return true;
 
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_27");
+        }
         DBGeneral dbGen = new DBGeneral();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         
@@ -1824,6 +1874,9 @@ public class ConsistensyCheck {
      */
     public boolean create_modify_check_28_alwaysOn(UserInfoClass SessionUserInfo,QClass Q, TMSAPIClass TA, IntegerObject sis_session,SortItem targetTermSortItem, ArrayList<String> bts_Vector,StringObject errorMsg,String pathToErrorsXML, boolean resolveError, OutputStreamWriter logFileWriter, int policy){
         
+        if(Parameters.DEBUG){
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_28");
+        }
         boolean suchATermExists = TA.IsThesaurusReferenceIdAssigned(SessionUserInfo.selectedThesaurus,targetTermSortItem.getThesaurusReferenceId());
         
         if(suchATermExists){

@@ -353,7 +353,7 @@
                 <option lang="el">Ο όρος '%s' δεν βρέθηκε στην βάση.</option>
             </errorcase>
             <errorcase id="3">
-                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the preexistance of direct hierarchical relationships of the NT of '%s' and of '%s', with terms: '%s'.</option>
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the preexistance of direct hierarchical relationships of the NTs of '%s' and '%s', with terms: '%s'.</option>
                 <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των προϋπαρχόντων άμεσων σχέσεων ιεραρχίας των ΕΟ του '%s' και του '%s', με τους όρους: '%s'.</option>
             </errorcase>
             <errorcase id="4">
@@ -446,7 +446,7 @@
             </errorcase>
             
             <errorcase id="3">
-                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the hierarchical relationships that already existos or going to be created between the term '%s and its recursive NTs, from/to the terms: '%s'.</option>
+                <option lang="en">Term '%s' cannot be moved under the BT '%s' due to the hierarchical relationships that already exist or going to be created between the term '%s and its recursive NTs, from/to the terms: '%s'.</option>
                 <option lang="el">Ο όρος '%s' δεν μπορεί να μετακινηθεί κάτω από τον ΠΟ '%s' λόγω των σχέσεων ιεραρχίας που υπάρχουν ή θα δημιουργηθούν μεταξύ του όρου '%s' και των αναδρομικά ΕΟ του, από/προς τους όρους: '%s'.</option>
             </errorcase>
             
