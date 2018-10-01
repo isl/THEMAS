@@ -34,37 +34,41 @@
 -->
 <TMS_DB_ADMIN_COFIGURATIONS>
     <!--<Neo4j_DB_FOLDER_PATH>/home/tzortzak/Projects/THEMAS_NEO4J_Database</Neo4j_DB_FOLDER_PATH>
+    
     <Neo4j_DB_PATH>/Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>/Backups/db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>/Backups/xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>/TSVs/</Neo4j_ExportFileDirectory>
     <Neo4j_GenericTSVFile>/TSVs/System/Generic.tsv</Neo4j_GenericTSVFile>
+    <Neo4j_SpecificTSVFile>/TSVs/System/Specific_el.tsv</Neo4j_SpecificTSVFile>
       
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>/TSVs/System/Specific_el.tsv</Neo4j_SpecificTSVFile>
+    
     -->
+    
     <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS_DB_Folder</Neo4j_DB_FOLDER_PATH>
+    
     <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
      
 <!--   
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
-    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
+    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>    
 -->
           
-    <PrimaryLanguage>English</PrimaryLanguage>
-    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
-    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
-    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
+    <PrimaryLanguage>English</PrimaryLanguage><!-- no spaces-->
+    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix><!-- 2 letter code preferrably -->
+    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName> <!-- Proposed Format UPPERCASE -->
+    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName> <!-- Proposed Format: Capitalize first letter --> 
+    
 
     <SupportedUILangCodes>
         <!-- mapcode should exist as lang code in the XML files contained in translations folder -->

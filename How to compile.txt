@@ -29,161 +29,133 @@ This file is part of the THEMAS system.
 ================================================================
 How to compile
 ================================================================
-The following instructions have been tested in the following enviroment
+The following instructions have been tested in the following environment
+but should be sufficient guidance for the installation to different environments
+
 OS: windows 10 64 bit
 IDE: Netbeans 8.2 IDE (All version for Windows)
-Java: jdk1.8.0_152 64 bit
+Java: jdk1.8.0_181 64 bit
 Server: Apache Tomcat 8.0.27 (coming with Netbeans 8.2)
-THEMAS: version used 1.2.1
 
-- Extract the zip file downloaded from github (https://github.com/isl/THEMAS/tree/v.1.2.1) 
-  to the desired development folder
-  
-- In Netbeans 8.2 select Open Project > Browse to the aforementions extracted folder  
+THEMAS: version used 1.3
 
-- Use the sources included in the /src/main/ 
-  folder of this repository
-  
-- Create the following empty folders in case they do not exist
-  -- /src/main/webapp/help-files
-  -- /src/main/webapp/LogFiles
-  -- /src/main/webapp/MonitorAutomaticBackups
-  -- /src/main/webapp/Save_Results_Displays/Save_Results_temporary_files
-  -- /src/main/webapp/SVGproducer/SVG_temporary_files
-  -- /src/main/webapp/third-party-javascript
-  -- /src/main/webapp/third-party-javascript/chosen
-  -- /src/main/webapp/third-party-javascript/mktree
-  -- /src/main/webapp/third-party-javascript/wztooltip
-  -- /src/main/webapp/third-party-javascript/ckeditor
-  -- /src/main/webapp/Uploads
-  -- /src/main/webapp/WEB-INF/SystemLogs
+1) In Netbeans 8.2 menu open Team > Git > Clone -> Repository Url: https://github.com/isl/THEMAS.git
 
-- Download the third party javascript files or use the copies provided at 
-  /libs/Javascript folder and place them in:
-  
-  -- /src/main/webapp/third-party-javascript/chosen and   
-  -- /src/main/webapp/third-party-javascript/mktree and 
-  -- /src/main/webapp/third-party-javascript/wztooltip and
-  -- /src/main/webapp/third-party-javascript/ckeditor  respectively
+2) Prepare database folder according to the 
+   instructions found below with prefix ##2##
+   
+3) Configure Themas according to the instructions 
+   found below with prefix ##3##
 
-  
-================================================================
-- Configure wz_tooltip.js:
-================================================================
-     var ttBorderColor = "#000000";
-     var ttFontColor   = "#898B5E";
-     var ttWidth       = 250;
-================================================================	 
+4) Download the third party javascript files or use the copies provided at 
+   /libs/Javascript folder and place them respectively in:
+   -- /src/main/webapp/third-party-javascript/chosen 
+   -- /src/main/webapp/third-party-javascript/mktree  
+   -- /src/main/webapp/third-party-javascript/wztooltip
+   -- /src/main/webapp/third-party-javascript/ckeditor
 
+5) configure the aforementioned javascript thrid-party plugins 
+   according to the instructions with prefix ##5##
+   
+6) Apply jvm option -Dfile.encoding=UTF8
 
+7) Build Project - Run and enjoy!
 
-================================================================
-- Customize chozen plugin by adding at the end of chosen.css
-================================================================
-/* customize chosen appearence for multiple selection */
-.chosen-container-multi .chosen-choices li.search-choice{
-    background-image: none;
-    border:none;
-}
-/*limit chosen results size */
-div.chosen-drop{
-    height:180px;
-}
-ul.chosen-results{
-    height:180px;
-}
-================================================================
+   * in case dependency Neo4j-sisapi is not resolved you can downloaded it directly from 
+     https://github.com/isl/Neo4j-sisapi/releases/tag/1.3
+	 
+   * in case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
+     dependencies cannot be resolved, you can find copies of these jars in libs folder  	 
 
 	 
--- In case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
-   dependencies cannot be resolved, you can find copies of these jars in libs folder 
+
+================================================================
+##2## Configure Database Folder
+================================================================
+Choose the local folder e.g. {DB_FOLDER} that will host 
+Neo4j database files and copy there 
+  1) the contents of /src/test/resources/THEMAS_DB_FOLDER
+  2) Extract in subfoler "{DB_FOLDER}/TSVs/System" the contents
+     of file TSVs.zip that accompany Neo4j-sisapi-1.3 available at
+	 https://github.com/isl/Neo4j-sisapi/releases/download/1.3/TSVs.zip
+	 
+	 A local copy can be also found in /libs subfolder
+================================================================
+
+================================================================
+##3## Configure THEMAS
+================================================================
+a) File  "/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
+- Database Paths and configuration (/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml)
    
-   Neo4j-sisapi-1.2.1.jar can be build from sources found in (https://github.com/isl/Neo4j-sisapi/tree/v1.2.1)
-   but a copy may be downloaded from attached files in (https://github.com/isl/Neo4j-sisapi/releases/tag/v1.2.1)
-  
-- create project references to these libraries
+   Set "Neo4j_DB_FOLDER_PATH" xml element text
+   to the path where neo4j database files will be created
+   
+- IF NEEDED define different PrimaryLanguage Parameters 
+  and unclassified terms hierarchy by changing the following XML element values
+   
+  <PrimaryLanguage>English</PrimaryLanguage> <!-- no spaces-->
+  <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix> <!-- 2 letter code preferrably -->
+  <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName> <!-- Proposed Format UPPERCASE --> 
+  <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName> <!-- Proposed Format: Capitalize first letter -->  
+ 
 
-
-- Apply jvm option -Dfile.encoding=UTF8
-
+b) Edit file: "/src/main/webapp/WEB-INF/classes/logging.properties"
+   so that logfile folder and log file prefix are correctly set
+   
+   e.g.
+   org.apache.juli.FileHandler.directory = ${catalina.base}/webapps/THEMAS-DEMO/WEB-INF/SystemLogs/
+   org.apache.juli.FileHandler.prefix = THEMAS-DEMOLogs_
 
 ================================================================
-You must now be able to compile
+   
 ================================================================
+##5## third-party-javascript plugins configurations
+===============================================================
+a) wz_tooltip configuration configurations
+   set the values of the following vars in file wz_tooltip.js to: 
+
+   var ttBorderColor = "#000000";
+   var ttFontColor   = "#898B5E";
+   var ttWidth       = 250;
+   
+b) Chosen Javascript Plugin 
+   Customize chozen plugin by adding at the end of chosen.css
+   
+    /* customize chosen appearence for multiple selection */
+	.chosen-container-multi .chosen-choices li.search-choice{
+		background-image: none;
+		border:none;
+	}
+	/*limit chosen results size */
+	div.chosen-drop{
+		height:180px;
+	}
+	ul.chosen-results{
+		height:180px;
+	}
+
+c) Customize ckeditor - optional configurations 
+       
+   In order to save Greek data in viewable format 
+   for XML files in fields that we use CKEditor
+   we have to add one parameter to ckeditor config file.
+   - Path for the config file is : "ckeditor/config.js"
+   - Parameter to add at the end of file (removing quotes in config file): 
+     "config.entities_greek = false;" 
+   
+   Behavior of the Enter key while typing in CKEditor is set
+   to mode CKEDITOR.ENTER_BR (2) which means that lines are 
+   broken with <br> elements. To use this mode or any mode 
+   have to add a parameter in ckeditor config file.
+   - Path for the config file is : "ckeditor/config.js"
+   - Parameter to add at the end of file (removing quotes in config file): 
+     "config.enterMode = 2;" 
+===============================================================
 
 
 
-================================================================
-- Database Paths and configuration (config.xml)
-================================================================
-The neo4j database needs no installation. 
-Copy contents of /src/test/resources/THEMAS_DB_FOLDER
-to any folder of your machine and refer to it 
-in config.xml file:
-
-"/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
-
-by changing the "Neo4j_DB_FOLDER_PATH" xml element text
 
 
 
-In order to define as primary language the English language
-then you also need to make the folowing confugurations:
-
-In File:
-"/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
-replace:
-
-    <PrimaryLanguage>Greek</PrimaryLanguage>
-    <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
-    <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
-    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
-
-with:
-
-    <PrimaryLanguage>English</PrimaryLanguage>
-    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
-    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
-    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>
-    
-================================================================
-
-In order to change the UIlanguage to english (It is irrelevant to the 
-language used as primary in the database) you should edit file: 
-"/src/main/webapp/WEB-INF/web.xml" 
-and replace:
-
-	<context-param>
-        <param-name>UILanguage</param-name>
-        <param-value>el</param-value>
-    </context-param>
-    
-with:
-
-	<context-param>
-        <param-name>UILanguage</param-name>
-        <param-value>en</param-value>
-    </context-param>
-
-
-
-Finally Edit File "/src/main/webapp/WEB-INF/classes/logging.properties
-so that logfile folder and log file prefix are correctly set
-
-e.g.
-org.apache.juli.FileHandler.directory = ${catalina.base}/webapps/THEMAS/WEB-INF/SystemLogs/
-org.apache.juli.FileHandler.prefix = THEMASLogs_
-
-
-
-In order to save Greek data in viewable format for XML files in fields that we use CKEditor
-we have to add one parameter to ckeditor config file.
-- Path for the config file is : "ckeditor/config.js"
-- Parameter to add in the end of file (parameter without quotes in config file): "config.entities_greek = false;" 
-
-Behavior of the Enter key while typing in CKEditor is set to mode CKEDITOR.ENTER_BR (2) which means that lines are broken with <br> elements. To use this mode or any mode have to add a parameter in ckeditor config file.
-- Path for the config file is : "ckeditor/config.js"
-- Parameter to add in the end of file (parameter without quotes in config file): "config.enterMode = 2;" 
 

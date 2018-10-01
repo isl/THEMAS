@@ -26,27 +26,39 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 =============================================================================
-THEMAS new version Release Notes
+THEMAS 1.3 Release notes (intermediate-release of version 2.0)
 =============================================================================
 - XML version exported in XML export schema
-- added url rewrite module in order to support SKOS export uris e.g. translate http://139.91.183.91:8084/THEMAS/BBT/Facet/6 to http://139.91.183.91:8084/THEMAS/CardOf_Facet?referenceId=6&external_user=ExternalReader&external_thesaurus=BBT&mode=XMLSTREAM 
+- added url rewrite module in order to respond 
+  to SKOS export uris with XML e.g. http://139.91.183.91:8084/THEMAS/BBT/Facet/6  
   Rules defined in /WEB-INF/urlrewrite.xml
-  Supposing that SKOS export uris have been produced using the default namespace values
-- Using the reduced scope note complexity functions of Neo4j-sisapi
-- Removed TSV files from THEMAS - more appropriate is to be released together with each Neo4j-sisapi version.
-  (also removed TSV language dependency - Adding configuration parameter about the UNCLASSIFIED TERMS facet in config.xml)
-- Added xml xsd file for version 2 
-- Skos Export Adaptations to be more close to the BBT and to be able to define concept scheme and target namespace
-- Adding note field in Terms
-- Adding scope note and note in Facets
+  Supposing that SKOS export uris have been 
+  produced using the default namespace values
+- Using the reduced scope note complexity 
+  functions of Neo4j-sisapi
+- Removed TSV files from THEMAS - more appropriate is 
+  to be released together with each Neo4j-sisapi version.
+  (also removed TSV language dependency - 
+  Adding configuration parameter about the UNCLASSIFIED 
+  TERMS facet in config.xml)
+- Added import xml xsd file
+- Skos Export Adaptations to be more close to the BBT 
+  and to be able to define concept scheme and target 
+  namespace
 - Transliteration search enabled in UFs and Translation terms
-- THEMAS Users may be applied access to all thesauri via * instead of thesarus name
+- THEMAS Users may be applied access to all 
+  thesauri via * instead of thesarus name
 - ability to change UIlanguage at login Page
-- Created servlet that receives a Thesaurus Name and Thesaurus Reference Id and responds with metadata such as name and Type (Facet / TOP TERM / TERM) + responseCode (success / not found /unauthorized access etc.)
+- Created servlet that receives a Thesaurus Name and 
+  Thesaurus Reference Id and responds with metadata such 
+  as name and Type (Facet / TOP TERM / TERM) + responseCode 
+  (success / not found /unauthorized access etc.)
 - increased thesaurus field width
 - GDPR texts (Conditions of Use + Privacy policy added) 
-- Added the XMLStream ability for the hierarchical representation of multiple hierarchies
-###- Started the feature to create hierarchical symbolic links at skos export ###
+- Added the XMLStream ability for the 
+  hierarchical representation of multiple hierarchies
+- External links supported in import/Export functionalities (not in UI yet)
+- Type ahead ajax improvement 
 
 =============================================================================
 THEMAS 1.2.1 Release Notes
