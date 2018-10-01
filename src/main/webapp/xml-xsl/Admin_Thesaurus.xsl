@@ -469,7 +469,7 @@
                     <tr>
                         <td colspan="2" style="text-align: right;">
                             
-                            <a href="./help-files/THEMAS_XML_schema_v_2.0.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
+                            <a href="./help-files/THEMAS_XML_schema_v_1.3.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
                                 <xsl:value-of disable-output-escaping="yes" select="$specificlocale/xmlschemalink/option[@lang=$lang]"/>
                             </a>
                             
