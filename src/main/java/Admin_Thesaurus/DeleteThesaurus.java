@@ -55,7 +55,7 @@ import javax.servlet.http.*;
 import java.util.*;
 import java.io.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
 DeleteThesaurus
@@ -103,7 +103,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
@@ -117,7 +117,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             // create a backup of the data base anyway
             StringObject DBbackupFileNameCreated = new StringObject("");
             String backUpDescrition = new String("backup_before_deletion_of_thesaurus_"+ThesaurusName);            
-            common_utils.CreateDBbackup(backUpDescrition, DeleteThesaurusResultMessage, DBbackupFileNameCreated);
+            common_utils.CreateDBbackup(backUpDescrition, DeleteThesaurusResultMessage, DBbackupFileNameCreated, SessionUserInfo.UILang);
             DeleteThesaurusResultMessage.setValue("");
             boolean DeleteThesaurusSucceded = true;
 
@@ -168,7 +168,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             boolean serverStarted = common_utils.StartDatabase();
 
             if (serverStarted == false) {
-                String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure");
+                String StartServerFailure = common_utils.config.GetTranslation("StartServerFailure",SessionUserInfo.UILang);
                 //CopyThesaurusResultMessage.setValue(StartServerFailure + " " + common_utils.DatabaserBatFileDirectory + File.separator + common_utils.DatabaseBatFileName);
                 common_utils.RestartDatabaseIfNeeded();
             }
@@ -179,7 +179,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             }*/
 
             // Refresh the list of the existing Thesaurus in DB
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             Q = new neo4j_sisapi.QClass();
             sis_session = new IntegerObject();
 
@@ -198,18 +198,18 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             //dbAdminUtils.RefreshThesaurusVector(sessionInstance, Q, TA, sis_session, tms_session, dbGen, thesaurusVector);
             // in case of succesful deletion of the thesaurus inform user's rights for the deletion of the thesaurus (todo)
             
-            
+            String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
             StringObject resultMessageObj = new StringObject();
             if (DeleteThesaurusSucceded == true) {
             
-                resultMessageObj.setValue(u.translateFromMessagesXML("root/DeleteThesaurus/DeleteThesaurusSucceded", new String[]{ThesaurusName}));
+                resultMessageObj.setValue(u.translateFromMessagesXML("root/DeleteThesaurus/DeleteThesaurusSucceded", new String[]{ThesaurusName}, SessionUserInfo.UILang));
                 
                 DeleteThesaurusResultMessage.setValue(resultMessageObj.getValue());
                 //DeleteThesaurusResultMessage.setValue("Thesaurus " + ThesaurusName + " deletion completed successfully");
                 UsersClass tmsUsers = new UsersClass();
                 synchronized (sessionInstance) {
                     if (thesaurusVector.size() > 0) {
-                        tmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, thesaurusVector.get(0).toString(), SessionUserInfo.userGroup);
+                        tmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, thesaurusVector.get(0).toString(), SessionUserInfo.userGroup, targetLang);
                         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Setting current thesaurus to " + thesaurusVector.get(0).toString());
                     }
                 }
@@ -217,9 +217,9 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
             }
 
             // inform hierarchies statuses (needed by Fix DB)
-            Vector<String> thesauriNames = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<String>();
+            ArrayList<String> allHierarchies = new ArrayList<String>();
+            ArrayList<String> allGuideTerms = new ArrayList<String>();
             // open SIS and TMS connection
             if (thesaurusVector.size() > 0) {
                 Q = new neo4j_sisapi.QClass();
@@ -246,8 +246,8 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
 
             // write the XML results
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI,SessionUserInfo.UILang));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, ThesaurusName, DeleteThesaurusResultMessage, DeleteThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -273,7 +273,7 @@ public class DeleteThesaurus extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
     ----------------------------------------------------------------------*/
-    public String getXMLMiddle(CommonUtilsDBadmin common_utils, Vector thesaurusVector, String ThesaurusName, StringObject DeleteThesaurusResultMessage, boolean DeleteThesaurusSucceded) {
+    public String getXMLMiddle(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector, String ThesaurusName, StringObject DeleteThesaurusResultMessage, boolean DeleteThesaurusSucceded) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
         // in case there are other active sessions => write their number to XML, 

@@ -51,7 +51,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 public class Rename_Term extends ApplicationBasicServlet {
 
@@ -81,6 +81,9 @@ public class Rename_Term extends ApplicationBasicServlet {
 
             DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
+            DBConnect_Term dbCon = new DBConnect_Term();
+            
             StringObject errorMsgObj = new StringObject();
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
@@ -88,40 +91,19 @@ public class Rename_Term extends ApplicationBasicServlet {
 
             
             String pathToErrorsXML = getServletContext().getRealPath("/translations/Consistencies_Error_Codes.xml");            
-            //String pathToMessagesXml = Utilities.getMessagesXml();
+            //String pathToMessagesXml = Utilities.getXml_For_Messages();
             
             
             //"Renamed succesfully!!" ;
             
-            String RenameResult = u.translateFromMessagesXML("root/EditTerm/Rename/Success", null);
+            String RenameResult = u.translateFromMessagesXML("root/EditTerm/Rename/Success", null,SessionUserInfo.UILang);
             
-            String end = "\0";
-            String empty = "";
-            int Numcouples;
-
-            
-
-            //THIS REFERS TO RELEASED DESCRIPTORS AN MUST PASS THROUGH u.Decode
-            String[] tempInput = request.getParameterValues("NewnameForServlet");
-            Vector<String> tempInputVector = new Vector<String>();
-            for (int i = 0; i < tempInput.length; i++) {
-                if (tempInput[i].trim().length() != 0) {
-                    tempInputVector.add(u.getDecodedParameterValue(tempInput[i]));
-                }
-            }
-
-            DBThesaurusReferences dbtr = new DBThesaurusReferences();
-            String oldName = u.getDecodedParameterValue(request.getParameter("target"));
-            String newName = u.getDecodedParameterValue(request.getParameter("newname"));
+            String oldName = u.getDecodedParameterValue(request.getParameter("target"));            
             String saveAsUf = u.getDecodedParameterValue(request.getParameter("saveasuf")); 
-            
-            
-            
+            String newName = u.getDecodedParameterValue(request.getParameter("newname"));
             newName = newName.replaceAll(" +", " ").trim();
 
             
-
-
             int ret1 = TMSAPIClass.TMS_APISucc;
             int ret_modify_other_nodes = TMSAPIClass.TMS_APISucc;
             
@@ -132,34 +114,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             }
 
-            /*
-            try {
-                Vector<String> errorArgs = new Vector<String>();
-                String pathToMessagesXML = Utilities.getMessagesXml();
-                byte[] byteArray = newName.getBytes("UTF-8");
-                int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    //errorMsgObj.setValue("No term selected for rename. Operation cancelled.");
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(errorMsgObj, "root/EditTerm/Creation/LongName", errorArgs, pathToMessagesXML);
-                        //abort transaction and close connection
-                        Q.free_all_sets();
-                        Q.abort_transaction();
-                        dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
-
-                        out.println(errorMsgObj.getValue());
-                        out.flush();
-                        return;
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
-
-            DBConnect_Term dbCon = new DBConnect_Term();
+            
             
             String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
 
@@ -171,7 +126,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 //OLD NAME NULL?
                 //No term selected for rename. Operation cancelled.
                 ret1 = TMSAPIClass.TMS_APIFail;
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NoTermSelected", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NoTermSelected", null,SessionUserInfo.UILang));
                 //abort transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
@@ -182,7 +137,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                 return;
             } else if (!dbGen.check_exist(oldtermobj.getValue(), Q, sis_session)) {
                 //OLD NAME EXISTS?
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                 //errorMsgObj.setValue("Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.");
                 ret1 = TMSAPIClass.TMS_APIFail;
 
@@ -198,7 +153,7 @@ public class Rename_Term extends ApplicationBasicServlet {
 
                 //NEW NAME ONY PREFIX?
                 //errorMsgObj.setValue("A new term name was not provided. Operation cancelled.");
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/EmptyNewName", null));
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/EmptyNewName", null,SessionUserInfo.UILang));
                 ret1 = TMSAPIClass.TMS_APIFail;
                 
                 //abort transaction and close connection
@@ -212,7 +167,7 @@ public class Rename_Term extends ApplicationBasicServlet {
             } else if (dbGen.check_exist(newtermobj.getValue(), Q, sis_session)) {
                 //NEW NAME EXISTS?
                 //errorMsgObj.setValue("New term name already exists in the database. Operation cancelled.");
-                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NewNameExists", null));                
+                errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/NewNameExists", null,SessionUserInfo.UILang));                
                 ret1 = TMSAPIClass.TMS_APIFail;
 
                 //abort transaction and close connection
@@ -226,7 +181,7 @@ public class Rename_Term extends ApplicationBasicServlet {
             } else {
 
                 //in case the option to save old name as uf is enabled
-                Vector<String> existingUFs = new Vector<String>();
+                ArrayList<String> existingUFs = new ArrayList<String>();
 
                 if(Parameters.AtRenameSaveOldNameAsUf && saveAsUf!=null && saveAsUf.equalsIgnoreCase("yes")){
 
@@ -237,11 +192,11 @@ public class Rename_Term extends ApplicationBasicServlet {
                 }
                 
                 //==========Start of Rename_Term New Descriptor===================================================================
-                Vector<String> modifiedNodes = new Vector<String>();
+                ArrayList<String> modifiedNodes = new ArrayList<String>();
 
-                Vector<String> bts_vec = new Vector<String>();
-                Vector<String> nts_vec = new Vector<String>();
-                Vector<String> rts_vec = new Vector<String>();
+                ArrayList<String> bts_vec = new ArrayList<String>();
+                ArrayList<String> nts_vec = new ArrayList<String>();
+                ArrayList<String> rts_vec = new ArrayList<String>();
                 bts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.bt_kwd, Q, TA, sis_session);
                 nts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.nt_kwd, Q, TA, sis_session);
                 rts_vec = dbGen.returnResults(SessionUserInfo, oldName, ConstantParameters.rt_kwd, Q, TA, sis_session);
@@ -250,32 +205,47 @@ public class Rename_Term extends ApplicationBasicServlet {
                 nts_vec.trimToSize();
                 rts_vec.trimToSize();
 
-                for (int m = 0; m < bts_vec.size(); m++) {
-                    if(modifiedNodes.contains(bts_vec.get(m))==false){
-                        modifiedNodes.add(bts_vec.get(m));
+                for (String btTerm : bts_vec) {
+                    if(modifiedNodes.contains(btTerm)==false){
+                        modifiedNodes.add(btTerm);
                     }
-                    //modifiedNodes += bts_vec.get(m) + ",";
                 }
-                for (int m = 0; m < nts_vec.size(); m++) {
-                    if(modifiedNodes.contains(nts_vec.get(m))==false){
-                        modifiedNodes.add(nts_vec.get(m));
+                for (String ntTerm : nts_vec) {
+                    if(modifiedNodes.contains(ntTerm)==false){
+                        modifiedNodes.add(ntTerm);
                     }
-                    //modifiedNodes += nts_vec.get(m) + ",";
-
                 }
-                for (int m = 0; m < rts_vec.size(); m++) {
-                    if(modifiedNodes.contains(rts_vec.get(m))==false){
-                        modifiedNodes.add(rts_vec.get(m));
+                for (String rtTerm : rts_vec) {
+                    if(modifiedNodes.contains(rtTerm)==false){
+                        modifiedNodes.add(rtTerm);
                     }
-                    //modifiedNodes += rts_vec.get(m) + ",";
                 }
 
-                if (modifiedNodes.size() > 0) {
-                    //modifiedNodes = modifiedNodes.substring(0, modifiedNodes.lastIndexOf(','));
+                
+                //StringObject newtermCmv = new StringObject(prefix.concat(newName));
+                //StringObject oldtermCmv = new StringObject(prefix.concat(oldName));
+                CMValue newtermCmv = new CMValue();
+                newtermCmv.assign_node(newtermobj.getValue(), -1, Utilities.getTransliterationString(newName,false), -1);
+                
+                Q.reset_name_scope();
+                CMValue oldtermCmv = new CMValue();                
+                long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldtermCmv);
+                if(ret<=0){
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
+                    //errorMsgObj.setValue("Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.");
+                    ret1 = TMSAPIClass.TMS_APIFail;
+
+                    //abort transaction and close connection
+                    Q.free_all_sets();
+                    Q.TEST_abort_transaction();
+                    dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+
+                    out.println(errorMsgObj.getValue());
+                    out.flush();
                 }
-
-
-                ret1 = TA.CHECK_RenameNewDescriptor(oldtermobj, newtermobj);
+                
+            
+                ret1 = TA.CHECK_RenameNewDescriptorCMValue(oldtermCmv, newtermCmv);
 
                 if (ret1 != TMSAPIClass.TMS_APIFail) {
 
@@ -352,7 +322,7 @@ public class Rename_Term extends ApplicationBasicServlet {
                         errorMessageStr = errorMessageStr.substring(errorMessageStr.indexOf("`") + 1);
                     }
                     
-                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{errorMessageStr}));                    
+                    errorMsgObj.setValue(u.translateFromMessagesXML("root/EditTerm/Edit/TermDoesNotExist", new String[]{errorMessageStr},SessionUserInfo.UILang));                    
                     
                 }
                 out.println(errorMsgObj.toString());

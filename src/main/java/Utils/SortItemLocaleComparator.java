@@ -45,6 +45,7 @@ import java.text.Collator;
  *
  * @author tzortzak
  */
+//abandoned replaced by SortItemComparator(TRANSLITERATION)
 public class SortItemLocaleComparator implements Comparator{
 
 

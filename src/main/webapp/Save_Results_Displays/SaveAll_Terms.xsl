@@ -82,6 +82,7 @@
                 <style rel="stylesheet" type="text/css">
                     td {font-size: 12px; font-family: verdana, arial, helvetica, sans-serif; text-decoration:none; color:black;}                    
                     a {text-decoration: none; color:black;}
+                    .showDecorations a{color: #0000EE; text-decoration: underline; color: -webkit-link; color: -moz-hyperlinktext;}
                     a.SaveAsAndPrintLinks { font-size: 11px; font-family: verdana, arial, helvetica, sans-serif; font-style:italic; text-decoration:underline; color:black; }
                 </style>
                 <title>
@@ -332,7 +333,17 @@
                             <xsl:if test="count($outputVar/scope_note)!=0">  
                                 <!--<td width="400" style="WORD-BREAK:BREAK-ALL;">-->
                                 <td>
-                                    <xsl:value-of disable-output-escaping="yes" select="./scope_note"/>
+                                    <xsl:choose>
+                                        <xsl:when test="./scope_note/text()!=''">
+                                            <span class="showDecorations">
+                                                <xsl:value-of disable-output-escaping="yes" select="./scope_note"/>
+                                            </span>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <a>-</a>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    
                                 </td>                              
                                     <!--<xsl:call-template name="drawAttributeTd">
                                         <xsl:with-param name="nodeSet" select="./scope_note"/>
@@ -435,31 +446,40 @@
         <xsl:param name="translationSeparator" />
         <td>
             <xsl:variable name="howmanyFields" select="count($nodeSet[node()!=''])"/>
+            
             <xsl:choose>
                 <xsl:when test="$howmanyFields=0">-</xsl:when>
                 <xsl:otherwise>
+                    
                     <xsl:for-each select="$nodeSet/node()">
-                            <a>
-                                <xsl:value-of select="../@linkClass"/>
-                                <xsl:value-of select="$translationSeparator"/>
-                                <xsl:text> </xsl:text>
-                                <xsl:choose>
-                                    <xsl:when test="local-name(..)='translations_scope_note'">
-                                        <xsl:value-of disable-output-escaping="yes" select="."/>
-                                    </xsl:when>
-                                    <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
-                                </xsl:choose>
-                            </a>
-                            <xsl:choose>
-                                <xsl:when test="position()!= $howmanyFields">
-                                    <xsl:if test="local-name(..)!='translations_scope_note'">
-                                        <!--<xsl:text>, </xsl:text>-->
-                                        <br/>
-                                    </xsl:if>
+                        <xsl:choose>
+                            <xsl:when test="local-name(..)='translations_scope_note'">
+                                <span class="showDecorations">
+                                    <xsl:value-of select="../@linkClass"/>
+                                    <xsl:value-of select="$translationSeparator"/>
+                                    <xsl:text> </xsl:text>
+
+                                    <xsl:value-of disable-output-escaping="yes" select="."/>
                                     <br/>
-                                </xsl:when>
-                            </xsl:choose>
-                    </xsl:for-each>
+                                </span>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <a>
+                                    <xsl:value-of select="../@linkClass"/>
+                                    <xsl:value-of select="$translationSeparator"/>
+                                    <xsl:text> </xsl:text>
+                                    
+                                    <xsl:value-of select="."/>
+                                </a>
+                                
+                                <xsl:if test="position()!= $howmanyFields">
+                                    <xsl:text>, </xsl:text>
+                                </xsl:if>
+                                <br/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    
+                    </xsl:for-each>                    
                 </xsl:otherwise>
             </xsl:choose>
         </td>

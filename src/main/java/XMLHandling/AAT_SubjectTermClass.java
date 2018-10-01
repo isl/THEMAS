@@ -33,7 +33,7 @@
  */
 package XMLHandling;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -43,8 +43,8 @@ public class AAT_SubjectTermClass {
 
     public String termName="";
     public boolean isPreffered = false;
-    public Vector<AAT_TermLanguage> langCodes = new Vector<AAT_TermLanguage>();
-    public Vector<String> termSources = new Vector<String>();
+    public ArrayList<AAT_TermLanguage> langCodes = new ArrayList<AAT_TermLanguage>();
+    public ArrayList<String> termSources = new ArrayList<String>();
 
     public AAT_SubjectTermClass(){
 

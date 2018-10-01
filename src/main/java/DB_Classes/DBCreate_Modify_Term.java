@@ -40,19 +40,15 @@ import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import Utils.Parameters;
 import Utils.SortItem;
-import Utils.TaxonomicCodeItem;
 import Utils.Utilities;
-
 import java.io.IOException;
+
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import neo4j_sisapi.*;
+import neo4j_sisapi.TMSAPIClass;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.*;
-import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.util.*;
 
 /**
  *
@@ -63,11 +59,17 @@ public class DBCreate_Modify_Term {
     public DBCreate_Modify_Term() {
     }
 
-    public void createNewTerm(UserInfoClass SessionUserInfo, String newName, Vector<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+    public void createNewTerm(UserInfoClass SessionUserInfo, String newName, ArrayList<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+        
+        SortItem newNameObj = new SortItem(newName,-1,Utilities.getTransliterationString(newName, false),-1);
+        createNewTermSortItem(SessionUserInfo,newNameObj,decodedValues,user,errorMsg,Q,sis_session,TA,tms_session,dbGen,pathToErrorsXML,updateModifiedFields,resolveError,logFileWriter,ConsistencyChecksPolicy);
+    }
 
-        String pathToMessagesXML = Utilities.getMessagesXml();
+    
+    public void createNewTermSortItem(UserInfoClass SessionUserInfo, SortItem newName, ArrayList<String> decodedValues, String user, StringObject errorMsg, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+
         if (Parameters.DEBUG) {
-            Utils.StaticClass.webAppSystemOutPrintln("Target NEW Term: " + newName + " Target bts: " + decodedValues.toString());
+            Utils.StaticClass.webAppSystemOutPrintln("Target NEW Term: " + newName.getLogName() + " Target bts: " + decodedValues.toString());
         }
 
         ConsistensyCheck consistencyChecks = new ConsistensyCheck();
@@ -75,82 +77,45 @@ public class DBCreate_Modify_Term {
         DBConnect_Term dbCon = new DBConnect_Term();
 
         String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        StringObject newNameObj = new StringObject(prefix.concat(newName));
+        StringObject newNameObj = new StringObject(prefix.concat(newName.getLogName()));
 
-
-        Vector<String> errorArgs = new Vector<String>();
-        if (newName != null && newName.length() > 0) {
-            /*
-            try {
-                byte[] byteArray = newName.getBytes("UTF-8");
-
-                int maxTermChars = dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    if (resolveError) {
-                        StringObject warningMsg = new StringObject();
-                        errorArgs.clear();
-                        errorArgs.add(newName);
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(warningMsg, "root/EditTerm/Creation/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                        Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                        try {
-                            logFileWriter.append("\r\n<targetTerm>");
-                            logFileWriter.append("<name>" + Utilities.escapeXML(newName) + "</name>");
-                            logFileWriter.append("<errorType>" + "name" + "</errorType>");
-                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(newName) + "</errorValue>");
-                            logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                            logFileWriter.append("</targetTerm>\r\n");
-                        } catch (IOException ex) {
-                            Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                            Utils.StaticClass.handleException(ex);
-                        }
-                        return;
-
-                    } else {
-
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(errorMsg, "root/EditTerm/Creation/LongName", errorArgs, pathToMessagesXML);
-                        return;
-                    }
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
-        }
-
-
-        if (consistencyChecks.create_modify_check_01(errorMsg, pathToErrorsXML, newName) == false) {
+        if (consistencyChecks.create_modify_check_01(errorMsg, pathToErrorsXML, newName.getLogName(), SessionUserInfo.UILang) == false) {
             return;
         }
 
         //Check if BTs declared exist in db and if these BTs are THES1HierarchyTerms 
-        if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 2) == false) {
+        if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 2, SessionUserInfo.UILang) == false) {
             return;
         }
 
-        if (consistencyChecks.create_modify_check_09(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, newName, prefix, "create") == false) {
+        if (consistencyChecks.create_modify_check_09(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, newName.getLogName(), prefix, "create", SessionUserInfo.UILang) == false) {
             return;
         }
 
-        if (consistencyChecks.create_modify_check_24(errorMsg, pathToErrorsXML, decodedValues, Parameters.UnclassifiedTermsLogicalname) == false) {
+        if (consistencyChecks.create_modify_check_24(errorMsg, pathToErrorsXML, decodedValues, Parameters.UnclassifiedTermsLogicalname, SessionUserInfo.UILang) == false) {
             return;
         }
 
-        if (consistencyChecks.create_modify_check_25(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, newName, decodedValues, "create", prefix, resolveError, logFileWriter) == false) {
-            return;
-        }
-
-
-        if (consistencyChecks.create_modify_check_27(SessionUserInfo, Q, sis_session, newName, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false) {
+        if (consistencyChecks.create_modify_check_25(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, newName.getLogName(), decodedValues, "create", prefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
             return;
         }
 
 
-        errorMsg.setValue(dbCon.connectDescriptor(SessionUserInfo.selectedThesaurus, newNameObj, decodedValues, Q, sis_session, dbGen, TA, tms_session));
+        if (consistencyChecks.create_modify_check_27(SessionUserInfo, Q, sis_session, newName.getLogName(), decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false) {
+            return;
+        }
+        
+        // Check if reference uri exists
+        if(consistencyChecks.create_modify_check_28_alwaysOn(SessionUserInfo, Q, TA, sis_session, newName, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false){
+            return;            
+        }
+        
+
+        CMValue termCmv = newName.getCMValue(newNameObj.getValue());
+        
+        
+        
+        errorMsg.setValue(dbCon.connectDescriptorCMValue(SessionUserInfo.selectedThesaurus, termCmv, decodedValues, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
 
 
         if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
@@ -163,7 +128,7 @@ public class DBCreate_Modify_Term {
 
             // FILTER default status for term creation depending on user group
             DBFilters dbf = new DBFilters();
-            dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, newNameObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q,TA, sis_session, tms_session, dbGen, errorMsg);
+            dbCon.CreateModifyStatus(SessionUserInfo, newNameObj, dbf.GetDefaultStatusForTermCreation(SessionUserInfo), Q,TA, sis_session, tms_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
@@ -215,11 +180,11 @@ public class DBCreate_Modify_Term {
     }
 
     public boolean guideTermsMoveToHierarchyBugFixStep1Of2(String selectedThesaurus,
-            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, Vector<Long> guideTermBugFixLinkIdsL,
-            Vector<Long> guideTermBugFixLinkCategIdsL, Vector<SortItem> guideTermBugFixBtsWithGuideTerms,
-            Vector<String> old_bts, StringObject errorMsg) {
+            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, ArrayList<Long> guideTermBugFixLinkIdsL,
+            ArrayList<Long> guideTermBugFixLinkCategIdsL, ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms,
+            ArrayList<String> old_bts, StringObject errorMsg, final String uiLang) {
 
-        //String pathToMessagesXML = Utilities.getMessagesXml();
+        //String pathToMessagesXML = Utilities.getXml_For_Messages();
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
 
@@ -249,7 +214,7 @@ public class DBCreate_Modify_Term {
         //IntegerObject linkID = new IntegerObject();
         //IntegerObject categID = new IntegerObject();
 
-        Vector<Return_Full_Link_Id_Row> retFLIVals = new Vector<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if(Q.bulk_return_full_link_id(set, retFLIVals)!=QClass.APIFail){
             for(Return_Full_Link_Id_Row row:retFLIVals){
                 String bt = dbGen.removePrefix(row.get_v8_cmv().getString());
@@ -297,14 +262,14 @@ public class DBCreate_Modify_Term {
             int ret = Q.CHECK_Add_Instance(currentLinkId, btLinkIdent);
             if (ret == QClass.APIFail) {
                 SortItem zongItem = guideTermBugFixBtsWithGuideTerms.get(i);
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/ZeroAdditionFailure", new String[]{zongItem.getLogName()}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/ZeroAdditionFailure", new String[]{zongItem.getLogName()}, uiLang));
                 //errorMsg.setValue("Addition failure of term  to the zero guide term category.");
                 return false;
             }
             ret = Q.CHECK_Delete_Instance(currentLinkId, currentLinkCategoryId);
             if (ret == QClass.APIFail) {
                 SortItem zongItem = guideTermBugFixBtsWithGuideTerms.get(i);
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailure", new String[]{zongItem.getLogName(),zongItem.getLinkClass()}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailure", new String[]{zongItem.getLogName(),zongItem.getLinkClass()}, uiLang));
                 //errorMsg.setValue("Deletion failure of BT relation between term " + zongItem.getLogName() + " and guide term: " + zongItem.getLinkClass());
                 return false;
             }
@@ -314,8 +279,8 @@ public class DBCreate_Modify_Term {
     }
 
     public boolean guideTermsMoveToHierarchyBugFixStep2Of2(String selectedThesaurus,
-            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, Vector<Long> guideTermBugFixLinkCategIdsL,
-            Vector<SortItem> guideTermBugFixBtsWithGuideTerms, StringObject errorMsg) {
+            QClass Q, IntegerObject sis_session, StringObject targetDescriptorObj, ArrayList<Long> guideTermBugFixLinkCategIdsL,
+            ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms, StringObject errorMsg, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -332,8 +297,8 @@ public class DBCreate_Modify_Term {
         Identifier btLinkIdent = new Identifier(btLinkidL);
 
         //link ids have changed. thus they must be read again in order to restore prior GuideTerm relations
-        Vector<Long> newGuideTermBugFixLinkIdsL = new Vector<Long>();
-        Vector<String> new_current_Bts = new Vector<String>();
+        ArrayList<Long> newGuideTermBugFixLinkIdsL = new ArrayList<Long>();
+        ArrayList<String> new_current_Bts = new ArrayList<String>();
 
 
         //StringObject fromcls = new StringObject();
@@ -351,7 +316,7 @@ public class DBCreate_Modify_Term {
         int set_new_bts = Q.get_link_from_by_category(0, fromClassObj, LinkObj);
         Q.reset_set(set_new_bts);
 
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(set_new_bts, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 String bt = dbGen.removePrefix(row.get_v3_cmv().getString());
@@ -386,13 +351,13 @@ public class DBCreate_Modify_Term {
             retL = Q.set_current_node_id(currentLinkCategoryId.getSysid());
             retL = Q.CHECK_Add_Instance(currentLinkId, currentLinkCategoryId);
             if (retL == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralAdditionFailure", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralAdditionFailure", null, uiLang));
                 //errorMsg.setValue("Failure during addition of term to guide term category. " );
                 return false;
             }
             retL = Q.CHECK_Delete_Instance(currentLinkId, btLinkIdent);
             if (retL == QClass.APIFail) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralDeletionFailure", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/GeneralDeletionFailure", null, uiLang));
                 //errorMsg.setValue("Failure during deletion of term from guide term category.");
                 return false;
             }
@@ -402,8 +367,8 @@ public class DBCreate_Modify_Term {
         return true;
     }
 
-    public void commitTermTransaction(UserInfoClass SessionUserInfo, String targetTerm,
-            String targetField, Vector<String> decodedValues,
+    public void commitTermTransactionInSortItem(UserInfoClass SessionUserInfo, SortItem targetTerm,
+            String targetField, ArrayList<String> decodedValues,
             String user, StringObject errorMsg,
             QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session,
             DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
@@ -432,29 +397,33 @@ public class DBCreate_Modify_Term {
 
         String UserName = dbtr.getThesaurusPrefix_Editor(Q, sis_session.getValue()) + user;
         String prefix = dbtr.getThesaurusPrefix_Descriptor(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
-        StringObject targetDescriptorObj = new StringObject(prefix.concat(targetTerm));
+        String targetTermWithoutPrefix = targetTerm.getLogName();
+        if(targetTermWithoutPrefix.startsWith(prefix)){
+            targetTermWithoutPrefix = dbGen.removePrefix(targetTermWithoutPrefix);
+        }
+        StringObject targetDescriptorObj = new StringObject(prefix.concat(targetTermWithoutPrefix));
 
         String[] modifiedNodes = null;
 
-        if (consistencyChecks.create_modify_check_01(errorMsg, pathToErrorsXML, targetTerm) == false) {
+        if (consistencyChecks.create_modify_check_01(errorMsg, pathToErrorsXML, targetTermWithoutPrefix, SessionUserInfo.UILang) == false) {
             return;
         }
 
         if (targetField.compareTo(ConstantParameters.delete_term_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Delete Term...">  
-            String descr = targetTerm;
+            String descr = targetTermWithoutPrefix;
 
-            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_3(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, descr, prefix) == false) {
+            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_3(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, descr, prefix, SessionUserInfo.UILang) == false) {
                 return;
             }
 
 
             //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"checks succeded for " + targetTerm);
             //Find out which nodes where modified
-            Vector<String> modifiedNodesVector = new Vector<String>();
-            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.bt_kwd, Q,TA, sis_session));
-            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.nt_kwd, Q,TA, sis_session));
-            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.rt_kwd, Q,TA, sis_session));
+            ArrayList<String> modifiedNodesVector = new ArrayList<String>();
+            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.bt_kwd, Q,TA, sis_session));
+            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.nt_kwd, Q,TA, sis_session));
+            modifiedNodesVector.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.rt_kwd, Q,TA, sis_session));
 
             if (modifiedNodesVector.size() > 0) {
                 modifiedNodes = new String[modifiedNodesVector.size()];
@@ -463,10 +432,10 @@ public class DBCreate_Modify_Term {
                 }
             }
 
-            Vector<String> old_top_terms = new Vector<String>();
-            old_top_terms = dbGen.returnResults(SessionUserInfo, targetTerm, "topterm", Q,TA, sis_session);
+            ArrayList<String> old_top_terms = new ArrayList<String>();
+            old_top_terms = dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session);
             if (deleteDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session, TA, tms_session,
-                    dbGen, dbCon, ConstantParameters.DESCRIPTOR_OF_KIND_NEW, targetDescriptorObj, targetTerm, errorMsg, old_top_terms) == false) {
+                    dbGen, dbCon, ConstantParameters.DESCRIPTOR_OF_KIND_NEW, targetDescriptorObj, targetTermWithoutPrefix, errorMsg, old_top_terms, SessionUserInfo.UILang) == false) {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"deletion cancelled");
                 return;
             }
@@ -477,16 +446,16 @@ public class DBCreate_Modify_Term {
             //<editor-fold defaultstate="collapsed" desc="Edit Status...">  
             //No consistency check
 
-            Vector<String> status = new Vector<String>();
-            status.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.status_kwd, Q,TA, sis_session));
+            ArrayList<String> status = new ArrayList<String>();
+            status.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.status_kwd, Q,TA, sis_session));
             if (status.size() > 0 && decodedValues.get(0).compareTo(status.get(0)) == 0) {
                 return;
             }
 
             modifiedNodes = new String[1];
-            modifiedNodes[0] = targetTerm.trim();
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
 
-            dbCon.CreateModifyStatus(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), Q, TA, sis_session, tms_session, dbGen, errorMsg);
+            dbCon.CreateModifyStatus(SessionUserInfo, targetDescriptorObj, decodedValues.get(0), Q, TA, sis_session, tms_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
@@ -495,55 +464,55 @@ public class DBCreate_Modify_Term {
             //<editor-fold defaultstate="collapsed" desc="Edit Bt...">
             //check consistency of at least one bt preserved
             if (decodedValues == null || decodedValues.size() == 0) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null,SessionUserInfo.UILang));
                 //errorMsg.setValue("One at least BT must be maintained.");
                 return;
             }
 
 
 
-            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTerm) == false) {
+            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTermWithoutPrefix,SessionUserInfo.UILang) == false) {
                 return;
             }
             //Check if RTs declared exist in db and if these RTs are THES1HierarchyTerms 
-            if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 2) == false) {
+            if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 2, SessionUserInfo.UILang) == false) {
                 return;
             }
 
-            if (consistencyChecks.create_modify_check_24(errorMsg, pathToErrorsXML, decodedValues, Parameters.UnclassifiedTermsLogicalname) == false) {
+            if (consistencyChecks.create_modify_check_24(errorMsg, pathToErrorsXML, decodedValues, Parameters.UnclassifiedTermsLogicalname, SessionUserInfo.UILang) == false) {
                 return;
             }
 
-            if (consistencyChecks.create_modify_check_25(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, decodedValues, "create", prefix, resolveError, logFileWriter) == false) {
+            if (consistencyChecks.create_modify_check_25(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues, "create", prefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
 
-            if (consistencyChecks.create_modify_check_27(SessionUserInfo, Q, sis_session, targetTerm, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false) {
+            if (consistencyChecks.create_modify_check_27(SessionUserInfo, Q, sis_session, targetTermWithoutPrefix, decodedValues, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy) == false) {
                 return;
             }
 
             if (decodedValues.size() == 0) {
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null));
+                errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/AtLeastOne", null, SessionUserInfo.UILang));
                 //errorMsg.setValue("One at least BT must be maintained.");
                 return;
             }
 
 
-            Vector<String> old_bts = new Vector<String>();
-            Vector<Long> guideTermBugFixLinkIdsL = new Vector<Long>();
-            Vector<Long> guideTermBugFixLinkCategIdsL = new Vector<Long>();
-            Vector<SortItem> guideTermBugFixBtsWithGuideTerms = new Vector<SortItem>();
+            ArrayList<String> old_bts = new ArrayList<String>();
+            ArrayList<Long> guideTermBugFixLinkIdsL = new ArrayList<Long>();
+            ArrayList<Long> guideTermBugFixLinkCategIdsL = new ArrayList<Long>();
+            ArrayList<SortItem> guideTermBugFixBtsWithGuideTerms = new ArrayList<SortItem>();
 
             //GuideTerms Bug Fix - Keep GuideTerms information related to this term , delete guide terms with its bts and then perform Move to hierarchy actions
             if (guideTermsMoveToHierarchyBugFixStep1Of2(SessionUserInfo.selectedThesaurus, Q, sis_session, targetDescriptorObj, 
-                    guideTermBugFixLinkIdsL, guideTermBugFixLinkCategIdsL, guideTermBugFixBtsWithGuideTerms, old_bts, errorMsg) == false) {
+                    guideTermBugFixLinkIdsL, guideTermBugFixLinkCategIdsL, guideTermBugFixBtsWithGuideTerms, old_bts, errorMsg, SessionUserInfo.UILang) == false) {
                 return;
             }
 
 
 
-            Vector<String> add_bts = new Vector<String>();
-            Vector<String> delete_bts = new Vector<String>();
+            ArrayList<String> add_bts = new ArrayList<String>();
+            ArrayList<String> delete_bts = new ArrayList<String>();
 
             for (int i = 0; i < decodedValues.size(); i++) {
                 int index = old_bts.indexOf(decodedValues.get(i));
@@ -569,7 +538,7 @@ public class DBCreate_Modify_Term {
             //Find out nodes that will be modified modified
             if (delete_bts.size() > 0 || add_bts.size() > 0) {
                 add_bts.addAll(delete_bts);
-                add_bts.add(targetTerm.trim());
+                add_bts.add(targetTermWithoutPrefix.trim());
                 modifiedNodes = new String[add_bts.size()];
                 for (int i = 0; i < add_bts.size(); i++) {
                     modifiedNodes[i] = add_bts.get(i).trim();
@@ -579,33 +548,72 @@ public class DBCreate_Modify_Term {
             }
 
             //Consistency checks
-            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_1(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, prefix) == false) {
+            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_1(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, prefix, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //perform consistency checks for all new values            
             Q.reset_name_scope();
-            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_7(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, decodedValues, prefix, resolveError, logFileWriter) == false) {
+            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_7(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues, prefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
             Q.reset_name_scope();
-            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_8(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, decodedValues, prefix, resolveError, logFileWriter) == false) {
+            
+            if (consistencyChecks.move_To_Hierarchy_Consistency_Test_8(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues, prefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
 
+            ArrayList<String> resolutionRemovals = new ArrayList<>();
+            StringBuilder resolutionSb = new StringBuilder("");
             for (int i = 0; i < decodedValues.size(); i++) {
 
-                if (consistencyChecks.move_To_Hierarchy_Consistency_Test_4(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, decodedValues.get(i), prefix) == false) {
-                    return;
+                if (consistencyChecks.move_To_Hierarchy_Consistency_Test_4(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues.get(i), prefix, SessionUserInfo.UILang) == false) {
+                    if(!resolveError){
+                        return;
+                    }
+                    else{
+                        
+                        resolutionRemovals.add(decodedValues.get(i));                        
+
+
+                        resolutionSb.append("\r\n<targetTerm>");
+                        resolutionSb.append("<name>" + Utilities.escapeXML(targetTermWithoutPrefix) + "</name>");
+                        resolutionSb.append("<errorType>" + ConstantParameters.bt_kwd + "</errorType>");
+                        resolutionSb.append("<errorValue>" + Utilities.escapeXML(decodedValues.get(i)) + "</errorValue>");
+
+                        resolutionSb.append("<reason>" + Utilities.escapeXML(errorMsg.getValue()) + "</reason>");
+
+
+                        resolutionSb.append("</targetTerm>\r\n");
+                        
+                        errorMsg.setValue("");
+                    }
                 }
 
             }
+            
+            if(resolveError && resolutionRemovals.size()>0){
+                decodedValues.removeAll(resolutionRemovals);
+                if(decodedValues.size()>0){
+                    try {
+                        
+                        logFileWriter.append(resolutionSb);
+                    } catch (IOException ex) {
+                        Logger.getLogger(DBCreate_Modify_Term.class.getName()).log(Level.SEVERE, null, ex);
+                    }                           
+                }
+                else{
+                    //Cannot resolve if everything has been removed
+                    errorMsg.setValue(resolutionSb.toString());
+                    return;
+                }
+            }
 
             //first move Node and subtree with first bt declared and then connect rest bts of decodedValues Vector if any more exist
-            Vector<String> fromhiers = new Vector<String>();
-            fromhiers.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, "topterm", Q,TA, sis_session));
+            ArrayList<String> fromhiers = new ArrayList<String>();
+            fromhiers.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session));
 
-            Vector<String> tohiers = new Vector<String>();
+            ArrayList<String> tohiers = new ArrayList<String>();
             tohiers.addAll(dbGen.returnResults(SessionUserInfo, decodedValues.get(0), "topterm", Q,TA, sis_session));
 
             boolean performmovement = true;
@@ -621,7 +629,7 @@ public class DBCreate_Modify_Term {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Term " + targetTerm + " was found without new Top Terms to be moved to.");
                 }
             }
-            if (performmovement && MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTerm, fromhiers.get(0), tohiers.get(0), decodedValues.get(0), ConstantParameters.MOVE_NODE_AND_SUBTREE, user, errorMsg) == false) {
+            if (performmovement && MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTermWithoutPrefix, fromhiers.get(0), tohiers.get(0), decodedValues.get(0), ConstantParameters.MOVE_NODE_AND_SUBTREE, user, errorMsg, SessionUserInfo.UILang) == false) {
                 return;
             } else {
 
@@ -631,11 +639,11 @@ public class DBCreate_Modify_Term {
 
                     for (int i = 1; i < decodedValues.size(); i++) {
 
-                        Vector<String> FromNewBThiers = new Vector<String>();
-                        FromNewBThiers.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, "topterm", Q,TA, sis_session));
-                        Vector<String> ToNewBThiers = new Vector<String>();
+                        ArrayList<String> FromNewBThiers = new ArrayList<String>();
+                        FromNewBThiers.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, "topterm", Q,TA, sis_session));
+                        ArrayList<String> ToNewBThiers = new ArrayList<String>();
                         ToNewBThiers.addAll(dbGen.returnResults(SessionUserInfo, decodedValues.get(i), "topterm", Q,TA, sis_session));
-                        if (MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTerm, FromNewBThiers.get(0), ToNewBThiers.get(0), decodedValues.get(i), ConstantParameters.CONNECT_NODE_AND_SUBTREE, user, errorMsg) == false) {
+                        if (MoveToHierarchyAction(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, targetTermWithoutPrefix, FromNewBThiers.get(0), ToNewBThiers.get(0), decodedValues.get(i), ConstantParameters.CONNECT_NODE_AND_SUBTREE, user, errorMsg, SessionUserInfo.UILang) == false) {
                             return;
                         }
 
@@ -661,8 +669,8 @@ public class DBCreate_Modify_Term {
 
                     StringObject errorMsgPrefixObj = new StringObject();
 
-                    if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg) == false) {
-                        errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null));
+                    if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg, SessionUserInfo.UILang) == false) {
+                        errorMsgPrefixObj.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null, SessionUserInfo.UILang));
 
                         errorMsg.setValue(errorMsgPrefixObj.getValue() + errorMsg.getValue());
                         Q.free_set(check_nodes_set);
@@ -671,14 +679,14 @@ public class DBCreate_Modify_Term {
                     Q.free_set(check_nodes_set);
                 } else {
                     
-                    errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null) +u.translateFromMessagesXML("root/EditTerm/BTs/NotFound", new String[]{targetTerm}));
+                    errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/GeneralHierarchyUpdateMsg", null,SessionUserInfo.UILang) +u.translateFromMessagesXML("root/EditTerm/BTs/NotFound", new String[]{targetTermWithoutPrefix}, SessionUserInfo.UILang));
                     return;
                 }
 
             }
 
             //restore bt realtions guide terms info
-            if (guideTermsMoveToHierarchyBugFixStep2Of2(SessionUserInfo.selectedThesaurus, Q, sis_session, targetDescriptorObj, guideTermBugFixLinkCategIdsL, guideTermBugFixBtsWithGuideTerms, errorMsg) == false) {
+            if (guideTermsMoveToHierarchyBugFixStep2Of2(SessionUserInfo.selectedThesaurus, Q, sis_session, targetDescriptorObj, guideTermBugFixLinkCategIdsL, guideTermBugFixBtsWithGuideTerms, errorMsg,SessionUserInfo.UILang) == false) {
                 return;
             }
 
@@ -693,37 +701,37 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.rt_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit Rt...">
             //Rts may not contain target descriptor
-            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTerm) == false) {
+            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTermWithoutPrefix,SessionUserInfo.UILang) == false) {
                 return;
             }
 
 
             //Check if RTs declared exist in db and if these RTs are THES1HierarchyTerms 
-            if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 0) == false) {
+            if (consistencyChecks.create_modify_check_15(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, 0, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //Check if RTs delared exist in set that includes all BTs and all NTs recursively of target Node
-            if (consistencyChecks.create_modify_check_20(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTerm, decodedValues, prefix, "modify", resolveError, logFileWriter) == false) {
+            if (consistencyChecks.create_modify_check_20(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, targetTermWithoutPrefix, decodedValues, prefix, "modify", resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //prepare modified nodes
-            Vector<String> modified_rts = new Vector<String>();
-            modified_rts.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.rt_kwd, Q,TA,  sis_session));
+            ArrayList<String> modified_rts = new ArrayList<String>();
+            modified_rts.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.rt_kwd, Q,TA,  sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_rts.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_rts.removeElementAt(index);
+                    String s = modified_rts.remove(index);
                 } else {
                     modified_rts.add(decodedValues.get(i));
                 }
 
             }
             if (modified_rts.size() > 0) {
-                modified_rts.add(targetTerm.trim());
+                modified_rts.add(targetTermWithoutPrefix.trim());
                 modifiedNodes = new String[modified_rts.size()];
                 for (int i = 0; i < modified_rts.size(); i++) {
                     modifiedNodes[i] = modified_rts.get(i).trim();
@@ -733,18 +741,18 @@ public class DBCreate_Modify_Term {
             }
             //end of modified nodes preparation
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.TO_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.TO_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectRTs(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session));
+                errorMsg.setValue(dbCon.connectRTs(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -759,64 +767,23 @@ public class DBCreate_Modify_Term {
 
             //String prefixEN = dbtr.getThesaurusPrefix_EnglishWord(SessionUserInfo.selectedThesaurus,Q,sis_session.getValue());
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<>();
+            /* Debuggin code
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
                 String langPrefix = "";
                 if (val.indexOf(Parameters.TRANSLATION_SEPERATOR) > 0) {
                     langPrefix = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR) + 1).trim();
                     val = val.substring(val.indexOf(Parameters.TRANSLATION_SEPERATOR) + 1).trim();
-                }
-                /*
-                try {
-                    
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForTranslation(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-                        if (resolveError) {
-                            valsToRemove.add(langPrefix + val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/Translations/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.translation_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(langPrefix + val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/Translations/LongName", errorArgs, pathToMessagesXML);
-
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                */
-            }
+                }                
+            }*/
 
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
 
             //Check if more than one english names are inserted      
-            if (consistencyChecks.create_modify_check_03(decodedValues, errorMsg, pathToErrorsXML) == false) {
+            if (consistencyChecks.create_modify_check_03(decodedValues, errorMsg, pathToErrorsXML, SessionUserInfo.UILang) == false) {
                 return;
             }
 
@@ -827,9 +794,9 @@ public class DBCreate_Modify_Term {
 
 
             //prepare modified nodes
-            Vector<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, true, targetTerm, Q, sis_session);
+            ArrayList<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, true, targetTermWithoutPrefix, Q, sis_session);
 
-            Vector<String> normalizedModeifiedNodes = new Vector<String>();
+            ArrayList<String> normalizedModeifiedNodes = new ArrayList<String>();
 
             for (int i = 0; i < modified_translations.size(); i++) {
                 SortItem targetSort = modified_translations.get(i);
@@ -837,7 +804,7 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> normalizedDecodedValues = new Vector<String>();
+            ArrayList<String> normalizedDecodedValues = new ArrayList<String>();
             for (int i = 0; i < decodedValues.size(); i++) {
                 String targetValue = decodedValues.get(i); //eg EN: some en term
 
@@ -855,7 +822,7 @@ public class DBCreate_Modify_Term {
 
                 int index = normalizedModeifiedNodes.indexOf(normalizedDecodedValues.get(i));
                 if (index >= 0) {
-                    normalizedModeifiedNodes.removeElementAt(index);
+                    String s = normalizedModeifiedNodes.remove(index);
                 } else {
                     normalizedModeifiedNodes.add(normalizedDecodedValues.get(i));
                 }
@@ -863,20 +830,20 @@ public class DBCreate_Modify_Term {
 
             if (normalizedModeifiedNodes.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
 
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectTranslation(SessionUserInfo.selectedThesaurus, targetDescriptorObj, normalizedDecodedValues, Q, sis_session, TA, tms_session));
+                errorMsg.setValue(dbCon.connectTranslation(SessionUserInfo.selectedThesaurus, targetDescriptorObj, normalizedDecodedValues, Q, sis_session, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -889,78 +856,29 @@ public class DBCreate_Modify_Term {
             //create_modify_check_16 //Check if UFs declared already exist in db but not as uf links
             //UFs may not contain target descriptor
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
 
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForUF(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/UF/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.uf_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/UF/LongName", errorArgs, pathToMessagesXML);
-
-                            return;
-                        }
-                    }
-
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-                
-            }
-*/
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTerm) == false) {
+            if (consistencyChecks.create_modify_check_07(decodedValues, errorMsg, pathToErrorsXML, targetTermWithoutPrefix,SessionUserInfo.UILang) == false) {
                 return;
             }
 
-            if (consistencyChecks.create_modify_check_16(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, targetTerm, resolveError, logFileWriter) == false) {
+            if (consistencyChecks.create_modify_check_16(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix, targetTermWithoutPrefix, resolveError, logFileWriter, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //prepare modified nodes
-            Vector<String> modified_ufs = new Vector<String>();
-            modified_ufs.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.uf_kwd, Q,TA, sis_session));
+            ArrayList<String> modified_ufs = new ArrayList<String>();
+            modified_ufs.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.uf_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_ufs.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_ufs.removeElementAt(index);
+                    String s = modified_ufs.remove(index);
                 } else {
                     modified_ufs.add(decodedValues.get(i));
                 }
@@ -968,23 +886,23 @@ public class DBCreate_Modify_Term {
             }
             if (modified_ufs.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.TO_Direction,
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.TO_Direction,
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectUFs(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session));
+                errorMsg.setValue(dbCon.connectUFs(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -1002,7 +920,7 @@ public class DBCreate_Modify_Term {
             }
              */
             //prepare modified nodes
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
                 String langPrefix = "";
@@ -1058,9 +976,9 @@ public class DBCreate_Modify_Term {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            Vector<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, false, targetTerm, Q, sis_session);
+            ArrayList<SortItem> modified_translations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, false, targetTermWithoutPrefix, Q, sis_session);
 
-            Vector<String> normalizedModeifiedNodes = new Vector<String>();
+            ArrayList<String> normalizedModeifiedNodes = new ArrayList<String>();
 
             for (int i = 0; i < modified_translations.size(); i++) {
                 SortItem targetSort = modified_translations.get(i);
@@ -1068,7 +986,7 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> normalizedDecodedValues = new Vector<String>();
+            ArrayList<String> normalizedDecodedValues = new ArrayList<String>();
             for (int i = 0; i < decodedValues.size(); i++) {
                 String targetValue = decodedValues.get(i); //eg EN: some en term
 
@@ -1083,7 +1001,7 @@ public class DBCreate_Modify_Term {
 
                 int index = normalizedModeifiedNodes.indexOf(normalizedDecodedValues.get(i));
                 if (index >= 0) {
-                    normalizedModeifiedNodes.removeElementAt(index);
+                    String s = normalizedModeifiedNodes.remove(index);
                 } else {
                     normalizedModeifiedNodes.add(normalizedDecodedValues.get(i));
                 }
@@ -1091,19 +1009,19 @@ public class DBCreate_Modify_Term {
 
             if (normalizedModeifiedNodes.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectUFTranslation(SessionUserInfo.selectedThesaurus, targetDescriptorObj, normalizedDecodedValues, Q, sis_session, TA, tms_session));
+                errorMsg.setValue(dbCon.connectUFTranslation(SessionUserInfo.selectedThesaurus, targetDescriptorObj, normalizedDecodedValues, Q, sis_session, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -1114,7 +1032,7 @@ public class DBCreate_Modify_Term {
 
             String prefix_Source = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
@@ -1168,19 +1086,19 @@ public class DBCreate_Modify_Term {
                 //LongNameErrorResolve
             }
 
-            if (consistencyChecks.create_modify_check_13(Q, sis_session, errorMsg, pathToErrorsXML, decodedValues, prefix_Source) == false) {
+            if (consistencyChecks.create_modify_check_13(Q, sis_session, errorMsg, pathToErrorsXML, decodedValues, prefix_Source, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //prepare modified nodes
-            Vector<String> modified_gts = new Vector<String>();
-            modified_gts.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.primary_found_in_kwd, Q,TA, sis_session));
+            ArrayList<String> modified_gts = new ArrayList<String>();
+            modified_gts.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.primary_found_in_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_gts.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_gts.removeElementAt(index);
+                    String s =modified_gts.remove(index);
                 } else {
                     modified_gts.add(decodedValues.get(i));
                 }
@@ -1188,19 +1106,19 @@ public class DBCreate_Modify_Term {
             }
             if (modified_gts.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, DBConnect_Term.CATEGORY_PRIMARY_FOUND_IN, Q, sis_session, dbGen, TA, tms_session));
+                errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, DBConnect_Term.CATEGORY_PRIMARY_FOUND_IN, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -1211,7 +1129,7 @@ public class DBCreate_Modify_Term {
             //create_modify_check_07 //Check if the same values with term name are used for another link declaration
             //create_modify_check_18 //Check if uk_ufs declared already exist in db but not as uk_uf links
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             String prefix_Source = dbtr.getThesaurusPrefix_Source(Q, sis_session.getValue());
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
@@ -1263,19 +1181,19 @@ public class DBCreate_Modify_Term {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            if (consistencyChecks.create_modify_check_13(Q, sis_session, errorMsg, pathToErrorsXML, decodedValues, prefix_Source) == false) {
+            if (consistencyChecks.create_modify_check_13(Q, sis_session, errorMsg, pathToErrorsXML, decodedValues, prefix_Source, SessionUserInfo.UILang) == false) {
                 return;
             }
 
             //prepare modified nodes
-            Vector<String> modified_ets = new Vector<String>();
-            modified_ets.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_found_in_kwd, Q,TA, sis_session));
+            ArrayList<String> modified_ets = new ArrayList<String>();
+            modified_ets.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.translations_found_in_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_ets.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_ets.removeElementAt(index);
+                    String s = modified_ets.remove(index);
                 } else {
                     modified_ets.add(decodedValues.get(i));
                 }
@@ -1283,19 +1201,19 @@ public class DBCreate_Modify_Term {
             }
             if (modified_ets.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, DBConnect_Term.CATEGORY_translations_found_in, Q, sis_session, dbGen, TA, tms_session));
+                errorMsg.setValue(dbCon.connectSources(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, DBConnect_Term.CATEGORY_translations_found_in, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -1304,90 +1222,29 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.tc_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit TC...">
             //prepare values --> 12.35 --> transform to --> 012.35
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             String prefix_TC = dbtr.getThesaurusPrefix_TaxonomicCode(Q, sis_session.getValue());
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForTaxonomicalcode(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/TC/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.tc_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/TC/LongName", errorArgs, pathToMessagesXML);
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-            }
-            */
-
+            
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            /*
-            for(int i=0; i< decodedValues.size();i++){
-            TaxonomicCodeItem tempItem = new TaxonomicCodeItem(decodedValues.get(i),"");
-            Vector<String> codeParts = new Vector<String>();
-            codeParts.addAll(tempItem.codeParts);
-            String codeStr = "";
-            for(int j=0; j< codeParts.size(); j++){
-            codeStr = codeStr.concat(codeParts.get(j));
-            if(j< codeParts.size()-1){
-            codeStr = codeStr.concat(".");
-            }
-            }
-            decodedValues.set(i, codeStr);
-            }
-             */
-
-            if (consistencyChecks.create_modify_check_11(errorMsg, pathToErrorsXML, decodedValues) == false) {
+            if (consistencyChecks.create_modify_check_11(errorMsg, pathToErrorsXML, decodedValues, SessionUserInfo.UILang) == false) {
                 return;
             }
-            if (consistencyChecks.create_modify_check_12(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix_TC, prefix.concat(targetTerm)) == false) {
+            if (consistencyChecks.create_modify_check_12(SessionUserInfo.selectedThesaurus, Q, sis_session, dbGen, errorMsg, pathToErrorsXML, decodedValues, prefix_TC, prefix.concat(targetTermWithoutPrefix), SessionUserInfo.UILang) == false) {
                 return;
             }
-
 
             //prepare modified nodes
-            Vector<String> modified_tcs = new Vector<String>();
-            modified_tcs.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.tc_kwd, Q,TA, sis_session));
+            ArrayList<String> modified_tcs = new ArrayList<String>();
+            modified_tcs.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.tc_kwd, Q,TA, sis_session));
 
             for (int i = 0; i < decodedValues.size(); i++) {
 
                 int index = modified_tcs.indexOf(decodedValues.get(i));
                 if (index >= 0) {
-                    modified_tcs.removeElementAt(index);
+                    String s = modified_tcs.remove(index);
                 } else {
                     modified_tcs.add(decodedValues.get(i));
                 }
@@ -1395,19 +1252,19 @@ public class DBCreate_Modify_Term {
             }
             if (modified_tcs.size() > 0) {
                 modifiedNodes = new String[1];
-                modifiedNodes[0] = targetTerm.trim();
+                modifiedNodes[0] = targetTermWithoutPrefix.trim();
             } else {
                 modifiedNodes = null;
             }
             //end of modified nodes preparation
 
-            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTerm, ConstantParameters.FROM_Direction, 
+            dbCon.delete_term_links_by_category(SessionUserInfo.selectedThesaurus, targetTermWithoutPrefix, ConstantParameters.FROM_Direction, 
                     fromClassObj.getValue(), LinkObj.getValue(), ConstantParameters.DESCRIPTOR_OF_KIND_NEW, Q, TA, sis_session, dbGen, errorMsg);
             if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                 return;
             }
             if (decodedValues.size() > 0) {
-                errorMsg.setValue(dbCon.connectTaxonomicCodes(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session));
+                errorMsg.setValue(dbCon.connectTaxonomicCodes(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues, Q, sis_session, dbGen, TA, tms_session, SessionUserInfo.UILang));
                 if (errorMsg.getValue() != null && errorMsg.getValue().length() > 0) {
                     return;
                 }
@@ -1416,66 +1273,20 @@ public class DBCreate_Modify_Term {
         } else if (targetField.compareTo(ConstantParameters.scope_note_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit SN...">
 
-            Vector<String> valsToRemove = new Vector<String>();
-            Vector<String> scopeNote = new Vector<String>();
-            /*
-            for (int k = 0; k < decodedValues.size(); k++) {
-                String val = decodedValues.get(k);
-
-                try {
-                    byte[] byteArray = val.getBytes("UTF-8");
-
-                    int maxChars = dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                    if (byteArray.length > maxChars) {
-
-                        if (resolveError) {
-                            valsToRemove.add(val);
-                            StringObject warningMsg = new StringObject();
-                            errorArgs.clear();
-                            errorArgs.add(val);
-                            errorArgs.add(targetTerm);
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(warningMsg, "root/EditTerm/ScopeNote/LongNameErrorResolve", errorArgs, pathToMessagesXML);
-                            Utils.StaticClass.webAppSystemOutPrintln(warningMsg.getValue());
-                            try {
-                                logFileWriter.append("\r\n<targetTerm>");
-                                logFileWriter.append("<name>" + Utilities.escapeXML(targetTerm) + "</name>");
-                                logFileWriter.append("<errorType>" + ConstantParameters.scope_note_kwd + "</errorType>");
-                                logFileWriter.append("<errorValue>" + Utilities.escapeXML(val) + "</errorValue>");
-                                logFileWriter.append("<reason>" + warningMsg.getValue() + "</reason>");
-                                logFileWriter.append("</targetTerm>\r\n");
-                            } catch (IOException ex) {
-                                Utils.StaticClass.webAppSystemOutPrintln("IOException caught: " + ex.getMessage());
-                                Utils.StaticClass.handleException(ex);
-                            }
-
-                        } else {
-
-                            errorArgs.add("" + maxChars);
-                            errorArgs.add("" + byteArray.length);
-                            dbGen.Translate(errorMsg, "root/EditTerm/ScopeNote/LongName", errorArgs, pathToMessagesXML);
-                            return;
-                        }
-                    }
-                } catch (UnsupportedEncodingException ex) {
-                    Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                    Utils.StaticClass.handleException(ex);
-                }
-            }
-            */
-
+            ArrayList<String> valsToRemove = new ArrayList<String>();
+            ArrayList<String> scopeNote = new ArrayList<String>();
+            
             if (valsToRemove.size() > 0) {
                 decodedValues.removeAll(valsToRemove);
             }
 
-            scopeNote.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.scope_note_kwd, Q,TA, sis_session));
+            scopeNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.scope_note_kwd, Q,TA, sis_session));
             if (decodedValues.size() > 0 && scopeNote.size() > 0 && decodedValues.get(0).compareTo(scopeNote.get(0)) == 0) {
                 return;
             }
 
             modifiedNodes = new String[1];
-            modifiedNodes[0] = targetTerm.trim();
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
 
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
             StringObject prevThes = new StringObject();
@@ -1500,7 +1311,7 @@ public class DBCreate_Modify_Term {
             
             if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.HYPERTEXT_CATEGORY_SCOPENOTE, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_SCOPENOTE, Q,TA, sis_session));
             }
 
             //</editor-fold >
@@ -1566,8 +1377,8 @@ public class DBCreate_Modify_Term {
                 return;
             }
             
-            Vector<String> scopeNoteEN = new Vector<String>();
-            scopeNoteEN.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session));
+            ArrayList<String> scopeNoteEN = new ArrayList<String>();
+            scopeNoteEN.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.translations_scope_note_kwd, Q, TA, sis_session));
             if (checkStr.length() > 0 && scopeNoteEN.size() > 0 && checkStr.compareTo(scopeNoteEN.get(0)) == 0) {
                 return;
             }
@@ -1575,8 +1386,8 @@ public class DBCreate_Modify_Term {
 
             
             
-            Hashtable<String, String> trSns = u.getTranslationScopeNotes(checkStr);
-            Vector<String> langCodes = new Vector<String>();
+            HashMap<String, String> trSns = u.getTranslationScopeNotes(checkStr);
+            ArrayList<String> langCodes = new ArrayList<String>();
             langCodes.addAll(trSns.keySet());
             Collections.sort(langCodes);
 
@@ -1593,7 +1404,7 @@ public class DBCreate_Modify_Term {
             finalTrSNStr = finalTrSNStr.trim();
              
             modifiedNodes = new String[1];
-            modifiedNodes[0] = targetTerm.trim();
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
 
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
             StringObject prevThes = new StringObject();
@@ -1617,14 +1428,14 @@ public class DBCreate_Modify_Term {
             }
             if (finalTrSNStr.length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, finalTrSNStr, DBConnect_Term.HYPERTEXT_CATEGORY_SCOPENOTE_TR, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, finalTrSNStr, DBConnect_Term.COMMENT_CATEGORY_SCOPENOTE_TR, Q,TA, sis_session));
             }
 
             //</editor-fold>
         } else if (targetField.compareTo(ConstantParameters.historical_note_kwd) == 0) {
             //<editor-fold defaultstate="collapsed" desc="Edit Historical Note...">
 
-            Vector<String> valsToRemove = new Vector<String>();
+            ArrayList<String> valsToRemove = new ArrayList<String>();
             /*
             for (int k = 0; k < decodedValues.size(); k++) {
                 String val = decodedValues.get(k);
@@ -1675,14 +1486,14 @@ public class DBCreate_Modify_Term {
             }
 
 
-            Vector<String> historicalNote = new Vector<String>();
-            historicalNote.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, ConstantParameters.historical_note_kwd, Q, TA, sis_session));
+            ArrayList<String> historicalNote = new ArrayList<String>();
+            historicalNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.historical_note_kwd, Q, TA, sis_session));
             if (decodedValues.size() > 0 && historicalNote.size() > 0 && decodedValues.get(0).compareTo(historicalNote.get(0)) == 0) {
                 return;
             }
 
             modifiedNodes = new String[1];
-            modifiedNodes[0] = targetTerm.trim();
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
 
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
             StringObject prevThes = new StringObject();
@@ -1705,7 +1516,97 @@ public class DBCreate_Modify_Term {
                 }
             if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
 
-                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.HYPERTEXT_CATEGORY_HISTORICALNOTE, Q,TA, sis_session));
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_HISTORICALNOTE, Q,TA, sis_session));
+            }
+
+            //</editor-fold >
+        }
+        else if (targetField.compareTo(ConstantParameters.comment_kwd) == 0) {
+            //<editor-fold defaultstate="collapsed" desc="Edit Comment Note...">
+
+            ArrayList<String> valsToRemove = new ArrayList<String>();
+            
+            if (valsToRemove.size() > 0) {
+                decodedValues.removeAll(valsToRemove);
+            }
+
+
+            ArrayList<String> commentNote = new ArrayList<String>();
+            commentNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.comment_kwd, Q, TA, sis_session));
+            if (decodedValues.size() > 0 && commentNote.size() > 0 && decodedValues.get(0).compareTo(commentNote.get(0)) == 0) {
+                return;
+            }
+
+            modifiedNodes = new String[1];
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
+
+            //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                TA.SetThesaurusName(SessionUserInfo.selectedThesaurus);
+            }
+            int ret = TA.DeleteDescriptorComment(targetDescriptorObj, fromClassObj, LinkObj);
+            if (ret == TMSAPIClass.TMS_APIFail) {
+                //errorMsg.setValue(" " + WTA.errorMessage.getValue());
+                TA.ALMOST_DONE_GetTMS_APIErrorMessage(errorMsg);
+                //reset to previous thesaurus name if needed
+                if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+                return;
+            }
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+            if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
+
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_COMMENT, Q,TA, sis_session));
+            }
+
+            //</editor-fold >
+        }
+        else if (targetField.compareTo(ConstantParameters.note_kwd) == 0) {
+            //<editor-fold defaultstate="collapsed" desc="Edit Note...">
+
+            ArrayList<String> valsToRemove = new ArrayList<>();
+            
+            if (valsToRemove.size() > 0) {
+                decodedValues.removeAll(valsToRemove);
+            }
+
+
+            ArrayList<String> noteNote = new ArrayList<String>();
+            noteNote.addAll(dbGen.returnResults(SessionUserInfo, targetTermWithoutPrefix, ConstantParameters.note_kwd, Q, TA, sis_session));
+            if (decodedValues.size() > 0 && noteNote.size() > 0 && decodedValues.get(0).compareTo(noteNote.get(0)) == 0) {
+                return;
+            }
+
+            modifiedNodes = new String[1];
+            modifiedNodes[0] = targetTermWithoutPrefix.trim();
+
+            //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                TA.SetThesaurusName(SessionUserInfo.selectedThesaurus);
+            }
+            int ret = TA.DeleteDescriptorComment(targetDescriptorObj, fromClassObj, LinkObj);
+            if (ret == TMSAPIClass.TMS_APIFail) {
+                //errorMsg.setValue(" " + WTA.errorMessage.getValue());
+                TA.ALMOST_DONE_GetTMS_APIErrorMessage(errorMsg);
+                //reset to previous thesaurus name if needed
+                if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+                return;
+            }
+            if(prevThes.getValue().equals(SessionUserInfo.selectedThesaurus)==false){
+                    TA.SetThesaurusName(prevThes.getValue());
+                }
+            if (decodedValues.size() > 0 && decodedValues.get(0).trim().length() > 0) {
+
+                errorMsg.setValue(dbCon.AddComment(SessionUserInfo.selectedThesaurus, targetDescriptorObj, decodedValues.get(0), DBConnect_Term.COMMENT_CATEGORY_NOTE, Q,TA, sis_session));
             }
 
             //</editor-fold >
@@ -1729,7 +1630,22 @@ public class DBCreate_Modify_Term {
 
     }
 
-    public int findLogNameIndexInSortItemVector(Vector<SortItem> containerVector, String targetLogName) {
+    public void commitTermTransaction(UserInfoClass SessionUserInfo, String targetTerm,
+            String targetField, ArrayList<String> decodedValues,
+            String user, StringObject errorMsg,
+            QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session,
+            DBGeneral dbGen, String pathToErrorsXML, boolean updateModifiedFields, boolean resolveError, OutputStreamWriter logFileWriter, int ConsistencyChecksPolicy) {
+
+        SortItem newItem = new SortItem(targetTerm,-1,Utilities.getTransliterationString(targetTerm, false),-1);
+        
+        commitTermTransactionInSortItem(SessionUserInfo, newItem,targetField, decodedValues,user, errorMsg,
+                                        Q,sis_session, TA, tms_session, dbGen, 
+                                        pathToErrorsXML, updateModifiedFields, 
+                                        resolveError, logFileWriter, 
+                                        ConsistencyChecksPolicy);
+    }
+
+    public int findLogNameIndexInSortItemVector(ArrayList<SortItem> containerVector, String targetLogName) {
         int index = -1;
         for (int i = 0; i < containerVector.size(); i++) {
             if (targetLogName.compareTo(containerVector.get(i).log_name) == 0) {
@@ -1741,7 +1657,7 @@ public class DBCreate_Modify_Term {
 
     public boolean deleteDescriptor(String selectedThesaurus, QClass Q, IntegerObject sis_session, 
             TMSAPIClass TA, IntegerObject tms_session, DBGeneral dbGen, DBConnect_Term dbCon, int KindOfDescriptor,
-            StringObject targetDescriptorObj, String targetDescriptorUTF8, StringObject errorMsg, Vector<String> old_top_terms) {
+            StringObject targetDescriptorObj, String targetDescriptorUTF8, StringObject errorMsg, ArrayList<String> old_top_terms, final String uiLang) {
         
         String initialVal = errorMsg.getValue()==null?"":errorMsg.getValue();
         if (KindOfDescriptor == ConstantParameters.DESCRIPTOR_OF_KIND_NEW) {
@@ -1763,13 +1679,19 @@ public class DBCreate_Modify_Term {
             StringObject scopenoteENLinkObj = new StringObject();
             dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenoteENFromClassObj, scopenoteENLinkObj, Q, sis_session);
 
+            
+            StringObject historicalnoteFromClassObj = new StringObject();
+            StringObject historicalnoteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            
             StringObject commentFromClassObj = new StringObject();
             StringObject commentLinkObj = new StringObject();
             dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
 
-            StringObject historicalnoteFromClassObj = new StringObject();
-            StringObject historicalnoteLinkObj = new StringObject();
-            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+            StringObject noteFromClassObj = new StringObject();
+            StringObject noteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
+
             //DELETE ALL TERM RELATIONS EXCEPT BT RELATIONS
             //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
             StringObject prevThes = new StringObject();
@@ -1780,6 +1702,7 @@ public class DBCreate_Modify_Term {
             TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteFromClassObj, scopenoteLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteENFromClassObj, scopenoteENLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
+            TA.DeleteDescriptorComment(targetDescriptorObj, noteFromClassObj, noteLinkObj);
             TA.DeleteDescriptorComment(targetDescriptorObj, historicalnoteFromClassObj, historicalnoteLinkObj);
             //reset to previous thesaurus name if needed
             if(prevThes.getValue().equals(selectedThesaurus)==false){
@@ -1818,7 +1741,7 @@ public class DBCreate_Modify_Term {
             for (int i = 0; i < old_top_terms.size(); i++) {
                 // karam: do NOT call MoveToHierarchyNodeOnly in case target and destination are the same
                 if (targetDescriptorUTF8.equals(old_top_terms.get(i).toString()) == false) {
-                    int ret = MoveToHierarchyNodeOnly(selectedThesaurus, targetDescriptorUTF8, old_top_terms.get(i).toString(), Q, sis_session, TA, tms_session, errorMsg);
+                    int ret = MoveToHierarchyNodeOnly(selectedThesaurus, targetDescriptorUTF8, old_top_terms.get(i).toString(), Q, sis_session, TA, tms_session, errorMsg, uiLang);    
                     if (ret == TMSAPIClass.TMS_APIFail) {
                         continue;
                     }
@@ -1852,10 +1775,10 @@ public class DBCreate_Modify_Term {
         return true;
     }
 
-    int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg) {
+    int MoveToHierarchyNodeOnly(String selectedThesaurus, String TargetTermName, String MoveFromHierarchy, QClass Q, IntegerObject sis_session, TMSAPIClass TA, IntegerObject tms_session, StringObject errorMsg, final String uiLang) {
 
-        //String pathToMessagesXML = Utilities.getMessagesXml();
-        //Vector<String> errorArgs = new Vector<String>();
+        //String pathToMessagesXML = Utilities.getXml_For_Messages();
+        //ArrayList<String> errorArgs = new ArrayList<String>();
         Utilities u = new Utilities();
 
         // looking for Term prefix
@@ -1878,7 +1801,7 @@ public class DBCreate_Modify_Term {
         StringObject MoveToHierarchyResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
             
-            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[] {TargetTermName}));
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/SuccessMsg", new String[] {TargetTermName}, uiLang));
             //MoveToHierarchyResultsMessage.setValue("Movement of term \"" + TargetTermName + "\" to Hierarchy waw successfully performed.");
 
         } else { // FAIL
@@ -1896,7 +1819,7 @@ public class DBCreate_Modify_Term {
     /*---------------------------------------------------------------------
     MoveToHierarchyAction()
     ----------------------------------------------------------------------*/
-    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveToHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage) {
+    boolean MoveToHierarchyAction(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session, DBGeneral dbGen, String TargetTermName, String MoveFromHierarchy, String MoveToHierarchy, String MoveBTterm, String MoveToHierarchyOption, String user, StringObject MoveToHierarchyResultsMessage, final String uiLang) {
 
         Utilities u = new Utilities();
 
@@ -1932,7 +1855,7 @@ public class DBCreate_Modify_Term {
         } else { // FAIL
             TA.ALMOST_DONE_GetTMS_APIErrorMessage( MoveToHierarchyResultsMessage);
 
-            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/ErrorPrefix", null) + MoveToHierarchyResultsMessage.getValue());
+            MoveToHierarchyResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/BTs/ErrorPrefix", null, uiLang) + MoveToHierarchyResultsMessage.getValue());
             //Q.free_all_sets();
             return false;
         }
@@ -1969,7 +1892,7 @@ public class DBCreate_Modify_Term {
         //IntegerObject BTlink_sysid = new IntegerObject();
         //CMValue cmv = new CMValue();
         long BTlink_sysidL =-1;
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(BT_links_set, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 String BTlink_toValue = row.get_v3_cmv().getString();
@@ -2018,13 +1941,13 @@ public class DBCreate_Modify_Term {
 
     }
 
-    boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg) {
+    boolean MoveToHierBugFix(String selectedThesaurus, int set_check_nodes, QClass Q, IntegerObject sis_session, DBGeneral dbGen, StringObject errorMsg, final String uiLang) {
 
 
         int SisSessionId = sis_session.getValue();
         Q.reset_name_scope();
 
-        Vector<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
+        ArrayList<String> checkNodes = dbGen.get_Node_Names_Of_Set(set_check_nodes, false, Q, sis_session);
         StringObject TopTermObjClass = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("TopTerm"));
         StringObject HierarchyObj = new StringObject();//(SessionUserInfo.selectedThesaurus.concat("ThesaurusNotionType"));
         StringObject TopTermHierRelationObj = new StringObject();//("belongs_to_" + SessionUserInfo.selectedThesaurus.toLowerCase().concat("_hierarchy"));
@@ -2105,7 +2028,7 @@ public class DBCreate_Modify_Term {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nDelete Classes Instances:\n" +dbGen.getStringList_Of_Set(set_classes_topterms, ",\n",Q,sis_session));
                 if (Q.set_get_card( set_classes_topterms) > 0) {
 
-                    Vector<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
+                    ArrayList<String> deleteInstancesClasses = dbGen.get_Node_Names_Of_Set(set_classes_topterms, true, Q, sis_session);
 
                     String tempStr = checkNodes.get(i);
                     tempStr = dbGen.removePrefix(tempStr);
@@ -2123,7 +2046,7 @@ public class DBCreate_Modify_Term {
                         ret = Q.CHECK_Delete_Instance( from, to);
                         if (ret == QClass.APIFail) {
                             
-                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}));
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}, uiLang));
                             //errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
@@ -2137,7 +2060,7 @@ public class DBCreate_Modify_Term {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nAdd class Instances:\n" +dbGen.getStringList_Of_Set(set_recursive_bts, ",\n",Q,sis_session));
                 if (Q.set_get_card( set_recursive_bts) > 0) {
 
-                    Vector<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
+                    ArrayList<String> addInstancesClasses = dbGen.get_Node_Names_Of_Set(set_recursive_bts, true, Q, sis_session);
                     int ret;
                     for (int k = 0; k < addInstancesClasses.size(); k++) {
 
@@ -2148,7 +2071,7 @@ public class DBCreate_Modify_Term {
 
                             String tempStr = checkNodes.get(i);
                             tempStr = dbGen.removePrefix(tempStr);
-                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}));
+                            errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/Move2Hierarchy/GeneralUpdateNodeError", new String[] {tempStr}, uiLang));
                             ///errorMsg.setValue("An error occurred during update of node " + tempStr+".");
                             return false;
                         }
@@ -2169,7 +2092,7 @@ public class DBCreate_Modify_Term {
         return true;
     }
 
-    public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, Vector<String> decodedNtsVec, Vector<String> decodedGuideTermsVec) {
+    public void performGuideTermEditing(String selectedThesaurus, QClass Q, IntegerObject sis_session, StringObject errorMsg, String targetTerm, ArrayList<String> decodedNtsVec, ArrayList<String> decodedGuideTermsVec, final String uiLang) {
 
         Utilities u = new Utilities();
 
@@ -2187,7 +2110,7 @@ public class DBCreate_Modify_Term {
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.nt_kwd, NTClassObj, NTLinkObj, Q, sis_session);
         dbtr.getThesaurusClass_HierarchyTerm(selectedThesaurus, Q, sis_session.getValue(), HierarchyTermObj);
 
-        Vector<String> existingGuideTerms = new Vector<String>();
+        ArrayList<String> existingGuideTerms = new ArrayList<String>();
         existingGuideTerms.addAll(dbGen.collectGuideLinks(selectedThesaurus, Q, sis_session));
 
         String termPrefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus, Q, sis_session.getValue());
@@ -2210,11 +2133,11 @@ public class DBCreate_Modify_Term {
 //
   //      CMValue cmv = new CMValue();
 
-        Vector<String> currentNts = new Vector<String>();
-        Vector<Long> linkIdsL = new Vector<Long>();
-        Vector<String> currentNtsGuideTerms = new Vector<String>();
+        ArrayList<String> currentNts = new ArrayList<String>();
+        ArrayList<Long> linkIdsL = new ArrayList<Long>();
+        ArrayList<String> currentNtsGuideTerms = new ArrayList<String>();
 
-        Vector<Return_Full_Link_Row> retFLVals = new Vector<Return_Full_Link_Row>();
+        ArrayList<Return_Full_Link_Row> retFLVals = new ArrayList<Return_Full_Link_Row>();
         if(Q.bulk_return_full_link(set_nts, retFLVals)!=QClass.APIFail){
             for(Return_Full_Link_Row row:retFLVals){
                 currentNts.add(row.get_v1_cls());
@@ -2261,7 +2184,7 @@ public class DBCreate_Modify_Term {
                     long decodedGuideTermLinkIdL = Q.set_current_node(decodedGuideTermLinkObj);
 
                     if (decodedGuideTermLinkIdL == QClass.APIFail) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/NotFoundGuideTerm", new String[] {decodedGuideTerm,currentNt}));
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/NotFoundGuideTerm", new String[] {decodedGuideTerm,currentNt}, uiLang));
                         //errorMsg.setValue("Guide term '" + decodedGuideTerm+"' selected for term '" +currentNt+ "' was not found in the database. Please refresh screen and repeat the action.");
                         return;
                     }
@@ -2270,7 +2193,7 @@ public class DBCreate_Modify_Term {
                     Q.reset_name_scope();
                     int ret = Q.CHECK_Add_Instance(currentLinkId, new Identifier(decodedGuideTermLinkIdL));
                     if (ret == QClass.APIFail) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/AdditionFailureOfGuideTerm", new String[] {decodedGuideTerm}));
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/AdditionFailureOfGuideTerm", new String[] {decodedGuideTerm}, uiLang));
                         //errorMsg.setValue("Failure during addition of term to guide term category: "+ decodedGuideTerm+".");
                         return;
                     }
@@ -2279,7 +2202,7 @@ public class DBCreate_Modify_Term {
                     Q.reset_name_scope();
                     ret = Q.CHECK_Delete_Instance(currentLinkId, new Identifier(oldGuideTermIDL));
                     if (ret == QClass.APIFail) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailureOfGuideTerm", new String[] {currentGuideTerm}));
+                        errorMsg.setValue(u.translateFromMessagesXML("root/EditTerm/GuideTerms/DeletionFailureOfGuideTerm", new String[] {currentGuideTerm}, uiLang));
                         //errorMsg.setValue("Failure during deletion of term from guide term category: "+currentGuideTerm+".");
                         return;
                     }

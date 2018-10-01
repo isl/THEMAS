@@ -102,7 +102,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             int usersPagingQueryResultsCount = 0;
 
             if (updateUsersCriteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Users", updateUsersCriteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Users", updateUsersCriteria, request, u);
                 sessionInstance.setAttribute("SearchCriteria_Users", searchCriteria);
 
             } else {  //else try to read criteria for this user
@@ -110,7 +110,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Users", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Users", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Users", searchCriteria);
 
             }
@@ -147,7 +147,8 @@ public class SearchResults_Users extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            //no need to inform search operators
+            //u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,true);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             StringBuffer xml = new StringBuffer();
@@ -159,27 +160,27 @@ public class SearchResults_Users extends ApplicationBasicServlet {
                 long startTime = Utilities.startTimer();
 
                 UsersClass tmsUsers = new UsersClass();
-                Vector allResultsUsers = tmsUsers.ReadWebAppUsersXMLFile(THEMASUsersFileName);
+                ArrayList allResultsUsers = tmsUsers.ReadWebAppUsersXMLFile(THEMASUsersFileName);
 
                 //Get only those users that will appear in next page
                 usersPagingQueryResultsCount = allResultsUsers.size();
                 if (usersPagingFirst > usersPagingQueryResultsCount) {
                     usersPagingFirst = 1;
                 }
-                Vector<UserInfoClass> resultsUsers = new Vector<UserInfoClass>();
+                ArrayList<UserInfoClass> resultsUsers = new ArrayList<UserInfoClass>();
                 for (int i = 0; i < usersPagingListStep; i++) {
                     if (i + usersPagingFirst > usersPagingQueryResultsCount) {
                         break;
                     }
                     UserInfoClass tmp = (UserInfoClass) allResultsUsers.get(i + usersPagingFirst - 1);
-                    resultsUsers.addElement(tmp);
+                    resultsUsers.add(tmp);
                 }
                 tmsUsers.getResultsInXml(request, resultsUsers, output, xmlResults);
 
                 elapsedTimeSec = Utilities.stopTimer(startTime);
                 // ---------------- SYNCHRONIZED BLOCK (END)----------------             
             }
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_USERS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_USERS, SessionUserInfo.UILang));
             xml.append("<results>");
             xml.append(u.writePagingInfoXML(usersPagingListStep, usersPagingFirst, usersPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Users"));
             xml.append("</results>");

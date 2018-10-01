@@ -64,19 +64,30 @@
             <xsl:variable name="localecommon" select="document($pathToSaveScriptingAndLocale)/root/common"/>
             <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/GlobalThesaurusTreeView"/>        
             <xsl:variable name="lang" select="page/@language"/>
+            
             <xsl:variable name="pageTitle">
-                <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
-                <xsl:value-of select="/page/targetThesaurus"/>
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="/page/title"/>
+                <xsl:choose>
+                    <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                        <xsl:value-of select="$localespecific/facettitleprefix/option[@lang=$lang]"/>
+                        <xsl:value-of select="/page/targetFacet"/>
+                        <xsl:text> </xsl:text>
+                        <xsl:value-of select="/page/title"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
+                        <xsl:value-of select="/page/targetThesaurus"/>
+                        <xsl:text> </xsl:text>
+                        <xsl:value-of select="/page/title"/>
+                    </xsl:otherwise>                         
+                </xsl:choose>
             </xsl:variable>
             <html>
                 <head>
                      <title>
                        <xsl:value-of select="$pageTitle"/>
                    </title>
-                    <link rel="stylesheet" type="text/css" href="../../third-party-javascript/mktree/mktree.css"/>                    
-                    <script language="JavaScript" type="text/javascript" src="../../third-party-javascript/mktree/mktree.js"></script>
+                    <link rel="stylesheet" type="text/css" href="../../third-party-javascript/mktree/mktree.css?v=@DeploymentTimestamp@"/>                    
+                    <script language="JavaScript" type="text/javascript" src="../../third-party-javascript/mktree/mktree.js?v=@DeploymentTimestamp@"></script>
                     
                    <script type="text/javascript"><xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/></script>
                    
@@ -100,10 +111,20 @@
                                    <!--<xsl:value-of disable-output-escaping="yes" select="$localecommon/searchcriteria/option[@lang=$lang]"/>
                                    <br/>
                                    -->
-                                   <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
-                                   <b>
-                                       <xsl:value-of select="/page/targetThesaurus"/>
-                                   </b>.
+                                   <xsl:choose>
+                                       <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                                           <xsl:value-of select="$localespecific/facetbaselabel/option[@lang=$lang]"/>
+                                           <b>
+                                               <xsl:value-of select="/page/targetFacet"/>
+                                           </b>.
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
+                                        <b>
+                                            <xsl:value-of select="/page/targetThesaurus"/>
+                                        </b>.
+                                    </xsl:otherwise>                         
+                                   </xsl:choose>                                   
                                </td>
                                
                                <td align="right">
@@ -127,10 +148,23 @@
                            <tr>
                                 <td colspan="2" align="left">
                                     <br/>
-                                    <a>
-                                        <xsl:attribute name="href"><xsl:value-of select="/page/query/typicalHierarchicalLocation"/></xsl:attribute>
-                                        <xsl:value-of select="$localespecific/linktotypical/option[@lang=$lang]"/>
-                                    </a>
+                                   
+                                    
+                                    
+                                    <xsl:choose>
+                                       <xsl:when test="count(/page/targetFacet[./text()!='']) != 0 ">
+                                            <a>
+                                            <xsl:attribute name="href"><xsl:value-of select="/page/query/typicalHierarchicalLocation"/></xsl:attribute>
+                                            <xsl:value-of select="$localespecific/facetlinktotypical/option[@lang=$lang]"/>
+                                            </a>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                         <a>
+                                            <xsl:attribute name="href"><xsl:value-of select="/page/query/typicalHierarchicalLocation"/></xsl:attribute>
+                                            <xsl:value-of select="$localespecific/linktotypical/option[@lang=$lang]"/>
+                                        </a>
+                                    </xsl:otherwise>                         
+                                   </xsl:choose>
                                     <br/>                                    
                                 </td>
                             </tr>

@@ -35,42 +35,27 @@ package Admin_Thesaurus;
 
 import DB_Admin.ConfigDBadmin;
 import DB_Admin.DBAdminUtilities;
-import DB_Classes.DBGeneral;
 import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConstantParameters;
-import Utils.NodeInfoStringContainer;
 import Utils.Utilities;
 import Utils.Parameters;
 import Utils.SessionWrapperClass;
 import Utils.SessionListener;
-import Utils.SortItem;
-import XMLHandling.WriteFileData;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import neo4j_sisapi.*;
 import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Collections;
-import java.util.Hashtable;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringWriter;
-import java.io.StringReader;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import javax.xml.transform.dom.DOMSource;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
 
 /**
  *
@@ -112,6 +97,7 @@ public class ExportData extends ApplicationBasicServlet {
 
 
         int port = request.getLocalPort();
+        String hostName = request.getLocalName();
         
         
         String logFileNamePath = session.getServletContext().getRealPath("/"+ConstantParameters.LogFilesFolderName);
@@ -139,6 +125,9 @@ public class ExportData extends ApplicationBasicServlet {
         String exportXMLfilename = u.getDecodedParameterValue(request.getParameter("exportXMLfilename"));
         String exprortThesaurus = u.getDecodedParameterValue(request.getParameter("exportThesaurus"));
         String exportSchemaName = request.getParameter("exportschematype");
+        String SkosExportConceptScheme = request.getParameter("skosConceptScheme");
+        String SkosExportBaseNameSpace = request.getParameter("skosBaseNameSpace");
+        //System.out.println("SkosExportBaseNameSpace: " + SkosExportBaseNameSpace);
         //String exportSchemaName    =  ConstantParameters.xmlschematype_THEMAS;
         String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
         String language = getServletContext().getInitParameter("LocaleLanguage");
@@ -176,9 +165,16 @@ public class ExportData extends ApplicationBasicServlet {
 
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
                 Filename += ".rdf";
-                ConstantParameters.referenceThesaurusSchemeName = "http://localhost:" + port + "/" + Parameters.ApplicationName + "#" + exprortThesaurus;
-                ConstantParameters.SchemePrefix = "http://localhost:" + port + "/" + Parameters.ApplicationName + "/" + exprortThesaurus;
-                ConstantParameters.SchemePrefix = ConstantParameters.SchemePrefix.toLowerCase();
+                if(SkosExportBaseNameSpace!=null && SkosExportBaseNameSpace.length()>0 &&  SkosExportConceptScheme!=null && SkosExportConceptScheme.length()>0){
+                    ConstantParameters.referenceThesaurusSchemeName = SkosExportConceptScheme;
+                    ConstantParameters.SchemePrefix = SkosExportBaseNameSpace;
+                }
+                else{
+                
+                    ConstantParameters.referenceThesaurusSchemeName = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName + "#" + exprortThesaurus;
+                    ConstantParameters.SchemePrefix = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName +"/"+ exprortThesaurus;
+                }
+                //ConstantParameters.SchemePrefix = ConstantParameters.SchemePrefix.toLowerCase();
 
             } else if (exportSchemaName.equals(ConstantParameters.xmlschematype_THEMAS)) {
                 Filename += ".xml";
@@ -196,14 +192,14 @@ public class ExportData extends ApplicationBasicServlet {
 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
 
-            } catch (Exception exc) {
+            } catch (FileNotFoundException | UnsupportedEncodingException exc) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
                 Utils.StaticClass.handleException(exc);
             }
 
-            Vector<String> thesauriNames = new Vector<String>();
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> thesauriNames = new ArrayList<>();
+            ArrayList<String> allHierarchies = new ArrayList<>();
+            ArrayList<String> allGuideTerms = new ArrayList<>();
             
             exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
@@ -212,8 +208,14 @@ public class ExportData extends ApplicationBasicServlet {
 
 
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
+            if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
+                xml.append("<exportschematype>"+exportSchemaName+"</exportschematype>");
+                        xml.append("<skosConceptScheme>"+SkosExportConceptScheme+"</skosConceptScheme>");
+                        xml.append("<skosBaseNameSpace>"+SkosExportBaseNameSpace+"</skosBaseNameSpace>");
+            }
+            
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
             xml.append(getXMLMiddle(thesauriNames, Filename));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -237,7 +239,7 @@ public class ExportData extends ApplicationBasicServlet {
 
     }
 
-    public String getXMLMiddle(Vector<String> thesaurusVector, String filePath) {
+    public String getXMLMiddle(ArrayList<String> thesaurusVector, String filePath) {
         // get the active sessions
         int OtherActiveSessionsNO = SessionListener.activesessionsNO - 1;
 

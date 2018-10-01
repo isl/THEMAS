@@ -66,8 +66,8 @@
 	<xsl:template name="SystemIsUnderMaintenance_Page">
 		<html>
 			<xsl:call-template name="SystemIsUnderMaintenance_HTML_head">
-				<xsl:with-param name="javascript" select="'Javascript/scripts.js'"/>
-				<xsl:with-param name="css" select="'CSS/page.css'"/>
+				<xsl:with-param name="javascript" select="'Javascript/scripts.js?v=@DeploymentTimestamp@'"/>
+				<xsl:with-param name="css" select="'CSS/page.css?v=@DeploymentTimestamp@'"/>
 			</xsl:call-template>
 			<!-- karam (22/1/08) set focus to username input at page loading -->
 			<body>

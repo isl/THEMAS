@@ -79,7 +79,9 @@
             <head>
                 <style rel="stylesheet" type="text/css">
                     td {font-size: 12px; font-family: verdana, arial, helvetica, sans-serif; text-decoration:none; color:black;}
+                    
                     a.SaveAsAndPrintLinks { font-size: 11px; font-family: verdana, arial, helvetica, sans-serif; font-style:italic; text-decoration:underline; color:black; }
+                    .showDecorations a{color: #0000EE; text-decoration: underline; color: -webkit-link; color: -moz-hyperlinktext;}
                 </style>
                 <title>
                     <xsl:value-of select="$pageTitle"/>
@@ -216,16 +218,18 @@
                             
                             <xsl:if test="count($outputVar/source_note)!=0">                                
                                 <td>
-                                    <a>
+                                    
                                         <xsl:choose>
                                             <xsl:when test="count(./source_note[./text()!=''])!=0">
-                                                <xsl:value-of disable-output-escaping="yes" select="./source_note"/>     
+                                                <span class="showDecorations">
+                                                    <xsl:value-of disable-output-escaping="yes" select="./source_note"/>     
+                                                </span>
                                             </xsl:when>                     
                                             <xsl:otherwise>
-                                                <xsl:text>-</xsl:text>
+                                                <xsl:text><a>-</a></xsl:text>
                                             </xsl:otherwise>
                                         </xsl:choose>
-                                    </a>
+                                    
                                 </td>
                                 <!--<xsl:call-template name="drawAttributeTd">
                                     <xsl:with-param name="nodeSet" select="./source_note"/>

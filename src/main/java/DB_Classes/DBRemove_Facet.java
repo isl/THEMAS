@@ -39,7 +39,7 @@ import Utils.Utilities;
 import java.util.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 
 /*---------------------------------------------------------------------
@@ -75,9 +75,15 @@ public class DBRemove_Facet {
     FUNCTION: abandons the given facet
     ----------------------------------------------------------------------*/
     public String AbandonFacet(TMSAPIClass TA,IntegerObject tms_session,  DBGeneral dbGen, StringObject targetFacet) {
+        CMValue cmv = new CMValue();
+        cmv.assign_node(targetFacet.getValue(), -1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
+        return AbandonFacetCMValue(TA,tms_session,dbGen,cmv);
+    }
+    
+    public String AbandonFacetCMValue(TMSAPIClass TA,IntegerObject tms_session,  DBGeneral dbGen, CMValue targetFacet) {
         String errorMsg = new String("");
 
-        int ret = TA.NOT_IMPLEMENTED_AbandonFacet(targetFacet); 
+        int ret = TA.NOT_IMPLEMENTED_AbandonFacet(new StringObject(targetFacet.getString())); 
         if (ret == TMSAPIClass.TMS_APIFail) {
             errorMsg += dbGen.check_success(ret, TA, null,tms_session);
         }
@@ -92,15 +98,20 @@ public class DBRemove_Facet {
     FUNCTION: undo abandons the given facet
     ----------------------------------------------------------------------*/
     public String UndoAbandonFacet(TMSAPIClass TA,IntegerObject tms_session, DBGeneral dbGen,StringObject targetFacet ) {
+        CMValue cmv = new CMValue();
+        cmv.assign_node(targetFacet.getValue(), -1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
+        return UndoAbandonFacetCMValue(TA,tms_session,dbGen,cmv);
+    }
+    
+    public String UndoAbandonFacetCMValue(TMSAPIClass TA,IntegerObject tms_session, DBGeneral dbGen,CMValue targetFacet ) {
 
         // CHECK AGAIN
         String errorMsg = new String("");
 
-        int ret = TA.NOT_IMPLEMENTED_UndoAbandonFacet(targetFacet);
+        int ret = TA.NOT_IMPLEMENTED_UndoAbandonFacet(new StringObject(targetFacet.getString()));
         if (ret == TMSAPIClass.TMS_APIFail) {
             errorMsg += dbGen.check_success(ret,TA,  null,tms_session);
         }
-
         return errorMsg;
     }
 
@@ -110,20 +121,24 @@ public class DBRemove_Facet {
     INPUT: - StringObject targetFacet: the NEW Facet to be deleted
     FUNCTION: deletes the given NEW facet (if it exists)
     ----------------------------------------------------------------------*/
-    public String DeleteFacet(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,StringObject targetFacet) {
+    public String DeleteFacet(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,StringObject targetFacet, final String uiLang) {
+        CMValue cmv = new CMValue();
+        cmv.assign_node(targetFacet.getValue(), -1, Utilities.getTransliterationString(targetFacet.getValue(), true), -1);
+        return DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, cmv, uiLang);        
+    }
+    
+    public String DeleteFacetCMValue(QClass Q,TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen,CMValue targetFacet, final String uiLang) {
         String errorMsg = new String("");
 
-        
-        
-        if (dbGen.check_exist(targetFacet.getValue(),Q,sis_session) == false) {
+        if (dbGen.check_exist(targetFacet.getString(),Q,sis_session) == false) {
             Utilities u = new Utilities();            
-            errorMsg = u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet.getValue()});
+            errorMsg = u.translateFromMessagesXML("root/EditFacet/Deletion/FacetNotFound", new String[]{targetFacet.getString()},uiLang);
             //errorMsg = "Facet " + targetFacet + " does not exist";
             
             return errorMsg;
         }
 
-        int ret = TA.CHECK_DeleteFacet(targetFacet);
+        int ret = TA.CHECK_DeleteFacet(new StringObject(targetFacet.getString()));
         if (ret == TMSAPIClass.TMS_APIFail) {
             errorMsg += dbGen.check_success(ret,TA,  null,tms_session);
         }

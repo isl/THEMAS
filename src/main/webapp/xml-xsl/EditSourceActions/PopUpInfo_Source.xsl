@@ -48,9 +48,9 @@
     -->
     <xsl:template match="/">
         <head>
-                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css"/>
-                <link rel="stylesheet" type="text/css" href="CSS/page.css"/>                
-				<!--<xsl:attribute name="href"><xsl:value-of select="'CSS/xml_thes.css'"/></xsl:attribute>
+                <link rel="stylesheet" type="text/css" href="CSS/xml_thes.css?v=@DeploymentTimestamp@"/>
+                <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>                
+				<!--<xsl:attribute name="href"><xsl:value-of select="'CSS/xml_thes.css?v=@DeploymentTimestamp@'"/></xsl:attribute>
 			</link>-->
                 <title>PopUpInfo_Source.xsl</title>
             </head>
@@ -172,7 +172,7 @@
                                 </td>
                                 <td>
                                     <br/>
-                                    <span class="headerThes_normal"><xsl:value-of disable-output-escaping="yes" select="$currentSource/source_note"/></span>
+                                    <span class="headerThes_normal showDecorations"><xsl:value-of disable-output-escaping="yes" select="$currentSource/source_note"/></span>
                                 </td>
                             </tr>
                         </xsl:if>

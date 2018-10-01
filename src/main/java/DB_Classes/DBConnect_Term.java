@@ -36,6 +36,7 @@ package DB_Classes;
 
 
 
+import Users.UserInfoClass;
 import Utils.ConstantParameters;
 
 import Utils.Parameters;
@@ -43,7 +44,7 @@ import Utils.Utilities;
 
 import java.util.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
 DBConnect_Term
@@ -75,10 +76,11 @@ public class DBConnect_Term {
     public final int DB_DELETE = 2;
 
         // constats used by AddComment()
-    public static final int HYPERTEXT_CATEGORY_COMMENT = 0;
-    public static final int HYPERTEXT_CATEGORY_SCOPENOTE = 1;    
-    public static final int HYPERTEXT_CATEGORY_HISTORICALNOTE = 2;
-    public static final int HYPERTEXT_CATEGORY_SCOPENOTE_TR = 3;
+    public static final int COMMENT_CATEGORY_COMMENT = 0;
+    public static final int COMMENT_CATEGORY_SCOPENOTE = 1;    
+    public static final int COMMENT_CATEGORY_HISTORICALNOTE = 2;
+    public static final int COMMENT_CATEGORY_SCOPENOTE_TR = 3;
+    public static final int COMMENT_CATEGORY_NOTE = 4;
     
     /*----------------------------------------------------------------------
     Constructor of DBConnect_Term
@@ -107,7 +109,29 @@ public class DBConnect_Term {
     all the hierarchies of the BTs.
     CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
     ----------------------------------------------------------------------*/
-    public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, Vector<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectDescriptor(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
+       CMValue cmv = new CMValue();
+       cmv.assign_node(targetDescriptor.getValue(), -1, Utilities.getTransliterationString(targetDescriptor.getValue(), true),-1);
+       
+       return connectDescriptorCMValue(selectedThesaurus,cmv,bts,Q,sis_session,dbGen,TA,tms_session,uiLang);
+    }
+
+    /*---------------------------------------------------------------------
+    connectDescriptorCMValue()
+    -----------------------------------------------------------------------
+    INPUT: - CMValue targetDescriptor: the Descriptor to be created
+    - String bts: the BT values to be added separated with "###"
+    OUTPUT: - String errorMsg: an error description (if any), "" otherwise
+    FUNCTION: creates a new Descriptor and associates it with the given BTs.
+    It creates relations of the type BT from the Descriptor given as 
+    parameter with the BTs that the user has specified.
+    The BTs must exist in the database otherwise the function returns error.
+    Besides creating the BTs relations, the Descriptor is also added under 
+    all the hierarchies of the BTs.
+    CALLED BY: createDescriptorAndBT()-Create_Or_ModifyDescriptor() ONLY in case of creation!
+    ----------------------------------------------------------------------*/
+    public String connectDescriptorCMValue(String selectedThesaurus,CMValue targetDescriptorCmv, ArrayList<String> bts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
+        
         // initialize output
         String errorMsg = new String("");
         Utilities u = new Utilities();
@@ -115,6 +139,8 @@ public class DBConnect_Term {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String b_prefix = dbtr.getThesaurusPrefix_Descriptor(selectedThesaurus,Q,sis_session.getValue());
 
+        //Utils.StaticClass.webAppSystemOutPrintln("targetDescriptor: "+ targetDescriptor + "  transliteration: " + transliterationString);
+        
         // in case of empty targetDescriptor
         // PERFORMED BY CONSISTENCYCHECK.JAVA
         /*
@@ -124,7 +150,7 @@ public class DBConnect_Term {
         }
          */
         // check for the existence of each BT given and collect them in vec_bt Vector
-        Vector<StringObject> vec_bt = new Vector<StringObject>();
+        ArrayList<StringObject> vec_bt = new ArrayList<StringObject>();
         //String[] bt_split = bts.split("###");
         StringObject bt_obj;
         for (int i = 0; i < bts.size(); i++) {
@@ -133,17 +159,28 @@ public class DBConnect_Term {
 
             if (dbGen.check_exist(bt_obj.getValue(),Q,sis_session) == false) {
                 //Bts declared should already exist in the database.
-                errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Creation/BTMustExist", null),tms_session) + "");
+                errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Creation/BTMustExist", null, uiLang),tms_session) + "");
                 continue;
             }
-            vec_bt.addElement(bt_obj);
+            vec_bt.add(bt_obj);
         }
 
         // create targetDescriptor if it doesn't exist
-        if (dbGen.check_exist(targetDescriptor.getValue(),Q,sis_session) == false) {
-            int ret = TA.CHECK_CreateDescriptor( targetDescriptor, (StringObject) vec_bt.get(0));
+        if (dbGen.checkCMV_exist(targetDescriptorCmv, Q,sis_session) == false) {
+            int ret = TA.CHECK_CreateDescriptorCMValue(targetDescriptorCmv, (StringObject) vec_bt.get(0));
             if (ret == TMSAPIClass.TMS_APIFail) {
-                errorMsg = errorMsg.concat("" + dbGen.check_success(ret, TA,null,tms_session) + "");
+                if(Q.get_error_code().equals(Messages.ErrorCode_For_ThesaurusReferenceIdAlreadyAssigned)){
+                    if(targetDescriptorCmv.getRefid()>0){
+                        errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Creation/AlreadyAssignedSpecificTermReferenceId", new String[] { ""+targetDescriptorCmv.getRefid(), dbGen.removePrefix(targetDescriptorCmv.getString()),selectedThesaurus}, uiLang));
+                    }
+                    else{
+                        errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Creation/ErrorDuringTermReferenceIdAssignement", new String[] { dbGen.removePrefix(targetDescriptorCmv.getString()),selectedThesaurus}, uiLang));
+                    }                 
+                }
+                else{
+                    String reasonMessage =dbGen.check_success(ret, TA,null,tms_session);                
+                    errorMsg = errorMsg.concat(reasonMessage);
+                }
                 return errorMsg;
             }
         } else {
@@ -151,31 +188,32 @@ public class DBConnect_Term {
             //Term dbGen.removePrefix(targetDescriptor.getValue()) already exists in the database.
             errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,
                                        TA, 
-                                       u.translateFromMessagesXML("root/EditTerm/Creation/TermAlreadyExists", new String[] { dbGen.removePrefix(targetDescriptor.getValue())}),
+                                       u.translateFromMessagesXML("root/EditTerm/Creation/TermAlreadyExists", new String[] { dbGen.removePrefix(targetDescriptorCmv.getString())}, uiLang),
                                        tms_session) 
                                     + "");
             return errorMsg;
         }
 
-        Vector<String> hiers = new Vector<String>();
-        Vector<String> prevHiers = new Vector<String>();
+        ArrayList<String> hiers = new ArrayList<String>();
+        ArrayList<String> prevHiers = new ArrayList<String>();
         for (int i = 0; i < vec_bt.size(); i++) {
-            hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i),Q,sis_session);
+            hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i),Q,sis_session, uiLang);
             if (i == 0) {
-                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) targetDescriptor,Q,sis_session);
+                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus,
+                                                          new StringObject(targetDescriptorCmv.getString()),
+                                                           Q,
+                                                           sis_session, uiLang);
             } else {
-                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i - 1),Q,sis_session);
+                prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_bt.get(i - 1),Q,sis_session, uiLang);
             }
             
             for (int j = 0; j < hiers.size(); j++) {
                 
-                String targetDescriptorUTF8 = targetDescriptor.getValue();
-                String prevHiers0_UTF8 = prevHiers.get(0);
-                String Hiers_UTF8 = hiers.get(j);
-                String vecBT_I = vec_bt.get(i).getValue();
-                
-                int ret = TA.CHECK_MoveToHierarchy(targetDescriptor, new StringObject(prevHiers.get(0)),
-                        new StringObject(hiers.get(j)), vec_bt.get(i), TMSAPIClass.CONNECT_NODE_AND_SUBTREE);
+                int ret = TA.CHECK_MoveToHierarchy(new StringObject(targetDescriptorCmv.getString()), 
+                                                   new StringObject(prevHiers.get(0)),
+                                                   new StringObject(hiers.get(j)), 
+                                                   vec_bt.get(i), 
+                                                   TMSAPIClass.CONNECT_NODE_AND_SUBTREE);
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("" + dbGen.check_success(ret,TA, null,tms_session) + "");
                 }
@@ -198,7 +236,7 @@ public class DBConnect_Term {
     the NT is also added to all the hierarchies of the Descriptor.
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectNTs(String selectedThesaurus, StringObject targetDescriptor, String nts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectNTs(String selectedThesaurus, StringObject targetDescriptor, String nts,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         String errorMsg = new String("");
         Utilities u = new Utilities();
         
@@ -215,15 +253,15 @@ public class DBConnect_Term {
         }
         // fill Vector vec_nt with the given NTs to DB format
         String[] nts_split = nts.split("###");
-        Vector<StringObject> vec_nt = new Vector<StringObject>();
+        ArrayList<StringObject> vec_nt = new ArrayList<StringObject>();
         for (int i = 0; i < nts_split.length; i++) {
             nts_split[i] = n_prefix.concat(nts_split[i]);
             StringObject nt_obj = new StringObject(nts_split[i]);
-            vec_nt.addElement(nt_obj);
+            vec_nt.add(nt_obj);
         }
 
         // get the Hierarchies of the targetDescriptor
-        Vector<String> hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, targetDescriptor,Q,sis_session);
+        ArrayList<String> hiers = dbGen.getDescriptorHierarchies(selectedThesaurus, targetDescriptor,Q,sis_session, uiLang);
         /*if (!hiers.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) hiers.get(0));
             errorMsg = errorMsg.concat((String) hiers.get(0));
@@ -237,12 +275,12 @@ public class DBConnect_Term {
                 if (dbGen.isConcept(selectedThesaurus, ((StringObject) vec_nt.get(i)).getValue(),Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) vec_nt.get(i)).getValue());
                     
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/NtNotInDescriptors", new String[]{str}),tms_session) + "");        
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/NtNotInDescriptors", new String[]{str}, uiLang),tms_session) + "");        
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Term " + str + " does not belong in Descriptors and therefore cannot be defined as NT.",tms_session) + "");
                     continue;
                 }
                 // get the Hierarchies of the current NT
-                Vector<String> prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
+                ArrayList<String> prevHiers = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session, uiLang);
                 /*if (!prevHiers.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) prevHiers.get(0));
                     errorMsg = errorMsg.concat((String) prevHiers.get(0));
@@ -275,7 +313,7 @@ public class DBConnect_Term {
                     continue;
                 }
                 // get the Hierarchies of the current NT
-                Vector<String> hier0 = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session);
+                ArrayList<String> hier0 = dbGen.getDescriptorHierarchies(selectedThesaurus, (StringObject) vec_nt.get(i),Q,sis_session, uiLang);
                 /*if (!hier0.get(0).getClass().getName().equals("neo4j_sisapi.StringObject")) {
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"connectNTs:: errorMsg = " + (String) hier0.get(0));
                     errorMsg = errorMsg.concat((String) hier0.get(0));
@@ -308,7 +346,7 @@ public class DBConnect_Term {
     it is created with the TMS function CreateDescriptor
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectRTs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> rts ,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectRTs(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> rts ,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
         String errorMsg = new String("");
@@ -337,9 +375,9 @@ public class DBConnect_Term {
             rtsVector.addElement(new StringObject(rt_split[i]));
         }
         */
-        Vector<StringObject> rtsVector = new Vector<StringObject>();
+        ArrayList<StringObject> rtsVector = new ArrayList<StringObject>();
         for (int i = 0; i < rts.size(); i++) {            
-            rtsVector.addElement(new StringObject(prefix.concat(rts.get(i))));
+            rtsVector.add(new StringObject(prefix.concat(rts.get(i))));
         }
         
         // for each RT
@@ -356,7 +394,7 @@ public class DBConnect_Term {
                 // in case it is not a HierarchyTerm, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) rtsVector.get(i), new StringObject(selectedThesaurus + "HierarchyTerm"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) rtsVector.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/RTNotInPreferredTerms", new String[]{str}),tms_session) + "");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,u.translateFromMessagesXML("root/EditTerm/Edit/RTNotInPreferredTerms", new String[]{str}, uiLang),tms_session) + "");
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Term " + str + " does not belong in the preferred terms set, therefore cannot be declared as RT value.",tms_session) + "");
                     continue;
                 }
@@ -397,7 +435,7 @@ public class DBConnect_Term {
     it is created with the TMS function CreateUsedForTerm
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectUFs(String selectedThesaurus,StringObject targetDescriptor, Vector<String> ufs,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectUFs(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> ufs,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
         
@@ -421,9 +459,9 @@ public class DBConnect_Term {
         String[] uf_split = ufs.split("###");
         // fill a Vector with the UFs with prefix and DB encoding		
         */
-        Vector<StringObject> ufsVector = new Vector<StringObject>();
+        ArrayList<StringObject> ufsVector = new ArrayList<>();
         for (int i = 0; i < ufs.size(); i++) {           
-            ufsVector.addElement(new StringObject(prefix.concat(ufs.get(i))));
+            ufsVector.add(new StringObject(prefix.concat(ufs.get(i))));
         }
         StringObject prevThes = new StringObject();
         TA.GetThesaurusNameWithoutPrefix(prevThes);
@@ -432,13 +470,18 @@ public class DBConnect_Term {
         }
         // for each UF
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
-        for (int i = 0; i < ufsVector.size(); i++) {
+        for (StringObject ufTermObj : ufsVector) {
+            
+            CMValue targetUfTermCmv = new CMValue();
+            targetUfTermCmv.assign_node(ufTermObj.getValue(), -1, Utilities.getTransliterationString(ufTermObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+            
             // in case it doesn't exist
-            if (dbGen.check_exist(((StringObject) ufsVector.get(i)).getValue(),Q,sis_session) == false) {
+            if (dbGen.check_exist(ufTermObj.getValue(),Q,sis_session) == false) {
                 // create it
                 //StringObject dummy = new StringObject();
                 //TA.GetThesaurusName( dummy);
-                int ret = TA.CHECK_CreateUsedForTerm((StringObject) ufsVector.get(i) );
+                int ret = TA.CHECK_CreateUsedForTermCMValue(targetUfTermCmv);
                 //TA.GetThesaurusName( dummy);
                 //TA.GetTMS_APIErrorMessage( dummy);TA.
                 if (ret == TMSAPIClass.TMS_APIFail) {
@@ -454,10 +497,10 @@ public class DBConnect_Term {
                 }
             } else { // UF exists		                
                 // in case it is not a UsedForTerm, fill error message
-                if (dbGen.NodeBelongsToClass((StringObject) ufsVector.get(i), new StringObject(selectedThesaurus + "UsedForTerm"), false,Q,sis_session) == false) {
-                    String str = dbGen.removePrefix(((StringObject) ufsVector.get(i)).getValue());
+                if (dbGen.NodeBelongsToClass(ufTermObj, new StringObject(selectedThesaurus + "UsedForTerm"), false,Q,sis_session) == false) {
+                    String str = dbGen.removePrefix(ufTermObj.getValue());
                     
-                     errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUsedForTerms", new String[]{str}),tms_session) + "");
+                     errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUsedForTerms", new String[]{str}, uiLang),tms_session) + "");
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Term: " + str + " does not belong in non-preferred terms set and therefore cannot be defined as UF.",tms_session) + "");
                     //reset to previous thesaurus name if needed
                     if(prevThes.getValue().equals(selectedThesaurus)==false){
@@ -472,9 +515,9 @@ public class DBConnect_Term {
             }
             // create the UF link
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node( (StringObject) ufsVector.get(i));
+            long sysid1L = Q.set_current_node( ufTermObj);
             CMValue to = new CMValue();
-            to.assign_node(((StringObject) ufsVector.get(i)).getValue(), sysid1L);
+            to.assign_node(ufTermObj.getValue(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( thesHierarchyTerm);
@@ -518,7 +561,7 @@ public class DBConnect_Term {
     it is created as instance of class DeweyNumber
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectDewey(String selectedThesaurus,StringObject targetDescriptor, String dewey,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectDewey(String selectedThesaurus,StringObject targetDescriptor, String dewey,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         Utilities u = new Utilities();
         String errorMsg = new String("");
@@ -539,10 +582,10 @@ public class DBConnect_Term {
         // get the Dewey values
         String[] dewey_split = dewey.split("###");
         // fill a Vector with the Deweys with prefix and DB encoding
-        Vector<StringObject> deweys = new Vector<StringObject>();
+        ArrayList<StringObject> deweys = new ArrayList<StringObject>();
         for (int i = 0; i < dewey_split.length; i++) {
             dewey_split[i] = DeweyPrefix.concat(dewey_split[i]);
-            deweys.addElement(new StringObject(dewey_split[i]));
+            deweys.add(new StringObject(dewey_split[i]));
         }
         // for each Dewey	
         for (int i = 0; i < deweys.size(); i++) {
@@ -551,7 +594,7 @@ public class DBConnect_Term {
                 // create it as instance of class DeweyNumber
                 Identifier id_d = new Identifier(((StringObject) deweys.get(i)).getValue());
                 if (Q.CHECK_Add_Node( id_d, QClass.SIS_API_TOKEN_CLASS,true) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}),tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}, uiLang),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Dewey Number: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) + " failed.",tms_session) + " ");
                     continue;
                 }
@@ -564,7 +607,7 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 //if (Q.CHECK_Add_Instance( id_from, id_to) == QClass.APIFail) {
                 if (Q.CHECK_Add_Instance( id_d, id_to) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}),tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/DeweyAdditionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}, uiLang),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Dewey Number: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue()) + " failed.",tms_session) + " ");
                      
                     continue;
@@ -573,7 +616,7 @@ public class DBConnect_Term {
                 // in case it is not a DeweyNumber, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) deweys.get(i), new StringObject("DeweyNumber"), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) deweys.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInDeweyNumbers", new String[]{str}),tms_session) + "");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInDeweyNumbers", new String[]{str}, uiLang),tms_session) + "");
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + str + " does not belong in the set of Dewey Numbers and therefore cannot be defined as DN.",tms_session) + "");
                     continue;
                 }
@@ -594,7 +637,7 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}) ,tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())}, uiLang) ,tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) deweys.get(i)).getValue())+ " .",tms_session) + " ");
             }
         }
@@ -612,7 +655,7 @@ public class DBConnect_Term {
     it is created as instance of class TaxonomicCode
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectTaxonomicCodes(String selectedThesaurus,StringObject targetDescriptor, Vector<String> tc,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTaxonomicCodes(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> tc,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
                
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
@@ -625,19 +668,19 @@ public class DBConnect_Term {
         StringObject tcLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.tc_kwd, tcFromClassObj, tcLinkObj,Q,sis_session);
         
-        if (tc.size() == 0) {
+        if (tc.isEmpty()) {
         //if (sourcesList.compareTo("") == 0) {
             return errorMsg;
         }
         // fill a Vector with the Source values (with prefix and DB format)
         //String[] src_split = sourcesList.split("###");
-        Vector<StringObject> taxCodes = new Vector<StringObject>();
+        ArrayList<StringObject> taxCodes = new ArrayList<>();
         
         for (int i = 0; i < tc.size(); i++) {
             String tempTaxCode = tc.get(i);
             if(tempTaxCode!=null && tempTaxCode.trim().length()>0){
                 tempTaxCode = tcPrefix.concat(tempTaxCode.trim());
-                taxCodes.addElement(new StringObject(tempTaxCode));
+                taxCodes.add(new StringObject(tempTaxCode));
             }
         }
 
@@ -649,7 +692,7 @@ public class DBConnect_Term {
                 // create it as instance of class DeweyNumber
                 Identifier id_tc = new Identifier(((StringObject) taxCodes.get(i)).getValue());
                 if (Q.CHECK_Add_Node( id_tc, QClass.SIS_API_TOKEN_CLASS,true) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}),tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}, uiLang),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Taxonomical Code: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())  + " failed.",tms_session) + " ");
                     
                     continue;
@@ -663,7 +706,7 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 //if (Q.CHECK_Add_Instance( id_from, id_to) == QClass.APIFail) {
                 if (Q.CHECK_Add_Instance( id_tc, id_to) == QClass.APIFail) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}),tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/TaxonomicalCodeAdditionError", new String[]{dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}, uiLang),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, "Addition of Taxonomical Code: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())  + " failed.",tms_session) + " ");
                     continue;
                 }
@@ -671,7 +714,7 @@ public class DBConnect_Term {
                 // in case it is not a DeweyNumber, fill error message
                 if (dbGen.NodeBelongsToClass((StringObject) taxCodes.get(i), new StringObject(taxCodeClass), false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue());
-                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTaxonomicalCodes", new String[]{str}),tms_session) + "");
+                    errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTaxonomicalCodes", new String[]{str}, uiLang),tms_session) + "");
                     //errorMsg = errorMsg.concat("" + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + str + " does not belong in the set of Taxonomical Codes and therefore cannot be defined as TC.",tms_session) + "");                    
                     continue;
                 }
@@ -692,12 +735,14 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())} ),tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue())}, uiLang ),tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) taxCodes.get(i)).getValue()) + " .",tms_session) + " ");
             }
         }
         return errorMsg;
     }
+    
+    
     
     /*---------------------------------------------------------------------
     connectSources()
@@ -714,7 +759,7 @@ public class DBConnect_Term {
     doesn't exist in the database, it is created with the TMS function CreateSource()
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectSources(String selectedThesaurus,StringObject targetDescriptor, Vector<String> sourcesList, int sourceCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectSources(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> sourcesList, int sourceCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -739,30 +784,34 @@ public class DBConnect_Term {
         }
         // fill a Vector with the Source values (with prefix and DB format)
         //String[] src_split = sourcesList.split("###");
-        Vector<StringObject> sources = new Vector<StringObject>();
+        ArrayList<StringObject> sources = new ArrayList<StringObject>();
         
         for (int i = 0; i < sourcesList.size(); i++) {
             String tempSource = sourcesList.get(i);
             if(tempSource!=null && tempSource.trim().length()>0){
                 tempSource = prefix.concat(tempSource.trim());
-                sources.addElement(new StringObject(tempSource));
+                sources.add(new StringObject(tempSource));
             }
         }
         // for each Source value	
-        for (int i = 0; i < sources.size(); i++) {
+        for (StringObject sourceObj : sources) {
+            
+            CMValue targetSourceCmv = new CMValue();
+            targetSourceCmv.assign_node(sourceObj.getValue(), -1, Utilities.getTransliterationString(sourceObj.getValue(), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+                    
             // if it doesn't exist with TMSAPI
-            if (dbGen.check_exist(((StringObject) sources.get(i)).getValue(),Q,sis_session) == false) {
+            if (dbGen.check_exist(sourceObj.getValue(),Q,sis_session) == false) {
                 // create it
-                int ret = TA.CHECK_CreateSource( (StringObject) sources.get(i));
+                int ret = TA.CHECK_CreateSourceCMValue(targetSourceCmv);
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat(" " + dbGen.check_success(ret, TA,null,tms_session) + " ");
                     continue;
                 }
             } else { // already exists
                 // check it is an instance of class Source
-                if (dbGen.NodeBelongsToClass((StringObject) sources.get(i), new StringObject("Source"), false,Q,sis_session) == false) {
-                    String str = dbGen.removePrefix(((StringObject) sources.get(i)).getValue());
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInSources", new String[]{str}),tms_session) + " ");
+                if (dbGen.NodeBelongsToClass(sourceObj, new StringObject("Source"), false,Q,sis_session) == false) {
+                    String str = dbGen.removePrefix(sourceObj.getValue());
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInSources", new String[]{str}, uiLang),tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail, TA,"Value: " + str + " does not belong in the set Sources and therefore cannot be used as primary or translations source.",tms_session) + " ");
                     continue;
                 }
@@ -776,9 +825,9 @@ public class DBConnect_Term {
             long sysidL = Q.set_current_node( targetDescriptor);
             Identifier from = new Identifier(sysidL);
             Q.reset_name_scope();
-            long sysid2L = Q.set_current_node( (StringObject) sources.get(i));
+            long sysid2L = Q.set_current_node( sourceObj);
             CMValue to = new CMValue();
-            to.assign_node(((StringObject) sources.get(i)).getValue(), sysid2L);
+            to.assign_node(sourceObj.getValue(), sysid2L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             long sysid3L = Q.set_current_node( thesHierarchyTerm);
@@ -794,7 +843,7 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(((StringObject) sources.get(i)).getValue())}) ,tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{ dbGen.removePrefix(sourceObj.getValue())}, uiLang) ,tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) sources.get(i)).getValue()) + " .",tms_session) + " ");
             }
         } // for each Source value
@@ -817,7 +866,7 @@ public class DBConnect_Term {
     doesn't exist in the database, it is created with the TMS function CreateEnglishWord()
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
-    public String connectEnglishWords(String selectedThesaurus,StringObject targetDescriptor, Vector<String> engWordList, int englishWordCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectEnglishWords(String selectedThesaurus,StringObject targetDescriptor, ArrayList<String> engWordList, int englishWordCategory,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         int SISapiSession = sis_session.getValue();
         int TMSapiSession = tms_session.getValue();
         String errorMsg = new String("");
@@ -831,13 +880,13 @@ public class DBConnect_Term {
         }
         // fill a Vector with the EnglishWord values (with prefix and DB format)	
         //String[] eng_split = engWordList.split("###");
-        Vector<StringObject> words = new Vector<StringObject>();
+        ArrayList<StringObject> words = new ArrayList<StringObject>();
         String e_prefix = dbtr.getThesaurusPrefix_EnglishWord(Q,sis_session.getValue());
         for (int i = 0; i < engWordList.size(); i++) {
             String tempWord = engWordList.get(i);
             if(tempWord!=null && tempWord.trim().length()>0){
                 tempWord=e_prefix.concat(tempWord.trim());
-                words.addElement(new StringObject(tempWord));
+                words.add(new StringObject(tempWord));
             }
         }
 
@@ -855,7 +904,7 @@ public class DBConnect_Term {
         for (int i = 0; i < words.size(); i++) {
             // check if current EnglishWord is the same with target descriptor
             if (targetDescriptor.getValue().compareTo(dbGen.removePrefix(((StringObject) words.get(i)).getValue())) == 0) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/CannotCreateRelationFromAndToTheSameTerm",null),tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/CannotCreateRelationFromAndToTheSameTerm",null, uiLang),tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "The creation of relation from and to the same term is prohibitied.",tms_session) + " ");
                 return errorMsg;
             }
@@ -871,7 +920,7 @@ public class DBConnect_Term {
                 // EnglishWord class is not thesauric and is the same as uk_uf
                 //String str = dbGen.removePrefix(((StringObject) words.get(i)).getValue());
                 if (dbGen.NodeBelongsToClass((StringObject) words.get(i), new StringObject("EnglishWord"), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{((StringObject) words.get(i)).getValue()}) ,tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{((StringObject) words.get(i)).getValue()}, uiLang) ,tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+" does not belong in the set of Translation terms and therefore cannot be defined as Translation.",tms_session) + " ");
                     return errorMsg;
                 }
@@ -893,7 +942,7 @@ public class DBConnect_Term {
             int ret = Q.CHECK_Add_Unnamed_Attribute( from, to, catSet);
             Q.free_set( catSet);
             if (ret == QClass.APIFail) {
-                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) words.get(i)).getValue())}) ,tms_session) + " ");
+                errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ConnectionError", new String[]{dbGen.removePrefix(((StringObject) words.get(i)).getValue())}, uiLang) ,tms_session) + " ");
                 //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA,"Error occurred while creationg link: " + dbGen.removePrefix(((StringObject) words.get(i)).getValue()),tms_session) + " ." + " ");
             }
         } // for each EnglishWord value
@@ -911,12 +960,18 @@ public class DBConnect_Term {
     FUNCTION: adds a comment of the type:
     commentCategory == CATEGORY_THES_COMMENT => THES1ThesaurusConcept->thes1_comment
     commentCategory == CATEGORY_THES_SCOPENOTE => THES1ThesaurusConcept->thes1_scope_note
-    commentCategory == HYPERTEXT_CATEGORY_HISTORICALNOTE => THES1ThesaurusConcept->thes1_historical_note
+    commentCategory == COMMENT_CATEGORY_HISTORICALNOTE => THES1ThesaurusConcept->thes1_historical_note
     to the given Descriptor 
     CALLED BY: the creation / modification of a Descriptor
     ----------------------------------------------------------------------*/
 
-    public String AddComment(String selectedThesaurus,StringObject targetDescriptor, String commentString, int commentCategory,QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
+    public String AddComment(String selectedThesaurus,
+            StringObject targetDescriptor, 
+            String commentString, 
+            int commentCategory,
+            QClass Q, 
+            TMSAPIClass TA, 
+            IntegerObject sis_session) {
 
         String errorMsg = new String("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -930,18 +985,26 @@ public class DBConnect_Term {
         dbtr.getThesaurusClass_ThesaurusConcept(selectedThesaurus,Q,sis_session.getValue(),thesThesaurusConcept);
 
         StringObject commentCategoryStrObj = new StringObject();
-        if (commentCategory == HYPERTEXT_CATEGORY_COMMENT) { 
-            dbtr.getThesaurusCategory_comment(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        } else if(commentCategory == HYPERTEXT_CATEGORY_SCOPENOTE){ 
-            dbtr.getThesaurusCategory_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+        switch (commentCategory) {
+            case COMMENT_CATEGORY_COMMENT:
+                dbtr.getThesaurusCategory_comment(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case COMMENT_CATEGORY_SCOPENOTE:
+                dbtr.getThesaurusCategory_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case COMMENT_CATEGORY_HISTORICALNOTE:
+                dbtr.getThesaurusCategory_historical_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            case COMMENT_CATEGORY_SCOPENOTE_TR:
+                dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;                
+            case COMMENT_CATEGORY_NOTE:
+                dbtr.getThesaurusCategory_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
+                break;
+            default:
+                break;
         }
-        else if(commentCategory == HYPERTEXT_CATEGORY_HISTORICALNOTE){ 
-            dbtr.getThesaurusCategory_historical_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        }
-        else if(commentCategory == HYPERTEXT_CATEGORY_SCOPENOTE_TR){
-            dbtr.getThesaurusCategory_translations_scope_note(selectedThesaurus,Q,sis_session.getValue(),commentCategoryStrObj);
-        }
-
+        
         
          //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         StringObject prevThes = new StringObject();
@@ -949,7 +1012,8 @@ public class DBConnect_Term {
         if(prevThes.getValue().equals(selectedThesaurus)==false){
             TA.SetThesaurusName(selectedThesaurus);
         }
-         int ret = TA.SetDescriptorComment(targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
+        
+        int ret = TA.SetDescriptorComment(targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
          //int ret = TA.SetDescriptorComment(TMSapiSession, targetDescriptor, new StringObject(commentString), thesThesaurusConcept, commentCategoryStrObj);
          //reset to previous thesaurus name if needed
         if(prevThes.getValue().equals(selectedThesaurus)==false){
@@ -966,7 +1030,7 @@ public class DBConnect_Term {
         return errorMsg;
     }
 
-    public String connectAlts(String selectedThesaurus,StringObject targetDescriptor, String alts, String prefix,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectAlts(String selectedThesaurus,StringObject targetDescriptor, String alts, String prefix,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
 
         String errorMsg = new String("");
         int SisSessionId = sis_session.getValue();
@@ -982,7 +1046,7 @@ public class DBConnect_Term {
         // get the alt values	
         String[] alts_split = alts.split(",");
         // fill a Vector with the alt with prefix and DB encoding	
-        Vector<StringObject> alts_Vector = new Vector<StringObject>();
+        ArrayList<StringObject> alts_Vector = new ArrayList<StringObject>();
 
         for (int i = 0; i < alts_split.length; i++) {
             String tempSTR1 = new String(alts_split[i].trim());
@@ -991,7 +1055,7 @@ public class DBConnect_Term {
                 StringObject tempSTR1Obj = new StringObject(prefix.concat(tempSTR1));
                 if (alts_Vector.contains(tempSTR1Obj) == false) {
 
-                    alts_Vector.addElement(tempSTR1Obj);
+                    alts_Vector.add(tempSTR1Obj);
                 }
             }
         }
@@ -1001,7 +1065,7 @@ public class DBConnect_Term {
             // in case it doesn't exist
             if (dbGen.check_exist(((StringObject) alts_Vector.get(i)).getValue(),Q,sis_session) == false) {
                 // create Alternative Term
-                int ret = TA.CHECK_CreateAlternativeTerm( (StringObject) alts_Vector.get(i));
+                int ret = TA.CreateAlternativeTerm( (StringObject) alts_Vector.get(i));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     continue;
@@ -1015,7 +1079,7 @@ public class DBConnect_Term {
                 if (dbGen.NodeBelongsToClass((StringObject) alts_Vector.get(i), altClassObj , false,Q,sis_session) == false) {
                     String str = dbGen.removePrefix(((StringObject) alts_Vector.get(i)).getValue());
                     //ValueNotInAlternativeTerms
-                    errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInAlternativeTerms", new String[]{str}));
+                    errorMsg = errorMsg.concat(u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInAlternativeTerms", new String[]{str}, uiLang));
                     //errorMsg = errorMsg.concat("Value: '" + str + "' does not belong in the set of Alternative Terms and therefore cannot be defined as ALT.");
                     continue;
                 }
@@ -1047,7 +1111,7 @@ public class DBConnect_Term {
 
     }
 
-    public String connectTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTranslation(String selectedThesaurus, StringObject targetDescriptor, ArrayList<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1070,7 +1134,7 @@ public class DBConnect_Term {
             return errorMsg;
         }
 
-        Vector<String> translationsVector = new Vector<String>();
+        ArrayList<String> translationsVector = new ArrayList<String>();
         for(int i=0 ; i<normalizedTranslations.size(); i++ ){
 
             String normalizedValue = normalizedTranslations.get(i); //i.e EN:some val
@@ -1081,21 +1145,23 @@ public class DBConnect_Term {
 
 
         
-        Hashtable<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, selectedThesaurus, null, false,false);
+        HashMap<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, selectedThesaurus, null, false,false);
 
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
             
-            String targetWord = translationsVector.get(i);
-            String prefix = targetWord.substring(0,targetWord.indexOf(ConstantParameters.languageIdentifierSuffix));
+            CMValue targetWordCmv = new CMValue();
+            targetWordCmv.assign_node(translationsVector.get(i), -1, Utilities.getTransliterationString(translationsVector.get(i), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            
+            String prefix = targetWordCmv.getString().substring(0,targetWordCmv.getString().indexOf(ConstantParameters.languageIdentifierSuffix));
             String targetWordClass =languagesIDs2Words.get(prefix)+ConstantParameters.wordClass;
             String targetSubTranslationCategory =selectedThesaurus + ConstantParameters.thesaursTranslationCategorysubString + prefix;
             
 
             // in case it doesn't exist
-            if (dbGen.check_exist(translationsVector.get(i),Q,sis_session) == false) {
+            if (dbGen.check_exist(targetWordCmv.getString(),Q,sis_session) == false) {
                 // create it as orphan
-                ret = TA.CHECK_CreateTranslationWord( new StringObject(targetWord), new StringObject(targetWordClass));
+                ret = TA.CHECK_CreateTranslationWordCMValue(targetWordCmv, new StringObject(targetWordClass));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     return errorMsg;
@@ -1103,8 +1169,8 @@ public class DBConnect_Term {
             } else { 
                 
                 //consistency check 26 is supposed to be applied prior to this call
-                if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                if (dbGen.NodeBelongsToClass(new StringObject(targetWordCmv.getString()), new StringObject(targetWordClass), false,Q,sis_session) == false) {
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInTranslations", new String[]{targetWordCmv.getString()}, uiLang) ,tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+" does not belong in the set of Translation terms and therefore cannot be defined as Translation.",tms_session) + " ");
                     return errorMsg;
                 }
@@ -1116,9 +1182,9 @@ public class DBConnect_Term {
             }
             // create the translation links
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node(new StringObject(targetWord));
+            long sysid1L = Q.set_current_node(new StringObject(targetWordCmv.getString()));
             CMValue to = new CMValue();
-            to.assign_node(targetWord, sysid1L);
+            to.assign_node(targetWordCmv.getString(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( fromClass);
@@ -1155,7 +1221,7 @@ public class DBConnect_Term {
 
     }
 
-    public String connectUFTranslation(String selectedThesaurus, StringObject targetDescriptor, Vector<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectUFTranslation(String selectedThesaurus, StringObject targetDescriptor, ArrayList<String> normalizedTranslations,QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -1175,7 +1241,7 @@ public class DBConnect_Term {
             return errorMsg;
         }
 
-        Vector<String> translationsVector = new Vector<String>();
+        ArrayList<String> translationsVector = new ArrayList<String>();
         for(int i=0 ; i<normalizedTranslations.size(); i++ ){
 
             String normalizedValue = normalizedTranslations.get(i); //i.e EN:some val
@@ -1186,21 +1252,22 @@ public class DBConnect_Term {
 
 
 
-        Hashtable<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false,false);
+        HashMap<String,String> languagesIDs2Words = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false,false);
 
         // for each translation
         for (int i = 0; i < translationsVector.size(); i++) {
 
-            String targetWord = translationsVector.get(i);
-            String prefix = targetWord.substring(0,targetWord.indexOf(ConstantParameters.languageIdentifierSuffix));
+            CMValue targetWordCmv = new CMValue();
+            targetWordCmv.assign_node(translationsVector.get(i), -1, Utilities.getTransliterationString(translationsVector.get(i), true), TMSAPIClass.Do_Not_Assign_ReferenceId);
+            String prefix = targetWordCmv.getString().substring(0,targetWordCmv.getString().indexOf(ConstantParameters.languageIdentifierSuffix));
             String targetWordClass =languagesIDs2Words.get(prefix)+ConstantParameters.wordClass;
             String targetSubTranslationCategory =selectedThesaurus + ConstantParameters.thesaursUFTranslationCategorysubString + prefix;
 
 
             // in case it doesn't exist
-            if (dbGen.check_exist(translationsVector.get(i),Q,sis_session) == false) {
+            if (dbGen.check_exist(targetWordCmv.getString(),Q,sis_session) == false) {
                 // create it as orphan
-                ret = TA.CHECK_CreateTranslationWord( new StringObject(targetWord), new StringObject(targetWordClass));
+                ret = TA.CHECK_CreateTranslationWordCMValue(targetWordCmv, new StringObject(targetWordClass));
                 if (ret == TMSAPIClass.TMS_APIFail) {
                     errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                     return errorMsg;
@@ -1208,9 +1275,9 @@ public class DBConnect_Term {
             } else {
 
                 //consistency check 26 is supposed to be applied prior to this call
-                if (dbGen.NodeBelongsToClass(new StringObject(targetWord), new StringObject(targetWordClass), false,Q,sis_session) == false) {
+                if (dbGen.NodeBelongsToClass(new StringObject(targetWordCmv.getString()), new StringObject(targetWordClass), false,Q,sis_session) == false) {
                     
-                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUFTranslations", new String[]{targetWord}) ,tms_session) + " ");
+                    errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, u.translateFromMessagesXML("root/EditTerm/Edit/ValueNotInUFTranslations", new String[]{targetWordCmv.getString()}, uiLang) ,tms_session) + " ");
                     //errorMsg = errorMsg.concat(" " + dbGen.check_success(TMSAPIClass.TMS_APIFail,TA, "Value: " + targetWord+"  does not belong in the set of non preferred Translation terms and therefore cannot be defined as translation UF.",tms_session) + " ");
                     return errorMsg;
                 }
@@ -1222,9 +1289,9 @@ public class DBConnect_Term {
             }
             // create the translation links
             Q.reset_name_scope();
-            long sysid1L = Q.set_current_node(new StringObject(targetWord));
+            long sysid1L = Q.set_current_node(new StringObject(targetWordCmv.getString()));
             CMValue to = new CMValue();
-            to.assign_node(targetWord, sysid1L);
+            to.assign_node(targetWordCmv.getString(), sysid1L);
             int catSet = Q.set_get_new();
             Q.reset_name_scope();
             Q.set_current_node( fromClass);
@@ -1281,7 +1348,7 @@ public class DBConnect_Term {
         // in case it doesn't exist
         if (dbGen.check_exist(user,Q,sis_session) == false) {
             // create it as orphan
-            ret = TA.CHECK_CreateEditor( new StringObject(user));
+            ret = TA.CreateEditor( new StringObject(user));
             if (ret == TMSAPIClass.TMS_APIFail) {
                 errorMsg = errorMsg.concat("\n" + dbGen.check_success(ret,TA, null,tms_session) + "\n");
                 return errorMsg;
@@ -1345,7 +1412,7 @@ public class DBConnect_Term {
         return errorMsg;
     }
     
-      public String connectTime(String selectedThesaurus,StringObject targetDescriptor, String FromClass, String Link,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
+    public String connectTime(String selectedThesaurus,StringObject targetDescriptor, String FromClass, String Link,QClass Q, IntegerObject sis_session,DBGeneral dbGen,TMSAPIClass TA, IntegerObject tms_session) {
           
         int ret = TMSAPIClass.TMS_APISucc;
         Utilities u = new Utilities();
@@ -1499,8 +1566,17 @@ public class DBConnect_Term {
         return errorMsg;
     }
     
-    public int delete_term_links_by_category(String selectedThesaurus, String targetDescriptor, 
-            int direction, String fromClass, String link, int KindOfDescriptor, QClass Q, TMSAPIClass TA, IntegerObject sis_session,DBGeneral dbGen,StringObject errorMsg) {
+    public int delete_term_links_by_category(String selectedThesaurus, 
+            String targetDescriptor, 
+            int direction, 
+            String fromClass, 
+            String link, 
+            int KindOfDescriptor, 
+            QClass Q, 
+            TMSAPIClass TA, 
+            IntegerObject sis_session,
+            DBGeneral dbGen,
+            StringObject errorMsg) {
 
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         int ret = TMSAPIClass.TMS_APISucc;
@@ -1520,7 +1596,7 @@ public class DBConnect_Term {
         StringObject linkObj = new StringObject(link);
         Q.reset_name_scope();
 
-        Vector<Long> deleteIDsL = new Vector<Long>();
+        ArrayList<Long> deleteIDsL = new ArrayList<Long>();
 
         //StringObject label = new StringObject();
         //IntegerObject sysid = new IntegerObject();
@@ -1532,13 +1608,13 @@ public class DBConnect_Term {
 
                 //must collect all Nodes Names with relation RT pointing to targetDescriptorObj in newTargets
                 //during this session we also collect the RTs labels sysids pointing to targetDescriptorObj in deleteDatesIDs
-                Vector<String> newTargets = new Vector<String>();
+                ArrayList<String> newTargets = new ArrayList<String>();
                 int selected_category_nodes = Q.get_link_to_by_category(0, fromClassObj, linkObj);
                 Q.reset_set(selected_category_nodes);
 
                 if (Q.set_get_card(selected_category_nodes) > 0) {
                     
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_category_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1562,7 +1638,7 @@ public class DBConnect_Term {
 
                 if (Q.set_get_card(select_category_values) > 0) {
 
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(select_category_values, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!newTargets.contains(row.get_v1_cls_logicalname())) {
@@ -1597,12 +1673,12 @@ public class DBConnect_Term {
                     Q.reset_name_scope();
                     Q.set_current_node(new StringObject(newTargets.get(k)));
 
-                    Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                    ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                     int selected_new_target_category_nodes = Q.get_link_from_by_category(0, fromClassObj, linkObj);
                     Q.reset_set(selected_new_target_category_nodes);
                     if (Q.set_get_card(selected_new_target_category_nodes) > 0) {
 
-                        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                         if(Q.bulk_return_nodes(selected_new_target_category_nodes, retVals)!=QClass.APIFail){
                             for(Return_Nodes_Row row:retVals){
                                 if (!deletenewTargetIDsL.contains(row.get_Neo4j_NodeId()) && deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1689,7 +1765,7 @@ public class DBConnect_Term {
                 Q.reset_set(selected_category_nodes);
                 if (Q.set_get_card(selected_category_nodes) > 0) {
 
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_category_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1697,18 +1773,6 @@ public class DBConnect_Term {
                             }
                         }
                     }
-                    /*
-                    while (Q.retur_full_nodes(selected_category_nodes, sysid, label, sclass) != QClass.APIFail) {
-
-                        //if(filterDelete){
-                        //String convertedName = dbGen.removePrefix(label.getValue()).trim() ;
-                        //if(escapeDeletion.contains(convertedName))
-                        //continue;                    
-                        //}
-                        if (!deleteIDs.contains(sysid.getValue())) {
-                            deleteIDs.add(sysid.getValue());
-                        }
-                    }*/
                 }
 
                 Q.free_set(selected_category_nodes);
@@ -1768,7 +1832,7 @@ public class DBConnect_Term {
         // prepare input parameters: add prefix and convert to DB encoding
         StringObject targetDescriptorObj = new StringObject(termPrefix.concat(targetDescriptor));
         
-        Vector<Long> deleteIDsL = new Vector<Long>();
+        ArrayList<Long> deleteIDsL = new ArrayList<Long>();
 
         //StringObject label  = new StringObject();
         //IntegerObject sysid = new IntegerObject();
@@ -1776,11 +1840,11 @@ public class DBConnect_Term {
 
         if (direction == ConstantParameters.TO_Direction) {
 
-            Vector<String> newTargets = new Vector<String>();
+            ArrayList<String> newTargets = new ArrayList<String>();
 
             //collect link ids for deletion
             if (Q.set_get_card(set_links) > 0) {
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_links, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1804,7 +1868,7 @@ public class DBConnect_Term {
             //collect their names in newTargets Vector
             if (Q.set_get_card(select_new_target_terms) > 0) {
 
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(select_new_target_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!newTargets.contains(row.get_v1_cls_logicalname())) {
@@ -1830,12 +1894,12 @@ public class DBConnect_Term {
                 Q.reset_name_scope();
                 Q.set_current_node(new StringObject(newTargets.get(k)));
 
-                Vector<Long> deletenewTargetIDsL = new Vector<Long>();
+                ArrayList<Long> deletenewTargetIDsL = new ArrayList<Long>();
                 int selected_new_target_nodes = Q.get_link_from(0);
                 Q.reset_set(selected_new_target_nodes);
                 if (Q.set_get_card(selected_new_target_nodes) > 0) {
                     
-                    Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                    ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                     if(Q.bulk_return_nodes(selected_new_target_nodes, retVals)!=QClass.APIFail){
                         for(Return_Nodes_Row row:retVals){
                             if (!deletenewTargetIDsL.contains(row.get_Neo4j_NodeId()) && deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1921,7 +1985,7 @@ public class DBConnect_Term {
 
             if (Q.set_get_card(set_links) > 0) {
 
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_links, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         if (!deleteIDsL.contains(row.get_Neo4j_NodeId())) {
@@ -1993,7 +2057,7 @@ public class DBConnect_Term {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
         
-        Vector<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
+        ArrayList<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
         Q.free_set(set_classes);
         
         Identifier I_Accepted = new Identifier(accepted_IDL);
@@ -2055,9 +2119,15 @@ public class DBConnect_Term {
         }
     }
     
-    public void CreateModifyStatus(String selectedThesaurus,StringObject targetDescriptorObj, String status,
+    public void CreateModifyStatus(UserInfoClass SessionUserInfo,StringObject targetDescriptorObj, String status,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,IntegerObject tms_session,  DBGeneral dbGen,StringObject errorMsg){
        
+        String displayStatusFor_UC = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo);
+        String displayStatusFor_FI = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo);
+        String displayStatusFor_FA = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo);
+        String displayStatusFor_FR = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Reinspection, SessionUserInfo);
+        String displayStatus_Approved = Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo);
+        
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         StringObject statusUnderConstructionObj = new StringObject();
         StringObject statusForApprovalObj       = new StringObject();
@@ -2065,11 +2135,11 @@ public class DBConnect_Term {
         StringObject statusForReinspectionObj   = new StringObject();
         StringObject statusApprovedObj          = new StringObject();
         
-        dbtr.getThesaurusClass_StatusUnderConstruction(selectedThesaurus,statusUnderConstructionObj);
-        dbtr.getThesaurusClass_StatusForApproval(selectedThesaurus,statusForApprovalObj);
-        dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus,statusForInsertionObj);
-        dbtr.getThesaurusClass_StatusForReinspection(selectedThesaurus,statusForReinspectionObj);
-        dbtr.getThesaurusClass_StatusApproved(selectedThesaurus,statusApprovedObj);
+        dbtr.getThesaurusClass_StatusUnderConstruction(SessionUserInfo.selectedThesaurus,statusUnderConstructionObj);
+        dbtr.getThesaurusClass_StatusForApproval(SessionUserInfo.selectedThesaurus,statusForApprovalObj);
+        dbtr.getThesaurusClass_StatusForInsertion(SessionUserInfo.selectedThesaurus,statusForInsertionObj);
+        dbtr.getThesaurusClass_StatusForReinspection(SessionUserInfo.selectedThesaurus,statusForReinspectionObj);
+        dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus,statusApprovedObj);
         
         //Get Sys_IDs and create Identifiers for all above Retrieved classes and target term
         Q.reset_name_scope();
@@ -2093,7 +2163,7 @@ public class DBConnect_Term {
         int set_classes = Q.get_all_classes(0);
         Q.reset_set(set_classes);
         
-        Vector<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
+        ArrayList<String> termClassesNames = dbGen.get_Node_Names_Of_Set(set_classes, false,Q,sis_session);
         Q.free_set(set_classes);
         
         Identifier I_Under_Construction = new Identifier(under_construction_IDL);
@@ -2104,7 +2174,7 @@ public class DBConnect_Term {
         Identifier I_Term = new Identifier(termIdL);
         int ret = QClass.APISucc;
             
-        if(status.compareTo(Parameters.Status_Under_Construction)==0){
+        if(status.compareTo(displayStatusFor_UC)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusForApprovalObj.getValue()))
@@ -2148,7 +2218,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_For_Approval)==0){
+        if(status.compareTo(displayStatusFor_FA)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2191,7 +2261,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_For_Insertion)==0){
+        if(status.compareTo(displayStatusFor_FI)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2234,7 +2304,7 @@ public class DBConnect_Term {
             }
         }
         else
-        if(status.compareTo(Parameters.Status_For_Reinspection)==0){
+        if(status.compareTo(displayStatusFor_FR)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2277,7 +2347,7 @@ public class DBConnect_Term {
             
         }
         else
-        if(status.compareTo(Parameters.Status_Approved)==0){
+        if(status.compareTo(displayStatus_Approved)==0){
             
             //Delete previous status
             if(termClassesNames.contains(statusUnderConstructionObj.getValue()))
@@ -2314,16 +2384,15 @@ public class DBConnect_Term {
             
             if(ret == QClass.APIFail){
                 errorMsg.setValue(errorMsg.getValue().concat(dbGen.check_success(ret, TA, null,tms_session)));
-            }            
-            
+            }
         }
     }
-     /* CreateModify_Finalization()
+    /* CreateModify_Finalization()
      * Handles created/modified info of each node affected.
      * Affected Nodes are target Node and all nodes in String otherModifiedNodes in a comma seperated list
      */
     public void CreateModify_Finalization(String selectedThesaurus,StringObject targetDescriptor, String user, 
-            Vector<String> otherModifiedNodes, int createORmodify,
+            ArrayList<String> otherModifiedNodes, int createORmodify,
             QClass Q, IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session,
             DBGeneral dbGen, StringObject errorMsg) {
 

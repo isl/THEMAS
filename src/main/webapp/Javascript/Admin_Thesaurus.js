@@ -73,16 +73,16 @@ function Import_DataButtonPressed(importMode){
         Import_Thesaurus_NewName = StringReplaceSpecialCharacters(Import_Thesaurus_NewName);
         Import_Thesaurus_NewName_Input.value = Import_Thesaurus_NewName;
         
-        var trimmed = Import_Thesaurus_NewName.replace(/^\s+|\s+$/g, '') ;
-        trimmed= trimmed.toUpperCase();
-        if (trimmed.length == 0 || trimmed.length > 10) {
+        var trimmed = ThesaurusNameNormalizedString(Import_Thesaurus_NewName);
+        
+        if (!ThesaurusNameIsLengthOk(trimmed)) {
             alert(translate(45));
             //alert('Το όνομα του θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.');
             // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
             // otherwise, the last form's action is executed!!
             submitFormTo('Import_DataForm' , 'Admin_Thesaurus?DIV=ImportExport_Data_DIV');  
         }
-        else if (trimmed != trimmed.match('[A-Z0-9]+')) {
+        else if (!ThesaurusNameAreCharsOk(trimmed)) {
             alert(translate(46));
             //alert('Το όνομα του θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.');
             // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
@@ -111,7 +111,13 @@ function Import_DataButtonPressed(importMode){
              //if(confirm('Είστε σίγουρος για την εισαγωγή θησαυρού στην βάση;\nΗ λειτουργία αυτή θα σταματήσει προσωρινά κάθε επικοινωνία με την βάση.')){
                 DisplayPleaseWaitScreen(true);
                 //alert('ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected);
-                submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection);
+                var intiDBCheckBox = document.getElementById('importThesarusInitDb');
+                if(intiDBCheckBox && intiDBCheckBox.checked){
+                    submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection+'&InitDB=true');
+                }
+                else{
+                    submitFormTo('Import_DataForm' , 'ImportData?Import_Thesaurus_NewName_NAME='+trimmed+"&importXMLfilename="+importXMLfilename + choiceSelected+'&schematype='+schemaTypeSelection);
+                }
             }
             else{
                 submitFormTo('Import_DataForm' , 'Admin_Thesaurus?DIV=ImportExport_Data_DIV');  
@@ -320,6 +326,24 @@ function callAdminTranslationsServlet(servlet,functionallity){
     
 }
 
+function ThesaurusNameNormalizedString(thesName){
+    var trimmed = thesName.replace(/^\s+|\s+$/g, '') ;
+    trimmed= trimmed.toUpperCase();
+    return trimmed;
+}
+function ThesaurusNameIsLengthOk(thesName){
+    if(thesName.length == 0 || thesName.length > 20){
+        return false;
+    }
+    return true;
+}
+
+function ThesaurusNameAreCharsOk(thesName){
+    if(thesName != thesName.match('[A-Z0-9_-]+')){
+        return false;
+    }
+    return true;
+}
 /*-----------------------------------------------------
               Create_ThesaurusOKButtonPressed()
 -------------------------------------------------------*/      
@@ -337,16 +361,15 @@ function Create_ThesaurusOKButtonPressed() {
   Create_Thesaurus_NewName = StringReplaceSpecialCharacters(Create_Thesaurus_NewName);
   Create_Thesaurus_NewName_Input.value = Create_Thesaurus_NewName;
     
-  var trimmed = Create_Thesaurus_NewName.replace(/^\s+|\s+$/g, '') ;
-  trimmed= trimmed.toUpperCase();
-  if (trimmed.length == 0 || trimmed.length > 10) {
+  var trimmed = ThesaurusNameNormalizedString(Create_Thesaurus_NewName);
+  if (!ThesaurusNameIsLengthOk(trimmed)) {
     alert(translate(45));  
     //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.');
     // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
     // otherwise, the last form's action is executed!!
     submitFormTo('Create_ThesaurusForm' , 'Admin_Thesaurus?DIV=CreateThesaurus_DIV');    
   }
-  else if (trimmed != trimmed.match('[A-Z0-9]+')) {
+  else if (!ThesaurusNameAreCharsOk(trimmed)) {
     alert(translate(46));
     //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.');
     // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
@@ -360,8 +383,6 @@ function Create_ThesaurusOKButtonPressed() {
           document.getElementById('Create_Thesaurus_result_textarea_ID').value = translate(42);
           //document.getElementById('Create_Thesaurus_result_textarea_ID').value = 'Παρακαλώ περιμένετε...';
           submitFormTo('Create_ThesaurusForm' , 'CreateThesaurus');  
-
-
 
 
 /*
@@ -469,17 +490,16 @@ function Copy_ThesaurusOKButtonPressed(){
     Copy_Thesaurus_NewName.value = Copy_Thesaurus_NewName; 
     
     
-    var trimmed = Copy_Thesaurus_NewName.replace(/^\s+|\s+$/g, '') ;
-    trimmed= trimmed.toUpperCase();
-  
-  if (trimmed.length == 0 || trimmed.length > 10) {
+    var trimmed = ThesaurusNameNormalizedString(Copy_Thesaurus_NewName) ;
+    
+  if (!ThesaurusNameIsLengthOk(trimmed)) {
     alert(translate(45));
     //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.');
     // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
     // otherwise, the last form's action is executed!!
     submitFormTo('Copy_ThesaurusForm' , 'Admin_Thesaurus?DIV=CreateThesaurus_DIV');  
   }
-  else if (trimmed != trimmed.match('[A-Z0-9]+')) {
+  else if (!ThesaurusNameAreCharsOk(trimmed)) {
     alert(translate(46));
     //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.');
     // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
@@ -555,17 +575,16 @@ function Merge_ThesauriButtonPressed() {
   
  // alert('Create_Thesaurus_1_Name = ' + Create_Thesaurus_1_Name + '\n\nCreate_Thesaurus_2_Name = ' + Create_Thesaurus_2_Name +'\n\nCreate_Thesaurus_Merged_Name = ' + Create_Thesaurus_Merged_Name );
    
-  var trimmedNewName = Create_Thesaurus_Merged_Name.replace(/^\s+|\s+$/g, '') ;
-  trimmedNewName = trimmedNewName.toUpperCase();
+  var trimmedNewName = ThesaurusNameNormalizedString(Create_Thesaurus_Merged_Name);
   if (callServletOK == true) {
-    if (trimmedNewName.length == 0 || trimmedNewName.length > 10) {
+    if (!ThesaurusNameIsLengthOk(trimmedNewName)) {
       alert(translate(45));
       //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει από 1 έως και 10 χαρακτήρες.');
       // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
       // otherwise, the last form's action is executed!!
       submitFormTo('Merge_ThesauriForm' , 'Admin_Thesaurus?DIV=CreateThesaurus_DIV');  
     }
-    else if (trimmedNewName != trimmedNewName.match('[A-Z0-9]+')) {
+    else if (!ThesaurusNameAreCharsOk(trimmedNewName)) {
       alert(translate(46));
       //alert('Το όνομα του νέου θησαυρού πρέπει να περιέχει μόνο κεφαλαίους λατινικούς χαρακτήρες και αριθμούς.');
       // ATTENTION!!!! in case of no thesaurus selected, set the form action to the following
@@ -755,4 +774,69 @@ function removeLanguageRow(table) {
     if(table.rows.length==0){
         document.getElementById('removeLanguageImg').style.display='none';
     }
+}
+
+
+function checkSkosConfiguration(){
+    if($('#radioSKOS').is(':checked')) { 
+        $('#skosConceptSchemeConfigurationRowId').css('visibility', 'visible'); 
+        $('#skosBaseNameSpaceConfigurationRowId').css('visibility', 'visible'); 
+        
+        //var currentVal = $('#skosBaseNameSpaceId').val();
+        //if(!currentVal || currentVal===""){
+        $('#skosConceptSchemeId').val(computeSkosDefaultConceptScheme());
+        $('#skosBaseNameSpaceId').val(computeSkosDefaultBaseNameSpace());
+        //}
+    }else{  
+        $('#skosConceptSchemeConfigurationRowId').css('visibility', 'hidden'); 
+        $('#skosBaseNameSpaceConfigurationRowId').css('visibility', 'hidden'); 
+    }
+}
+
+function computeSkosDefaultConceptScheme(){
+    
+    
+    var retVal = window.location.origin;
+    var baseStr = window.location.pathname;
+    var parts = baseStr.split("/");
+    if(parts && parts.length>0)
+    {        
+        for(var partIndex=0;  partIndex < parts.length ; partIndex++){
+            var part = parts[partIndex];
+            if(part && part.length>0){
+                retVal +="/"+part;
+                break;
+            }
+        }        
+    }    
+    var selectedThes = $('#exportThesaurus_ID :selected').text();
+    if(selectedThes && selectedThes.length>0){
+        retVal+="#"+selectedThes;
+    }
+    
+    return retVal;
+}
+
+function computeSkosDefaultBaseNameSpace(){
+    var retVal = window.location.origin;
+    var baseStr = window.location.pathname;
+    var parts = baseStr.split("/");
+    if(parts && parts.length>0)
+    {        
+        for(var partIndex=0;  partIndex < parts.length ; partIndex++){
+            var part = parts[partIndex];
+            if(part && part.length>0){
+                retVal +="/"+part;
+                break;
+            }
+        }        
+    }    
+    var selectedThes = $('#exportThesaurus_ID :selected').text();
+    if(selectedThes && selectedThes.length>0){
+        retVal+="/"+selectedThes;
+    }
+    
+    return retVal;
+    
+    
 }

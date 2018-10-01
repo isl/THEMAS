@@ -38,7 +38,7 @@ package DB_Classes;
 import Utils.Utilities;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 /**
  *
  * @author tzortzak
@@ -68,7 +68,16 @@ public class DBConnect_Hierarchy {
         
     }
  
-    public String ConnectHierarchy(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, StringObject targetHierarchyObj, StringObject targetHierarchyFacetObj, String pathToErrorsXML) {
+    public String ConnectHierarchy(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, StringObject targetHierarchyObj, StringObject targetHierarchyFacetObj, String pathToErrorsXML, final String uiLang) {
+
+        CMValue cmv = new CMValue();
+        cmv.assign_node(targetHierarchyObj.getValue(),-1, Utilities.getTransliterationString(targetHierarchyObj.getValue(), true), -1);
+        
+        return ConnectHierarchyCMValue(selectedThesaurus,Q,TA,sis_session,tms_session,cmv,targetHierarchyFacetObj,pathToErrorsXML, uiLang);
+
+    }
+    
+    public String ConnectHierarchyCMValue(String selectedThesaurus,QClass Q, TMSAPIClass TA,IntegerObject sis_session, IntegerObject tms_session, CMValue targetHierarchyCmv, StringObject targetHierarchyFacetObj, String pathToErrorsXML, final String uiLang) {
 
         StringObject errorMsgObj = new StringObject("");
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -76,17 +85,17 @@ public class DBConnect_Hierarchy {
         Utilities u = new Utilities();
         String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus,Q,sis_session.getValue());
 
-        if (targetHierarchyObj.getValue().trim().equals(prefix)) {
+        if (targetHierarchyCmv.getString().trim().equals(prefix)) {
             //errorMSG = errorMSG.concat("A name must be specified for the new hierarchy.");
-            return u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null);
+            return u.translateFromMessagesXML("root/EditHierarchy/Creation/EmptyName", null, uiLang);
         }
 
         if (targetHierarchyFacetObj.getValue().trim().equals(prefix)) {
             //errorMSG = errorMSG.concat("At least one parent facet must be specified for the new hierarchy creation.");
-            return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null) ;
+            return u.translateFromMessagesXML("root/EditHierarchy/Creation/NoFacetName", null, uiLang) ;
         }
-
-        int ret = TA.CHECK_CreateHierarchy(targetHierarchyObj, targetHierarchyFacetObj);
+        
+        int ret = TA.CreateHierarchyCMValue(targetHierarchyCmv, targetHierarchyFacetObj);
 
         if (ret == TMSAPIClass.TMS_APIFail) {
 

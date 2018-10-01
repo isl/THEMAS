@@ -33,6 +33,7 @@
  */
 package Users;
 
+import Utils.Parameters;
 import java.util.*;
 
 
@@ -55,15 +56,18 @@ Class for storing information
 2. for the authenticated THEMAS user of each session
 ----------------------------------------------------------------------*/
 public class UserInfoClass {
+    
     // <user> info found in WebAppUSERS.xml
     public String name;
     public String password;
+    
+    public String UILang;
     //String DBname;
     // parallel Vectors for tags (g.e.): 
     // <thesaurus group="READER">THES1</thesaurus>
     // <thesaurus group="LIBRARY">THES2</thesaurus>
-    public Vector<String> thesaurusNames;
-    public Vector<String> thesaurusGroups;
+    public ArrayList<String> thesaurusNames;
+    public ArrayList<String> thesaurusGroups;
     public String description;
     
     // current session user info
@@ -75,11 +79,11 @@ public class UserInfoClass {
     public String[] alphabetical_From_Class;
     public String[] alphabetical_Links;
 
-    public Vector<Vector<String>> CLASS_SET_INCLUDE;
+    public ArrayList<ArrayList<String>> CLASS_SET_INCLUDE;
     
     private static ArrayList<String> readerPermittedServletNames;
     
-    public static void initializeAccessControlStructures(Vector<String> configValues){
+    public static void initializeAccessControlStructures(ArrayList<String> configValues){
         
         //comment out not existing servlets and servelts where access is allowed
         //leave only servlets where access is not allowed
@@ -167,15 +171,12 @@ Servlets.WaitForDownload.class.getName(),
         
     }
 
-    /*---------------------------------------------------------------------
-                                    UserInfoClass()
-    ----------------------------------------------------------------------*/                
     public UserInfoClass() {
         name = "";
         password = "";
-        thesaurusNames = new  Vector<String>();
-        thesaurusGroups = new Vector<String>();
-        
+        thesaurusNames = new  ArrayList<String>();
+        thesaurusGroups = new ArrayList<String>();
+        UILang = Parameters.UILang;
         description = "";
         selectedThesaurus = "";
         userGroup = "";
@@ -189,11 +190,15 @@ Servlets.WaitForDownload.class.getName(),
     public UserInfoClass(UserInfoClass refUserInfo) {
         name = refUserInfo.name;
         password = refUserInfo.password;
-        thesaurusNames = new Vector<String>();
+        UILang = refUserInfo.UILang;
+        if(UILang==null || UILang.trim().length()==0){
+            UILang = Parameters.UILang;
+        }
+        thesaurusNames = new ArrayList<>();
         if(refUserInfo.thesaurusNames!=null){
             thesaurusNames.addAll(refUserInfo.thesaurusNames);
         }
-        thesaurusGroups = new Vector<String>();
+        thesaurusGroups = new ArrayList<>();
         if(refUserInfo.thesaurusGroups!=null){
             thesaurusGroups.addAll(refUserInfo.thesaurusGroups);
         }
@@ -217,7 +222,7 @@ Servlets.WaitForDownload.class.getName(),
             }
         }
 
-        CLASS_SET_INCLUDE = new Vector<Vector<String>>();
+        CLASS_SET_INCLUDE = new ArrayList<ArrayList<String>>();
 
         if(refUserInfo.CLASS_SET_INCLUDE!=null){
             CLASS_SET_INCLUDE.addAll(refUserInfo.CLASS_SET_INCLUDE);
@@ -237,7 +242,6 @@ Servlets.WaitForDownload.class.getName(),
         }
         return "";
     }
-    
     
     public boolean servletAccessControl(String className){
         boolean returnVal = true;

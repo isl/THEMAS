@@ -34,8 +34,14 @@
 package DB_Classes;
 
 
+import Utils.ConsistensyCheck;
+import static Utils.ConsistensyCheck.EDIT_TERM_POLICY;
+import static Utils.ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
 import Utils.ConstantParameters;
+import Utils.SortItem;
 import Utils.Utilities;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -43,7 +49,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.*;
 
 /**
@@ -95,9 +101,13 @@ public class DBCreate_Modify_Facet {
     FUNCTION: creates / modifies the given Facet
     CALLED BY: Create_Modify_Facet servlet
     ----------------------------------------------------------------------*/
-    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists) {
+    public boolean Create_Or_ModifyFacet(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, IntegerObject tms_session,  DBGeneral dbGen, String targetFacet,/* Vector targetFacetLetterCodes, */ String createORmodify, String deletionOperator, StringObject errorMsg, boolean errorIfExists, final String uiLang) {
 
+        //targetFacet shold come without prefix
+        SortItem facetSortItem = new SortItem(targetFacet,-1,Utilities.getTransliterationString(targetFacet, false),-1);        
+        return Create_Or_ModifyFacetSortItem(selectedThesaurus,Q,TA,sis_session,tms_session,dbGen,facetSortItem,createORmodify, deletionOperator, errorMsg, errorIfExists,false,null,ConsistensyCheck.EDIT_TERM_POLICY, uiLang);
         
+        /*
         DBConnect_Facet dbCon = new DBConnect_Facet();
         Utilities u = new Utilities();
 
@@ -117,24 +127,7 @@ public class DBCreate_Modify_Facet {
         // convert target Facet to DB encoding with prefix
         StringObject targetFacetObj = new StringObject(prefix.concat(targetFacet));
 
-        /*
-        try {
-            byte[] byteArray = targetFacet.getBytes("UTF-8");
-
-            int maxFacetChars =  dbtr.getMaxBytesForFacet(selectedThesaurus, Q, sis_session);
-            if(byteArray.length > maxFacetChars){
-                Vector<String> errorArgs = new Vector<String>();
-                errorArgs.add(""+maxFacetChars);
-                errorArgs.add(""+byteArray.length);
-
-                dbGen.Translate(errorMsg, "root/EditFacet/Edit/LongName", errorArgs, pathToMessagesXml);                
-                return false;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            Utils.StaticClass.webAppSystemOut(ex.getMessage());
-            Utils.StaticClass.handleException(ex);
-        }
-        */
+        
         // in case of empty Facet
         if (targetFacetObj.getValue().trim().equals(prefix) == true) {
 
@@ -145,7 +138,7 @@ public class DBCreate_Modify_Facet {
         
         int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
         if (createORmodify.equals("create")) {
-            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,Utilities.getMessagesXml())));
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacet(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetObj, errorIfExists,Utilities.getXml_For_Messages())));
 
         } else // modify
         {
@@ -171,11 +164,7 @@ public class DBCreate_Modify_Facet {
                 }
 
 
-            } /*else {
-        
-        //letter code modification and parent facets modifications should be handled 
-        modifyLetterCodes(targetFacet, targetFacetLetterCodes);
-        }*/
+            } 
         }
 
         if (errorMsg != null && errorMsg.getValue() != null && errorMsg.getValue().length() > 0) { // case of error
@@ -192,29 +181,202 @@ public class DBCreate_Modify_Facet {
             //Q.end_transaction();
             if (createORmodify.equals("create")) {
 
-                errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacet}));
+                //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacet}));
                 //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully created.");
 
             } else { // modify
                 if (deletionOperator != null) { // delete / (undo) abandon descriptor
                     //String message = "";
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacet}));
                         //message = "Undo abandonment action of facet '%s' was successfully performed.";
                     }
                     if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
-                        errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacet}));
                         //message = "Facet: '" + targetFacet + "' was successfully deleted.";
                     }
                      
                     //errorMsg.setValue(message);
                     //return message;
                 } else {
-                    errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacet}));
+                    //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacet}));
+                    //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
+                }
+            }
+
+            return true;
+        }
+*/
+    }
+
+    public boolean Create_Or_ModifyFacetSortItem(String selectedThesaurus,
+                                                 QClass Q, 
+                                                 TMSAPIClass TA, 
+                                                 IntegerObject sis_session, 
+                                                 IntegerObject tms_session,  
+                                                 DBGeneral dbGen, 
+                                                 SortItem targetFacetSortItem, 
+                                                 String createORmodify, 
+                                                 String deletionOperator, 
+                                                 StringObject errorMsg, 
+                                                 boolean errorIfExists, 
+                                                 boolean resolveError,
+                                                 OutputStreamWriter logFileWriter, 
+                                                 int ConsistencyChecksPolicy,
+                                                 final String uiLang) {
+
+        
+        DBConnect_Facet dbCon = new DBConnect_Facet();
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        Utilities u = new Utilities();
+
+        StringObject errorMsgPrefix = new StringObject();
+        if (createORmodify.equals("create")) {            
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/ErrorPrefix", null, uiLang));
+        } else {
+            errorMsgPrefix.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/ErrorPrefix", null, uiLang));
+        }
+
+        Q.reset_name_scope();
+        
+        // looking for Facet prefix (EKTClass`)        
+        String prefix = dbtr.getThesaurusPrefix_Class(selectedThesaurus, Q, sis_session.getValue());
+        //loking for facet name without the prefix
+        String targetFacetWithoutPrefix = targetFacetSortItem.getLogName();
+        if(targetFacetWithoutPrefix.startsWith(prefix)){
+            targetFacetWithoutPrefix = dbGen.removePrefix(targetFacetWithoutPrefix);
+        }
+        
+        StringObject targetFacetObj = new StringObject(prefix.concat(targetFacetWithoutPrefix));
+
+        // in case of empty Facet
+        if (targetFacetObj.getValue().trim().equals(prefix) == true) {
+            errorMsg.setValue(errorMsgPrefix.getValue() + u.translateFromMessagesXML("root/EditFacet/Edit/NoTargetSpecified", null, uiLang));            
+            return false;
+        }
+        
+        //Facet of kind New / released or obsolete
+        int KindOfFacet = dbGen.GetKindOfFacet(selectedThesaurus, targetFacetObj, Q, sis_session);
+        
+        // Check if reference uri exists
+        if(targetFacetSortItem.getThesaurusReferenceId()>0 && TA.IsThesaurusReferenceIdAssigned(selectedThesaurus,targetFacetSortItem.getThesaurusReferenceId())){
+            
+            String termUsingThisReferenceId = dbGen.removePrefix(Q.findLogicalNameByThesaurusReferenceId(selectedThesaurus, targetFacetSortItem.getThesaurusReferenceId()));
+            if(termUsingThisReferenceId.equals(targetFacetSortItem.getLogName())==false)
+            {
+                ConsistensyCheck con = new ConsistensyCheck();
+                ArrayList<String> errorArgs = new ArrayList<String>();
+
+                switch(ConsistencyChecksPolicy){
+
+
+                    case IMPORT_COPY_MERGE_THESAURUS_POLICY:{
+
+                        errorArgs.add(""+targetFacetSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetFacetSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+                        errorArgs.add(targetFacetSortItem.getLogName());
+                        errorArgs.add(selectedThesaurus);
+
+
+                        if(resolveError){
+                            long refIdCausingProblem = targetFacetSortItem.getThesaurusReferenceId();
+                            targetFacetSortItem.setThesaurusReferenceId(-1);
+                            try {
+                                logFileWriter.append("\r\n<targetFacet>");
+                                logFileWriter.append("<name>" + Utilities.escapeXML(targetFacetSortItem.getLogName()) + "</name>");
+                                logFileWriter.append("<errorType>" + ConstantParameters.system_referenceIdAttribute_kwd + "</errorType>");
+                                logFileWriter.append("<errorValue>" + refIdCausingProblem + "</errorValue>");
+                                logFileWriter.append("<reason>" + con.translate(28, 3, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), uiLang) + "</reason>");
+                                logFileWriter.append("</targetFacet>\r\n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
+                                Utils.StaticClass.handleException(ex);
+                            }                                                
+                        }
+                        break;
+                    }
+                    case EDIT_TERM_POLICY:{
+                        errorArgs.add(""+targetFacetSortItem.getThesaurusReferenceId());
+                        errorArgs.add(targetFacetSortItem.getLogName());                    
+                        errorArgs.add(termUsingThisReferenceId);
+
+                        errorMsg.setValue(con.translate(28, 4, con.Create_Modify_XML_STR, errorArgs, Utilities.getXml_For_ConsistencyChecks(), uiLang));
+
+                        return false; 
+
+                    }
+                    default:
+
+                        return false;
+                }
+            }
+            
+        }
+
+        
+        CMValue targetFacetCMV = targetFacetSortItem.getCMValue(targetFacetObj.getValue());
+        
+        if (createORmodify.equals("create")) {
+            errorMsg.setValue(errorMsg.getValue().concat(dbCon.ConnectFacetCMValue(selectedThesaurus, Q, TA, sis_session, tms_session, targetFacetCMV, errorIfExists,Utilities.getXml_For_Messages(),uiLang)));
+        } 
+        else // modify
+        {
+            if (deletionOperator != null) { // delete / (undo) abandon facet
+
+                DBRemove_Facet dbRemF = new DBRemove_Facet();
+                if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) { // new facet => delete 
+                    errorMsg.setValue(errorMsg.getValue().concat(dbRemF.DeleteFacetCMValue(Q, TA, sis_session, tms_session, dbGen, targetFacetCMV,uiLang)));
+                } else {
+                    //Facet_CreationOrModificationSucceded = true;
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) { // obsolete facet => undo abandon
+                        // convert BT_for_undo_abandon to DB encoding with prefix ?????
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemF.UndoAbandonFacetCMValue(TA, tms_session, dbGen, targetFacetCMV)));
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) { // released facet => abandon
+                        errorMsg.setValue(errorMsg.getValue().concat(dbRemF.AbandonFacetCMValue(TA, tms_session, dbGen, targetFacetCMV)));
+                    }
+                }
+            } 
+        }
+
+        if (errorMsg != null && errorMsg.getValue() != null && errorMsg.getValue().length() > 0) { // case of error
+            
+            errorMsg.setValue(errorMsgPrefix.getValue() + errorMsg.getValue());
+            return false;
+
+        } else { // case of NO error
+            //In case of success there is no need any more to set error Message
+            
+            if (createORmodify.equals("create")) {
+
+                //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Creation/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+            
+
+            } else { // modify
+                if (deletionOperator != null) { // delete / (undo) abandon descriptor
+                    //String message = "";
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_NEW) {
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_OBSOLETE) {
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessUndoObsoleteMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Undo abandonment action of facet '%s' was successfully performed.";
+                    }
+                    if (KindOfFacet == ConstantParameters.FACET_OF_KIND_RELEASED) {
+                        //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Deletion/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
+                        //message = "Facet: '" + targetFacet + "' was successfully deleted.";
+                    }
+                     
+                    //errorMsg.setValue(message);
+                    //return message;
+                } else {
+                    //errorMsg.setValue(u.translateFromMessagesXML("root/EditFacet/Edit/SuccessMsg", new String[]{targetFacetWithoutPrefix}));
                     //errorMsg.setValue("Facet: '" + targetFacet + "' was successfully edited.");                
                 }
             }
@@ -223,8 +385,6 @@ public class DBCreate_Modify_Facet {
         }
 
     }
-
-    
     /*
     private void modifyLetterCodes(String selectedThesaurus,TMSAPIClass TA, String targetFacet, Vector targetFacetLetterCodes, Locale targetLocale) {
     

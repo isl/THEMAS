@@ -31,16 +31,16 @@ based system for creating and managing multi-
 faceted multilingual thesauri with Greek or English language 
 serving as the dominant language and a configurable number 
 of reference translation languages. [Neo4j open source graph database] (http://neo4j.com/ "Neo4j") 
-is used in the backend for data storage, [Neo4j-sisapi v1.0] (https://github.com/isl/Neo4j-sisapi/tree/v1.0 "Neo4j-sisapi") 
+is used in the backend for data storage, [Neo4j-sisapi 1.3] (https://github.com/isl/Neo4j-sisapi/tree/1.3 "Neo4j-sisapi") 
 for the interaction with the database and TELOS 
-representation language stuctures are used as reference for 
+representation language structures are used as reference for 
 the thesauri structure.
 
 The possibilities offered by THEMAS in a thesaurus management 
 level, cover a wide range of functions ranging from conservation 
 and expansion of thesauri (functions of addition, modification 
 and deletion of terms, hierarchies and facets, mass import / 
-export of terms, creation of theusari, saving and restoring backups
+export of terms, creation of thesauri, saving and restoring backups
 etc.) to integration of multiple presentation methods (alphabetical, 
 systematic graphical, hierarchical presentation) and access (alternative 
 forms of navigation, support of complex search criteria, 
@@ -53,10 +53,10 @@ conservation (maintenance) according to the consistency checks
 specified by the relevant ISO and ELOT standards. 
 
 ## Build
-Instructions on how to compile the THEMAS system are included in file How to compile.txt
+Instructions on how to compile the THEMAS system are included in file: **How to compile.txt**
 
 ## Dependencies
-The THEMAS dependecies and licenses used are described in file THEMAS-Dependencies-LicensesUsed.txt
+The THEMAS dependencies and licenses used are described in file: **THEMAS-Dependencies-LicensesUsed.txt**
 
 
 # Functionalities

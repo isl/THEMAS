@@ -9,8 +9,19 @@ Desktop.ini
 $RECYCLE.BIN/
 
 DoNotPublish/
-Sources/WebApplication/web/third-party-javascript/
-src/main/webapp/third-party-javascript/
+
+src/main/webapp/third-party-javascript/chosen/*
+!src/main/webapp/third-party-javascript/chosen/.keep
+
+src/main/webapp/third-party-javascript/ckeditor/*
+!src/main/webapp/third-party-javascript/ckeditor/.keep
+
+src/main/webapp/third-party-javascript/mktree/*
+!src/main/webapp/third-party-javascript/mktree/.keep
+
+src/main/webapp/third-party-javascript/wztooltip/*
+!src/main/webapp/third-party-javascript/wztooltip/.keep
+
 /releases/
 /target/
 nbactions.xml
@@ -23,3 +34,4 @@ nb-configuration.xml
 *.msp
 #.gitignore
 
+/nbproject/

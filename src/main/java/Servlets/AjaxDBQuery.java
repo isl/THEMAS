@@ -45,7 +45,7 @@ import javax.servlet.http.*;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
                       AjaxDBQuery
@@ -139,7 +139,7 @@ public class AjaxDBQuery extends ApplicationBasicServlet {
         DBGeneral dbGen = new DBGeneral();
         
         
-        Vector<String> termsVector = new Vector<String>();
+        ArrayList<String> termsVector = new ArrayList<String>();
         
         
         termsVector = dbGen.GetTermsOfHierarchy(selectedThesaurus, targetHierarchy,Q,sis_session,targetLocale);

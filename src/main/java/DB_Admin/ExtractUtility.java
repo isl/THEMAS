@@ -38,7 +38,7 @@ package DB_Admin;
 import Utils.Parameters;
 import java.io.*;
 import java.util.Collections;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.zip.*;
 
 /*-----------------------------------------------------
@@ -66,7 +66,7 @@ class  ExtractUtility
         {
             
             //first find all folders to be created
-            Vector<String> directories = new Vector<String>();
+            ArrayList<String> directories = new ArrayList<String>();
             ZipInputStream zipinputstream = new ZipInputStream(new FileInputStream(filename));
             ZipEntry zipentry = zipinputstream.getNextEntry();
             while (zipentry != null){ 

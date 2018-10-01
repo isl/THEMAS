@@ -25,6 +25,75 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
 This file is part of the THEMAS system.
 
+=============================================================================
+THEMAS 1.3 Release notes (intermediate-release of version 2.0)
+=============================================================================
+- XML version exported in XML export schema
+- added url rewrite module in order to respond 
+  to SKOS export uris with XML e.g. http://139.91.183.91:8084/THEMAS/BBT/Facet/6  
+  Rules defined in /WEB-INF/urlrewrite.xml
+  Supposing that SKOS export uris have been 
+  produced using the default namespace values
+- Using the reduced scope note complexity 
+  functions of Neo4j-sisapi
+- Removed TSV files from THEMAS - more appropriate is 
+  to be released together with each Neo4j-sisapi version.
+  (also removed TSV language dependency - 
+  Adding configuration parameter about the UNCLASSIFIED 
+  TERMS facet in config.xml)
+- Added import xml xsd file
+- Skos Export Adaptations to be more close to the BBT 
+  and to be able to define concept scheme and target 
+  namespace
+- Transliteration search enabled in UFs and Translation terms
+- THEMAS Users may be applied access to all 
+  thesauri via * instead of thesarus name
+- ability to change UIlanguage at login Page
+- Created servlet that receives a Thesaurus Name and 
+  Thesaurus Reference Id and responds with metadata such 
+  as name and Type (Facet / TOP TERM / TERM) + responseCode 
+  (success / not found /unauthorized access etc.)
+- increased thesaurus field width
+- GDPR texts (Conditions of Use + Privacy policy added) 
+- Added the XMLStream ability for the 
+  hierarchical representation of multiple hierarchies
+- External links supported in import/Export functionalities (not in UI yet)
+- Type ahead ajax improvement 
+
+=============================================================================
+THEMAS 1.2.1 Release Notes
+=============================================================================
+- Update to Java 8 / Neo4j 3.2.5 / Neo4j-sisapi 1.2.1
+- Each Term/TopTerm/Facet created is assigned a reference Id unique per thesaurus
+  and a transliteration of the logicalname according to configurations in config.xml.
+  This transliteration will be used for custom sorting and case&tone incensitive search.
+  (Transliteration request occurred as a result of the need to support polytonic greek punctuation)
+- Each XML exported contains the referenceId added to each term
+- Thesaurus and Facet Hierarchical and Tree View
+- Searching with Contains operator uses the transliteration field whenever referring to Terms/Hierarchies/Facets
+- SKOS export now uses this reference Id instead of a random number or the first taxonomical code
+- External reader role added (In contrast with reader role 
+  ExternalReader sees all terms including non published)
+- XMLStream mode was added for specific read-only Servlets so that External Readers 
+  (if having access) can retrieve thesaurus data in XML format as a Service
+- Type ahead mechanism added in order to assist the selection in large lists (e.g. bts at term creation etc.)
+- Thesauri Management Tab was changed to be only available
+  to administrators until the copy/merge/delete functionalities are corrected
+- Increased Thesaurus name max length to 20 and allowed _ and - chars
+- Resolved Bug with starts with operator
+- Resolved Bug in Translations Synchronization
+- Resolved Thesaurus Deletion bug
+- Resolved Thesaurus Import With Initialize DB bug
+- Ubuntu support changes
+
+
+-----------------------------------------------------------------------------
+THEMAS version 1.1 (not officially released)
+-----------------------------------------------------------------------------
+- Bug Fixes (corrected messages, removed hard coded messages, removePrefix bugfix etc.)
+- Removed length control in term names scopenotes etc.
+- Added html editor for comment categories
+
 -----------------------------------------------------------------------------
 THEMAS 1.0 Release Notes
 -----------------------------------------------------------------------------

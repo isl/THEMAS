@@ -35,8 +35,8 @@ package Utils;
 
 import Users.UserInfoClass;
 import javax.servlet.http.HttpSession;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -45,12 +45,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SessionWrapperClass {
 
-    Vector<String> validAttrs;
-    Hashtable<String, Object> keywords ;
+    ArrayList<String> validAttrs;
+    HashMap<String, Object> keywords ;
     public String path;
     
-    public  SessionWrapperClass(){
-        validAttrs = new Vector<String>();
+        public  SessionWrapperClass(){
+        validAttrs = new ArrayList<String>();
         validAttrs.add("currentTABup");
         validAttrs.add("SessionUser");
         validAttrs.add("SearchCriteria_Facets");
@@ -58,7 +58,7 @@ public class SessionWrapperClass {
         validAttrs.add("SearchCriteria_Terms");
         validAttrs.add("SearchCriteria_Sources");
         validAttrs.add("SearchCriteria_Users");
-        keywords = new Hashtable<String, Object>();
+        keywords = new HashMap<String, Object>();
     }
     
     public  SessionWrapperClass(SessionWrapperClass copy){
@@ -179,8 +179,8 @@ public class SessionWrapperClass {
 
                 }
 
-                //then write all values held in keywords Hashtable back to session.
-                //Hashtable will not accept null values
+                //then write all values held in keywords HashMap back to session.
+                //HashMap will not accept null values
                 for (int i = 0; i < validAttrs.size(); i++) {
                     Object value = keywords.get(validAttrs.get(i));
                     session.setAttribute(validAttrs.get(i), value);

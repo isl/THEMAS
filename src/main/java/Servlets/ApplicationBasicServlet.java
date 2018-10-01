@@ -75,10 +75,20 @@ public class ApplicationBasicServlet extends HttpServlet {
         
         new CommonUtilsDBadmin(new ConfigDBadmin(basePath)).RestartDatabaseIfNeeded();
         
+        String overrideUILangParameter = request.getParameter("lang");
+        
+        
         
         Calendar cal = Calendar.getInstance();
         UsersClass tmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+        
+        if(overrideUILangParameter!=null && overrideUILangParameter.trim().length()>0){
+            overrideUILangParameter = overrideUILangParameter.trim().toLowerCase();
+            if(Parameters.SupportedUILangCodes!=null && SessionUserInfo!=null && Parameters.SupportedUILangCodes.containsKey(overrideUILangParameter)){
+                SessionUserInfo.UILang = Parameters.SupportedUILangCodes.get(overrideUILangParameter);
+            }
+        }
         
         // check the case of the servlet being called without login (URL intergrated to other web sites) 
         // g.e. SearchResults_Hierarchies?external_user=readerAAA&external_thesaurus=AAA       (for specific thesaurus reader)
@@ -88,16 +98,26 @@ public class ApplicationBasicServlet extends HttpServlet {
         
             String external_user = request.getParameter("external_user");
             String external_thesaurus = request.getParameter("external_thesaurus");
+            String checkIfXMLStream = request.getParameter("answerType");
+            boolean skipSessionUpdate = false;
             if (external_user != null && external_thesaurus != null) { // in case of servlet external call
                 // authenticate the given parameters
+                if(checkIfXMLStream==null || checkIfXMLStream.length()==0){
+                    checkIfXMLStream = request.getParameter("mode");
+                }
+                if(checkIfXMLStream!=null || (checkIfXMLStream!=null && checkIfXMLStream.compareTo(Utils.ConstantParameters.XMLSTREAM)==0)){
+                    skipSessionUpdate = true;
+                }                
                 
                 tmsUsers.Authenticate(request, session, sessionInstance,external_user, "", external_thesaurus);
                 Parameters.initParams(getServletContext());
                 
                 String ServletParametersDescription = GetServletParametersDescription(request);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+ cal.getTime() + " Servlet: " + request.getServletPath() + " called from user " + external_user + " with..." + ServletParametersDescription);
-                
-                sessionInstance.writeBackToSession(session);
+                    
+                if(!skipSessionUpdate){
+                    sessionInstance.writeBackToSession(session);
+                }
                 
             }
             else{

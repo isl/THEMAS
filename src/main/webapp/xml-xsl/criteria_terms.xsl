@@ -216,7 +216,7 @@
                             <tr>
                                 <td colspan="2">
                                     <br/><br/>
-                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option[@lang=$lang]"/><input type="checkbox" name="output_term1" value="name" checked="checked" style="visibility:hidden;" disabled="disabled"/>
+                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option[@lang=$lang]"/><input type="checkbox" name="output_term1" value="name" checked="checked" class="hiddenInput" disabled="disabled"/>
                                 </td>
                                 <td align="right" valign="bottom">
                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/selectall/option[@lang=$lang]"/>

@@ -52,6 +52,36 @@ function getAjaxActiveXObject() {
     }
     return xmlHttp;
 }
+function setLangCode(selectBoxId, targetLangId){
+    var selectBox = document.getElementById(selectBoxId);
+    if(selectBox && selectBox.selectedIndex>=0){
+        var inputBox = document.getElementById(targetLangId);
+        if(inputBox){
+            inputBox.value = selectBox.options[selectBox.selectedIndex].value;
+        }
+        
+        var currentLocation = window.location.href;
+        var newLocation = '';
+        var newValue = 'lang='+selectBox.options[selectBox.selectedIndex].value;
+        if(currentLocation.indexOf('lang=')>0){
+            
+            newLocation  = currentLocation.replace(/lang=[a-z]+/mg, newValue)
+        }
+        else{
+            if(currentLocation.indexOf('?')>0){
+                newLocation = currentLocation+'&'+newValue;
+            }
+            else{
+                newLocation = currentLocation+'?'+newValue;
+            }        
+
+        }
+        
+        window.location.href = newLocation;
+    }
+    
+    
+}
 
 /*-----------------------------------------------------
  getObj()
@@ -643,6 +673,8 @@ function showEditFieldCard(objectName, targetObjectField, servlet) {
                
                 promptbox.style.visibility = 'visible';
                 promptbox.focus();
+                
+                updateSelectDropDowns();
             }
         }
     }

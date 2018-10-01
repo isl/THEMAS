@@ -1,0 +1,1322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright 2015 Institute of Computer Science,
+                Foundation for Research and Technology - Hellas.
+
+ Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ by the European Commission - subsequent versions of the EUPL (the "Licence");
+ You may not use this work except in compliance with the Licence.
+ You may obtain a copy of the Licence at:
+
+      http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in writing, software distributed
+ under the Licence is distributed on an "AS IS" basis,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the Licence for the specific language governing permissions and limitations
+ under the Licence.
+ 
+ =============================================================================
+ Contact: 
+ =============================================================================
+ Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greece
+     Tel: +30-2810-391632
+     Fax: +30-2810-391638
+  E-mail: isl@ics.forth.gr
+ WebSite: http://www.ics.forth.gr/isl/cci.html
+ 
+ =============================================================================
+ Authors: 
+ =============================================================================
+ Elias Tzortzakakis <tzortzak@ics.forth.gr>
+ 
+ This file is part of the THEMAS system.
+ -->
+
+<!--
+    Document : Messages.xml
+    Created on: December 21, 2011, 4:50 PM
+    Author   : tzortzak
+    Description:
+        Purpose of the document follows.
+-->
+
+<root>
+    <!--<GeneralMessages>
+        <XMLStartTitleAttribute>
+            <option lang="en">Thesarus Creator</option>
+            <option lang="el">Δημιουργός Θησαυρού</option>
+        </XMLStartTitleAttribute>
+        <XMLStartHeaderName>
+            <option lang="en">Thesarus Creator</option>
+            <option lang="el">Δημιουργός Θησαυρού</option>
+        </XMLStartHeaderName>
+    </GeneralMessages>-->
+    <GeneralMessages>
+        <DBConnectionError>
+            <option lang="en">A database connection error occurred. Please try again later.</option>
+            <option lang="el">"Παρουσιάστηκε πρόβλημα κατά την πρόσβαση στη βάση. Παρακαλούμε προσπαθήστε ξανά.</option>
+        </DBConnectionError>
+        <TermDoesNotBelongInAnyHierarchy>
+            <option lang="en">Term: '%s' is not classified under any hierarchy.</option>
+            <option lang="el">Ο όρος: '%s' δεν ανήκει σε ιεραρχία.</option>
+        </TermDoesNotBelongInAnyHierarchy>
+        <TermNotfoundInTheDatabase>
+            <option lang="en">Term: '%s' was not found in the database.</option>
+            <option lang="el">Ο όρος: '%s' δεν βρέθηκε στην βάση.</option>
+        </TermNotfoundInTheDatabase>
+        <ConsistencyChecks>
+            <AsNTtermOfTerms>
+                <option lang="en">As narrower term of term(or terms): </option>
+                <option lang="el">Ως ειδικότερος όρος του όρου(ων): </option>
+            </AsNTtermOfTerms> 
+            <AsTopTerm>
+                <option lang="en">As top term.</option>
+                <option lang="el">Ως όρος κορυφής.</option>
+            </AsTopTerm>
+            <AsNonPreferredTerm>
+                <option lang="en">As non-Preferred Term.</option>
+                <option lang="el">Ως μη προτιμώμενος όρος.</option>
+            </AsNonPreferredTerm>    
+            <OfTermOrTerms>
+                <option lang="en"> of term(or terms): </option>
+                <option lang="el"> του όρου(ων): </option>
+            </OfTermOrTerms>            
+        </ConsistencyChecks>
+    </GeneralMessages>
+    <PreviewErrorReports>
+        <Kinds>
+            <Facet>
+                <option lang="en">Facet</option>
+                <option lang="el">Μικροθησαυρός</option>
+            </Facet>
+            <Hierarchy>
+                <option lang="en">Hierarchy</option>
+                <option lang="el">Ιεραρχία</option>
+            </Hierarchy>
+            <Term>
+                <option lang="en">Term</option>
+                <option lang="el">Όρος</option>
+            </Term>
+            <UF>
+                <option lang="en">UF</option>
+                <option lang="el">ΧΑ</option>
+            </UF>
+            <tr_UF>
+                <option lang="en">UF (Tra.)</option>
+                <option lang="el">ΧΑ (Μετ.)</option>
+            </tr_UF>
+            <AlternativeTerm>
+                <option lang="en">Alternative Term</option>
+                <option lang="el">Εναλλ. Όρος</option>
+            </AlternativeTerm>
+            <Translation>
+                <option lang="en">Translation</option>
+                <option lang="el">Μετάφραση</option>
+            </Translation>
+            <Source>
+                <option lang="en">Source</option>
+                <option lang="el">Πηγή</option>
+            </Source>
+            <SN>
+                <option lang="en">SN</option>
+                <option lang="el">ΔΣ</option>
+            </SN>
+            <tr_SN>
+                <option lang="en">SN (Tra.)</option>
+                <option lang="el">ΔΣ (Μετ.)</option>
+            </tr_SN>
+            <HN>
+                <option lang="en">HN</option>
+                <option lang="el">ΙΣ</option>
+            </HN>            
+            <Editor>
+                <option lang="en">Editor</option>
+                <option lang="el">Συντάκτης</option>
+            </Editor>
+            <CreationDate>
+                <option lang="en">Creation Date</option>
+                <option lang="el">Ημερομην.Δημιουργίας</option>
+            </CreationDate>
+            <ModificationDate>
+                <option lang="en">Modification Date</option>
+                <option lang="el">Ημερομην.Τροποποίησης</option>
+            </ModificationDate>            
+        </Kinds>
+        <ExistsMessage>
+            <option lang="en">EXISTS</option>
+            <option lang="el">ΥΠΑΡΧΕΙ</option>
+        </ExistsMessage>
+        <Yes>
+            <option lang="en">YES</option>
+            <option lang="el">ΝΑΙ</option>
+        </Yes>
+    </PreviewErrorReports>
+    <TranslationsSynchronization>
+        <DeletionErrorRemainingInstances>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed due to existing instances of this translation.</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία λόγω υπάρχοντων στιγμιοτύπων αυτής της μετάφρασης.</option>
+        </DeletionErrorRemainingInstances>
+        <CategoryDeletionError>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed. Failure point: deletion of %s.</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία. Σημείο αποτυχίας: διαγραφή %s.</option>
+        </CategoryDeletionError>
+        <remainingWordInstances>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed. Relation %s can not be deleted due to remaining instances of language %s.</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία. H σχέση %s δεν μπορεί να διαγραφεί λόγω ύπαρξης στιγμιοτύπων της γλώσσας %s.</option>
+        </remainingWordInstances>
+        <remainingWordRelations>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed. Deletion of relation %s was aborted due to detection of further links from/to language %s.</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία. Η διαγραφή της σχέσης %s απέτυχε λόγω ύπαρξης περαιτέρω συνδέσμων από/προς την γλώσσα %s.</option>
+        </remainingWordRelations>
+        <CategoryDeletionErrorFinalStep>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed. Failure point: deletion of %s and %s</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία. Σημείο αποτυχίας: διαγραφή των %s και %s</option>
+        </CategoryDeletionErrorFinalStep>
+        <remainingPrefixRelations>
+            <option lang="en">Deletion actions of translation category to %s with identifier %s were not successfully completed. Deletion failed due to detection of further links to identifier %s.</option>
+            <option lang="el">Οι ενέργειες διαγραφής της κατηγορίας μετάφρασης σε %s με αναγνωριστικό %s δεν ολοκληρώθηκαν με επιτυχία. Η διαγραφή απέτυχε λόγω ύπαρξης περαιτέρω συνδέσμων προς το αναγνωριστικό %s.</option>
+        </remainingPrefixRelations>
+    </TranslationsSynchronization>
+    <CardOfFacet>
+        <NoFacetSelected>
+            <option lang="en">No facet is selected in order to display its card.</option>
+            <option lang="el">Δεν έχει προσδιοριστεί μικροθησαυρός για προβολή της κάρτας του.</option>
+        </NoFacetSelected>
+        <FacetNotFound>
+            <option lang="en">Facet '%s' was not found in order to display its card.</option>
+            <option lang="el">Δεν βρέθηκε ο μικροθησαυρός '%s' για προβολή της κάρτας του.</option>
+        </FacetNotFound>
+    </CardOfFacet>
+    <CardOfHierarchy>
+        <NoHierarchySelected>
+            <option lang="en">No hierarchy is selected in order to display its card.</option>
+            <option lang="el">Δεν έχει προσδιοριστεί ιεραρχία για προβολή της κάρτας της.</option>
+        </NoHierarchySelected>
+    </CardOfHierarchy>
+    <CardOfSource>
+        <NoSourceSelected>
+            <option lang="en">No source is selected in order to display its card.</option>
+            <option lang="el">Δεν έχει προσδιοριστεί πηγή για προβολή της κάρτας της.</option>
+        </NoSourceSelected>
+    </CardOfSource>
+    <CardOfTerm>
+        <NoTermSelected>
+            <option lang="en">No term is selected in order to display its card.</option>
+            <option lang="el">Δεν έχει προσδιοριστεί όρος για προβολή της κάρτας του.</option>
+        </NoTermSelected>
+        <TermNotFound>
+            <option lang="en">Term %s was not found in order to display its card.</option>
+            <option lang="el">Δεν βρέθηκε ο όρος '%s' για προβολή της κάρτας του.</option>
+        </TermNotFound>
+    </CardOfTerm>
+    <EditFacet>
+        <Deletion>
+            <FacetNotFound>
+                <option lang="en">Facet %s was not found.</option>
+                <option lang="el">Δεν βρέθηκε ο μικροθησαυρός: %s.</option>
+            </FacetNotFound>
+            <LastFacetForHierarchies>
+                <option lang="en">Facet %s is the only one under which heirarchies: %s are classifiesd. Facet deletion action was cancelled in order to maintain these hierarchies under at least one facet.</option>
+                <option lang="el">Ο μικροθησαυρός: %s είναι ο μοναδικός στον οποίο υπάγονται οι ιεραρχίες: %s. Η λειτουργία διαγραφής ακυρώθηκε προκειμένου να παραμείνουν αυτές οι ιεραρχίες κάτω από έναν τουλάχιστον μικροθησαυρό.</option>
+            </LastFacetForHierarchies>
+            <SuccessMsg>
+                <option lang="en">Facet '%s' was successfully deleted.</option>
+                <option lang="el">Ο Μικροθησαυρός: '%s' διαγράφηκε με επιτυχία.</option>
+            </SuccessMsg>
+            <SuccessObsoleteMsg>
+                <option lang="en">Facet '%s' was successfully abandoned</option>
+                <option lang="el">Ο Μικροθησαυρός: '%s' καταργήθηκε με επιτυχία.</option>
+            </SuccessObsoleteMsg>
+            <SuccessUndoObsoleteMsg>
+                <option lang="en">Undo abandonment action of facet '%s' was successfully performed.</option>
+                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής του μικροθησαυρού: '%s'.</option>
+            </SuccessUndoObsoleteMsg>
+        </Deletion>
+        <Creation>
+            <ErrorPrefix>
+                <option lang="en">Facet creation error: </option>
+                <option lang="el">Λάθος κατά τη δημιουργία μικροθησαυρού: </option>
+            </ErrorPrefix>
+            <EmptyName>
+                <option lang="en">A name must be specified for the new facet</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για τον μικροθησαυρό.</option>
+            </EmptyName>
+            <FacetExists>
+                <option lang="en">Facet %s already exists in the database.</option>
+                <option lang="el">Ο Μικροθησαυρός %s υπάρχει ήδη στη βάση.</option>
+            </FacetExists>
+            <SuccessMsg>
+                <option lang="en">Facet '%s' was successfully created.</option>
+                <option lang="el">Ο Μικροθησαυρός: '%s' δημιουργήθηκε με επιτυχία.</option>
+            </SuccessMsg>
+        </Creation>
+        <Edit>
+            <LongName>
+                <option lang="en"><!--Facet name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα του Μικροθησαυρού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <ErrorPrefix>
+                <option lang="en">Facet editing error: </option>
+                <option lang="el">Λάθος κατά την τροποποίηση μικροθησαυρού: </option>
+            </ErrorPrefix>
+            <NoTargetSpecified>
+                <option lang="en">No target facet has been specified for etiting/creation.</option>
+                <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση μικροθησαυρού.</option>
+            </NoTargetSpecified>
+            <SuccessMsg>
+                <option lang="en">Facet '%s' was successfully modified.</option>
+                <option lang="el">Ο Μικροθησαυρός: '%s' τροποποιήθηκε με επιτυχία.</option>
+            </SuccessMsg>
+        </Edit>
+        <Rename>
+            <LongName>
+                <option lang="en"><!--Facet name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα του Μικροθησαυρού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>        
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+             <NoFacetSelected>
+                <option lang="en">No Facet selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε μικροθησαυρός για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoFacetSelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Facet selected for rename does not exist anymore. Please search again for this Facet and try again. Operation cancelled.</option>
+                <option lang="el">Ο Μικροθησαυρός προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new Facet name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για τον μικροθησαυρό προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New Facet name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>
+            <NewNameExistsAsTT>
+                <option lang="en">New hierarchy name cannot be used as Top Term of the Hierarchy. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα που δώθηκε δεν μπορεί να χρησιμοποιηθεί για τον Όρο κορυφής της ιεραρχίας. Ακύρωση μετονομασίας.</option>
+            </NewNameExistsAsTT>
+            <CannotRenameDefaultHierarchy>
+                <option lang="en">This hierarchy cannot be renamed. All new terms created are classified by default under this hierarchy.</option>
+                <option lang="el">Η συγκεκριμένη ιεραρχία δεν μπορεί να μετονομαστεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται.</option>
+            </CannotRenameDefaultHierarchy>
+            <HierarchyDoesNotExist>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyDoesNotExist>
+        </Rename>
+    </EditFacet>
+    <EditHierarchy>
+        <Deletion>
+            <HierarchyNotFound>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία: %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyNotFound>
+            <UnclassifiedTermsHierarchy>
+                <option lang="en">This hierarchy can not be deleted. It is used to classify all new terms that are not classified elsewhere.</option>
+                <option lang="el">Η συγκεκριμένη ιεραρχία δεν μπορεί να διαγραφεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται χωρίς να κατατάσσονται κάπου αλλού.</option>
+            </UnclassifiedTermsHierarchy>
+            <TopTermNotFound>
+                <option lang="en">The relevant Top Term was not found in the database. The hierarchy deletion action failed.</option>
+                <option lang="el">Ο αντίστοιχος Όρος κορυφής δεν βρέθηκε στην βάση. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε.</option>
+            </TopTermNotFound>
+            <TopTermHasLinksTo>
+                <option lang="en">The relevant Top term has references pointing to it. The hierarchy deletion action failed.</option>
+                <option lang="el">Ο αντίστοιχος Όρος κορυφής διαθέτει αναφορές προς αυτόν. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε.</option>
+            </TopTermHasLinksTo>
+            <TopTermHasLinksFrom>
+                <option lang="en">The relevant Top term has references pointing to other nodes. The hierarchy deletion action failed.</option>
+                <option lang="el">Ο αντίστοιχος Όρος κορυφής διαθέτει συνδέσμους προς άλλους κόμβους. Η διαδικασία διαγραφής της ιεραρχίας απέτυχε.</option>
+            </TopTermHasLinksFrom>
+        </Deletion>
+        <Creation>
+            <Success>
+                <option lang="en">Hierarchy: %s was sucessfully created.</option>
+                <option lang="el">Η ιεραρχία: %s δημιουργήθηκε με επιτυχία.</option>
+            </Success>
+            <ErrorPrefix>
+                <option lang="en">Hierarchy creation error: </option>
+                <option lang="el">Λάθος κατά τη δημιουργία ιεραρχίας: </option>
+            </ErrorPrefix>
+            <EmptyName>
+                <option lang="en">A name must be specified for the new hierarchy.</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για την ιεραρχία.</option>
+            </EmptyName>
+            <NoFacet>
+                <option lang="en">At least one parent facet must be specified for the new hierarchy creation.</option>
+                <option lang="el">Η δήλωση ενός τουλάχιστον μικροθησαυρού είναι υποχρεωτική για την δημιουργία της ιεραρχίας.</option>
+            </NoFacet>
+            <AlreadyinDB>
+                <option lang="en">Name %s is already used in the database as a hierarchy name or facet name.</option>
+                <option lang="el">Το όνομα %s υπάρχει ήδη στην βάση είτε σαν ιεραρχία είτε σαν μικροθησαυρός.</option>
+            </AlreadyinDB>
+            <TermAlreadyinDB>
+                <option lang="en">Name %s is already used in the database as a term name and it can not be used in order to create the relavant TT.</option>
+                <option lang="el">Το όνομα %s υπάρχει ήδη στην βάση σαν όρος με αποτέλεσμα να μην μπορεί να δημιουργηθεί ο αντίστοιχος ΟΚ.</option>
+            </TermAlreadyinDB>
+        </Creation>
+        <Edit>
+            <LongName>
+                <option lang="en"><!--Hierarchy name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα της Ιεραρχίας δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <ErrorPrefix>
+                <option lang="en">Hierarchy editing error: </option>
+                <option lang="el">Λάθος κατά την τροποποίηση ιεραρχίας: </option>
+            </ErrorPrefix>
+            <AvailableFacets>
+                <option lang="en">Available Facets: </option>
+                <option lang="el">Διαθέσιμοι μικροθησαυροί: </option>
+            </AvailableFacets>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing hierarchy and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο η ιεραρχία στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
+            <HierarchyNotFound>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία: %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyNotFound>
+            <NoTargetSpecified>
+                <option lang="en">No target hierarchy has been specified for etiting/creation.</option>
+                <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση ιεραρχίας.</option>
+            </NoTargetSpecified>
+            <NoFacet>
+                <option lang="en">Every Hierarchy must be classified under at least one facet. Modification aborted.</option>
+                <option lang="el">Κάθε ιεραρχία πρέπει να υπάγεται σε έναν τουλάχιστον μικροθησαυρό. Ακύρωση τροποποίησης.</option>
+            </NoFacet>
+            <SuccessfullyDeleted>
+                <option lang="en">Hierarchy %s was successfully deleted.</option>
+                <option lang="el">Η ιεραρχία %s διαγράφηκε με επιτυχία.</option>
+            </SuccessfullyDeleted>
+            <SuccessUndoObsoleteMsg>
+                <option lang="en">Undo abandonment action of hierarchy: '%s' was successfully performed.</option>
+                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής της ιεραρχίας: '%s'.</option>                
+            </SuccessUndoObsoleteMsg>    
+            <SuccessfullyEdited>
+                <option lang="en">Hierarchy: '%s' was successfully modified.</option>
+                <option lang="el">Η ιεραρχία: '%s' τροποποιήθηκε επιτυχώς.</option>                
+            </SuccessfullyEdited>                    
+        </Edit>
+        <Rename>
+            <LongName>
+                <option lang="en"><!--Hierarchy name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα της Ιεραρχίας δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+             <NoHierarchySelected>
+                <option lang="en">No hierarchy selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε ιεραρχία για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoHierarchySelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.</option>
+                <option lang="el">Η ιεραρχία προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new hierarchy name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για την ιεραρχία προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New hierarchy name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>
+            <NewNameExistsAsTT>
+                <option lang="en">New hierarchy name cannot be used as Top Term of the Hierarchy. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα που δώθηκε δεν μπορεί να χρησιμοποιηθεί για τον Όρο κορυφής της ιεραρχίας. Ακύρωση μετονομασίας.</option>
+            </NewNameExistsAsTT>
+            <CannotRenameDefaultHierarchy>
+                <option lang="en">This hierarchy cannot be renamed. All new terms created are classified by default under this hierarchy.</option>
+                <option lang="el">Η συγκεκριμένη ιεραρχία δεν μπορεί να μετονομαστεί. Σε αυτήν κατατάσσονται όλοι οι νέοι όροι που δημιουργούνται.</option>
+            </CannotRenameDefaultHierarchy>
+            <HierarchyDoesNotExist>
+                <option lang="en">Hierarchy %s was not found in the database.</option>
+                <option lang="el">Η ιεραρχία %s δεν βρέθηκε στην βάση.</option>
+            </HierarchyDoesNotExist>
+        </Rename>
+    </EditHierarchy>
+    <EditSource>
+        <Creation>
+            <LongName>
+                <option lang="en"><!--Source Name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα πηγής δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Source %s was renamed to %s because it exceeded the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η πηγή %s μετονομάστηκε σε %s γιατί ξεπερνούσε το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+            <LongSourceNote>
+                <option lang="en"><!--Source Note must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η σημείωση πηγής δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongSourceNote>
+            <LongSourceNoteErrorResolve>
+                <option lang="en"><!--Source Note for source %s was not added to the database because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η σημείωση πηγής για την πηγή %s δεν προστέθηκε στην βάση γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongSourceNoteErrorResolve>
+            <EmptyName>
+                <option lang="en">A name must be specified for the new source.</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για την πηγή.</option>
+            </EmptyName>
+            <AlreadyinDB>
+                <option lang="en">Source with name %s already exists in the database.</option>
+                <option lang="el">Η πηγή με όνομα %s υπάρχει ήδη στην βάση.</option>
+            </AlreadyinDB>
+        </Creation>
+        <Deletion>
+            <EmptyName>
+                <option lang="en">No name is specified for the deletion source. Deletion cancelled.</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για την πηγή διαγραφής. Ακύρωση διαγραφής.</option>
+            </EmptyName>
+            <NotFound>
+                <option lang="en">Source given for deletion: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.</option>
+                <option lang="el">Η πηγή που δόθηκε προς διαγραφή: %s δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση διαγραφής.</option>
+            </NotFound>
+            <HasReferences>
+                <option lang="en">Source %s is referenced from the current or other thesauri of the database and can not be deleted. Deletion cancelled.</option>
+                <option lang="el">Η πηγή %s διαθέτει αναφορές από τον τρέχοντα ή από άλλους θησαυρούς της βάσης και δεν μπορεί να διαγραφεί. Ακύρωση διαγραφής.</option>
+            </HasReferences>
+            <ReferenceDeletionError>
+                <option lang="en">Deletion error occurred while deleting source references for term %s. Deletion cancelled.</option>
+                <option lang="el">Αποτυχία διαγραφής αναφορών πηγής από τον τρέχοντα θησαυρό για τον όρο: %s. Η λειτουργία διαγραφής της πηγής απέτυχε.</option>
+            </ReferenceDeletionError>
+            <OtherThesauriReferences>
+                <option lang="en">Source references from current thesaurus were deleted successfully. The source could not be though deleted due to references from other thesauri of the database.</option>
+                <option lang="el">Η διαγραφή των αναφορών της πηγής από τον τρέχοντα θησαυρό ολοκληρώθηκε επιτυχώς. Ωστόσο η πηγή δεν μπορεί να διαγραφεί γιατί διαθέτει αναφορές και από άλλους θησαυρούς.</option>
+            </OtherThesauriReferences>
+        </Deletion>
+        <Edit>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing source and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο η πηγή στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
+        </Edit>
+        <Rename>
+            <LongName>
+                <option lang="en"><!--Source Name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα πηγής δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <EmptyName>
+                <option lang="en">No name is specified for the source to rename. Renaming operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε πηγή για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyName>
+            <EmptyNewName>
+                <option lang="en">No new name is specified for the source to rename. Renaming operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα πηγής για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NotFound>
+                <option lang="en">Source given for rename: %s was not found in the database. Please refresh the page contents and try again. Deletion cancelled.</option>
+                <option lang="el">Η πηγή που δόθηκε προς μετονομασία %s δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση διαγραφής.</option>
+            </NotFound>
+            <AlreadyinDB>
+                <option lang="en">New source name selected already exists in the database. Please select another source name.</option>
+                <option lang="el">Το νέο όνομα που δόθηκε για την μετονομασία υπάρχει ήδη στην βάση. Παρακαλώ επιλέξτε άλλο όνομα πηγής.</option>
+            </AlreadyinDB>
+            <RenameFailure>
+                <option lang="en">Rename Failure.</option>
+                <option lang="el">Αποτυχία μετονομασίας.</option>
+            </RenameFailure>
+        </Rename>
+        <MoveReferences>
+            <NotFound>
+                <option lang="en">Source %s was not found in the database. Please refresh the source's search results.</option>
+                <option lang="el">Η πηγή %s δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε τα αποτελέσματα αναζήτησης πηγών.</option>
+            </NotFound>
+        </MoveReferences>
+        <Source_Note>
+            <LongName>
+                <option lang="en"><!--Source Note must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η σημείωση πηγής δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+        </Source_Note>
+    </EditSource>
+    <EditTerm>
+        <Creation>
+            <LongName>
+                <option lang="en"><!--Term Name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Term %s was renamed to %s because it exceeded the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O όρος %s μετονομάστηκε σε %s γιατί ξεπερνoύσε το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+            <TermAlreadyExists>
+                <option lang="en">Term: %s already exists in the database.</option>
+                <option lang="el">Ο όρος %s υπάρχει ήδη στην βάση.</option>
+            </TermAlreadyExists>
+            <BTMustExist>
+                <option lang="en">Bts declared should already exist in the database.</option>
+                <option lang="el">Πρέπει να εισάγεται στο πεδίο ΠΟ όρους που υπάρχουν στη βάση.</option>
+            </BTMustExist>
+            <AlreadyAssignedSpecificTermReferenceId>
+                <option lang="en">Thesaurus Reference Id %s cannot be added to term %s because it is already used in thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να προστεθεί στον όρο %s γιατί έχει ήδη χρησιμοποιηθεί στον θησαυρό %s.</option>
+            </AlreadyAssignedSpecificTermReferenceId>
+            <ErrorDuringTermReferenceIdAssignement>
+                <option lang="en">Failure during creation of new Thesaurus Reference Id to term %s for thesaurus %s.</option>
+                <option lang="el">Αποτυχία κατά την δημιουργία νέου θησαυρικού αναγνωριστικού στον όρο %s για τον θησαυρό %s.</option>
+            </ErrorDuringTermReferenceIdAssignement>
+        </Creation>
+        <Rename>
+            <Success>
+                <option lang="en">Rename completed sucessfully.</option>
+                <option lang="el">Η μετονομασία ολοκληρώθηκε με επιτυχία.</option>
+            </Success>
+            <UndoRenameSuccess>
+                <option lang="en">Undo rename operation of term '%s' was successfully completed.</option>
+                <option lang="el">Η αναίρεση μετονομασίας του όρου '%s', ολοκληρώθηκε επιτυχώς.</option>
+            </UndoRenameSuccess>
+            <NoTermSelected>
+                <option lang="en">No term selected for rename. Operation cancelled.</option>
+                <option lang="el">Δεν επιλέχθηκε όρος για μετονομασία. Ακύρωση μετονομασίας.</option>
+            </NoTermSelected>
+            <OldNameDoesNotExist>
+                <option lang="en">Term selected for rename does not exist anymore. Please search again for this term and try again. Operation cancelled.</option>
+                <option lang="el">Ο όρος προς μετονομασία δεν είναι έγκυρος. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+            </OldNameDoesNotExist>
+            <EmptyNewName>
+                <option lang="en">A new term name was not provided. Operation cancelled.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για τον όρο προς μετονομασία. Ακύρωση μετονομασίας.</option>
+            </EmptyNewName>
+            <NewNameExists>
+                <option lang="en">New term name already exists in the database. Operation cancelled.</option>
+                <option lang="el">Το νέο όνομα υπάρχει ήδη στη βάση δεδομένων. Ακύρωση μετονομασίας.</option>
+            </NewNameExists>            
+        </Rename>
+        <Edit>
+            <NothingSpecified>
+                <option lang="en">Editing error. Both the target editing term and the target edit field must be specified.</option>
+                <option lang="el">Σφάλμα επεξεργασίας. Πρέπει να προσδιοριστεί τόσο ο όρος στόχος όσο και το πεδίο προς επεξεργασία.</option>
+            </NothingSpecified>
+            <TermDoesNotExist>
+                <option lang="en">Term %s was not found in the database.</option>
+                <option lang="el">Ο όρος %s δεν βρέθηκε στην βάση.</option>
+            </TermDoesNotExist>
+            <NtNotInDescriptors>
+                <option lang="en">Term %s does not belong in Descriptors and therefore cannot be defined as NT.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στους περιγραφείς ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο NT.</option>
+            </NtNotInDescriptors>
+            <RTNotInPreferredTerms>
+                <option lang="en">Term %s does not belong in preferred terms set and therefore cannot be defined as RT.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στο σύνολο των προτιμώμενων όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΣΟ.</option>
+            </RTNotInPreferredTerms>
+            <ValueNotInUsedForTerms>
+                <option lang="en">Term %s does not belong in non-preferred terms set and therefore cannot be defined as UF.</option>
+                <option lang="el">Ο όρος %s δεν ανήκει στο σύνολο των μη προτιμώμενων όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΧΑ.</option>
+            </ValueNotInUsedForTerms>
+             <ValueNotInDeweyNumbers>
+                <option lang="en">Value: %s does not belong in the set of Dewey Numbers and therefore cannot be defined as DN.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Dewey Numbers ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Dewey.</option>
+            </ValueNotInDeweyNumbers>
+            <ValueNotInTaxonomicalCodes>
+                <option lang="en">Value: %s does not belong in the set of Taxonomical Codes and therefore cannot be defined as TC.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Ταξινομικών κωδικών ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΤΚ.</option>
+            </ValueNotInTaxonomicalCodes>
+            <ValueNotInTranslations>
+                <option lang="en">Value: %s does not belong in the set of Translation terms and therefore cannot be defined as Translation.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των όρων Μετάφρασης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Μετάφρασης.</option>
+            </ValueNotInTranslations>
+            <ValueNotInAlternativeTerms>
+                <option lang="en">Value: %s does not belong in the set of Alternative Terms and therefore cannot be defined as ALT.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των όρων Ενναλακτικών όρων ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο Εναλλ.όρος.</option>
+            </ValueNotInAlternativeTerms>
+            <CannotCreateRelationFromAndToTheSameTerm>
+                <option lang="en">The creation of relation from and to the same term is prohibitied.</option>
+                <option lang="el">Δεν επιτρέπεται η δημιουργία σχέσης ενός όρου με τον εαυτό του.</option>
+            </CannotCreateRelationFromAndToTheSameTerm>
+            <ValueNotInUFTranslations>
+                <option lang="en">Value: %s does not belong in the set of non preferred Translation terms and therefore cannot be defined as translation UF.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των μή προτιμόμενων όρων Μετάφρασης ώστε να μπορεί να χρησιμοποιηθεί στο πεδίο ΧΑ (Μετ.).</option>
+            </ValueNotInUFTranslations>
+            <ValueNotInSources>
+                <option lang="en">Value: %s does not belong in the set Sources and therefore cannot be used as primary or translations source.</option>
+                <option lang="el">Η τιμή: %s δεν ανήκει στο σύνολο των Πηγων ώστε να μπορεί να χρησιμοποιηθεί ως πηγή πρωτεύουσας γλώσσας ή πηγή μετάφρασης.</option>
+            </ValueNotInSources>
+            <ConnectionError>
+                <option lang="en">Error occurred while creationg link: %s.</option>
+                <option lang="el">Λάθος κατά την δημιουργία συνδέσμου: %s.</option>
+            </ConnectionError>
+            <DeweyAdditionError>
+                <option lang="en">Addition of Dewey Number: %s failed.</option>
+                <option lang="el">Η προσθήκη του κωδικού Dewey: %s απέτυχε.</option>
+            </DeweyAdditionError>
+            <TaxonomicalCodeAdditionError>
+                <option lang="en">Addition of Taxonomical Code: %s failed.</option>
+                <option lang="el">Η προσθήκη του Ταξινομικού κωδικού: %s απέτυχε.</option>
+            </TaxonomicalCodeAdditionError>
+        </Edit>
+        <Translations>
+            <LongName>
+                <option lang="en"><!--Translation of a term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η μετάφραση ενός όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Translation %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O όρος μετάφρασης %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </Translations>
+        <UF>
+            <LongName>
+                <option lang="en"><!--Used for term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O XA όρος δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Used for term %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O XA όρος %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </UF>
+        <TR_UF>
+            <LongName>
+                <option lang="en"><!--UF Translation used for term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O XA όρος μετάφρασης δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--UF Translation %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O XA όρος μετάφρασης %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </TR_UF>
+        <PR_source>
+            <LongName>
+                <option lang="en"><!--Primary Source of term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η πηγή του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Primary Source %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η πηγή %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </PR_source>
+        <TR_source>
+            <LongName>
+                <option lang="en"><!--Translations Source of term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η πηγή μεταφράσεων του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Translations Source %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η πηγή μεταφράσεων %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </TR_source>
+        <TC>
+            <LongName>
+                <option lang="en"><!--Taxonomical Code of term must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Ο ταξινομικός κωδικός του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Taxonomical Code %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Ο ταξινομικός κωδικός %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </TC>
+        <ScopeNote>
+            <LongName>
+                <option lang="en"><!--Scope Note must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η Διευκρινιστική Σημείωση του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Scope Note %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η Διευκρινιστική Σημείωση %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </ScopeNote>
+        <TranslationsScopeNote>
+            <LongName>
+                <option lang="en"><!--Translations Scope Notes must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Οι Μετάφρασεις Διευκρινιστικής Σημείωσης του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Translations Scope Note %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η Μετάφραση Διευκρινιστικής Σημείωσης %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </TranslationsScopeNote>
+        <HistoricalNote>
+            <LongName>
+                <option lang="en"><!--Historical Note must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η ιστορική σημείωση του όρου δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Historical Note %s was not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Η ιστορική σημείωση %s δεν προστέθηκε στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </HistoricalNote>
+        <BTs>
+            <AtLeastOne>
+                <option lang="en">One at least BT must be maintained.</option>
+                <option lang="el">Πρέπει να διατηρηθεί τουλάχιστον ένας όρος σαν ΠΟ.</option>
+            </AtLeastOne>
+            <GeneralHierarchyUpdateMsg>
+                <option lang="en">Error during modification of hierarchies.</option>
+                <option lang="el">Λάθος κατά την ενημέρωση των ιεραρχιών.</option>
+            </GeneralHierarchyUpdateMsg>
+            <NotFound>
+                <option lang="en">Term %s was not found.</option>
+                <option lang="el">Δεν βρέθηκε ο όρος %s.</option>
+            </NotFound>
+            <ErrorPrefix>
+                <option lang="en">Error during modification of BTS operation: </option>
+                <option lang="el">Λάθος κατά την λειτουργία τροποποίησης ΠΟ: </option>
+            </ErrorPrefix>
+            <LongNameErrorResolve>
+                <option lang="en"><!--BT %s can not added to term %s because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--O ΠΟ %s δεν μπορεί να προστεθεί στον όρο %s γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+        </BTs>
+        <GuideTerms>
+            <ZeroAdditionFailure>
+                <option lang="en">Addition failure of term %s to the zero guide term category.</option>
+                <option lang="el">Αποτυχία προσθήκης του όρου %s στην μηδενική ετικέτα δεσμού.</option>
+            </ZeroAdditionFailure>
+            <DeletionFailure>
+                <option lang="en">Deletion failure of BT relation between term %s and guide term: %s.</option>
+                <option lang="el">Αποτυχία διαγραφής της σχέσης ΠΟ με τον όρο %s από την ετικέτα δεσμού: %s.</option>
+            </DeletionFailure>
+            <GeneralAdditionFailure>
+                <option lang="en">Failure during addition of term to guide term category.</option>
+                <option lang="el">Αποτυχία κατά την διαδικασία προσθήκης όρου σε ετικέτα δεσμού.</option>
+            </GeneralAdditionFailure>
+            <GeneralDeletionFailure>
+                <option lang="en">Failure during deletion of term from guide term category.</option>
+                <option lang="el">Αποτυχία κατά την διαδικασία διαγραφής όρου από ετικέτα δεσμού.</option>
+            </GeneralDeletionFailure>
+            <NotFoundGuideTerm>
+                <option lang="en">Guide term '%s' selected for term '%s' was not found in the database. Please refresh screen and repeat the action.</option>
+                <option lang="el">Η ετικέτα δεσμού '%s' που επιλέχθηκε για τον όρο '%s' δεν βρέθηκε στην βάση. Παρακαλώ ανανεώστε την οθόνη και επαναλάβετε την ενέργεια.</option>
+            </NotFoundGuideTerm>
+            <AdditionFailureOfGuideTerm>
+                <option lang="en">Failure during addition of term to guide term category: %s.</option>
+                <option lang="el">Αποτυχία κατά την διαδικασία προσθήκης όρου σε ετικέτα δεσμού: %s.</option>
+            </AdditionFailureOfGuideTerm>
+            <DeletionFailureOfGuideTerm>
+                <option lang="en">Failure during deletion of term from guide term category: %s.</option>
+                <option lang="el">Αποτυχία κατά την διαδικασία διαγραφής όρου από ετικέτα δεσμού: %s.</option>
+            </DeletionFailureOfGuideTerm>
+        </GuideTerms>
+        <Move2Hierarchy>
+            <SuccessMsg>
+                <option lang="en">Movement of term '%s' was successfully performed.</option>
+                <option lang="el">Η μετακίνηση του όρου '%s', ολοκληρώθηκε επιτυχώς.</option>
+            </SuccessMsg>
+            <GeneralUpdateNodeError>
+                <option lang="en">An error occurred during update of node %s.</option>
+                <option lang="el">Παρουσιάστηκε σφάλμα κατά την ενημέρωση του κόμβου %s.</option>
+            </GeneralUpdateNodeError>
+            <NoTargetTermSpecified>
+                <option lang="en">No target term was specified for the movement operation.</option>
+                <option lang="el">Δεν δηλώθηκε όρος προς μετακίνηση.</option>
+            </NoTargetTermSpecified>            
+            <SpecificDeleteBtSuccess>
+                <option lang="en">Deletion of BT: %s from term: %s was successfully completed.</option>
+                <option lang="el">Η διαγραφή του ΠΟ: %s του όρου %s ολοκληρώθηκε επιτυχώς.</option>
+            </SpecificDeleteBtSuccess>
+            <SpecificDeleteBtFailure>
+                <option lang="en">Deletion of BT: %s from term: %s failed.</option>
+                <option lang="el">Η διαγραφή του ΠΟ: %s του όρου %s απέτυχε.</option>
+            </SpecificDeleteBtFailure>
+            <CurrentTermNotFound>
+                <option lang="en">The given term does not exist in data base.</option>
+                <option lang="el">Ο τρέχων όρος δεν βρέθηκε στην βάση δεδομένων.</option>
+            </CurrentTermNotFound>
+            <CurrentTermIsTopTerm>
+                <option lang="en">Current term is Top Term.</option>
+                <option lang="el">Ο τρέχων όρος είναι κορυφαίος.</option>
+            </CurrentTermIsTopTerm>
+            <CurrentTermIsObsolete>
+                <option lang="en">Current term is Obsolete.</option>
+                <option lang="el">Ο τρέχων όρος είναι κατηργημένος.</option>
+            </CurrentTermIsObsolete>
+            <CurrentTermNotDescriptor>
+                <option lang="en">Current term does not belong in Descriptors.</option>
+                <option lang="el">Ο τρέχων όρος δεν υπάγεται στην κλάσση Descriptors.</option>
+            </CurrentTermNotDescriptor>
+        </Move2Hierarchy>
+    </EditTerm>
+    <EditGuideTerms>
+        <Creation>
+            <LongName>
+                <option lang="en"><!--Guide Term name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα της ετικέτας δεσμού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <LongNameErrorResolve>
+                <option lang="en"><!--Guide Term %s was not added to the database because it exceeds the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--H ετικέτα δεσμού %s δεν προστέθηκε στην βάση γιατί ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongNameErrorResolve>
+
+            <Exists>
+                <option lang="en">Guide Term '%s' is already defined in the database.</option>
+                <option lang="el">Η ετικέτα δεσμού '%s' χρησιμοποιείται ήδη στην βάση.</option>
+            </Exists>
+            <AdditionError>
+                <option lang="en">Creation failure of new Guide Term: %s.</option>
+                <option lang="el">Αποτυχία δημιουργίας νέας ετικέτας δεσμού: %s.</option>
+            </AdditionError>
+            <AccessError>
+                <option lang="en">Failed to refer to the new Guide Term: %s.</option>
+                <option lang="el">Αποτυχία πρόσβασης στην νέα ετικέτα δεσμού: %s.</option>
+            </AccessError>
+            <InstatiationError>
+                <option lang="en">Failed to classify new guide term %s under BT category.</option>
+                <option lang="el">Αποτυχία υπαγωγής της νέας ετικέτας δεσμού %s κάτω από τον σύνδεσμο ΠΟ</option>
+            </InstatiationError>
+            <InstatiationIDError>
+                <option lang="en">Failed to classify new guide term %s under link-node with id: %s</option>
+                <option lang="el">Αποτυχία ένταξης της νέας ετικέτας δεσμού κάτω από τον σύνδεσμο με sys id: %s</option>
+            </InstatiationIDError>
+        </Creation>
+        <Delete>
+            <NotFound>
+                <option lang="en">Guide Term '%s' was not found in the database.</option>
+                <option lang="el">Η ετικέτα δεσμού '%s' δεν βρέθηκε στην βάση.</option>
+            </NotFound>
+            <BTLinksCopyError>
+                <option lang="en">Copying failure of BT links of guide term: %s.</option>
+                <option lang="el">Αποτυχία αντιγραφής των συνδέσμων ΠΟ της ετικέτας δεσμού: %s.</option>
+            </BTLinksCopyError>
+            <BTLinksDeletionError>
+                <option lang="en">Deletion failure of BT links of guide term: %s.</option>
+                <option lang="el">Αποτυχία διαγραφής των συνδέσμων ΠΟ της ετικέτας δεσμού: %s.</option>
+            </BTLinksDeletionError>
+            <GeneralError>
+                <option lang="en">Deletion failure of guide term: '%s'.</option>
+                <option lang="el">Αποτυχία διαγραφής της ετικέτας δεσμού: '%s'.</option>
+            </GeneralError>
+        </Delete>
+        <Rename>
+            <LongName>
+                <option lang="en"><!--Guide Term name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
+                <option lang="el"><!--Το όνομα της ετικέτας δεσμού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+            </LongName>
+            <NotFound>
+                <option lang="en">Guide Term '%s' was not found in the database.</option>
+                <option lang="el">Η ετικέτα δεσμού '%s' δεν βρέθηκε στην βάση.</option>
+            </NotFound>
+            <NewNameExists>
+                <option lang="en">New Guide Term name '%s' is already defined in the database.</option>
+                <option lang="el">Η ετικέτα δεσμού '%s' χρησιμοποιείται ήδη στην βάση.</option>
+            </NewNameExists>
+            <GeneralError>
+                <option lang="en">Renaming action of Guide Term '%s'\n to '%s' failed.</option>
+                <option lang="el">Η μετονομασία της ετικέτας δεσμού: '%s'\n σε '%s' απέτυχε.</option>
+            </GeneralError>
+        </Rename>
+    </EditGuideTerms>
+    <SearchCriteria>
+        <LongName>
+            <option lang="en">Check lengths.</option>
+            <option lang="el">Ελέγξετε το μήκος των ορισμάτων.</option>
+        </LongName>
+    </SearchCriteria>
+    <resultOfCreateUser>
+        <NO_USER_NAME_GIVEN>
+            <option lang="en">Username field is not declared.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.</option>
+        </NO_USER_NAME_GIVEN>
+        <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.</option>
+            <option lang="el">Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
+        </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+        <NO_USER_PASSWORD_GIVEN>
+            <option lang="en">User Password field is not declared.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο κωδικού του χρήστη.</option>
+        </NO_USER_PASSWORD_GIVEN>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+            <option lang="en">The new Username '%s' is already in use from another user.</option>
+            <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+        <THESAURUS_SET_WITH_DUBLICATE_VALUES>
+            <option lang="en">Definition of different groups is not allowed in the same Thesaurus.</option>
+            <option lang="el">Δεν επιτρέπεται ο ορισμός διαφορετικών γκρουπ στον ίδιο θησαυρό.</option>
+        </THESAURUS_SET_WITH_DUBLICATE_VALUES>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+            <option lang="en">New User already exists in database.</option>
+            <option lang="el">Ο νέος χρήστης υπάρχει ήδη στο σύστημα.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+        <NO_NEW_FORMER_USER_NAME_GIVEN>
+            <option lang="en">Field of new User is not declared for the older User '%s'.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο νέου ονόματος για τον παλαιότερο χρήστη '%s'.</option>
+        </NO_NEW_FORMER_USER_NAME_GIVEN>
+        <NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+            <option lang="en">New field of Username '%s' must have minimun length of 2 and max length of 20 characters.</option>
+            <option lang="el">Το νέο πεδίο ονόματος χρήστη '%s' πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
+        </NEW_FORMER_USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+        <NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML>
+            <option lang="en">The new Username '%s' is already in use from another user.</option>
+            <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
+        </NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_XML>
+        <NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB>
+            <option lang="en">The new Username '%s' is already in use from another user in database. Please choose a different one.</option>
+            <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη στην βάση. Παρακαλώ επιλέξτε διαφορετικό όνομα.</option>
+        </NEW_FORMER_USER_NAME_ALREADY_EXISTS_IN_DB>
+        <FORMER_USER_RENAME_FAILED>
+            <option lang="en">Renaming of user '%s' to '%s' in database failed.</option>
+            <option lang="el">Η μετονομασία του χρήστη '%s' σε '%s' στην βάση απέτυχε.</option>
+        </FORMER_USER_RENAME_FAILED>
+    </resultOfCreateUser>
+    <resultOfEditUser>
+        <NO_USER_NAME_GIVEN>
+            <option lang="en">Username field is not declared.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.</option>
+        </NO_USER_NAME_GIVEN>
+        <NOT_ALLOWED_TO_DELETE_YOURSELF>
+            <option lang="en">Self deletion of user '%s' is not allowed.</option>
+            <option lang="el">Δεν επιτρέπεται η αυτο-διαγραφή του χρήστη '%s'.</option>
+        </NOT_ALLOWED_TO_DELETE_YOURSELF>
+        <CANNOT_DELETE_LAST_ADMINISTRATOR>
+            <option lang="en">User '%s' cannot be deleted. He/She is the last administrator of the system.</option>
+            <option lang="el">Ο χρήστης '%s' δεν μπορεί να διαγραφεί. Είναι ο τελευταίος χρήστης Διαχειριστής.</option>
+        </CANNOT_DELETE_LAST_ADMINISTRATOR>
+        <CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS>
+            <option lang="en">User '%s' cannot be deleted. He/She is the last user of group "Thesaurus Committee" for a Thesaurus.</option>
+            <option lang="el">Ο χρήστης '%s' δεν μπορεί να διαγραφεί. Είναι ο τελευταίος χρήστης "Επιτροπή Θησαυρού" για κάποιον θησαυρό.</option>
+        </CANNOT_DELETE_LAST_THESAURUS_COMMITTEE_USER_OF_A_THESAURUS>
+        <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+            <option lang="en">New field of Username must have minimum length of 2 and max length of 20 characters.</option>
+            <option lang="el">Το νέο πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
+        </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+            <option lang="en">The new Username '%s' is already in use from another user.</option>
+            <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+            <option lang="en">New User already exists in database.</option>
+            <option lang="el">Ο νέος χρήστης υπάρχει ήδη στο σύστημα.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+        <USER_RENAME_FAILED>
+            <option lang="en">Renaming of user '%s' to '%s' in database failed.</option>
+            <option lang="el">Η μετονομασία του χρήστη '%s' σε '%s' στην βάση απέτυχε.</option>
+        </USER_RENAME_FAILED>
+    </resultOfEditUser>
+    <resultOfEditTargetAndOlderUser>
+        <NO_USER_NAME_GIVEN>
+            <option lang="en">Username field is not declared.</option>
+            <option lang="el">Δεν έχει δηλωθεί το πεδίο ονόματος του χρήστη.</option>
+        </NO_USER_NAME_GIVEN>
+        <USER_NAME_DOES_NOT_EXIST>
+            <option lang="en">The renaming user: '%s' could not be found as a user of the system.</option>
+            <option lang="el">Ο προς μετονομασία χρήστης: '%s' δεν βρέθηκε ως χρήστης του συστήματος.</option>
+        </USER_NAME_DOES_NOT_EXIST>
+        <USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+            <option lang="en">The field of Username must have minimum length of 2 and max length of 20 characters.</option>
+            <option lang="el">Το πεδίο ονόματος χρήστη πρέπει να περιέχει τουλάχιστον 2 και το πολύ 20 χαρακτήρες.</option>
+        </USER_NAME_LENGTH_MUST_BE_BETWEEN_2_AND_20>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+            <option lang="en">The new Username '%s' is already in use from another user.</option>
+            <option lang="el">Το νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη σαν χρήστης του συστήματος.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_XML>
+        <NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+            <option lang="en">Username '%s' already exists in database. Please choose a different Username to rename the old user '%s'.</option>
+            <option lang="el">Tο νέο όνομα χρήστη '%s' χρησιμοποιείται ήδη στην βάση. Παρακαλώ επιλέξτε άλλο όνομα για μετονομασία του παλαιότερου χρήστη '%s'.</option>
+        </NEW_USER_NAME_ALREADY_EXISTS_IN_DB>
+        <TARGET_USER_RENAME_FAILED>
+            <option lang="en">Failure of renaming user '%s' to '%s'.</option>
+            <option lang="el">Αποτυχία μετονομασίας του χρήστη '%s' σε '%s'.</option>
+        </TARGET_USER_RENAME_FAILED>
+        <FORMER_USER_RENAME_FAILED>
+            <option lang="en">Renaming of user '%s' to '%s' in database failed.</option>
+            <option lang="el">Η μετονομασία του χρήστη '%s' σε '%s' στην βάση απέτυχε.</option>
+        </FORMER_USER_RENAME_FAILED>
+        <TARGET_USER_DELETION_FAILED>
+            <option lang="en">Failure of deleting user '%s' from the database.</option>
+            <option lang="el">Αποτυχία διαγραφής του χρήστη '%s' από την βάση.</option>
+        </TARGET_USER_DELETION_FAILED>
+        <FORMER_USER_DELETION_FAILED>
+            <option lang="en">Failure of deleting user '%s' from the database.</option>
+            <option lang="el">Αποτυχία διαγραφής του χρήστη '%s' από την βάση.</option>
+        </FORMER_USER_DELETION_FAILED>
+        <TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED>
+            <option lang="en">Failure of deleting creator links to author '%s'.</option>
+            <option lang="el">Αποτυχία διαγραφής των συνδέσμων δημιουργού προς τον συντάκτη '%s'.</option>
+        </TARGET_USER_CREATED_BY_LINKS_DELETION_FAILED>
+        <TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED>
+            <option lang="en">Failure of deleting modifier links to author '%s'.</option>
+            <option lang="el">Αποτυχία διαγραφής των συνδέσμων τροποποιητή προς τον συντάκτη '%s'.</option>
+        </TARGET_USER_MODIFIED_BY_LINKS_DELETION_FAILED>
+        <FORMER_USER_INSTANCE_ADDITION_FAILED>
+            <option lang="en">Failure inserting user '%s' to thesaurus where user '%s' belonged.</option>
+            <option lang="el">Αποτυχία προσθήκης του χρήστη '%s' στους θησαυρούς που άνηκε ο χρήστης '%s'.</option>
+        </FORMER_USER_INSTANCE_ADDITION_FAILED>
+        <FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED>
+            <option lang="en">Failure of moving creator links to author '%s'.</option>
+            <option lang="el">Αποτυχία μεταφοράς συνδέσμων δημιουργού προς τον συντάκτη '%s'.</option>
+        </FORMER_USER_CREATED_BY_LINKS_ADDITION_FAILED>
+        <FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED>
+            <option lang="en">Failure of moving modifier links to author '%s'.</option>
+            <option lang="el">Αποτυχία μεταφοράς συνδέσμων τροποποιητή προς τον συντάκτη '%s'.</option>
+        </FORMER_USER_MODIFIED_BY_LINKS_ADDITION_FAILED>
+    </resultOfEditTargetAndOlderUser>
+    <resultOfEditUserPassword>
+        <USER_NAME_DOES_NOT_EXIST>
+            <option lang="en">The renaming user: '%s' could not be found as a user of the system.</option>
+            <option lang="el">Ο προς μετονομασία χρήστης: '%s' δεν βρέθηκε ως χρήστης του συστήματος.</option>
+        </USER_NAME_DOES_NOT_EXIST>
+        <OLD_PASSWORD_GIVEN_INCORRECT>
+            <option lang="en">Wrong old password was given.</option>
+            <option lang="el">Λανθασμένη τιμή παλιού κωδικού.</option>
+        </OLD_PASSWORD_GIVEN_INCORRECT>
+        <CONFIRM_NEW_PASSWORD_IS_DIFFERENT>
+            <option lang="en">Different values of new password were given.</option>
+            <option lang="el">Δόθηκαν διαφορετικές τιμές για τον νέο κωδικό.</option>
+        </CONFIRM_NEW_PASSWORD_IS_DIFFERENT>
+    </resultOfEditUserPassword>
+    <resultOfEditUserThesaurus>
+        <USER_NAME_DOES_NOT_EXIST>
+            <option lang="en">The renaming user: '%s' could not be found as a user of the system.</option>
+            <option lang="el">Ο προς μετονομασία χρήστης: '%s' δεν βρέθηκε ως χρήστης του συστήματος.</option>
+        </USER_NAME_DOES_NOT_EXIST>
+        <AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
+            <option lang="en">The change of thesaurus failed.</option>
+            <option lang="el">Η αλλαγή θησαυρού απέτυχε.</option>
+        </AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
+    </resultOfEditUserThesaurus>
+    <resultOfShareThesaurus>
+        <THESAURUS_WITHOUT_THESAURUS_COMMITTEE>
+            <option lang="en">Thesaurus must have at least one "Thesaurus Committee" user.</option>
+            <option lang="el">Ο θησαυρός πρέπει να έχει έναν τουλάχιστον χρήστη "Επιτροπή Θησαυρού".</option>
+        </THESAURUS_WITHOUT_THESAURUS_COMMITTEE>
+        <USER_SET_WITH_DUBLICATE_VALUES>
+            <option lang="en">There cannot be defined more than one group-role for one user at the same Thesaurus.</option>
+            <option lang="el">Δεν μπορούν να ορισθούν παραπάνω από ένα γκρουπ-ρόλος για έναν χρήστη στον ίδιο θησαυρό.</option>
+        </USER_SET_WITH_DUBLICATE_VALUES>
+    </resultOfShareThesaurus>            
+    <DeleteThesaurus>
+        <DeleteThesaurusSucceded>
+            <option lang="en">Deletion of Thesaurus '%s' succeeded.</option>
+            <option lang="el">Η διαγραφή του θησαυρού '%s' ολοκληρώθηκε με επιτυχία.</option>
+        </DeleteThesaurusSucceded>
+    </DeleteThesaurus>
+    <MergeThesauri>
+        <ReportTitle>
+            <option lang="en">Report of merge operation of thesauri %s and %s in %s. Time: %s.</option>
+            <option lang="el">Αναφορά συγχώνευσης θησαυρών %s και %s στον νέο θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Merge thesauri operation of thesauri %s and %s in %s completed successfully in %s minutes.</option>
+            <option lang="el">Η διαδικασία συγχώνευσης θησαυρών %s και %s στον νέο θησαυρό %s ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
+        </ReportSuccessMessage>
+        <MergeTermSNs>
+            <option lang="en">Two SNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΔΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermSNs>
+        <MergeTerm_trSNs>
+            <option lang="en">Two SNs (Tra.) were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΔΣ (Μετ.) για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTerm_trSNs>
+        <MergeTermHNs>
+            <option lang="en">Two HNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 ΙΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermHNs>
+        <MergeSourceSNsSourcePrefix>
+            <option lang="en">Source: </option>
+            <option lang="el">Πηγή: </option>
+        </MergeSourceSNsSourcePrefix>
+        <MergeSourceSNs>
+            <option lang="en">Two Source Notes were found for source: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 Σημειώσεις πηγής για την πηγή: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeSourceSNs>
+        <SkipUFLink>
+            <option lang="en">Skipping copying of UF (Tra.) link: '%s' for term: %s from thesaurus: %s. This name is already used as a translation of thesaurus %s and cannot be used as a UF (Tra.) term in the new thesaurus.</option>
+            <option lang="el">Παρακάμφθηκε η αντιγραφή του ΧΑ (Μετ.) συνδέσμου: %s για τον όρο: %s από τον θησαυρό %s. Το όνομα αυτό χρησιμοποιείται για Μετάφραση του θησαυρού %s και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί για τη περιγραφή ΧΑ (Μετ.) συνδέσμου στον νέο θησαυρό.</option>
+        </SkipUFLink>
+        <SkipUFLink>
+            <option lang="en">Skipping copying of UF link: '%s' for term: %s. This name is already used as a term in thesaurus %s and cannot be used as a non-preferred term in the new thesaurus.</option>
+            <option lang="el">Παρακάμφθηκε η αντιγραφή του ΧΑ συνδέσμου: %s για τον όρο: %s. Το όνομα αυτό χρησιμοποιείται για όρο του θησαυρού %s και δεν μπορεί ταυτόχρονα να χρησιμοποιηθεί ως μη προτιμώμενος όρος στον νέο θησαυρό.</option>
+        </SkipUFLink>
+        <SkipNodeLabel>
+            <option lang="en">Term: '%s' has an already defined NT relationship with term: '%s' and node label: '%s'. There was also detected though another NT relationship among them with node label: '%s' which was skipped.</option>
+            <option lang="el">Για τον όρο: '%s' έχει ήδη ορισθεί σχέση ΕΟ με τον όρο '%s' και ετικέτα δεσμού '%s'. Ανιχνεύθηκε ωστόσο μεταξύ τους και σχέση ΕΟ με ετικέτα δεσμού '%s' η οποία παρακάμφθηκε.</option>
+        </SkipNodeLabel>
+        <FailureMessage>
+            <option lang="en">Failure of merge thesauri operation.</option>
+            <option lang="el">Αποτυχία λειτουργίας συγχώνευσης.</option>
+        </FailureMessage>
+    </MergeThesauri>
+    <CopyThesauri>
+        <ReportTitle>
+            <option lang="en">Report of copy thesaurus operation of thesaurus %s to thesaurus %s. Time: %s.</option>
+            <option lang="el">Αναφορά αντιγραφής δεδομένων από τον θησαυρό %s στον θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Copy thesaurus operation completed successfully in %s minutes.</option>
+            <option lang="el">Η διαδικασία αντιγραφής θησαυρών ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
+        </ReportSuccessMessage>
+        <FailureMessage>
+            <option lang="en">Failure of copy thesaurus operation.</option>
+            <option lang="el">Αποτυχία λειτουργίας αντιγραφής.</option>
+        </FailureMessage>
+    </CopyThesauri>
+    <ImportData>
+        <ReportTitle>
+            <option lang="en">Import Data in thesaurus: %s report. Time: %s.</option>
+            <option lang="el">Αναφορά εισαγωγής δεδομένων στον θησαυρό %s. Ώρα: %s.</option>
+        </ReportTitle>
+        <ReportSuccessMessage>
+            <option lang="en">Import Data operation in thesaurus: %s from file: %s was successfully completed in: %s minutes.</option>
+            <option lang="el">Η διαδικασία εισαγωγής δεδομένων στον θησαυρό %s από το αρχείο %s ολοκληρώθηκε με επιτυχία σε χρόνο: %s λεπτά.</option>
+        </ReportSuccessMessage>
+        <ImportFunctionFailure>
+            <option lang="en">Import Data failed. </option>
+            <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
+        </ImportFunctionFailure>
+        <importThesaurusNameFailure>
+            <option lang="en">Thesaurus '%s' already exists in database. Please choose a different name for the Thesaurus.</option>
+            <option lang="el">Ο θησαυρός '%s' έχει ήδη ορισθεί στην βάση. Παρακαλώ επιλέξτε διαφορετικό όνομα θησαυρού.</option>
+        </importThesaurusNameFailure>
+        <ThesaurusDoesNotExist>
+            <option lang="en">Thesaurus '%s' does not exist in database. Please choose a different thesaurus if this one still exists.</option>
+            <option lang="el">Ο θησαυρός '%s' δεν βρέθηκε στην βάση. Παρακαλώ ελέγξτε αν ο θησαυρός αυτός εξακολουθεί να υπάρχει.</option>
+        </ThesaurusDoesNotExist>
+        <InsertionFailure>
+            <option lang="en">Data insertion failure. </option>
+            <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
+        </InsertionFailure>
+        <SuccessfulInsertion>
+            <option lang="en">Data insertion finished successfully. Current Thesaurus set: %s.</option>
+            <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο: %s.</option>
+        </SuccessfulInsertion>
+    </ImportData>
+    <commitMergeActions>
+        <MergeThesaurusSucceed>
+            <option lang="en">Merge of Thesaurus Succeeded. The new Thesaurus '%s' was set as the default.</option>
+            <option lang="el">Η λειτουργία συγχώνευσης ολοκληρώθηκε με επιτυχία. Ο νέος θησαυρός '%s' τέθηκε σαν επιλεγμένος.</option>            
+        </MergeThesaurusSucceed>
+    </commitMergeActions>
+    <commitCopyActions>
+        <CopySucceed>
+            <option lang="en">Copy of Thesaurus Succeeded.</option>
+            <option lang="el">Η λειτουργία αντιγραφής ολοκληρώθηκε με επιτυχία.</option>
+        </CopySucceed>
+    </commitCopyActions>
+    <FixCurrentData>
+        <ChangeStatusFailure>
+            <option lang="en">Failed to find Hierarchy '%s' in database.</option>
+            <option lang="el">Αποτυχία εύρεσης της ιεραρχίας '%s' στην βάση.</option>
+        </ChangeStatusFailure>
+    </FixCurrentData>
+    <importTermsUnderHierarchy>
+        <FailureFindHierarchy>
+            <option lang="en">Hierarchy '%s' which was choosen for insertion of terms does not exist in database. Please choose a different name of Hierarchy.</option>
+            <option lang="el">Η ιεραρχία '%s' που επιλέχθηκε για εισαγωγή όρων δεν βρέθηκε στην βάση. Παρακαλώ επιλέξτε ένα νέο όνομα ιεραρχίας.</option>
+        </FailureFindHierarchy>
+        <targetUITermAlreadyExists>
+            <option lang="en">The Term '%s' already exists in database and it did not change (to be essentially NT of Term: </option>
+            <option lang="el">Ο όρος '%s' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: </option>
+        </targetUITermAlreadyExists>
+    </importTermsUnderHierarchy>
+    <CreateHierarchies>
+        <WrongHierarchyPosition>
+            <option lang="en">Hierarchy '%s' found incorrectly without belonging in any Facet. Subordination of this Hierarchy to Facet '%s'.</option>
+            <option lang="el">Η ιεραρχία '%s' βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα μικροθησαυρό. Υπαγωγή της στον μικροθησαυρό '%s'.</option>
+        </WrongHierarchyPosition>
+        <TermFoundAsTopTerm>
+            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s'.</option>
+            <option lang="el">Ο όρος '%s' βρέθηκε σαν OK στον θησαυρό '%s'. Για την επιτυχή προσθήκη του μετονομάζεται σε '%s' </option>
+        </TermFoundAsTopTerm>        
+    </CreateHierarchies>
+    <CopyRTs>
+        <TermLinkToRT>
+            <option lang="en">'%s' found to have Link RT with itself at Thesaurus: '%s' . This Relationship will be bypassed.</option>
+            <option lang="el">'%s' βρέθηκε να έχει σχέση ΣΟ με τον εαυτό του στον θησαυρό: '%s'. Η σχέση αυτή παρακάμπτεται.</option>
+        </TermLinkToRT>
+        <CategoryReferenceFailed_2_Param>
+            <option lang="en">Failed to reference at Category '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s' του θησαυρού: '%s'.</option>
+        </CategoryReferenceFailed_2_Param>
+        <CategoryReferenceFailed>
+            <option lang="en">Failed to reference at Category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
+        </CategoryReferenceFailed>
+    </CopyRTs>
+    <CreateStatuses>
+        <FoundInStatus>
+            <option lang="en">Term '%s' found in status '%s' and '%s' .<br/><t/><t/> It was choosen with priority order the status '%s'.</option>
+            <option lang="el">O όρος: '%s' βρέθηκε με κατάσταση '%s' και '%s'.<br/><t/><t/>Επιλέχθηκε με σειρά προτεραιότητας η κατάσταση '%s'.</option>
+        </FoundInStatus>
+    </CreateStatuses>
+    <CopyTermsLevelByLevel>
+        <TopTermReferenceFailed>
+            <option lang="en">Failed to reference at TopTerm Class of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση TopTerm του θησαυρού: '%s'.</option>
+        </TopTermReferenceFailed>
+    </CopyTermsLevelByLevel>
+    <CreateTermsLevelByLevel>
+        <TermFoundAsTopTerm>
+            <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s'.</option>
+            <option lang="el">Ο όρος '%s' βρέθηκε σαν OK στον θησαυρό '%s'. Για την επιτυχή προσθήκη του μετονομάζεται σε '%s' </option>
+        </TermFoundAsTopTerm>
+        <CopyTermFailure>
+            <option lang="en">Term copy failure from Thesaurus '%s' . </option>
+            <option lang="el">Σφάλμα κατά την αντιγραφή όρου από τον θησαυρό '%s' . </option>
+        </CopyTermFailure>
+    </CreateTermsLevelByLevel>
+    <CreateStatuses>
+        <FailedToUpdateTermStatus>
+            <option lang="en">Failed to Update Status of Term: '%s' . </option>
+            <option lang="el">Αποτυχία ενημέρρωσης της κατάστασης του όρου: '%s' . </option>
+        </FailedToUpdateTermStatus>
+        <TermReferenceFailed>
+            <option lang="en">Failed to reference at Term '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στον όρο '%s' του θησαυρού: '%s'.</option>
+        </TermReferenceFailed>
+    </CreateStatuses>
+    <CopyDatesAndEditors>
+        <ClassReferenceFailure>
+            <option lang="en">Failed to refer to Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
+        </ClassReferenceFailure>
+        <CategoryReferenceFailure>
+            <option lang="en">Failed to refer to Category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
+        </CategoryReferenceFailure>                    
+    </CopyDatesAndEditors>
+    <CopySimpleLinks>
+        <ClassReferenceFailure>
+            <option lang="en">Failed to refer to Class '%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κλάση '%s' του θησαυρού: '%s'.</option>
+        </ClassReferenceFailure>
+        <CategoryReferenceFailure>
+            <option lang="en">Failed to reference at category '%s'->'%s' of Thesaurus: '%s'.</option>
+            <option lang="el">Αποτυχία αναφοράς στην κατηγορία '%s'->'%s' του θησαυρού: '%s'.</option>
+        </CategoryReferenceFailure>                  
+    </CopySimpleLinks>
+    <abortActions>
+        <InsertionFailure>
+            <option lang="en">Data insertion failure. </option>
+            <option lang="el">Αποτυχία λειτουργίας εισαγωγής δεδομένων. </option>
+        </InsertionFailure>
+    </abortActions>
+    <abortActionsMergeThesauri>
+        <MergeFailure>
+            <option lang="en">Merge of thesauri failure. </option>
+            <option lang="el">Αποτυχία λειτουργίας συγχώνευσης. </option>
+        </MergeFailure>
+    </abortActionsMergeThesauri>
+    <commitActionsMergeThesauri>
+        <MergeSucceeded>
+            <option lang="en">Thesauri merge finished successfully. New thesaurus '%s' was set as current thesaurus.</option>
+            <option lang="el">Η λειτουργία συγχώνευσης ολοκληρώθηκε με επιτυχία. Ο νέος θησαυρός '%s' τέθηκε σαν επιλεγμένος.</option>
+        </MergeSucceeded>
+    </commitActionsMergeThesauri>
+    <DBAdminUtilities>
+        <DeleteThesaurus>
+            <USER_NAME_DOES_NOT_EXIST>
+                <option lang="en">User '%s' does not exist.</option>
+                <option lang="el">Ο χρήστης '%s' δεν υπάρχει.</option>
+            </USER_NAME_DOES_NOT_EXIST>
+            <AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
+                <option lang="en">User '%s' does not have permission to delete the thesaurus '%s'.</option>
+                <option lang="el">Ο χρήστης '%s' δεν έχει το δικαίωμα διαγραφής του θησαυρού '%s'.</option>
+            </AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED>
+            <ThesaurusNotFound>
+                <option lang="en">Thesaurus '%s' does not exist in database.</option>
+                <option lang="el">Ο θησαυρός '%s' δεν βρέθηκε στην βάση.</option>
+            </ThesaurusNotFound>
+        </DeleteThesaurus>
+        <BackupRestore>
+            <ZipFileNotFound>
+                <option lang="en">File: '%s' was not found.</option>
+                <option lang="el">Δεν βρέθηκε το αρχείο: '%s'.</option>
+            </ZipFileNotFound>
+            <ZipFileSuccessfullyDeleted>
+                <option lang="en">File: '%s' was successfully deleted.</option>
+                <option lang="el">Το αρχείο: '%s' διαγράφηκε με επιτυχία.</option>
+            </ZipFileSuccessfullyDeleted>
+        </BackupRestore>
+    </DBAdminUtilities>
+</root>

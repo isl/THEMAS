@@ -103,8 +103,8 @@
                 <option lang="el">Υπό έγκριση</option>
             </underapproval>
             <forreinspection>
-                <option lang="en">Για αναθεώρηση</option>
-                <option lang="el">For Reinspection</option>
+                <option lang="en">For Reinspection</option>
+                <option lang="el">Για αναθεώρηση</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
@@ -167,7 +167,7 @@
         </trsource>
         <facet>
             <option lang="en">Facet</option>
-            <option lang="el">Μικροθησαυρός</option>
+            <option lang="el">Θέμα</option>
         </facet>
         <topterm>
             <option lang="en">TT</option>
@@ -219,8 +219,8 @@
                 <option lang="el">Υπό έγκριση</option>
             </underapproval>
             <forreinspection>
-                <option lang="en">Για αναθεώρηση</option>
-                <option lang="el">For Reinspection</option>
+                <option lang="en">For Reinspection</option>
+                <option lang="el">Για αναθεώρηση</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
@@ -277,6 +277,10 @@
             <option lang="en">Hierarchical display of terms of hierarchy: </option>
             <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
         </baselabel>
+        <baselabelformultiple>
+            <option lang="en">Hierarchical display of terms of hierarchies: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων των ιεραρχιών: </option>
+        </baselabelformultiple>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
@@ -296,6 +300,10 @@
             <option lang="en">Hierarchical display of terms of hierarchy: </option>
             <option lang="el">Ιεραρχική παρουσίαση όρων της ιεραρχίας: </option>
         </baselabel>
+        <baselabelformultiple>
+            <option lang="en">Hierarchical display of terms of hierarchies: </option>
+            <option lang="el">Ιεραρχική παρουσίαση όρων των ιεραρχιών: </option>
+        </baselabelformultiple>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
@@ -307,13 +315,21 @@
     </savealltermshierarchicalsimple>
     <GlobalThesaurusSimpleHierarchicalView>
         <titleprefix>
-            <option lang="en">Hierarchical Simple Presentation of Thesaurus </option>
-            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού </option>
+            <option lang="en">Hierarchical Simple Presentation of Thesaurus: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
         </titleprefix>
+        <facettitleprefix>
+            <option lang="en">Hierarchical Simple Presentation of Facet: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θέματος: </option>
+        </facettitleprefix>
         <baselabel>
             <option lang="en">Hierarchical Simple Presentation of Thesaurus: </option>
             <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
+        <facetbaselabel>
+            <option lang="en">Hierarchical Simple Presentation of Facet: </option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θέματος: </option>
+        </facetbaselabel>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
@@ -322,25 +338,42 @@
             <option lang="en">Thesaurus Tree Presentation</option>
             <option lang="el">Δενδρική Παρουσίαση Θησαυρού</option>
         </linktotree>
+        <facetlinktotree>
+            <option lang="en">Facet Tree Presentation</option>
+            <option lang="el">Δενδρική Παρουσίαση Θέματος</option>
+        </facetlinktotree>
     </GlobalThesaurusSimpleHierarchicalView>
     <GlobalThesaurusTreeView>
         <titleprefix>
             <option lang="en">Tree Presentation of Thesaurus </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού </option>
         </titleprefix>
+        <facettitleprefix>
+            <option lang="en">Tree Presentation of Facet: </option>
+            <option lang="el">Δενδρική Παρουσίαση του Θέματος: </option>
+        </facettitleprefix>
         <baselabel>
             <option lang="en">Tree Presentation of Thesaurus: </option>
             <option lang="el">Δενδρική Παρουσίαση του Θησαυρού: </option>
         </baselabel>
+        <facetbaselabel>
+            <option lang="en">Tree Presentation of Facet: </option>
+            <option lang="el">Δενδρική Παρουσίαση του Θέματος: </option>
+        </facetbaselabel>
         <noterms>
             <option lang="en">No Terms were found.</option>
             <option lang="el">Δεν βρέθηκαν όροι.</option>
         </noterms>
         <linktotypical>
             <option lang="en">Thesaurus Hierarchical Simple Presentation</option>
-            <option lang="el">Τυπική Ιεραρχική Παρουσίαση του Θησαυρού</option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση Θησαυρού</option>
         </linktotypical>
+        <facetlinktotypical>
+            <option lang="en">Facet Hierarchical Simple Presentation</option>
+            <option lang="el">Τυπική Ιεραρχική Παρουσίαση Θέματος</option>
+        </facetlinktotypical>
     </GlobalThesaurusTreeView>
+    
     
     <statistics>
         <terms>
@@ -410,19 +443,19 @@
         <facets>
             <legendprefix>
                 <option lang="en">Statistics of Facets of thesaurus: </option>
-                <option lang="el">Στατιστικά για τους Μικροθησαυρούς του θησαυρού: </option>
+                <option lang="el">Στατιστικά για τα Θέματα του θησαυρού: </option>
             </legendprefix>
             <totalfacets>
                 <option lang="en">Total number of Facets: </option>
-                <option lang="el">Συνολικός αριθμός Μικροθησαυρών: </option>
+                <option lang="el">Συνολικός αριθμός Θεμάτων: </option>
             </totalfacets>
             <subfieldlegend>
                 <option lang="en">Number of Hierarchies, Terms, Non-Preferred Terms, Translations and UF Translations per facet</option>
-                <option lang="el">Αριθμός Ιεραρχιών, Όρων, XA, Μεταφράσεων και XA Μεταφράσεων ανά μικροθησαυρό</option>
+                <option lang="el">Αριθμός Ιεραρχιών, Όρων, XA, Μεταφράσεων και XA Μεταφράσεων ανά θέμα</option>
             </subfieldlegend>
             <facet>
                 <option lang="en">Facet</option>
-                <option lang="el">Μικροθησαυρός</option>
+                <option lang="el">Θέμα</option>
             </facet>
             <hierarchies>
                 <option lang="en">Hierarchies</option>
@@ -548,17 +581,17 @@
         </hierarchy>
         <facets>
             <option lang="en">Facets</option>
-            <option lang="el">Μικροθησαυροί</option>
+            <option lang="el">Θέματα</option>
         </facets>
     </saveallhierarchies>
     <saveallfacets>
         <titleprefix>
             <option lang="en">Facets Search Results </option>
-            <option lang="el">Αποτελέσματα Aναζήτησης Μικροθησαυρών </option>
+            <option lang="el">Αποτελέσματα Aναζήτησης Θεμάτων </option>
         </titleprefix>
         <noresults>
             <option lang="en">No Facets were found.</option>
-            <option lang="el">Δεν βρέθηκαν μικροθησαυροί.</option>
+            <option lang="el">Δεν βρέθηκαν Θέματα.</option>
         </noresults>
         <number>
             <option lang="en">Num.</option>
@@ -566,7 +599,7 @@
         </number>
         <facet>
             <option lang="en">Facet</option>
-            <option lang="el">Μικροθησαυρός</option>
+            <option lang="el">Θέμα</option>
         </facet>
         <hierarchies>
             <option lang="en">Hierarchies</option>
@@ -651,8 +684,8 @@
             <option lang="el">A./A.</option>
         </number>
         <termhier>
-            <option lang="en">Term/Hierarchy</option>
-            <option lang="el">Όρος/Ιεραρχία</option>
+            <option lang="en">Facet / Hierarchy / Term</option>
+            <option lang="el">Θέμα / Ιεραρχία / Όρος</option>
         </termhier>
         <relation>
             <option lang="en">Relation</option>
@@ -684,12 +717,16 @@
         </source_note>
         <facet>
             <option lang="en">Facet</option>
-            <option lang="el">Μικροθησαυρός</option>
+            <option lang="el">Θέμα</option>
         </facet>
         <bt>
             <option lang="en">BT</option>
             <option lang="el">ΠΟ</option>
         </bt>
+        <referenceId>
+            <option lang="en">Thesaurus Reference Id</option>
+            <option lang="el">Θησαυρικό αναγνωριστικό</option>
+        </referenceId>
         <tc>
             <option lang="en">Tax. Code</option>
             <option lang="el">Ταξ. Κωδικός</option>

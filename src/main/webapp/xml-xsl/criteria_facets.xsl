@@ -164,7 +164,7 @@
                                     <br/>
                                     <br/>
                                     <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option[@lang=$lang]"/>
-                                    <input type="checkbox" name="output_facet" value="name" checked="checked" style="visibility:hidden;" disabled="disabled"/>
+                                    <input type="checkbox" name="output_facet" value="name" checked="checked"  class="hiddenInput" disabled="disabled"/>
                                 </td>
                                 <td align="right" valign="bottom">
                                    <!-- <xsl:text>Επιλογή όλων: </xsl:text>

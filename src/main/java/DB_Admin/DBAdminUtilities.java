@@ -39,15 +39,18 @@ import DB_Classes.DBCreate_Modify_Facet;
 import DB_Classes.DBThesaurusReferences;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBConnect_Term;
+import DB_Classes.DBCreate_Modify_Term;
 import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
 import Utils.Utilities;
 import Users.UserInfoClass;
 import Users.UsersClass;
+import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
+import Utils.SortItem;
 
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -58,7 +61,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo4j_sisapi.*;
@@ -211,7 +216,8 @@ public class DBAdminUtilities {
     /*----------------------------------------------------------------------
      DBCanBeInitialized()
      ------------------------------------------------------------------------*/
-    public boolean DBCanBeInitialized(ConfigDBadmin config, CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, StringObject InitializeDBResultMessage, Boolean DBInitializationSucceded) {
+    public boolean DBCanBeInitialized(ConfigDBadmin config, CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, 
+            StringObject InitializeDBResultMessage, Boolean DBInitializationSucceded,final String uiLang) {
 
         // check if the SISInitializeDBTelosSourcesDirectory configuration directory
         // (g.e. "C:\ICS-FORTH\TMS-EKT\telos_sources\model\generic"), exists
@@ -219,7 +225,7 @@ public class DBAdminUtilities {
         boolean fileExists = (Neo4jInitializeDBTsvFile.exists() && !Neo4jInitializeDBTsvFile.isDirectory());
         //boolean SISInitializeDBTelosSourcesDirectoryExists = SISInitializeDBTelosSourcesDirectory.isDirectory();
         if (fileExists == false) {
-            String InvalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue");
+            String InvalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue", uiLang);
             InitializeDBResultMessage.setValue(InvalidConfigValue + ": " + common_utils.Neo4j_GenericTsvFile);
             DBInitializationSucceded = false;
             return false;
@@ -234,12 +240,12 @@ public class DBAdminUtilities {
      GivenThesaurusCanBeCreated()
      ------------------------------------------------------------------------*/
     public boolean GivenThesaurusCanBeCreated(ConfigDBadmin config, CommonUtilsDBadmin common_utils,
-            Vector thesaurusVector, String NewThesaurusName, String NewThesaurusNameDBformatted,
-            StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
+            ArrayList thesaurusVector, String NewThesaurusName, String NewThesaurusNameDBformatted,
+            StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded,final String uiLang) {
         // check if the given NewThesaurusName exists
         boolean exists = thesaurusVector.contains(NewThesaurusName);
         if (exists == true) {
-            String ThesaurusExists = common_utils.config.GetTranslation("ThesaurusExists");
+            String ThesaurusExists = common_utils.config.GetTranslation("ThesaurusExists",uiLang);
             CreateThesaurusResultMessage.setValue(ThesaurusExists);
             CreateThesaurusSucceded = false;
             return false;
@@ -247,7 +253,7 @@ public class DBAdminUtilities {
         // check if the given NewThesaurusName has only 1 character
         boolean OneCharacter = (NewThesaurusName.length() == 1);
         if (OneCharacter == true) {
-            String OneCharacterMessage = common_utils.config.GetTranslation("OneCharacterMessage");
+            String OneCharacterMessage = common_utils.config.GetTranslation("OneCharacterMessage",uiLang);
             CreateThesaurusResultMessage.setValue(OneCharacterMessage);
             CreateThesaurusSucceded = false;
             return false;
@@ -255,7 +261,7 @@ public class DBAdminUtilities {
         // check if the given NewThesaurusName contains invalid characters
         boolean ContainsInvalidCharacters = common_utils.FileNameContainsInvalidCharacters(NewThesaurusNameDBformatted);
         if (ContainsInvalidCharacters == true) {
-            String ThesaurusContainsInvalidCharacters = common_utils.config.GetTranslation("ThesaurusContainsInvalidCharacters");
+            String ThesaurusContainsInvalidCharacters = common_utils.config.GetTranslation("ThesaurusContainsInvalidCharacters",uiLang);
             CreateThesaurusResultMessage.setValue(ThesaurusContainsInvalidCharacters);
             CreateThesaurusSucceded = false;
             return false;
@@ -265,7 +271,7 @@ public class DBAdminUtilities {
         boolean fileExists = (Neo4jSpecificTsvFile.exists() && !Neo4jSpecificTsvFile.isDirectory());
         //boolean SISInitializeDBTelosSourcesDirectoryExists = SISInitializeDBTelosSourcesDirectory.isDirectory();
         if (fileExists == false) {
-            String InavalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue");
+            String InavalidConfigValue = common_utils.config.GetTranslation("InvalidConfigValue",uiLang);
             CreateThesaurusResultMessage.setValue(InavalidConfigValue + ": " + common_utils.Neo4j_SpecificTsvFile);
             CreateThesaurusSucceded = false;
             return false;
@@ -360,7 +366,11 @@ public class DBAdminUtilities {
      CreateThesaurus()
      * DBbackupFileNameCreated: Used in order to store back Up file name. If not null its value will be used as a backup description
      -------------------------------------------------------*/
-    public boolean CreateThesaurus(CommonUtilsDBadmin common_utils, String NewThesaurusNameDBformatted, StringObject CreateThesaurusResultMessage, String backUpDescrition, StringObject DBbackupFileNameCreated) {
+    public boolean CreateThesaurus(UserInfoClass refSessionUserInfo, CommonUtilsDBadmin common_utils, 
+            String NewThesaurusNameDBformatted, 
+            StringObject CreateThesaurusResultMessage, 
+            String backUpDescrition, 
+            StringObject DBbackupFileNameCreated) {
         // check if server runs (close it before creating new thesaurus)
         /*
          boolean databaseIsRunning = common_utils.ProcessIsRunning(common_utils.MachineName, common_utils.DatabaseFullPath, common_utils.DatabaseName);
@@ -375,7 +385,7 @@ public class DBAdminUtilities {
          */
 
         // create a backup of the data base anyway
-        common_utils.CreateDBbackup(backUpDescrition, CreateThesaurusResultMessage, DBbackupFileNameCreated);
+        common_utils.CreateDBbackup(backUpDescrition, CreateThesaurusResultMessage, DBbackupFileNameCreated, refSessionUserInfo.UILang);
 
         /*// start server
          boolean serverStarted = common_utils.StartDatabase();
@@ -392,18 +402,92 @@ public class DBAdminUtilities {
          }
          */
         TSVExportsImports expimps = new TSVExportsImports();
-        if (expimps.importSpecificFromFile(Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath()) == false) {
+        if (expimps.importSpecificFromFile(Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath(),false) == false) {
 
             StringObject result = new StringObject("");
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
-            CreateThesaurusResultMessage.setValue("Can non create file : " + Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath() + "\r\n" + result.getValue());
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, refSessionUserInfo.UILang);
+            CreateThesaurusResultMessage.setValue("Can not create file : " + Neo4jCreateNewThesaurusSpecificTsv.getAbsolutePath() + "\r\n" + result.getValue());
             return false;
+        }
+        
+        Utils.StaticClass.closeDb();
+        
+        //create the default Facet and Hierarchy
+        DBGeneral dbGen = new DBGeneral();
+        
+        DBCreate_Modify_Facet creation_modificationOfFacet = new DBCreate_Modify_Facet();
+        DBCreate_Modify_Hierarchy creation_modificationOfHierarchy = new DBCreate_Modify_Hierarchy();
+        
+        QClass Q = new QClass(); 
+        TMSAPIClass TA = new TMSAPIClass();
+        IntegerObject sis_session = new IntegerObject();
+        IntegerObject tms_session = new IntegerObject();
+        
+        //open connection and start Transaction
+        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, NewThesaurusNameDBformatted, false)==QClass.APIFail)
+        {
+            
+            CreateThesaurusResultMessage.setValue("Cannot open connection");
+            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ creation of new thesaurus.");
+            return false;
+        }
+        
+        StringObject errorMsg = new StringObject();
+        
+        boolean succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(NewThesaurusNameDBformatted, Q, TA,  sis_session, tms_session,
+                         dbGen,  Parameters.UnclassifiedTermsFacetLogicalname, "create",  null, errorMsg,true, refSessionUserInfo.UILang);
+        
+        UsersClass wtmsUsers = new UsersClass();
+        UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
+        
+        wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, NewThesaurusNameDBformatted);
+        //just to give the under construction status that creates less issues
+        SessionUserInfo.thesaurusNames.add(NewThesaurusNameDBformatted);
+        SessionUserInfo.thesaurusGroups.add(Utils.ConstantParameters.Group_ThesaurusCommittee);
+        SessionUserInfo.userGroup = Utils.ConstantParameters.Group_ThesaurusCommittee;
+
+        if(succeded){
+            ArrayList<String> facets = new ArrayList<>();
+            facets.add(Parameters.UnclassifiedTermsFacetLogicalname);
+            succeded = creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(SessionUserInfo, 
+                    Q, 
+                    TA,  
+                    sis_session,  
+                    tms_session,
+                    dbGen,  
+                    Parameters.UnclassifiedTermsLogicalname, 
+                    facets,
+                    "create", 
+                    null, 
+                    SessionUserInfo.name, 
+                    new Locale(Parameters.TargetLocaleLang, Parameters.TargetLocaleCountry)
+                    ,errorMsg
+                    ,true);
+        }
+        if(succeded){
+
+            //commit transaction and close connection
+            Q.free_all_sets();
+            Q.TEST_end_transaction();
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+
+            //out.println("Success");
+        }else{
+
+            //abort transaction and close connection
+            Q.free_all_sets();
+            Q.TEST_abort_transaction();
+            dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+            CreateThesaurusResultMessage.setValue(errorMsg.getValue());
+            //out.println("Failure" + errorMsg.getValue());
+            return false;
+
         }
         /*
          // get the modification date of db folder contents before telos parsing
          long DBmodificationBeforeTelos = common_utils.GetFolderContentsModificationDate(common_utils.DBPath);
          // call telos for TelosFileName x N times
-         Vector<String> tlsFiles = new Vector<String>();
+         ArrayList<String> tlsFiles = new ArrayList<String>();
          StringObject telosOutputObj = new StringObject("");
          fillTlsFilesVector(tlsFiles, common_utils, NewThesaurusNameDBformatted, CREATE_BAT_FILE_FOR_CREATE_THESAURUS);
 
@@ -455,7 +539,7 @@ public class DBAdminUtilities {
          }
          */
         // inform user for success
-        String CreateThesaurusSuccess = common_utils.config.GetTranslation("CreateThesaurusSuccess");
+        String CreateThesaurusSuccess = common_utils.config.GetTranslation("CreateThesaurusSuccess",SessionUserInfo.UILang);
         CreateThesaurusResultMessage.setValue(CreateThesaurusSuccess);
         return true;
     }
@@ -463,9 +547,9 @@ public class DBAdminUtilities {
     /*-----------------------------------------------------
      InitializeDB()
      -------------------------------------------------------*/
-    public boolean InitializeDB(CommonUtilsDBadmin common_utils, StringObject InitializeDBResultMessage) {
+    public boolean InitializeDB(CommonUtilsDBadmin common_utils, StringObject InitializeDBResultMessage,final String uiLang) {
 
-        //Vector<String> tlsFiles = new Vector<String>();
+        //ArrayList<String> tlsFiles = new ArrayList<String>();
         //fillTlsFilesVector(tlsFiles, common_utils, null, CREATE_BAT_FILE_FOR_INIT_DB);
         // check if server runs (close it before creating DB initialization)
         /*
@@ -480,7 +564,7 @@ public class DBAdminUtilities {
          }*/
         // create a backup of the data base anyway
         StringObject DBbackupFileNameCreated = new StringObject("");
-        common_utils.CreateDBbackup("backup_before_DB_initialization", InitializeDBResultMessage, DBbackupFileNameCreated);
+        common_utils.CreateDBbackup("backup_before_DB_initialization", InitializeDBResultMessage, DBbackupFileNameCreated, uiLang);
 
         Utils.StaticClass.closeDb();
         // check if server runs (close it before deleting DB folder contents)
@@ -497,10 +581,10 @@ public class DBAdminUtilities {
         // clear db folder contents
         boolean dbIsCleared = common_utils.DeleteFolderContents(common_utils.DBPath);
         if (dbIsCleared == false) {
-            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure");
+            String ClearDBFolderFailure = common_utils.config.GetTranslation("ClearDBFolderFailure", uiLang);
             InitializeDBResultMessage.setValue(ClearDBFolderFailure + " " + common_utils.DBPath);
             //common_utils.RestartDatabaseIfNeeded();
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject());
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject(), uiLang);
             return false;
         }
 
@@ -510,9 +594,9 @@ public class DBAdminUtilities {
         //import generic file
         String genericTSVFile = common_utils.Neo4j_GenericTsvFile;
         TSVExportsImports expimps = new TSVExportsImports();
-        if (expimps.importGenericFromFile(genericTSVFile) == false) {
+        if (expimps.importGenericFromFile(genericTSVFile,false) == false) {
             InitializeDBResultMessage.setValue("Generic Import Failed");
-            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject());
+            boolean RestoreDBbackupSucceded = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), new StringObject(), uiLang);
 
             return false;
         }
@@ -574,7 +658,7 @@ public class DBAdminUtilities {
         Utils.StaticClass.getDBService();
 
         // inform user for success
-        String InitializeDBSuccess = common_utils.config.GetTranslation("InitializeDBSuccess");
+        String InitializeDBSuccess = common_utils.config.GetTranslation("InitializeDBSuccess", uiLang);
         InitializeDBResultMessage.setValue(InitializeDBSuccess + " ");
         return true;
     }
@@ -591,13 +675,20 @@ public class DBAdminUtilities {
         StringObject scopenoteENLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.translations_scope_note_kwd, scopenoteENFromClassObj, scopenoteENLinkObj, Q, sis_session);
 
-        StringObject commentFromClassObj = new StringObject();
-        StringObject commentLinkObj = new StringObject();
-        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
 
         StringObject historicalnoteFromClassObj = new StringObject();
         StringObject historicalnoteLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.historical_note_kwd, historicalnoteFromClassObj, historicalnoteLinkObj, Q, sis_session);
+        
+        
+        StringObject commentFromClassObj = new StringObject();
+        StringObject commentLinkObj = new StringObject();
+        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+        
+        
+        StringObject noteFromClassObj = new StringObject();
+        StringObject noteLinkObj = new StringObject();
+        dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
         //DELETE ALL TERM RELATIONS EXCEPT BT RELATIONS
         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
         StringObject prevThes = new StringObject();
@@ -607,8 +698,9 @@ public class DBAdminUtilities {
         }
         TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteFromClassObj, scopenoteLinkObj);
         TA.DeleteDescriptorComment(targetDescriptorObj, scopenoteENFromClassObj, scopenoteENLinkObj);
-        TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
         TA.DeleteDescriptorComment(targetDescriptorObj, historicalnoteFromClassObj, historicalnoteLinkObj);
+        TA.DeleteDescriptorComment(targetDescriptorObj, commentFromClassObj, commentLinkObj);
+        TA.DeleteDescriptorComment(targetDescriptorObj, noteFromClassObj, noteLinkObj);
 
         //reset to previous thesaurus name if needed
         if (prevThes.getValue().equals(selectedThesaurus) == false) {
@@ -655,6 +747,7 @@ public class DBAdminUtilities {
         long startTime = Utilities.startTimer();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " STARTED ############");
 
+        
         int ret = 0;
         HttpSession session = request.getSession();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
@@ -662,6 +755,19 @@ public class DBAdminUtilities {
         int SISApiSession = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         UsersClass tmsUsers = new UsersClass();
+        
+        //DELETE GUIDE TERMS FROM THESAURUS
+        //1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms}
+        
+        //delete facets
+        //delete hierarchies
+        //delete terms residing in unclassified terms
+        
+        //remove target thesaurus translation categories
+        //search for the 12 groups defined in 
+        //http://athena.ics.forth.gr:9090/redmine/issues/185 and delete these nodes
+        //remember to exclude e.g. Language Words
+        
         // construct targetThesaurusObj StringObject with prefix        
         StringObject targetThesaurusObj = new StringObject("Thesaurus`" + targetThesaurus);
         // ATTENTION!!!: all queries must be done AFTER the call to tmsUsers.EditUserThesaurus()
@@ -675,12 +781,12 @@ public class DBAdminUtilities {
         switch (ret) {
             case UsersClass.USER_NAME_DOES_NOT_EXIST:
                 
-                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/USER_NAME_DOES_NOT_EXIST", new String[]{targetUser}, refSessionUserInfo.UILang));
                 //errorMsg.setValue("The renaming user: '" + targetUser + "' could not be found as a user of the system.");
                 return;
             case UsersClass.AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED:
                 
-                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", new String[]{targetUser,targetThesaurus}));
+                errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/AUTHENTICATION_FOR_CHANGE_THESAURUS_FAILED", new String[]{targetUser,targetThesaurus}, refSessionUserInfo.UILang));
                 //errorMsg.setValue(User '" + targetUser + "' does not have permission to delete the thesaurus '" + targetThesaurus+ "'.");
                 // ATTENTION: the following is necessary so as to restore the old valid state of the "SessionUser" session attribute
                 sessionInstance.setAttribute("SessionUser", refSessionUserInfo);
@@ -690,17 +796,18 @@ public class DBAdminUtilities {
         Q.reset_name_scope();
         if (Q.set_current_node(targetThesaurusObj) == QClass.APIFail) {
             
-            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", new String[]{targetThesaurus}));
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/ThesaurusNotFound", new String[]{targetThesaurus}, refSessionUserInfo.UILang));
             //errorMsg.setValue(errorMsg.getValue().concat("Thesaurus '" + targetThesaurus + "' does not exist in database."));
             return;
         }
 
-        //upda
+        // <editor-fold defaultstate="collapsed" desc="Retrieving target Thesaurus Classes.">
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         tmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, targetThesaurus);
         // ATTENTION!!!: all queries must be done AFTER the call to tmsUsers.EditUserThesaurus()
         // so as the selected thesaurus for deletion is set as selectedThesaurus of current SessionUserInfo
         // and the DB thesaurus references are associated with this thesaurus
+        
         // looking for AAAHierarchy
         StringObject thesHierarchy = new StringObject();
         dbtr.getThesaurusClass_Hierarchy(SessionUserInfo.selectedThesaurus, Q, SISApiSession, thesHierarchy);
@@ -732,6 +839,7 @@ public class DBAdminUtilities {
         SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
         int set_facets = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
 
+        
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
@@ -739,7 +847,7 @@ public class DBAdminUtilities {
 
         //StringObject nodeName = new StringObject();
         Q.reset_set(set_classes);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if (Q.bulk_return_nodes(set_classes, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 orphansHierarchyFacet.setValue(row.get_v1_cls_logicalname());
@@ -752,18 +860,22 @@ public class DBAdminUtilities {
         String testFacet = orphansHierarchyFacet.getValue();
         //SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"DeleteThesaurus(" + targetThesaurus + ") and current SessionUserInfo selectedThesaurus = " + SessionUserInfo.selectedThesaurus);
-
-        //0 DELETE GUIDE TERMS FROM THESAURUS
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="DELETE GUIDE TERMS FROM THESAURUS">
+        
         DBEditGuideTerms editGuideTerms = new DBEditGuideTerms();
-        Vector<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
+        ArrayList<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
             String GuideTermForDeletion = guideTerms.get(i);
-            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg);
+            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg, SessionUserInfo.UILang);
             if (errorMsg.getValue().equals("") == false) {
                 return;
             }
         }
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="DELETE Hierarchies FROM THESAURUS (except Unclassified?)">
         // 1. --- delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms} ---
         // a. get all hierarchies of thesaurus AAA (ALL instances of AAAHierarchy) EXCEPT{AAAClass`Unclassfied terms}
         Q.reset_name_scope();
@@ -778,7 +890,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansHierarchy);
         int hierarchiesSetWithoutOrphansHierarchy = hierarchiesSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"hierarchiesSetWithoutOrphansHierarchy card = " + Q.set_get_card( hierarchiesSetWithoutOrphansHierarchy));
-        Vector<String> hierarchiesToBeDeleted = new Vector<String>();
+        ArrayList<String> hierarchiesToBeDeleted = new ArrayList<String>();
         Q.reset_set(hierarchiesSetWithoutOrphansHierarchy);
         retVals.clear();
         if (Q.bulk_return_nodes(hierarchiesSetWithoutOrphansHierarchy, retVals) != QClass.APIFail) {
@@ -793,8 +905,10 @@ public class DBAdminUtilities {
         Q.free_set(hierarchiesSetWithoutOrphansHierarchy);
         // b. delete all hierarchies of thesaurus AAA EXCEPT{AAAClass`Unclassfied terms}
         DBCreate_Modify_Hierarchy creation_modificationOfHierarchy = new DBCreate_Modify_Hierarchy();
+        
         int hierarchiesToBeDeletedSize = hierarchiesToBeDeleted.size();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Deleting " + hierarchiesToBeDeletedSize + " hierarchies...");
+        
         for (int i = 0; i < hierarchiesToBeDeletedSize; i++) {
             String hierarchyToBeDeleted = (String) hierarchiesToBeDeleted.get(i);
             String hierarchyToBeDeletedUIWithoutPrefix = dbGen.removePrefix(hierarchyToBeDeleted);
@@ -823,7 +937,7 @@ public class DBAdminUtilities {
          DBCreate_Modify_Term DBCMT = new DBCreate_Modify_Term();
          String prefixTerm = dbtr.getThesaurusPrefix_Descriptor(sessionInstance, Q, sis_session.getValue());
         
-         Vector<String> oldTopTerms = new Vector<String>();
+         ArrayList<String> oldTopTerms = new ArrayList<String>();
          oldTopTerms.add(Parameters.UnclassifiedTermsLogicalname);
         
          Q.reset_name_scope();
@@ -866,7 +980,7 @@ public class DBAdminUtilities {
          Q.set_difference(set_leaf_nodes,set_non_leaf_nodes);
          Q.reset_set(set_leaf_nodes);
         
-         Vector<String> termsForDeletion = new Vector<String>();
+         ArrayList<String> termsForDeletion = new ArrayList<String>();
          termsForDeletion.addAll(dbGen.get_Node_Names_Of_Set(set_leaf_nodes, true, Q, sis_session));
         
          Q.free_set(set_leaf_nodes);
@@ -901,6 +1015,9 @@ public class DBAdminUtilities {
          }
          Q.begin_transaction();
          */
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete Orphan terms">
         Q.reset_name_scope();
         Q.set_current_node(orphansHierarchyObj);
         int orphanTermsSet = Q.get_all_instances(0);
@@ -913,7 +1030,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansTopTerm);
         int orphanTermsSetWithoutOrphansTopTerm = orphanTermsSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"orphanTermsSetWithoutOrphansTopTerm card = " + Q.set_get_card( orphanTermsSetWithoutOrphansTopTerm));        
-        Vector<String> orphanTermsToBeDeleted = new Vector<String>();
+        ArrayList<String> orphanTermsToBeDeleted = new ArrayList<String>();
         Q.reset_set(orphanTermsSetWithoutOrphansTopTerm);
         retVals.clear();
         if (Q.bulk_return_nodes(orphanTermsSetWithoutOrphansTopTerm, retVals) != QClass.APIFail) {
@@ -937,7 +1054,9 @@ public class DBAdminUtilities {
 
             step2ofDeletion(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, new StringObject(orphanTermToBeDeleted), orphanTermToBeDeletedUIWithoutPrefix, errorMsg);
         }
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Delete Facets">
         // 3. --- delete all facets of thesaurus AAA
         // get all facets of thesaurus AAA (ALL instances of AAAFacet EXCEPT{AAAClass`UNCLASSIFIED TERMS})
         Q.reset_name_scope();
@@ -952,7 +1071,7 @@ public class DBAdminUtilities {
         Q.free_set(setWithOrphansFacet);
         int facetsOfThesaurusSetWithoutOrphansFacet = facetsOfThesaurusSet;
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"facetsOfThesaurusSetWithoutOrphansFacet card = " + Q.set_get_card( facetsOfThesaurusSetWithoutOrphansFacet));                
-        Vector<String> facetsToBeDeleted = new Vector<String>();
+        ArrayList<String> facetsToBeDeleted = new ArrayList<String>();
         Q.reset_set(facetsOfThesaurusSetWithoutOrphansFacet);
         retVals.clear();
         if (Q.bulk_return_nodes(facetsOfThesaurusSetWithoutOrphansFacet, retVals) != QClass.APIFail) {
@@ -973,7 +1092,7 @@ public class DBAdminUtilities {
             String facetToBeDeleted = (String) facetsToBeDeleted.get(i);
             String facetToBeDeletedUIWithoutPrefix = dbGen.removePrefix(facetToBeDeleted);
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + i + 1 + ". Delete facet: " + facetToBeDeletedUIWithoutPrefix);
-            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true) == false) {
+            if (creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, tms_session, dbGen, facetToBeDeletedUIWithoutPrefix, "modify", "delete", errorMsg, true, SessionUserInfo.UILang) == false) {
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"--------------------- facet deletion cancelled");
                 return;
             } else {
@@ -983,7 +1102,103 @@ public class DBAdminUtilities {
                 errorMsg.setValue("");
             }
         }
+        // </editor-fold>
+        
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete the 12 group nodes related to the thesaurus">
+        //these groups are listed in  defined in http://athena.ics.forth.gr:9090/redmine/issues/185
+        //and include the Instance Thesaurus`AAA from class Thesaurus
+        
+        
+        
+        //remove links from unclassified terms
+        DBCreate_Modify_Term modifyTerm = new DBCreate_Modify_Term();
+        
+        Utils.SortItem unclassifiedTermsSortItem = new Utils.SortItem(Parameters.UnclassifiedTermsLogicalname);
+        String xmlPath = Utilities.getXml_For_ConsistencyChecks();
+        int consistencyPolicy = ConsistensyCheck.IMPORT_COPY_MERGE_THESAURUS_POLICY;
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.created_on_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
 
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.created_by_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.modified_by_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.modified_on_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translation_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.uf_translations_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.uf_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.primary_found_in_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translations_found_in_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.tc_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.scope_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.translations_scope_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.historical_note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.comment_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        modifyTerm.commitTermTransactionInSortItem(SessionUserInfo, unclassifiedTermsSortItem, ConstantParameters.note_kwd, 
+                   new ArrayList<>(),"", errorMsg, Q,sis_session, TA, tms_session, dbGen, xmlPath, false, true, null,consistencyPolicy);
+        
+        
+        // <editor-fold defaultstate="collapsed" desc="Delete Translation Categories">
+        dbGen.synchronizeTranslationCategories(dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, SessionUserInfo.selectedThesaurus, null, false, true),
+                            new HashMap<String, String>(), new ArrayList<String>(), new ArrayList<String>(), SessionUserInfo.selectedThesaurus,
+                            errorMsg, Utilities.getXml_For_Messages(), Q, TA, sis_session,  tms_session, SessionUserInfo.UILang);
+        // </editor-fold>
+        
+        /*
+        ArrayList<Long> excludeList = new ArrayList<>();
+        Q.reset_name_scope();
+        long primaryTermId = Q.set_current_node(new StringObject(Parameters.PrimaryLang+"Term"));
+        if(primaryTermId>0){
+            excludeList.add(primaryTermId);
+        }
+        Q.reset_name_scope();
+        long primaryLangId = Q.set_current_node(new StringObject(Parameters.PrimaryLang+"Language"));
+        if(primaryLangId>0){
+            excludeList.add(primaryLangId);
+        }
+        */
+        
+        StringObject deleteThesErrorMsgCode = new StringObject();
+        if(!TA.DeleteEmptyThesaurusModel(targetThesaurus,deleteThesErrorMsgCode)){
+            
+            errorMsg.setValue(u.translateFromMessagesXML("root/DBAdminUtilities/DeleteThesaurus/GeneralMessageForDeleteThesaurusFailure", new String[]{targetThesaurus}, refSessionUserInfo.UILang));    
+            if(Parameters.DEBUG && deleteThesErrorMsgCode.getValue() !=null && deleteThesErrorMsgCode.getValue().length()>0){
+                errorMsg.setValue(errorMsg.getValue()+"\n"+deleteThesErrorMsgCode.getValue());
+                return;
+            }
+        }
+        
+        // </editor-fold>
+        
+        
+        /*
         // 4. --- Delete Instance Thesaurus`AAA from class Thesaurus 
         // a. delete ALL links pointed to/from target thesaurus
         Q.reset_name_scope();
@@ -1000,7 +1215,7 @@ public class DBAdminUtilities {
         //CMValue cmv = new CMValue();
         //IntegerObject flag = new IntegerObject();
 
-        Vector<Return_Link_Id_Row> retLIVals = new Vector<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retLIVals = new ArrayList<Return_Link_Id_Row>();
         if (Q.bulk_return_link_id(linksSet, retLIVals) != QClass.APIFail) {
             //while (Q.retur_link_id( linksSet, cls, fromid, link_sysid, cmv, flag) != QClass.APIFail) {
             for (Return_Link_Id_Row row : retLIVals) {
@@ -1014,20 +1229,13 @@ public class DBAdminUtilities {
                 }
             }
         }
-        /*
-         //THEMASAPIClass WTA = new THEMASAPIClass(sis_session);
-         while (Q.retur_link_id( linksSet, cls, fromid, link_sysid, cmv, flag) != QClass.APIFail) {
-         Identifier I_from = new Identifier(fromid.getValue());
-         Identifier I_link = new Identifier(link_sysid.getValue());
-         if (WTA.IS_UNNAMED(link_sysid.getValue()) != 0) { // unnamed attribute
-         ret = Q.Delete_Unnamed_Attribute( I_link);
-         } else { // named attribute
-         ret = Q.Delete_Named_Attribute( I_link, I_from);
-         }
-         }
-         */
         Q.free_set(linksSet);
 
+        
+        //CHECK deletion of translation categories
+        //Check deletion of the 12 node categories found in #185
+        //http://athena.ics.forth.gr:9090/redmine/issues/185
+        
         // b. Delete Instance Thesaurus`AAA from class Thesaurus
         ret = Q.CHECK_Delete_Instance(new Identifier(targetThesaurusObj.getValue()), new Identifier("Thesaurus"));
         if (ret == QClass.APIFail) {
@@ -1035,6 +1243,7 @@ public class DBAdminUtilities {
             return;
         }
 
+        */
         // timer end
         float elapsedTimeSec = Utilities.stopTimer(startTime);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "############ DELETION of thesaurus: " + targetThesaurus + " SUCCEDED ############ (Time elapsed: " + elapsedTimeSec + " sec)");

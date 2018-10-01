@@ -41,34 +41,33 @@
     </user>
         
     <user>
-        <name>committee</name>
-        <password>committee</password>
-        <thesaurus group="THESAURUS_COMMITTEE">AAA</thesaurus>
-        <description>Thesaurus Committee user for thesaurus AAA</description>
+        <name>com</name>
+        <password>com</password>
+        <thesaurus group="THESAURUS_COMMITTEE">*</thesaurus>
+        <description>Thesaurus Committee user for all thesauri</description>
     </user>
     <user>
         <name>team</name>
         <password>team</password>
-        <thesaurus group="THESAURUS_TEAM">AAA</thesaurus>        
-        <description>Thesaurus Team user for thesaurus AAA</description>
+        <thesaurus group="THESAURUS_TEAM">*</thesaurus>        
+        <description>Thesaurus Team user for all thesauri</description>
     </user>
     <user>
-        <name>library</name>
-        <password>library</password>
-        <thesaurus group="LIBRARY">AAA</thesaurus>
-        <description>Library user for thesaurus AAA</description>
+        <name>lib</name>
+        <password>lib</password>
+        <thesaurus group="LIBRARY">*</thesaurus>
+        <description>Library user for all thesauri</description>
     </user>
     <user>
         <name>reader</name>
         <password/>
-        <thesaurus group="READER">AAA</thesaurus>
-        <description>Reader user for thesaurus AAA, viewing only Published Terms</description>
+        <thesaurus group="READER">*</thesaurus>
+        <description>Reader user for all thesauri, viewing only Published Terms</description>
     </user>
     <user>
         <name>ExternalReader</name> 
-        <password/>
-        <thesaurus group="EXTERNALREADER">AATDEMO</thesaurus>
-        <thesaurus group="EXTERNALREADER">ANCIENT</thesaurus>        
-        <description>External Read only user for thesaurus THEMASDEMO (no login required - all non published terms included)</description>
-    </user>
+        <password/>        
+        <thesaurus group="EXTERNALREADER">*</thesaurus>
+        <description>External Read only user for for all thesauri (no login required - all non published terms included)</description>
+    </user>   
 </WebAppUsers>

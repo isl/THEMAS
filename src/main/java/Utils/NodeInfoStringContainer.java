@@ -35,8 +35,8 @@ package Utils;
 
 
 
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -47,16 +47,16 @@ public class NodeInfoStringContainer {
     public static final String CONTAINER_TYPE_TERM = "TERM";
     public static final String CONTAINER_TYPE_SOURCE = "SOURCE";
     public String containerType;
-    public Hashtable<String,Vector<String>> descriptorInfo = null;
+    public HashMap<String,ArrayList<String>> descriptorInfo = null;
     
     public NodeInfoStringContainer(String type, String[] output){
        
         containerType = new String(type);
         if(type.compareTo(CONTAINER_TYPE_TERM)==0 ||type.compareTo(CONTAINER_TYPE_SOURCE)==0  ){
             
-            descriptorInfo = new Hashtable<String,Vector<String>>();
+            descriptorInfo = new HashMap<String,ArrayList<String>>();
             for(int i=0; i< output.length ; i++){
-                Vector<String> values = new Vector<String>();
+                ArrayList<String> values = new ArrayList<>();
                 descriptorInfo.put(output[i], values);               
             }
         }

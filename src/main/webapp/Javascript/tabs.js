@@ -72,23 +72,6 @@ function CheckSearchUserInput(searchKind) {
         }
 
 
-/*8
-        for ( i=0; i< selectsArrayPedio.length; i++) {
-            var pedio = selectsArrayPedio[i];
-            var timh = inputsArrayTimh[i];
-            if ((pedio == "name" || pedio == "translations" || pedio == "bt" || pedio == "nt" || pedio == "rt" || pedio == "uf" || pedio == "uf_translations" || pedio == "tc" || pedio == "primary_found_in" || pedio == "translations_found_in" || pedio == "facet" || pedio ==  "topterm" || pedio == "created_by" || pedio == "modified_by" || pedio == "created_on" || pedio == "modified_on" || pedio == "status")
-                && timh.length > THEMASAPI_LOGINAM_SIZE) {
-                alert(translate(15) + THEMASAPI_LOGINAM_SIZE + translate(16));
-                //alert('Το όνομα ενός στοιχείου της βάσης δεδομένων δεν πρέπει να ξεπερνάει τους ' + THEMASAPI_LOGINAM_SIZE + ' χαρακτήρες.');
-                return false;
-            }
-            if ((pedio == "scope_note" || pedio == "translations_scope_note") && timh.length > THEMASAPI_MAX_COM_LEN) {
-                alert(translate(17) + THEMASAPI_MAX_COM_LEN + translate(18));
-                //alert('Το κείμενο ενός σχολίου δεν πρέπει να ξεπερνάει τους ' + THEMASAPI_MAX_COM_LEN + ' χαρακτήρες.');
-                return false;
-            }
-        }
-        */
     }
     // ------------------------------- SearchHierarchies -------------------------------
     else if (searchKind == "SearchHierarchies") {
@@ -384,6 +367,7 @@ function cancelAction(){
         CurrentLocation.indexOf('FixDB')!=-1 ){
         
         document.getElementById('DisplayCardArea').innerHTML='';
+        DisplayPleaseWaitScreen(false);
     }
     else
     if(CurrentLocation.charAt(CurLocationLength-1) == "#"){
@@ -560,7 +544,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
         }
         fieldSetParams += 'translations_scope_note=' + escape(encodeURIComponent(value)) + '&' ;
     }   
-    else if(targetFieldSetID=='edit_source_source_note'){
+    else if(targetFieldSetID=='edit_source_source_note' || targetFieldSetID=='edit_source_create'){
         var textareas = targetFieldSet.getElementsByTagName('textarea');
         for ( i=0; i< textareas.length; i++) {
 
@@ -581,7 +565,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
             if(textareas[i].name!= '')
                 fieldSetParams += textareas[i].name + '=' + escape(encodeURIComponent(tempval)) + '&' ;
         }
-    }
+    }    
     else if(targetFieldSetID=='edit_term_scope_note'){
         var textareas = targetFieldSet.getElementsByTagName('textarea');
         for ( i=0; i< textareas.length; i++) {
@@ -598,7 +582,6 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
             while(tempval.indexOf("\n")>0){
                 tempval = tempval.replace("\n","");
             }
-
 
             if(textareas[i].name!= '')
                 fieldSetParams += textareas[i].name + '=' + escape(encodeURIComponent(tempval)) + '&' ;
@@ -652,17 +635,36 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
     var selects = targetFieldSet.getElementsByTagName('select');
     
     for ( i=0; i< selects.length; i++) {
-
+        //if edit user servlet then should check if parent row is disabled
+        
+        
         //if(servletName != 'Create_Modify_Hierarchy' && servletName !='EditActions_Term'){
-        if(selectsSelectionMode=='selectedIndexOnly'){
-            if(selects[i].name!= '' && selects[i].selectedIndex >=0 && selects[i].style.visibility != 'hidden')
+        if(selectsSelectionMode==='selectedIndexOnly'){
+            //added "&& !selects[i].disabled" for share Thesaurus functionality
+            //so that global thesaurus (* All thesauri) editing rights of users, 
+            //that are not editable via share thesaurus card are not also collected
+            if(selects[i].name!== '' && selects[i].selectedIndex >=0 && selects[i].style.visibility !== 'hidden' && !selects[i].disabled)
                 fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[selects[i].selectedIndex].value)) + "&";
         }
         else{
-            if(selects[i].name!= '')
-                for(var k =0; k<selects[i].options.length; k++ ){
-                    fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+            if(selects[i].name!== ''){
+                
+                if(selects[i].multiple){
+                    //introduced in order to include only selected options of select
+                    //(chosen plugin)
+                
+                    for(var k =0; k<selects[i].options.length; k++ ){
+                        if(selects[i].options[k].selected){
+                            fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+                        }
+                    }
+                } 
+                else{
+                    for(var k =0; k<selects[i].options.length; k++ ){
+                        fieldSetParams += selects[i].name + "=" + escape(encodeURIComponent(selects[i].options[k].value)) + "&";
+                    }
                 }
+            }
 
         }
     }
@@ -740,21 +742,21 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
                         var newFacetField = document.getElementById('newFacetName_Id');
                         var newSourceField = document.getElementById('newSourceName_Id');
                         var newUserField = document.getElementById('newUserName_Id');
-                        if(newTermField && newTermField.value !=''){
+                        if(newTermField && newTermField.value !==''){
                       
                             showEditCard_Term(newTermField.value);
                         }
                         else
-                        if(newHierarchyField && newHierarchyField.value !=''){
+                        if(newHierarchyField && newHierarchyField.value !==''){
                             
                             showEditCard_Hierarchy(newHierarchyField.value);
                         }
                         else
-                        if(newFacetField && newFacetField.value !=''){                            
+                        if(newFacetField && newFacetField.value !==''){                            
                             showEditCard_Facet(newFacetField.value);
                         }
                         else
-                        if(newSourceField && newSourceField.value !=''){                            
+                        if(newSourceField && newSourceField.value !==''){                            
                             showEditCard_Source(newSourceField.value);
                         }
                         else
@@ -762,7 +764,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
                             showEditCard_Source(moveToSource.options[moveToSource.selectedIndex].value);
                         }
                         else
-                        if(newUserField && newUserField.value !=''){
+                        if(newUserField && newUserField.value !==''){
                             document.getElementById('DisplayCardArea').innerHTML = '';
                             //window.location.reload( true );
                             cancelAction();
@@ -1127,13 +1129,16 @@ function JustRemovePleasWait(){
     document.getElementById('peploScreen').style.zIndex = '300';
 }
 
-/*-----------------------------------------------------
-              DisplayPleaseWaitScreen()
-  -------------------------------------------------------*/        
+/**
+ * Toggles the please wait gif icon and calls the DisplayBlackBackground function
+ * to open or hide 
+ * 
+ * @param {type} display
+ * @returns {undefined}
+ */
 function DisplayPleaseWaitScreen(display) {
-    if (display == true) {
-        document.getElementById('pleasewaitScreen').style.visibility = 'visible';
-        
+    if (display === true) {
+        document.getElementById('pleasewaitScreen').style.visibility = 'visible';        
     }
     else {
         document.getElementById('pleasewaitScreen').style.visibility = 'hidden';

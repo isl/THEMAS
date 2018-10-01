@@ -43,6 +43,7 @@ import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
 import Utils.Utilities;
+import static Utils.Utilities.escapeXML;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -83,7 +84,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
             
 
             Utilities u = new Utilities();
-            //Hashtable params = u.getFormParams(request);
+            //HashMap params = u.getFormParams(request);
             String term_decoded    = u.getDecodedParameterValue(request.getParameter("targetTerm"));
 
 
@@ -108,9 +109,9 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
 
-            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+term_decoded+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
+            xml.append(u.getXMLMiddle(/*upPartXML + */xmlResults+ "<targetTerm>"+Utilities.escapeXML(term_decoded)+"</targetTerm><targetEditField>name</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf(), "Rename" ));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
 
@@ -162,7 +163,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
         boolean targetTermCanBeUndoRenamed = DescriptorCanBeUndoRenamed(selectedThesaurus, targetTermWithPrefix,Q,sis_session);
 
         // if target term can be undo-renamed, collect the undo-rename chain
-        Vector<String[]> UndoRenameChain = new Vector<String[]>();
+        ArrayList<String[]> UndoRenameChain = new ArrayList<String[]>();
         if (targetTermCanBeUndoRenamed == true) {
             UndoRenameChain = GetUndoRenameChain(selectedThesaurus, targetTermWithPrefix,caseOfUndoRenameCycle,Q,sis_session);
         }
@@ -237,7 +238,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
     FUNCTION: collects in a Vector the path or cycle of nodes including 
     targetObg and being connected with "ekt_gave_name_to" links
     -----------------------------------------------------------------*/
-    Vector<String[]> GetUndoRenameChain(String selectedThesaurus, StringObject targetObg,Boolean caseOfUndoRenameCycle, QClass Q,IntegerObject sis_session ) {
+    ArrayList<String[]> GetUndoRenameChain(String selectedThesaurus, StringObject targetObg,Boolean caseOfUndoRenameCycle, QClass Q,IntegerObject sis_session ) {
         int SISApiSession = sis_session.getValue();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
@@ -273,9 +274,9 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
         int GaveNameToLinksSetCard = Q.set_get_card(GaveNameToLinksSet);
         // collect in RenameCouplesVector the existing rename couples (path or cycle)
         // ATTENTION: the rename couples are returned from DB in RANDOM order!!!
-        Vector<String[]> RenameCouplesVector = new Vector<String[]>();
+        ArrayList<String[]> RenameCouplesVector = new ArrayList<String[]>();
         
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<Return_Link_Row>();
         if(Q.bulk_return_link(GaveNameToLinksSet, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 String renameCouple[] = new String[2];
@@ -335,7 +336,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
         }
 
         // collect in a Vector the rename couples in the CORRECT order
-        Vector<String[]> UndoRenameChain = new Vector<String[]>();
+        ArrayList<String[]> UndoRenameChain = new ArrayList<String[]>();
         // begin from the 1st node
         String current_1stPart = FIRST_node_OfRenameChain;
         for (int i = 0; i < RenameCouplesSize; i++) {

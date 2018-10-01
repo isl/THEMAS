@@ -67,14 +67,14 @@ function RemoteStateSuggestions() {
     }
     
 }
-
+var TypeAheadOpts = [];
 /**
  * Request suggestions for the given autosuggest control. 
  * @scope protected
  * @param oAutoSuggestControl The autosuggest control to provide suggestions for.
  */
 RemoteStateSuggestions.prototype.requestSuggestions = function (oAutoSuggestControl /*:AutoSuggestControl*/,bTypeAhead /*:boolean*/) {
-    var oHttp = this.http;
+    //var oHttp = this.http;
     
     var sTextboxValue = oAutoSuggestControl.textbox.value;  
     // alert("sTextboxValue = " + sTextboxValue + " inputType = " + oAutoSuggestControl.inputField)
@@ -210,7 +210,7 @@ RemoteStateSuggestions.prototype.requestSuggestions = function (oAutoSuggestCont
             }
         }   
         // cancel type-ahead mechanism in case of selected operator different than =, !=
-        if (currentTELESTHS_value != "=" && currentTELESTHS_value != "!") {
+        if (currentTELESTHS_value !== "=" && currentTELESTHS_value !== "!") {
             return;
         }      
         /*
@@ -220,10 +220,10 @@ RemoteStateSuggestions.prototype.requestSuggestions = function (oAutoSuggestCont
       }
          */
         
-        if (currentPEDIO_value == "primary_found_in" || currentPEDIO_value == "translations_found_in") {
+        if (currentPEDIO_value === "primary_found_in" || currentPEDIO_value === "translations_found_in") {
             inputTypeForURL = "inputvalue_term";
         }          
-        if (currentPEDIO_value == "source_note" ) {
+        if (currentPEDIO_value === "source_note" ) {
              return;
             //inputTypeForURL = "inputvalue_source_note";
         }
@@ -231,6 +231,59 @@ RemoteStateSuggestions.prototype.requestSuggestions = function (oAutoSuggestCont
     // karam: disable the type-ahead mechanism depending on current PEDIO (END)
     // ----------------------------------------------------------------------------    
     
+    
+    $.ajax({ 
+            method: "POST",
+            url: "nicajax",
+            data: { inputvalue: sTextboxValue, inputType: inputTypeForURL } ,
+            beforeSend: function() {
+                    if(sTextboxValue.length===1){
+                       DisplayPleaseWaitScreen(true);
+                    }
+                }
+            }).done(function( msg ) {
+                //alert( "Data Saved: " + msg );
+                
+                var neos = [];
+                if(sTextboxValue.length===1) {
+                    TypeAheadOpts = [];
+                    //$xmlDoc = $.parseXML( msg ),
+                    ///$xml = $( xmlDoc ),
+                    $options = $(msg).find( "option" ).each(function () {
+
+                        TypeAheadOpts.push($(this).text());
+                    });
+                }
+                
+                var neos = [];
+                if (sTextboxValue.length >1){ 
+
+                    for (var i=0; i < TypeAheadOpts.length-1; i++) { 
+
+                        var len = sTextboxValue.length;
+                        var str = TypeAheadOpts[i]; 
+                        var  a   = str.substr(0,len);
+
+                        if (a===sTextboxValue){			
+                            neos.push(TypeAheadOpts[i]);
+                        }
+                    } 
+                    oAutoSuggestControl.autosuggest(neos, bTypeAhead);
+                }
+
+                if(sTextboxValue.length===1){
+                    oAutoSuggestControl.autosuggest(TypeAheadOpts, bTypeAhead);
+                }
+                
+                
+                
+            }).always(function() {
+                //if(sTextboxValue.length===1){
+                   DisplayPleaseWaitScreen(false);
+                //}
+              });
+
+    /* Previous Code 
     //if there is already a live request, cancel it
     if (oHttp.readyState != 0) {
         oHttp.abort();
@@ -253,81 +306,41 @@ RemoteStateSuggestions.prototype.requestSuggestions = function (oAutoSuggestCont
     oHttp.send(params);
     oHttp.onreadystatechange = function () {
         
-        
         if (oHttp.readyState == 4 ) 
         {
-            
             //evaluate the returned text Javacript (an array)
             var Options = [];
-            //var aSuggestions=[];
-            //var Optionss = [];
             
-            if(sTextboxValue.length==1)
-            {
+            if(sTextboxValue.length==1) {
                 aSuggestions =oHttp.responseText;
-		
             }
             
-            //alert("suggest :" +aSuggestions)
-            //provide suggestions to the control
             Options=aSuggestions.split("###");
             
-            //alert("Options : "+Options)
-            
             var neos = [];
-            if (sTextboxValue.length >1)
-            { 
+            if (sTextboxValue.length >1){ 
                 
+                for (var i=0; i < Options.length-1; i++) { 
                 
-	 	//	alert("2 : "+sTextboxValue);+
-                
-		
-                for (var i=0; i < Options.length-1; i++) 
-		{ 
                     var len = sTextboxValue.length;
                     var str = Options[i]; 
-                    
                     var  a   = str.substr(0,len);
                     
-                    // BIG KOYLAMARA!!! (karam bug fix 16/12/2008)
-                    //		   if (i>0){
-                    //		  var a   = str.substr(0,len+len);
-                    //		   }
-                    
-                    //alert("str :"+ str);
-                    //alert("a :"+i + a);
-                    //alert(len);
-                    //alert("alen"+a.length);
-                    //alert("txtlen"+sTextboxValue.length);
-                    
-                    // BIG KOYLAMARA!!! (karam bug fix 16/12/2008)
-                    //if (a.substr(2,len)==sTextboxValue)
-                    if (a==sTextboxValue)
-                    {
-			
+                    if (a==sTextboxValue){			
                         neos.push(Options[i]);
-                        //alert("neos :"+neos);
-			
                     }
-			
-		
-			
                 } 
 		oAutoSuggestControl.autosuggest(neos, bTypeAhead);
             }
             
-            if(sTextboxValue.length==1)
-            {
+            if(sTextboxValue.length==1){
 		oAutoSuggestControl.autosuggest(Options, bTypeAhead);
             }
-            
-            
-            
-            
         }
         
         
     };
+    */
 	
     
 

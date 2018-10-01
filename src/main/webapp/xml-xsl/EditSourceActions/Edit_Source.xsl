@@ -53,8 +53,7 @@ This file is part of the THEMAS system.
                 
                 <meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
                 <script language="JavaScript">
-                    <xsl:attribute name="src">Javascript/tabs.js
-                    </xsl:attribute>
+                    <xsl:attribute name="src">Javascript/tabs.js?v=@DeploymentTimestamp@</xsl:attribute>
                 </script>
                 <title>Edit_Source.xsl</title>                
             </head>
@@ -143,12 +142,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetSource"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetEditField"/>
                 </xsl:attribute>
@@ -247,12 +246,12 @@ This file is part of the THEMAS system.
                         </td>
                     </tr>
                 </table>
-                <input type="text" name="targetSource" style="visibility:hidden;">
+                <input type="text" name="targetSource" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="//targetSource"/>
                     </xsl:attribute>
                 </input>
-                <input type="text" name="targetEditField" style="visibility:hidden;">
+                <input type="text" name="targetEditField" class="hiddenInput">
                     <xsl:attribute name="value">
                         <xsl:value-of select="$targetEditField"/>
                     </xsl:attribute>
@@ -341,23 +340,19 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//source/name"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
             </input>
         </fieldset>
         <table width="100%">
-            <tr>
-                <td>
-                    <br/>
-                </td>
-            </tr>
+            
             <tr>
                 <td id="resultOf_Edit">
                     <br/>
@@ -367,7 +362,7 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" >
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/moverefs/moveAndDeletebtntext/option[@lang=$lang]"/>
                         </xsl:attribute>
                         <xsl:attribute name="onclick">
                             <xsl:text>getServletResult('EditActions_Source','edit_source_refs','','selectedIndexOnly');</xsl:text>
@@ -413,12 +408,12 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//source/name"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
@@ -494,23 +489,19 @@ This file is part of the THEMAS system.
                     </td>
                 </tr>
             </table>
-            <input type="text" name="targetSource" style="visibility:hidden;">
+            <input type="text" name="targetSource" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="//targetSource"/>
                 </xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$targetEditField"/>
                 </xsl:attribute>
             </input>
         </fieldset>
         <table width="100%">
-            <tr>
-                <td>
-                    <br/>
-                </td>
-            </tr>
+            
             <tr>
                 <td id="resultOf_Edit">
                     <br/>
@@ -520,7 +511,7 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getDeleteResult('EditActions_Source','edit_source_delete', '','')">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
                         </xsl:attribute>
                     </input>
                     &#160;

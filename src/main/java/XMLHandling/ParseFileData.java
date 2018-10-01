@@ -40,6 +40,8 @@ package XMLHandling;
 import DB_Classes.DBGeneral;
 
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
@@ -49,8 +51,8 @@ import Utils.Utilities;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Enumeration;
 
 
@@ -60,6 +62,12 @@ import XMLHandling.AAT_TermLanguage.AAT_TermLanguage_Term_Type_Enum;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import neo4j_sisapi.CMValue;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -119,9 +127,9 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
 
-                        if (openingTagName.equals("skos:ConceptScheme")) {
+                        if (openingTagName.equals(ConstantParameters.XML_skos_conceptScheme)) {
                             insideConceptScheme = true;
-                        } else if (insideConceptScheme && openingTagName.equals("skos:prefLabel")) {
+                        } else if (insideConceptScheme && openingTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
                             returnVal = this.parseSimpleContentElement(xpp);
                             break;
                         }
@@ -147,7 +155,10 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals("data")) {
-                            returnVal = this.parseSpecificAttibuteValue("ofThes", xpp);
+                            returnVal = this.parseSpecificAttibuteValue("thesaurus", xpp);
+                            if(returnVal==null || returnVal.length()==0){
+                                returnVal = this.parseSpecificAttibuteValue("ofThes", xpp);                                                                
+                            }
                             break;
                         }
                     }
@@ -165,7 +176,7 @@ public class ParseFileData {
         return returnVal;
     }
 
-    public void getAAT_SpecificSubjectIds(String xmlFilePath, String xmlSchemaType, Vector<String> targetSubjectIds) {
+    public void getAAT_SpecificSubjectIds(String xmlFilePath, String xmlSchemaType, ArrayList<String> targetSubjectIds) {
         if (xmlSchemaType != ConstantParameters.xmlschematype_aat) {
             return;
 
@@ -274,7 +285,247 @@ public class ParseFileData {
         Utils.StaticClass.webAppSystemOutPrintln("\r\n</results>");
     }
 
-    public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, Vector<String> xmlFacets) {
+    public boolean readXMLFacetsInSortItems(String importThesaurusName, String xmlFilePath, String xmlSchemaType, HashMap<String,SortItem> xmlFacetSortItems) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets in sort Items from file: " + xmlFilePath + ".");
+
+         
+        try {
+
+            XmlPullParserFactory factory;
+            factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+
+
+            //<editor-fold defaultstate="collapsed" desc="AAT reading not supported yet ...">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
+
+                Utils.StaticClass.webAppSystemOutPrintln("Reading of aat schema Facets in SortItem structures has not been implenmented yet.");
+                return false;
+                /*
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                boolean insideSubject = false;
+
+                boolean insidefacet = false;
+                boolean insidePrefferred = false;
+
+                String targetSubjectId = "";
+                String targetFacetName = "";
+                int eventType = xpp.getEventType();
+
+                //<editor-fold defaultstate="collapsed" desc="Show XML ...">
+
+                boolean showall = false;
+                boolean textPrinted = false;
+                int currentDepth = 0;
+
+                //</editor-fold>
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    //<editor-fold defaultstate="collapsed" desc="Show XML">
+                    
+//                   if(showall){
+//                    if (eventType == xpp.START_TAG) {
+//
+//                    currentDepth = xpp.getDepth();
+//                    Utils.StaticClass.webAppSystemOutPrint("\r\n");
+//                    for(int i=0; i<currentDepth;i++){
+//                    Utils.StaticClass.webAppSystemOutPrint("  ");
+//                    }
+//                    Utils.StaticClass.webAppSystemOutPrint("<"+xpp.getName()+">");
+//                    }
+//                    else if(eventType ==xpp.END_TAG){
+//
+//                    if(textPrinted){
+//                    Utils.StaticClass.webAppSystemOutPrintln("</"+xpp.getName()+">");
+//                    textPrinted= false;
+//                    }
+//                    else{
+//                    for(int i=0; i<currentDepth;i++){
+//                    Utils.StaticClass.webAppSystemOutPrint("  ");
+//                    }
+//                    Utils.StaticClass.webAppSystemOutPrint("</"+xpp.getName()+">");
+//                    }
+//                    currentDepth--;
+//                    }
+//                    else if(eventType == xpp.TEXT){
+//                    Utils.StaticClass.webAppSystemOutPrint(Utilities.escapeXML(xpp.getText()));
+//                    textPrinted = true;
+//                    }
+//                    }
+//
+//                     
+                    //</editor-fold>
+                    if (eventType == xpp.START_TAG) {
+                        int depth = xpp.getDepth();
+
+                        if (depth == 2) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_subject_tag)) {
+                                targetSubjectId = this.parseSpecificAttibuteValue(ConstantParameters.aat_subject_id_attr, xpp);
+                                insideSubject = true;
+                                //<editor-fold defaultstate="collapsed" desc="Show XML">
+
+//                                if(targetSubjectId.equals("300000000")
+//                                || targetSubjectId.equals("300000201")
+//                                || targetSubjectId.equals("300004789")
+//                                || targetSubjectId.equals("300008346")
+//                                || targetSubjectId.equals("300010357")
+//                                || targetSubjectId.equals("300015646")
+//                                || targetSubjectId.equals("300022238")
+//                                || targetSubjectId.equals("300024978")
+//                                || targetSubjectId.equals("300026029")
+//                                || targetSubjectId.equals("300036743")
+//                                || targetSubjectId.equals("300037221")
+//                                || targetSubjectId.equals("300037335")
+//                                || targetSubjectId.equals("300041619")
+//                                || targetSubjectId.equals("300042929")
+//                                || targetSubjectId.equals("300045611")
+//                                || targetSubjectId.equals("300053001")
+//                                || targetSubjectId.equals("300054134")
+//                                || targetSubjectId.equals("300054593")
+//                                || targetSubjectId.equals("300054722")
+//                                || targetSubjectId.equals("300055126")
+//                                || targetSubjectId.equals("300123558")
+//                                || targetSubjectId.equals("300123559")
+//                                || targetSubjectId.equals("300131647")
+//                                || targetSubjectId.equals("300136012")
+//                                || targetSubjectId.equals("300139081")
+//                                || targetSubjectId.equals("300179869")
+//                                || targetSubjectId.equals("300185711")
+//                                || targetSubjectId.equals("300186269")
+//                                || targetSubjectId.equals("300207851")
+//                                || targetSubjectId.equals("300209261")
+//                                || targetSubjectId.equals("300222468")
+//                                || targetSubjectId.equals("300234770")
+//                                || targetSubjectId.equals("300241489")
+//                                || targetSubjectId.equals("300241490")
+//                                || targetSubjectId.equals("300264550")
+//                                || targetSubjectId.equals("300264551")
+//                                || targetSubjectId.equals("300264552")
+//                                || targetSubjectId.equals("300265673"))
+//                                {
+//                                showall=true;
+//                                Utils.StaticClass.webAppSystemOutPrintln("<Subject Subject_ID=\""+targetSubjectId+"\">");
+//                                }
+//                                 
+
+                                //</editor-fold>
+                            }
+                        } else if (insideSubject && depth == 3) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_record_type_tag)) {
+                                String recType = this.parseSimpleContentElement(xpp);
+                                if (recType.equals(ConstantParameters.aat_record_type_Facet_val)) {
+
+                                    insidefacet = true;
+                                }
+                            }
+                        } else if (insidefacet && depth > 3) {
+                            String openingTagName = this.openingTagEncoutered(xpp, null);
+                            if (openingTagName.equals(ConstantParameters.aat_Preferred_Term_tag)) {
+                                insidePrefferred = true;
+                            } else if (insidePrefferred && openingTagName.equals(ConstantParameters.aat_Term_Text_tag)) {
+                                targetFacetName = this.parseSimpleContentElement(xpp);
+                            }
+                        }
+
+
+                    } else if (eventType == xpp.END_TAG) {
+                        int depth = xpp.getDepth();
+                        if (depth == 2) {
+                            String closingTagName = this.closingTagEncoutered(xpp, null);
+                            if (closingTagName.equals(ConstantParameters.aat_subject_tag)) {
+                                if (insidefacet) {
+                                    if (targetFacetName != null && targetFacetName.length() > 0 && xmlFacets.contains(targetFacetName) == false) {
+                                        xmlFacets.add(targetFacetName);
+                                    }
+                                }
+                                insidefacet = false;
+                                insidePrefferred = false;
+                                insideSubject = false;
+                                targetSubjectId = "";
+                                targetFacetName = "";
+
+
+                                //<editor-fold defaultstate="collapsed" desc="Show XML">
+                                //showall = false;
+                                //</editor-fold>
+                            }
+                        } else if (insidePrefferred && depth > 2) {
+                            String closingTagName = this.closingTagEncoutered(xpp, null);
+                            if (closingTagName.equals(ConstantParameters.aat_Preferred_Term_tag)) {
+                                insidePrefferred = false;
+                            }
+                        }
+
+                    }
+
+                    eventType = xpp.next();
+                }
+                */
+            }
+            //</editor-fold>
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="collapsed" desc="SKOS reading not supported yet ...">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                Utils.StaticClass.webAppSystemOutPrintln("Reading of SKOS schema Facets in SortItem structures has not been implenmented yet.");
+                return false;
+                /*
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                this.parseFacetNodes(xpp, xmlSchemaType, xmlFacets);
+                */
+
+            } 
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Facet reading...">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory.setNamespaceAware(true);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+
+
+                int eventType = xpp.getEventType();
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals("facets")) {
+                            return this.parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetSortItems);                            
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            }
+            //</editor-fold>
+
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+            return false;
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+            return false;
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+            return false;
+        }
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacetSortItems.size() + " Facets.");
+        return true;
+    }
+
+    
+    
+    public boolean readXMLFacets(String importThesaurusName, String xmlFilePath, String xmlSchemaType, ArrayList<String> xmlFacets) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Facets from file: " + xmlFilePath + ".");
 
         try {
@@ -490,7 +741,7 @@ public class ParseFileData {
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
         }
-        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacets.size() + " Dacets.");
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of Facet reading. Found " + xmlFacets.size() + " Facets.");
         return true;
     }
 
@@ -547,8 +798,8 @@ public class ParseFileData {
         return returnTerm;
     }
 
-    public Vector<AAT_SubjectTermClass> parseAAT_DescriptiveNotes(XmlPullParser xpp) {
-        Vector<AAT_SubjectTermClass> returnVals = new Vector<AAT_SubjectTermClass>();
+    public ArrayList<AAT_SubjectTermClass> parseAAT_DescriptiveNotes(XmlPullParser xpp) {
+        ArrayList<AAT_SubjectTermClass> returnVals = new ArrayList<AAT_SubjectTermClass>();
 
         String openingTagName = xpp.getName();
         if (openingTagName.equals(ConstantParameters.aat_Descriptive_NotesWrapper_tag) == false) {
@@ -615,8 +866,8 @@ public class ParseFileData {
 
     }
 
-    public Vector<AAT_RevisionClass> parseAAT_RevisionHistory(XmlPullParser xpp) {
-        Vector<AAT_RevisionClass> returnVals = new Vector<AAT_RevisionClass>();
+    public ArrayList<AAT_RevisionClass> parseAAT_RevisionHistory(XmlPullParser xpp) {
+        ArrayList<AAT_RevisionClass> returnVals = new ArrayList<AAT_RevisionClass>();
 
         String openingTagName = xpp.getName();
         if (openingTagName.equals(ConstantParameters.aat_Revision_History_Wrapper_tag) == false) {
@@ -681,8 +932,8 @@ public class ParseFileData {
         return returnVals;
     }
 
-    public Vector<String> parseAAT_Associative_Relationships(XmlPullParser xpp) {
-        Vector<String> returnVals = new Vector<String>();
+    public ArrayList<String> parseAAT_Associative_Relationships(XmlPullParser xpp) {
+        ArrayList<String> returnVals = new ArrayList<String>();
 
 
         String openingTagName = xpp.getName();
@@ -793,17 +1044,20 @@ public class ParseFileData {
 
     }
 
-    public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Hashtable<String, String> languageSelections) {
+    /**
+     * If languageSelections == null then accept all language codes
+     * 
+     * @param xmlFilePath
+     * @param xmlSchemaType
+     * @param termsInfo
+     * @param languageSelections
+     * @return 
+     */
+    public boolean readXMLTerms(String xmlFilePath, String xmlSchemaType, HashMap<String, NodeInfoStringContainer> termsInfo,
+            HashMap<String, String> languageSelections) {
 
-        DBGeneral dbGen = new DBGeneral();
-        String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
-            ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-            ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-            ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
-        };
-
+        String[] output = Utilities.getSortedTermAllOutputArray();
+        
         Utilities u = new Utilities();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "readXMLTerms Started at " + Utilities.GetNow()); // JUST READ WHTAEVER YOU SEE
 
@@ -817,7 +1071,7 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
             } // <editor-fold defaultstate="collapsed" desc="skos case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 // <editor-fold defaultstate="collapsed" desc="parse All ids">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -843,7 +1097,7 @@ public class ParseFileData {
                                 targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
                                 targetPrefferedName = this.parseSimpleContentElement(xpp);
@@ -886,7 +1140,7 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="terms parsing with ids">
 
-                //Hashtable<String, NodeInfoStringContainer> termsInfoIds = new Hashtable<String, NodeInfoStringContainer>();
+                //HashMap<String, NodeInfoStringContainer> termsInfoIds = new HashMap<String, NodeInfoStringContainer>();
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
@@ -899,6 +1153,7 @@ public class ParseFileData {
 
                 // </editor-fold>
             } // </editor-fold>
+            //</editor-fold>
             // <editor-fold defaultstate="collapsed" desc="themas case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
                 String translationSeparator = "";
@@ -947,8 +1202,7 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
-                            this.parseTermNodes(xpp, xmlSchemaType, termsInfo, translationSeparator, output, null, languageSelections);
-                            break;
+                            return this.parseTermNodes(xpp, xmlSchemaType, termsInfo, translationSeparator, output, null, languageSelections);                            
                         }
                     }
                     eventType = xpp.next();
@@ -961,11 +1215,13 @@ public class ParseFileData {
 
         } catch (FileNotFoundException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (XmlPullParserException ex) {
-
             Utils.StaticClass.handleException(ex);
+            return false;
         }
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "readXMLTerms Successfully Ended at " + Utilities.GetNow() + " found " + termsInfo.size() + " terms.");
@@ -974,7 +1230,7 @@ public class ParseFileData {
 
     public boolean readXMLHierarchies(String importThesaurusName,
             String xmlFilePath, String xmlSchemaType,
-            Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> xmlFacets) {
+            HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> xmlFacets) {
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Hierarchies from file: " + xmlFilePath + ".");
 
         int mainLanguageNotFound = 0;
@@ -996,7 +1252,7 @@ public class ParseFileData {
                 boolean insidePrefferred = false;
                 String targetSubjectId = "";
                 String targetHierarchyName = "";
-                Vector<String> hierFacets = new Vector<String>();
+                ArrayList<String> hierFacets = new ArrayList<String>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
@@ -1048,10 +1304,10 @@ public class ParseFileData {
                                 if (insideHierarchy) {
 
                                     if (targetHierarchyName != null && targetHierarchyName.length() > 0 && hierarchyFacets.containsKey(targetHierarchyName) == false) {
-                                        hierarchyFacets.put(targetHierarchyName, new Vector<String>());
+                                        hierarchyFacets.put(targetHierarchyName, new ArrayList<String>());
                                     }
 
-                                    Vector<String> existingFacets = new Vector<String>();
+                                    ArrayList<String> existingFacets = new ArrayList<String>();
                                     if (hierarchyFacets.containsKey(targetHierarchyName)) {
                                         existingFacets.addAll(hierarchyFacets.get(targetHierarchyName));
                                     }
@@ -1089,7 +1345,7 @@ public class ParseFileData {
                                 targetHierarchyName = "";
                                 insideHierarchy = false;
                                 insideSubject = false;
-                                hierFacets = new Vector<String>();
+                                hierFacets = new ArrayList<String>();
                             }
                         } else {
                             String closingTagName = this.closingTagEncoutered(xpp, null);
@@ -1108,12 +1364,12 @@ public class ParseFileData {
                 //aat allows hierarchy under hierarchy. We will not allow this
                 //The subhierarchy will be considered as simple term
 
-                Vector<String> hierarchiesToRemove = new Vector<String>();
+                ArrayList<String> hierarchiesToRemove = new ArrayList<String>();
                 //clean sub hierarchies
-                Enumeration<String> allhiers = hierarchyFacets.keys();
-                while (allhiers.hasMoreElements()) {
-                    targetHierarchyName = allhiers.nextElement();
-                    Vector<String> facets = hierarchyFacets.get(targetHierarchyName);
+                Iterator<String> allhiers = hierarchyFacets.keySet().iterator();
+                while (allhiers.hasNext()) {
+                    targetHierarchyName = allhiers.next();
+                    ArrayList<String> facets = hierarchyFacets.get(targetHierarchyName);
 
                     for (int j = 0; j < facets.size(); j++) {
                         String facetStr = facets.get(j);
@@ -1138,7 +1394,7 @@ public class ParseFileData {
 
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
@@ -1162,7 +1418,7 @@ public class ParseFileData {
                                 targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null
                                     && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
@@ -1220,20 +1476,20 @@ public class ParseFileData {
 
                 Utils.StaticClass.webAppSystemOutPrintln(idsToNames.size() + " terms found undefined in main language: " + mainLanguageNotFound);
 
-                Hashtable<String, Vector<String>> hierarchyFacetsIds = new Hashtable<String, Vector<String>>();
+                HashMap<String, ArrayList<String>> hierarchyFacetsIds = new HashMap<String, ArrayList<String>>();
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
                 this.parseHierarchyNodes(xpp, xmlSchemaType, hierarchyFacetsIds, xmlFacets);
 
                 //now replace ids with values
-                Enumeration<String> enum1 = hierarchyFacetsIds.keys();
-                while (enum1.hasMoreElements()) {
-                    String hierarchyId = enum1.nextElement();
-                    Vector<String> facetIds = hierarchyFacetsIds.get(hierarchyId);
+                Iterator<String> enum1 = hierarchyFacetsIds.keySet().iterator();
+                while (enum1.hasNext()) {
+                    String hierarchyId = enum1.next();
+                    ArrayList<String> facetIds = hierarchyFacetsIds.get(hierarchyId);
 
                     String hierarchyName = idsToNames.get(hierarchyId);
-                    Vector<String> facetNames = new Vector<String>();
+                    ArrayList<String> facetNames = new ArrayList<String>();
                     for (int k = 0; k < facetIds.size(); k++) {
                         String facetName = idsToNames.get(facetIds.get(k));
                         if (facetName != null && facetName.length() > 0 && facetNames.contains(facetName) == false) {
@@ -1247,7 +1503,7 @@ public class ParseFileData {
                     if (hierarchyFacets.containsKey(hierarchyName) == false) {
                         hierarchyFacets.put(hierarchyName, facetNames);
                     } else {
-                        Vector<String> existingFacets = hierarchyFacets.get(hierarchyName);
+                        ArrayList<String> existingFacets = hierarchyFacets.get(hierarchyName);
                         for (int k = 0; k < existingFacets.size(); k++) {
                             if (facetNames.contains(existingFacets.get(k)) == false) {
                                 facetNames.add(existingFacets.get(k));
@@ -1284,17 +1540,20 @@ public class ParseFileData {
 
         } catch (FileNotFoundException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading Hierarchies. Found: " + hierarchyFacets.size() + " hierarchies.");
         return true;
     }
 
-    public boolean readXMLSources(String xmlFilePath, String xmlSchemaType, Hashtable<String, String> XMLsources) {
+    public boolean readXMLSources(String xmlFilePath, String xmlSchemaType, HashMap<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Sources from file: " + xmlFilePath + ".");
@@ -1346,8 +1605,8 @@ public class ParseFileData {
         return true;
     }
 
-    public Vector<String> findGuideTermRelatedBts(Hashtable<String, AAT_SubjectClass> allSubjects, AAT_SubjectClass guideTermClass) {
-        Vector<String> returnVals = new Vector<String>();
+    public ArrayList<String> findGuideTermRelatedBts(HashMap<String, AAT_SubjectClass> allSubjects, AAT_SubjectClass guideTermClass) {
+        ArrayList<String> returnVals = new ArrayList<String>();
 
         if (guideTermClass != null && guideTermClass.parentSubjectIds != null) {
             for (int i = 0; i < guideTermClass.parentSubjectIds.size(); i++) {
@@ -1364,7 +1623,7 @@ public class ParseFileData {
                         }
                     } else if (cadidateBt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
 
-                        Vector<String> newBts = findGuideTermRelatedBts(allSubjects, cadidateBt);
+                        ArrayList<String> newBts = findGuideTermRelatedBts(allSubjects, cadidateBt);
                         for (int k = 0; k < newBts.size(); k++) {
                             String val = newBts.get(k);
                             if (val != null && val.length() > 0 && returnVals.contains(val) == false) {
@@ -1383,11 +1642,11 @@ public class ParseFileData {
     }
 
     public boolean readAAT_XML(String xmlFilePath, String xmlSchemaType,
-            Vector<String> xmlFacets,
-            Hashtable<String, Vector<String>> hierarchyFacets,
-            Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> guideTerms,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+            ArrayList<String> xmlFacets,
+            HashMap<String, ArrayList<String>> hierarchyFacets,
+            HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> guideTerms,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
         XmlPullParserFactory factory;
         try {
 
@@ -1395,15 +1654,29 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
                 DBGeneral dbGen = new DBGeneral();
 
-                String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd,
-                    ConstantParameters.tc_kwd, ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-                    ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-                    ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-                    ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
+                String[] output = {ConstantParameters.bt_kwd, 
+                    ConstantParameters.nt_kwd, 
+                    ConstantParameters.rt_kwd, 
+                    ConstantParameters.uf_kwd,
+                    ConstantParameters.tc_kwd, 
+                    ConstantParameters.translation_kwd, 
+                    ConstantParameters.status_kwd, 
+                    ConstantParameters.uf_translations_kwd,
+                    ConstantParameters.primary_found_in_kwd,
+                    ConstantParameters.translations_found_in_kwd, 
+                    ConstantParameters.created_by_kwd, 
+                    ConstantParameters.created_on_kwd, 
+                    ConstantParameters.modified_by_kwd,
+                    ConstantParameters.modified_on_kwd, 
+                    ConstantParameters.scope_note_kwd, 
+                    ConstantParameters.translations_scope_note_kwd,
+                    ConstantParameters.historical_note_kwd,
+                    ConstantParameters.comment_kwd,
+                    ConstantParameters.note_kwd
                 };
 
 
-                Hashtable<String, AAT_SubjectClass> allSubjects = new Hashtable<String, AAT_SubjectClass>();
+                HashMap<String, AAT_SubjectClass> allSubjects = new HashMap<String, AAT_SubjectClass>();
 
                 //<editor-fold defaultstate="collapsed" desc="Parse XML">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1451,17 +1724,17 @@ public class ParseFileData {
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Associative_Relationships_tag)) {
                                     
-                                    Vector<String> relSubjectIds = parseAAT_Associative_Relationships(xpp);
+                                    ArrayList<String> relSubjectIds = parseAAT_Associative_Relationships(xpp);
                                     if (relSubjectIds != null) {
                                         targetSubjectClass.associatedSubjectIds.addAll(relSubjectIds);
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Descriptive_NotesWrapper_tag)) {
-                                    Vector<AAT_SubjectTermClass> scopeNotes = this.parseAAT_DescriptiveNotes(xpp);
+                                    ArrayList<AAT_SubjectTermClass> scopeNotes = this.parseAAT_DescriptiveNotes(xpp);
                                     if (scopeNotes != null) {
                                         targetSubjectClass.descriptiveNotes.addAll(scopeNotes);
                                     }
                                 } else if (openingTagName.equals(ConstantParameters.aat_Revision_History_Wrapper_tag)) {
-                                    Vector<AAT_RevisionClass> newRevs = this.parseAAT_RevisionHistory(xpp);
+                                    ArrayList<AAT_RevisionClass> newRevs = this.parseAAT_RevisionHistory(xpp);
                                     if (newRevs != null) {
                                         targetSubjectClass.contributors.addAll(newRevs);
                                     }
@@ -1520,9 +1793,9 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="facets">
                 //find facets
-                Enumeration<String> subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                Iterator<String> subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_FACET) {
@@ -1572,9 +1845,9 @@ public class ParseFileData {
                 // <editor-fold defaultstate="collapsed" desc="hierarchies">
 
                 //find hierarchies
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_HIERARCHY) {
@@ -1603,8 +1876,8 @@ public class ParseFileData {
 
 
                         boolean isValidHierarchy = true;//true if it is not placed under some other Hierarchy
-                        Vector<String> parentIds = targetClass.parentSubjectIds;
-                        Vector<String> finalHierarchyFacets = new Vector<String>();
+                        ArrayList<String> parentIds = targetClass.parentSubjectIds;
+                        ArrayList<String> finalHierarchyFacets = new ArrayList<String>();
                         if (parentIds != null) {
                             for (int k = 0; k < parentIds.size(); k++) {
                                 String checkParentId = parentIds.get(k);
@@ -1648,9 +1921,9 @@ public class ParseFileData {
                 // <editor-fold defaultstate="collapsed" desc="guide terms">
 
                 //find guideTerms
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
                     if (targetClass.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
@@ -1702,9 +1975,9 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="Step 1 tcs and names/renames">
                 //find terms - step 1 get names/renames and tcs
-                subjectEnum = allSubjects.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetSubjectId = subjectEnum.nextElement();
+                subjectEnum = allSubjects.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetSubjectId = subjectEnum.next();
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetSubjectId);
 
@@ -1752,16 +2025,19 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="bts nts and guide terms">
                 //now find bts nts and guide terms
-                subjectEnum = termsInfo.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetTermName = subjectEnum.nextElement();
+                subjectEnum = termsInfo.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetTermName = subjectEnum.next();
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTermName);
-                    String targetTermId = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd).firstElement();
+                    
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    String targetTermId = (tcs!=null && !tcs.isEmpty()) ? tcs.get(0) : "";
+                    
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetTermId);
 
-                    Vector<String> parentIds = targetClass.parentSubjectIds;
-                    Vector<String> finalBts = new Vector<String>();
+                    ArrayList<String> parentIds = targetClass.parentSubjectIds;
+                    ArrayList<String> finalBts = new ArrayList<String>();
 
                     if (parentIds != null) {
                         for (int k = 0; k < parentIds.size(); k++) {
@@ -1778,7 +2054,7 @@ public class ParseFileData {
                                         finalBts.add(candidateBtName);
                                     }
                                     if (termsInfo.containsKey(candidateBtName)) {
-                                        Vector<String> existingNts = termsInfo.get(candidateBtName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                        ArrayList<String> existingNts = termsInfo.get(candidateBtName).descriptorInfo.get(ConstantParameters.nt_kwd);
                                         if (existingNts.contains(targetTermName) == false) {
                                             existingNts.add(targetTermName);
                                         }
@@ -1787,7 +2063,7 @@ public class ParseFileData {
                                 } else if (candidateBt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
 
                                     String targetGuideTermName = candidateBt.SubjectPreferredTermName.termName;
-                                    Vector<String> bts = findGuideTermRelatedBts(allSubjects, candidateBt);
+                                    ArrayList<String> bts = findGuideTermRelatedBts(allSubjects, candidateBt);
 
                                     for (int m = 0; m < bts.size(); m++) {
                                         String btName = bts.get(m);
@@ -1795,14 +2071,14 @@ public class ParseFileData {
                                             finalBts.add(btName);
                                         }
                                         if (termsInfo.containsKey(btName)) {
-                                            Vector<String> existingNts = termsInfo.get(btName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                            ArrayList<String> existingNts = termsInfo.get(btName).descriptorInfo.get(ConstantParameters.nt_kwd);
                                             if (existingNts.contains(targetTermName) == false) {
                                                 existingNts.add(targetTermName);
                                             }
                                             termsInfo.get(btName).descriptorInfo.put(ConstantParameters.nt_kwd, existingNts);
                                         }
 
-                                        Vector<SortItem> newNts = new Vector<SortItem>();
+                                        ArrayList<SortItem> newNts = new ArrayList<SortItem>();
                                         SortItem sortItemToAdd = new SortItem(targetTermName, -1, targetGuideTermName);
                                         if (guideTerms.contains(targetGuideTermName) == false) {
                                             guideTerms.add(targetGuideTermName);
@@ -1811,7 +2087,7 @@ public class ParseFileData {
                                             newNts.add(sortItemToAdd);
                                         } else {
 
-                                            Vector<SortItem> existingNts = XMLguideTermsRelations.get(btName);
+                                            ArrayList<SortItem> existingNts = XMLguideTermsRelations.get(btName);
                                             newNts.addAll(existingNts);
                                             boolean itemExists = false;
                                             for (int j = 0; j < newNts.size(); j++) {
@@ -1845,17 +2121,18 @@ public class ParseFileData {
 
                 //<editor-fold defaultstate="collapsed" desc="rts tra. ufs (and tra.) scope_note (and tra.), sources(and tra.) creators modificators and dates">
                 //now find bts nts and guide terms
-                subjectEnum = termsInfo.keys();
-                while (subjectEnum.hasMoreElements()) {
-                    String targetTermName = subjectEnum.nextElement();
+                subjectEnum = termsInfo.keySet().iterator();
+                while (subjectEnum.hasNext()) {
+                    String targetTermName = subjectEnum.next();
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTermName);
-                    String targetTermId = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd).firstElement();
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    String targetTermId = (tcs!=null && !tcs.isEmpty()) ? tcs.get(0) : "";
 
                     AAT_SubjectClass targetClass = allSubjects.get(targetTermId);
 
                     
-                    Vector<String> assocatedIds = targetClass.associatedSubjectIds;
-                    Vector<String> finalRts = new Vector<String>();
+                    ArrayList<String> assocatedIds = targetClass.associatedSubjectIds;
+                    ArrayList<String> finalRts = new ArrayList<String>();
 
                     if (assocatedIds != null) {
                         for (int k = 0; k < assocatedIds.size(); k++) {
@@ -1870,7 +2147,7 @@ public class ParseFileData {
                                     if (finalRts.contains(candidateRtName) == false) {
                                         finalRts.add(candidateRtName);
                                         if (termsInfo.containsKey(candidateRtName)) {
-                                            Vector<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                            ArrayList<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
                                             if (existingRts.contains(targetTermName) == false) {
                                                 existingRts.add(targetTermName);
                                             }
@@ -1880,7 +2157,7 @@ public class ParseFileData {
                                         }
                                     }
                                 } else if (candidateRt.SubjectKind == AAT_Subject_Kind_Enum.KIND_GUIDE_TERM) {
-                                    Vector<String> rts = this.findGuideTermRelatedBts(allSubjects, candidateRt);
+                                    ArrayList<String> rts = this.findGuideTermRelatedBts(allSubjects, candidateRt);
                                     for (int m = 0; m < rts.size(); m++) {
                                         String candidateRtName = rts.get(m);
 
@@ -1890,7 +2167,7 @@ public class ParseFileData {
                                         if (finalRts.contains(candidateRtName) == false) {
                                             finalRts.add(candidateRtName);
                                             if (termsInfo.containsKey(candidateRtName)) {
-                                                Vector<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                                ArrayList<String> existingRts = termsInfo.get(candidateRtName).descriptorInfo.get(ConstantParameters.rt_kwd);
                                                 if (existingRts.contains(targetTermName) == false) {
                                                     existingRts.add(targetTermName);
                                                 }
@@ -1908,11 +2185,11 @@ public class ParseFileData {
 
                     targetInfo.descriptorInfo.put(ConstantParameters.rt_kwd, finalRts);
 
-                    Vector<String> finalTranslations = new Vector<String>();
-                    Vector<String> finalPrimarySources = new Vector<String>();
-                    Vector<String> finalTranslationSources = new Vector<String>();
-                    Vector<String> finalUfs = new Vector<String>();
-                    Vector<String> finalTranslationUfs = new Vector<String>();
+                    ArrayList<String> finalTranslations = new ArrayList<String>();
+                    ArrayList<String> finalPrimarySources = new ArrayList<String>();
+                    ArrayList<String> finalTranslationSources = new ArrayList<String>();
+                    ArrayList<String> finalUfs = new ArrayList<String>();
+                    ArrayList<String> finalTranslationUfs = new ArrayList<String>();
 
                     for (int i = 0; i < targetClass.SubjectPreferredTermName.termSources.size(); i++) {
                         String source = targetClass.SubjectPreferredTermName.termSources.get(i);
@@ -2020,8 +2297,8 @@ public class ParseFileData {
                     targetInfo.descriptorInfo.put(ConstantParameters.uf_translations_kwd, finalTranslationUfs);
 
 
-                    Vector<String> finalScopeNoteVec = new Vector<String>();
-                    Vector<String> finalTranslationsScopeNoteVec = new Vector<String>();
+                    ArrayList<String> finalScopeNoteVec = new ArrayList<String>();
+                    ArrayList<String> finalTranslationsScopeNoteVec = new ArrayList<String>();
 
                     String finalScopeNoteStr = "";
                     String finalTranslationsScopeNoteStr = "";
@@ -2034,7 +2311,8 @@ public class ParseFileData {
                             continue;
                         }
 
-                        AAT_TermLanguage checkLang = checkNote.langCodes.firstElement();
+                        ArrayList<AAT_TermLanguage> langCodes = checkNote.langCodes;
+                        AAT_TermLanguage checkLang =(langCodes!=null && !langCodes.isEmpty()) ? langCodes.get(0) : null;
                         if (checkLang != null) {
                             if (checkLang.languageCode.toUpperCase().equals(Parameters.PrimaryLang.toUpperCase())) {
                                 finalScopeNoteStr += baseNote;
@@ -2078,10 +2356,10 @@ public class ParseFileData {
                     }
 
 
-                    Vector<String> finalCreatedBy = new Vector<String>();
-                    Vector<String> finalCreatedOn = new Vector<String>();
-                    Vector<String> finalModifiedBy = new Vector<String>();
-                    Vector<String> finalModifiedOn = new Vector<String>();
+                    ArrayList<String> finalCreatedBy = new ArrayList<String>();
+                    ArrayList<String> finalCreatedOn = new ArrayList<String>();
+                    ArrayList<String> finalModifiedBy = new ArrayList<String>();
+                    ArrayList<String> finalModifiedOn = new ArrayList<String>();
 
                     for (int i = 0; i < targetClass.contributors.size(); i++) {
                         AAT_RevisionClass checkRev = targetClass.contributors.get(i);
@@ -2138,7 +2416,52 @@ public class ParseFileData {
 
     }
 
-    private void readAllGuideTerms(String xmlFilePath, String xmlSchemaType, Vector<String> guideTerms){
+    private void readAllExternalVocabularies(String xmlFilePath, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+        XmlPullParserFactory factory;
+        try {
+
+            //<editor-fold defaultstate="collapsed" desc="SKOS Case - NOT CURRENTLY SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+            } //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+                int eventType = xpp.getEventType();
+
+                String targetTermId = "";
+                String targetPrefferedName = "";
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName) ){
+                            this.parseExternalVocabularyNodes(xpp, xmlSchemaType, vocabularyIdentifiers);
+                            break;
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            } //</editor-fold>
+        
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+
+        
+        return;
+    }
+    private void readAllGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms){
 
         XmlPullParserFactory factory;
         try {
@@ -2185,8 +2508,67 @@ public class ParseFileData {
         return;
     }
 
-    public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, Vector<String> guideTerms,
-            Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+    
+    public boolean readXMLExternalLinks(String xmlFilePath, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers, HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations) {
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading External Links from file: " + xmlFilePath + ".");
+
+        readAllExternalVocabularies(xmlFilePath, xmlSchemaType, vocabularyIdentifiers);
+        
+        //read all subjectIds, subjectClass values
+        //read all guide terms by storing values in ArrayList<String> guideTerms
+        //read all term/guideterms - parentSubject Id pairs
+
+
+
+        XmlPullParserFactory factory;
+        try {
+
+
+            //<editor-fold defaultstate="collapsed" desc="SKOS Case - CURRENTLY NOT SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+
+            } //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="THEMAS Case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+
+                factory.setNamespaceAware(true);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
+
+
+                int eventType = xpp.getEventType();
+
+                while (eventType != xpp.END_DOCUMENT) {
+
+                    if (eventType == xpp.START_TAG) {
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        if (openingTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
+                            this.parseTermsForExternalLinks(xpp, xmlSchemaType, vocabularyIdentifiers, XMLExternalLinksRelations);
+                            break;
+                        }
+                    }
+                    eventType = xpp.next();
+                }
+            }
+            //</editor-fold>
+
+        } catch (FileNotFoundException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+
+        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of reading External Links. Found: " + vocabularyIdentifiers.size() + " External Vocabulary Ids.");
+        return true;
+    }
+    
+    public boolean readXMLGuideTerms(String xmlFilePath, String xmlSchemaType, ArrayList<String> guideTerms,
+            HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading Guide Terms / Node labels from file: " + xmlFilePath + ".");
 
@@ -2194,7 +2576,7 @@ public class ParseFileData {
 
         readAllGuideTerms(xmlFilePath, xmlSchemaType, guideTerms);
         //read all subjectIds, subjectClass values
-        //read all guide terms by storing values in Vector<String> guideTerms
+        //read all guide terms by storing values in ArrayList<String> guideTerms
         //read all term/guideterms - parentSubject Id pairs
 
 
@@ -2206,7 +2588,7 @@ public class ParseFileData {
             //<editor-fold defaultstate="collapsed" desc="SKOS Case">
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
-                Hashtable<String, String> idsToNames = new Hashtable<String, String>();
+                HashMap<String, String> idsToNames = new HashMap<String, String>();
 
                 // <editor-fold defaultstate="collapsed" desc="parse All ids">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -2232,7 +2614,7 @@ public class ParseFileData {
                                 targetTermId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
                             }
                         } else if (depth == 3) {
-                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                            String targetLangCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
 
                             if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel) && targetLangCode != null
                                     && targetLangCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
@@ -2276,7 +2658,7 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="Guide Terms Parsing">
 
-                //Hashtable<String, NodeInfoStringContainer> termsInfoIds = new Hashtable<String, NodeInfoStringContainer>();
+                //HashMap<String, NodeInfoStringContainer> termsInfoIds = new HashMap<String, NodeInfoStringContainer>();
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(false);
                 xpp = factory.newPullParser();
@@ -2322,13 +2704,13 @@ public class ParseFileData {
                             if (insideConcept) {
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
 
-                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower)) {
+                                if (openingTagName.equals(ConstantParameters.XML_skos_narrower) /* || openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)*/) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
                                     } else {
-                                        Vector<String> collectionIds = new Vector<String>();
-                                        targetGuideTerm = parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
+                                        targetGuideTerm = parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
 
                                         if (collectionIds != null) {
                                             if (targetGuideTerm != null && targetGuideTerm.length() > 0) {
@@ -2336,10 +2718,10 @@ public class ParseFileData {
                                                     guideTerms.add(targetGuideTerm);
                                                 }
                                                 if (XMLguideTermsRelations.containsKey(targetTermName) == false) {
-                                                    XMLguideTermsRelations.put(targetTermName, new Vector<SortItem>());
+                                                    XMLguideTermsRelations.put(targetTermName, new ArrayList<SortItem>());
                                                 }
 
-                                                Vector<SortItem> finalGts = XMLguideTermsRelations.get(targetTermName);
+                                                ArrayList<SortItem> finalGts = XMLguideTermsRelations.get(targetTermName);
 
                                                 for (int k = 0; k < collectionIds.size(); k++) {
                                                     String collectionMemberId = collectionIds.get(k);
@@ -2441,7 +2823,7 @@ public class ParseFileData {
         return true;
     }
 
-    private void parseHierarchyNodes(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, Vector<String>> hierarchyFacets, Vector<String> xmlFacets) {
+    private void parseHierarchyNodes(XmlPullParser xpp, String xmlSchemaType, HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<String> xmlFacets) {
         try {
 
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
@@ -2482,13 +2864,13 @@ public class ParseFileData {
                                 String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
                                 if (facetId != null && facetId.length() > 0 && targetId != null && targetId.length() > 0) {
                                     if (hierarchyFacets.containsKey(targetId)) {
-                                        Vector<String> facetIds = hierarchyFacets.get(targetId);
+                                        ArrayList<String> facetIds = hierarchyFacets.get(targetId);
                                         if (facetIds.contains(facetId) == false) {
                                             facetIds.add(facetId);
                                         }
                                         hierarchyFacets.put(targetId, facetIds);
                                     } else {
-                                        Vector<String> facetIds = new Vector<String>();
+                                        ArrayList<String> facetIds = new ArrayList<String>();
                                         facetIds.add(facetId);
                                         hierarchyFacets.put(targetId, facetIds);
                                     }
@@ -2496,7 +2878,7 @@ public class ParseFileData {
                             } else if (insideConcept && openingTagName.equals(ConstantParameters.XML_skos_topConceptOf)) {
                                 if (hierarchyId != null && hierarchyId.length() > 0) {
                                     if (hierarchyFacets.containsKey(hierarchyId) == false) {
-                                        hierarchyFacets.put(hierarchyId, new Vector<String>());
+                                        hierarchyFacets.put(hierarchyId, new ArrayList<String>());
                                     }
                                 }
 
@@ -2537,7 +2919,7 @@ public class ParseFileData {
 
 
                 String targetHierarchyName = "";
-                Vector<String> targetHierarcyFacets = null;
+                ArrayList<String> targetHierarcyFacets = null;
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -2548,7 +2930,7 @@ public class ParseFileData {
                         String currentTagName = this.openingTagEncoutered(xpp, null);
                         if (currentTagName.equals("hierarchy")) {
                             targetHierarchyName = "";
-                            targetHierarcyFacets = new Vector<String>();
+                            targetHierarcyFacets = new ArrayList<String>();
 
                         } else if (currentTagName.equals("name")) {
                             String targetValue = this.parseSimpleContentElement(xpp);
@@ -2591,12 +2973,12 @@ public class ParseFileData {
 
                                 if (hierarchyFacets.containsKey(targetHierarchyName) == false) {
                                     if (targetHierarcyFacets == null) {
-                                        targetHierarcyFacets = new Vector<String>();
+                                        targetHierarcyFacets = new ArrayList<String>();
                                     }
                                     hierarchyFacets.put(targetHierarchyName, targetHierarcyFacets);
                                 } else {
                                     if (targetHierarcyFacets != null && targetHierarcyFacets.size() > 0) {
-                                        Vector<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
+                                        ArrayList<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
                                         for (int k = 0; k < targetHierarcyFacets.size(); k++) {
                                             String checkFacet = targetHierarcyFacets.get(k);
                                             if (existingFacets.contains(checkFacet) == false) {
@@ -2623,7 +3005,198 @@ public class ParseFileData {
         }
     }
 
-    private void parseSourceNodes(XmlPullParser xpp, Hashtable<String, String> XMLsources) {
+    
+    private void parseHierarchyNodesWithFacetsInSortItems(XmlPullParser xpp, String xmlSchemaType, HashMap<String, ArrayList<String>> hierarchyFacets, ArrayList<SortItem> xmlFacets) {
+        try {
+            
+            //creating a vector for String only comparison of logical name
+            ArrayList<String> xmlFacetStrings = new ArrayList<String>();
+            for(SortItem item: xmlFacets){
+                xmlFacetStrings.add(item.getLogName());
+            }
+
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                String facetId = "";
+                String hierarchyId = "";
+                boolean insideCollection = false;
+                boolean insideConcept = false;
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        //case 1 collection-meber--> Facet-Heirarchy, case 2 concept with topConceptOf
+
+                        String openingTagName = this.openingTagEncoutered(xpp, null);
+                        int depth = xpp.getDepth();
+                        //check that we are in correct Depth
+
+                        if (depth == 2) {
+
+                            String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_about, xpp);
+                            if (openingTagName.equals(ConstantParameters.XML_skos_collection)) {
+                                insideCollection = true;
+                                insideConcept = false;
+                                facetId = targetId;
+                            } else if (openingTagName.equals(ConstantParameters.XML_skos_concept)) {
+                                insideCollection = false;
+                                insideConcept = true;
+                                hierarchyId = targetId;
+                            }
+                        } else if (depth == 3) {
+
+                            if (insideCollection && openingTagName.equals(ConstantParameters.XML_skos_member)) {
+                                String targetId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
+                                if (facetId != null && facetId.length() > 0 && targetId != null && targetId.length() > 0) {
+                                    if (hierarchyFacets.containsKey(targetId)) {
+                                        ArrayList<String> facetIds = hierarchyFacets.get(targetId);
+                                        if (facetIds.contains(facetId) == false) {
+                                            facetIds.add(facetId);
+                                        }
+                                        hierarchyFacets.put(targetId, facetIds);
+                                    } else {
+                                        ArrayList<String> facetIds = new ArrayList<String>();
+                                        facetIds.add(facetId);
+                                        hierarchyFacets.put(targetId, facetIds);
+                                    }
+                                }
+                            } else if (insideConcept && openingTagName.equals(ConstantParameters.XML_skos_topConceptOf)) {
+                                if (hierarchyId != null && hierarchyId.length() > 0) {
+                                    if (hierarchyFacets.containsKey(hierarchyId) == false) {
+                                        hierarchyFacets.put(hierarchyId, new ArrayList<String>());
+                                    }
+                                }
+
+                            }
+
+                        }
+
+
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        int depth = xpp.getDepth();
+                        if (depth == 2) {
+                            facetId = "";
+                            hierarchyId = "";
+                            insideCollection = false;
+                            insideConcept = false;
+                        }
+                    }
+                    //</editor-fold>
+                }
+
+
+
+
+            } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals("hierarchies") == false) {
+                    return;
+                }
+                //</editor-fold>
+
+
+                String targetHierarchyName = "";
+                ArrayList<String> targetHierarcyFacets = null;
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals("hierarchy")) {
+                            targetHierarchyName = "";
+                            targetHierarcyFacets = new ArrayList<String>();
+
+                        } else if (currentTagName.equals("name")) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                targetHierarchyName = this.readXMLTag(targetValue);
+                            }
+                        } else if (currentTagName.equals("facet")) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                if (targetHierarcyFacets.contains(targetValue) == false) {
+                                    targetHierarcyFacets.add(targetValue);
+                                }
+                                
+                                if (xmlFacetStrings.contains(targetValue) == false) {
+                                    SortItem newFacet = new SortItem(targetValue,-1,Utilities.getTransliterationString(targetValue, false),-1);
+                                    xmlFacets.add(newFacet);
+                                }
+                            }
+                        }
+                    } //</editor-fold>
+                    
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if hierarchies parsing is completed
+                        if (currentTagName.equals("hierarchies")) {
+                            break;
+                        }
+
+                        //Check if currentFacet parsing is completed
+                        if (currentTagName.equals("hierarchy")) {
+                            if (targetHierarchyName == null || targetHierarchyName.trim().length() == 0) {
+                                continue;
+                            } else {
+
+                                //if hierarchy info does not exist then add it
+
+                                if (hierarchyFacets.containsKey(targetHierarchyName) == false) {
+                                    if (targetHierarcyFacets == null) {
+                                        targetHierarcyFacets = new ArrayList<String>();
+                                    }
+                                    hierarchyFacets.put(targetHierarchyName, targetHierarcyFacets);
+                                } else {
+                                    if (targetHierarcyFacets != null && targetHierarcyFacets.size() > 0) {
+                                        ArrayList<String> existingFacets = hierarchyFacets.get(targetHierarchyName);
+                                        for (int k = 0; k < targetHierarcyFacets.size(); k++) {
+                                            String checkFacet = targetHierarcyFacets.get(k);
+                                            if (existingFacets.contains(checkFacet) == false) {
+                                                existingFacets.add(checkFacet);
+                                            }
+                                        }
+
+                                        hierarchyFacets.put(targetHierarchyName, existingFacets);
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                    }
+                    //</editor-fold>
+                }
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+
+    private void parseSourceNodes(XmlPullParser xpp, HashMap<String, String> XMLsources) {
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
@@ -2644,7 +3217,7 @@ public class ParseFileData {
                 xpp.next();
                 int eventType = xpp.getEventType();
 
-                // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New hierarchy Encoutered">
+                // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Source Encountered">
                 if (eventType == xpp.START_TAG) {
                     String currentTagName = this.openingTagEncoutered(xpp, null);
                     if (currentTagName.equals("source")) {
@@ -2713,7 +3286,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseTermNodesSources(XmlPullParser xpp, Hashtable<String, String> XMLsources) {
+    private void parseTermNodesSources(XmlPullParser xpp, HashMap<String, String> XMLsources) {
 
         DBGeneral dbGen = new DBGeneral();
         try {
@@ -2768,7 +3341,7 @@ public class ParseFileData {
         }
     }
 
-    private void parseGuideTerms(XmlPullParser xpp, Vector<String> guideTerms, Hashtable<String, Vector<SortItem>> XMLguideTermsRelations) {
+    private void parseGuideTerms(XmlPullParser xpp, ArrayList<String> guideTerms, HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations) {
 
         DBGeneral dbGen = new DBGeneral();
         try {
@@ -2825,12 +3398,12 @@ public class ParseFileData {
                                 SortItem newSI = new SortItem(targetNt, -1, targetGuideTerm.trim());
 
                                 if (XMLguideTermsRelations.containsKey(targetTerm) == false) {
-                                    Vector<SortItem> newGTs = new Vector<SortItem>();
+                                    ArrayList<SortItem> newGTs = new ArrayList<SortItem>();
                                     newGTs.add(newSI);
                                     XMLguideTermsRelations.put(targetTerm, newGTs);
 
                                 } else {
-                                    Vector<SortItem> oldGTs = XMLguideTermsRelations.get(targetTerm);
+                                    ArrayList<SortItem> oldGTs = XMLguideTermsRelations.get(targetTerm);
                                     if (oldGTs.contains(newSI) == false) {
                                         oldGTs.add(newSI);
                                     }
@@ -2871,8 +3444,8 @@ public class ParseFileData {
         }
     }
 
-    private String parseSkosCollectionMembers(XmlPullParser xpp, String endTag, Vector<String> returnVals) {
-        //Vector<String> returnVals = new Vector<String>();
+    private String parseSkosCollectionMembers(XmlPullParser xpp, String endTag, ArrayList<String> returnVals) {
+        //ArrayList<String> returnVals = new ArrayList<String>();
 
         String collectionName = "";
         try {
@@ -2910,10 +3483,169 @@ public class ParseFileData {
         return collectionName;
 
     }
+    
+    private void parseTermsForExternalLinks(XmlPullParser xpp, 
+                                            String xmlSchemaType, 
+                                            ArrayList<ExternalVocabulary> vocabularyIdentifiers, 
+                                            HashMap<String, ArrayList<ExternalLink>> XMLExternalLinksRelations) {
+        try {
 
-    private void parseTermNodes(XmlPullParser xpp, String xmlSchemaType, Hashtable<String, NodeInfoStringContainer> termsInfo, String translationSeparator, String[] output, Hashtable<String, String> idsToNames, Hashtable<String, String> languageSelections) {
+            // <editor-fold defaultstate="collapsed" desc="Skos Case - CURRENTLY NOT SUPPORTED">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+                //all concept nodes are enough
 
-        DBGeneral dbGen = new DBGeneral();
+            } // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="THEMAS case">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+
+                ArrayList<String> validAttrKeywords = new ArrayList<>();
+                validAttrKeywords.add(ConstantParameters.XMLDescriptorElementName);
+                validAttrKeywords.add(ConstantParameters.externalLink_kwd);
+
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals(ConstantParameters.XMLTermsWrapperElementName) == false) {
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Failed to find XML container element for terms: " + ConstantParameters.XMLTermsWrapperElementName);
+                    return;
+                }
+                //</editor-fold>
+
+
+                String targetTermName = "";
+                ArrayList<ExternalLink> extLinksInfo = new ArrayList<>();//new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Terms Encoutered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
+
+                            targetTermName = "";
+                            extLinksInfo = new ArrayList<>();
+                            
+                        } else if (currentTagName.equals(ConstantParameters.XMLDescriptorElementName)) {
+                            
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                targetTermName = this.readXMLTag(targetValue);
+                            }
+                        } else if(currentTagName.equals(ConstantParameters.externalLink_kwd)){
+                                String matchType ="";
+                                String vocabId ="";
+                                //no need to parse the attributes now it is a String container
+                                int howmanyAttributes = xpp.getAttributeCount();
+                                for (int k = 0; k < howmanyAttributes; k++) {
+                                    if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_matchType_kwd)) {
+                                        matchType = xpp.getAttributeValue(k);
+                                    }
+                                    else if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_vocabId_kwd)) {
+                                        vocabId = xpp.getAttributeValue(k);
+                                    }
+                                }
+                            
+                                String parsedValue = this.parseSimpleContentElement(xpp);
+
+
+                                if (parsedValue != null && parsedValue.trim().length() > 0) {
+                                    parsedValue = readXMLTag(parsedValue);
+
+                                    ExternalLink newLink = new ExternalLink(parsedValue);
+                                    newLink.matchType = matchType;
+                                    newLink.vocabularyIdentifier = vocabId;
+
+                                    //some improvement here - avoid dublicates??
+                                    extLinksInfo.add(newLink);
+                                }
+                            }
+                        
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Term Completed. also Check if all terms are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if terms parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
+                            break;
+                        }
+
+                        //Check if currentTerm parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
+                            
+                            if (targetTermName != null && targetTermName.trim().length() > 0 && extLinksInfo!=null && extLinksInfo.size()>0) {
+
+                                if(XMLExternalLinksRelations.containsKey(targetTermName)){
+                                    for(ExternalLink extLink : extLinksInfo){
+                                        XMLExternalLinksRelations.get(targetTermName).add(extLink);
+                                    }
+                                }
+                                else{
+                                    XMLExternalLinksRelations.put(targetTermName, extLinksInfo);
+                                }
+                                
+                                ArrayList<String> vocabIds = new ArrayList<>();
+                                vocabIds.addAll(extLinksInfo.stream().filter(x -> x.vocabularyIdentifier!=null && x.vocabularyIdentifier.trim().length()>0).map(x -> x.vocabularyIdentifier.trim()).collect(Collectors.toList()));
+                                
+                                for(String vocabId : vocabIds){
+                                    
+                                    final String searchId = vocabId.trim().toLowerCase();
+                                    
+                                    //if externalVocabulary info does not exist then add it
+                                    Predicate<ExternalVocabulary> p1 = e -> e.vocabularyIdentifier.toLowerCase().equals(searchId);
+                                    Optional<ExternalVocabulary> exists = vocabularyIdentifiers.stream().filter(p1).findFirst();
+                                    
+                                    ExternalVocabulary newVal = new ExternalVocabulary(vocabId);
+                                    if(!exists.isPresent()){
+                                        vocabularyIdentifiers.add(newVal);
+                                    }
+                                }
+                            }
+                                
+                        }
+
+                    }
+                    //</editor-fold>
+                }
+
+            }
+            // </editor-fold>
+            
+        } catch (XmlPullParserException | IOException ex) {
+            Utils.StaticClass.handleException(ex);
+            return;
+        }
+    }
+
+    /**
+     * If languageSelections == null then accept all lang codes
+     * 
+     * @param xpp
+     * @param xmlSchemaType
+     * @param termsInfo
+     * @param translationSeparator
+     * @param output
+     * @param idsToNames
+     * @param languageSelections
+     * @return 
+     */
+    private boolean parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
+            HashMap<String, NodeInfoStringContainer> termsInfo, 
+            String translationSeparator, 
+            String[] output, 
+            HashMap<String, String> idsToNames,
+            HashMap<String, String> languageSelections) {
+
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Skos Case">
@@ -2953,7 +3685,7 @@ public class ParseFileData {
                                     termName = targetId;
                                 }
                                 targetTermInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
-                                Vector<String> tcs = new Vector<String>();
+                                ArrayList<String> tcs = new ArrayList<String>();
                                 String tcValue = readSkosTC(targetId);
 
                                 /*if (targetId.startsWith("http://")) {
@@ -2974,18 +3706,18 @@ public class ParseFileData {
 
                                 // <editor-fold defaultstate="collapsed" desc="prefLabel - translations">
                                 if (openingTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
 
-                                        //if it is the same then skip as we will find it from the idsToNames hashtable
+                                        //if it is the same then skip as we will find it from the idsToNames HashMap
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase()) == false) {
                                             //skip languages not supported
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
+                                            if (languageSelections==null || languageSelections.containsValue(langCode.toUpperCase())) {
+                                                ArrayList<String> translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
                                                 if (translationValues == null) {
-                                                    translationValues = new Vector<String>();
+                                                    translationValues = new ArrayList<String>();
                                                 }
                                                 String translationValue = langCode.toUpperCase() + translationSeparator + targetValue;
 
@@ -3001,16 +3733,16 @@ public class ParseFileData {
                                 // <editor-fold defaultstate="collapsed" desc="altLabel - uf and uf_translations">
                                 else if (openingTagName.equals(ConstantParameters.XML_skos_altLabel)) {
 
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
 
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
 
-                                            Vector<String> ufValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
+                                            ArrayList<String> ufValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_kwd);
                                             if (ufValues == null) {
-                                                ufValues = new Vector<String>();
+                                                ufValues = new ArrayList<String>();
                                             }
                                             String newValue = targetValue;
 
@@ -3019,10 +3751,10 @@ public class ParseFileData {
                                                 targetTermInfo.descriptorInfo.put(ConstantParameters.uf_kwd, ufValues);
                                             }
                                         } else {
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> uf_translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
+                                            if (languageSelections==null || languageSelections.containsValue(langCode.toUpperCase())) {
+                                                ArrayList<String> uf_translationValues = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
                                                 if (uf_translationValues == null) {
-                                                    uf_translationValues = new Vector<String>();
+                                                    uf_translationValues = new ArrayList<String>();
                                                 }
                                                 String newValue = langCode.toUpperCase() + translationSeparator + targetValue;
 
@@ -3045,9 +3777,9 @@ public class ParseFileData {
                                             relatedName = relatedId;
                                         }
                                         if (relatedName != null && relatedName.trim().length() > 0) {
-                                            Vector<String> relatedValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                                            ArrayList<String> relatedValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
                                             if (relatedValues == null) {
-                                                relatedValues = new Vector<String>();
+                                                relatedValues = new ArrayList<String>();
                                             }
                                             if (relatedValues.contains(relatedName) == false) {
                                                 relatedValues.add(relatedName);
@@ -3056,7 +3788,7 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
                                         parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_related, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
@@ -3069,9 +3801,9 @@ public class ParseFileData {
                                                         rtName = collectionMemberId;
                                                     }
                                                     if (rtName != null && rtName.trim().length() > 0) {
-                                                        Vector<String> rtValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
+                                                        ArrayList<String> rtValues = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
                                                         if (rtValues == null) {
-                                                            rtValues = new Vector<String>();
+                                                            rtValues = new ArrayList<String>();
                                                         }
                                                         if (rtValues.contains(rtName) == false) {
                                                             rtValues.add(rtName);
@@ -3084,8 +3816,9 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="broder - bts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_broader)/* || openingTagName.equals(ConstantParameters.XML_skos_broaderTransitive)*/) {
 
+                                    
                                     String broaderId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
                                     if (broaderId != null && broaderId.trim().length() > 0) {
 
@@ -3096,9 +3829,9 @@ public class ParseFileData {
                                             broaderName = broaderId;
                                         }
                                         if (broaderName != null && broaderName.trim().length() > 0) {
-                                            Vector<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                                            ArrayList<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
                                             if (btValues == null) {
-                                                btValues = new Vector<String>();
+                                                btValues = new ArrayList<String>();
                                             }
                                             if (btValues.contains(broaderName) == false) {
                                                 btValues.add(broaderName);
@@ -3107,8 +3840,8 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
-                                        parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_broader, collectionIds);
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
+                                        parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
                                                 String collectionMemberId = collectionIds.get(k);
@@ -3120,9 +3853,9 @@ public class ParseFileData {
                                                         btName = collectionMemberId;
                                                     }
                                                     if (btName != null && btName.trim().length() > 0) {
-                                                        Vector<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
+                                                        ArrayList<String> btValues = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
                                                         if (btValues == null) {
-                                                            btValues = new Vector<String>();
+                                                            btValues = new ArrayList<String>();
                                                         }
                                                         if (btValues.contains(btName) == false) {
                                                             btValues.add(btName);
@@ -3135,7 +3868,7 @@ public class ParseFileData {
                                     }
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="narrower - nts">
-                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower)) {
+                                else if (openingTagName.equals(ConstantParameters.XML_skos_narrower) /*|| openingTagName.equals(ConstantParameters.XML_skos_narrowerTransitive)*/) {
                                     String narrowerId = this.parseSpecificAttibuteValue(ConstantParameters.XML_rdf_resource, xpp);
 
                                     if (narrowerId != null && narrowerId.trim().length() > 0) {
@@ -3146,9 +3879,9 @@ public class ParseFileData {
                                             ntName = narrowerId;
                                         }
                                         if (ntName != null && ntName.trim().length() > 0) {
-                                            Vector<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                            ArrayList<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
                                             if (ntValues == null) {
-                                                ntValues = new Vector<String>();
+                                                ntValues = new ArrayList<String>();
                                             }
                                             if (ntValues.contains(ntName) == false) {
                                                 ntValues.add(ntName);
@@ -3157,8 +3890,8 @@ public class ParseFileData {
                                         }
                                     } else {
                                         //in this case it may be a colletion with members nodes
-                                        Vector<String> collectionIds = new Vector<String>();
-                                        parseSkosCollectionMembers(xpp, ConstantParameters.XML_skos_narrower, collectionIds);
+                                        ArrayList<String> collectionIds = new ArrayList<String>();
+                                        parseSkosCollectionMembers(xpp, openingTagName, collectionIds);
                                         if (collectionIds != null) {
                                             for (int k = 0; k < collectionIds.size(); k++) {
                                                 String collectionMemberId = collectionIds.get(k);
@@ -3170,9 +3903,9 @@ public class ParseFileData {
                                                         ntName = collectionMemberId;
                                                     }
                                                     if (ntName != null && ntName.trim().length() > 0) {
-                                                        Vector<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
+                                                        ArrayList<String> ntValues = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
                                                         if (ntValues == null) {
-                                                            ntValues = new Vector<String>();
+                                                            ntValues = new ArrayList<String>();
                                                         }
                                                         if (ntValues.contains(ntName) == false) {
                                                             ntValues.add(ntName);
@@ -3189,9 +3922,9 @@ public class ParseFileData {
                                 else if (openingTagName.equals(ConstantParameters.XML_dc_creator)) {
                                     String targetValue = this.parseSimpleContentElement(xpp);
                                     if (targetValue != null && targetValue.length() > 0) {
-                                        Vector<String> creatorValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_by_kwd);
+                                        ArrayList<String> creatorValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_by_kwd);
                                         if (creatorValues == null) {
-                                            creatorValues = new Vector<String>();
+                                            creatorValues = new ArrayList<String>();
                                         }
                                         if (creatorValues.contains(targetValue) == false) {
                                             creatorValues.add(targetValue);
@@ -3222,9 +3955,9 @@ public class ParseFileData {
                                     }
                                     if (targetValue != null && targetValue.length() > 0) {
 
-                                        Vector<String> creationDateValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_on_kwd);
+                                        ArrayList<String> creationDateValues = targetTermInfo.descriptorInfo.get(ConstantParameters.created_on_kwd);
                                         if (creationDateValues == null) {
-                                            creationDateValues = new Vector<String>();
+                                            creationDateValues = new ArrayList<String>();
                                         }
                                         if (creationDateValues.contains(targetValue) == false) {
                                             creationDateValues.add(targetValue);
@@ -3234,13 +3967,13 @@ public class ParseFileData {
                                 } // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="scopeNote - scope_note and translations_scope_note">
                                 else if (openingTagName.equals(ConstantParameters.XML_skos_scopeNote)) {
-                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                                    String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),false);
                                     String targetValue = this.parseSimpleContentElement(xpp);
 
                                     if (langCode != null && langCode.length() > 0 && targetValue != null && targetValue.length() > 0) {
 
                                         if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
-                                            Vector<String> snValues = targetTermInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
+                                            ArrayList<String> snValues = targetTermInfo.descriptorInfo.get(ConstantParameters.scope_note_kwd);
                                             String Snvalue = "";
                                             if (snValues != null && snValues.size() > 0) {
                                                 Snvalue = snValues.get(0);
@@ -3251,16 +3984,16 @@ public class ParseFileData {
                                             } else if (Snvalue.equals(targetValue) == false) {
                                                 Snvalue += " " + targetValue;
                                             }
-                                            snValues = new Vector<String>();
+                                            snValues = new ArrayList<String>();
                                             snValues.add(Snvalue);
                                             targetTermInfo.descriptorInfo.put(ConstantParameters.scope_note_kwd, snValues);
 
                                         } else {
-                                            if (languageSelections.containsValue(langCode.toUpperCase())) {
-                                                Vector<String> snTrValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+                                            if (languageSelections ==null || languageSelections.containsValue(langCode.toUpperCase())) {
+                                                ArrayList<String> snTrValues = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
                                                 if (snTrValues == null) {
-                                                    snTrValues = new Vector<String>();
-                                                    targetTermInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, new Vector<String>());
+                                                    snTrValues = new ArrayList<String>();
+                                                    targetTermInfo.descriptorInfo.put(ConstantParameters.translations_scope_note_kwd, new ArrayList<String>());
                                                 }
 
                                                 String Snvalue = "";
@@ -3273,7 +4006,7 @@ public class ParseFileData {
                                                 //} else if (Snvalue.equals(targetValue) == false) {
                                                 //    Snvalue += "\n" + langCode.toUpperCase() + translationSeparator + "\n" + targetValue.trim();
                                                 //}
-                                                //snTrValues = new Vector<String>();
+                                                //snTrValues = new ArrayList<String>();
                                                 //snTrValues.add(Snvalue);
                                                 if(snTrValues.contains(Snvalue)==false){
                                                     targetTermInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd).add(Snvalue);
@@ -3323,7 +4056,7 @@ public class ParseFileData {
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
 
-                Vector<String> validAttrKeywords = new Vector<String>();
+                ArrayList<String> validAttrKeywords = new ArrayList<>();
                 validAttrKeywords.add(ConstantParameters.XMLDescriptorElementName);
                 for (int i = 0; i < output.length; i++) {
                     validAttrKeywords.add(output[i]);
@@ -3332,16 +4065,20 @@ public class ParseFileData {
 
                 // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
                 if (xpp == null) {
-                    return;
+                    
+                    return false;
                 }
                 String elementName = xpp.getName();
                 if (elementName.equals(ConstantParameters.XMLTermsWrapperElementName) == false) {
-                    return;
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Failed to find XML container element for terms: " + ConstantParameters.XMLTermsWrapperElementName);
+                    return false;
                 }
                 //</editor-fold>
 
 
                 String targetTermName = "";
+                String translit = "";
+                long targetTermRefId =-1;
                 NodeInfoStringContainer targetTermInfo = null;//new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
@@ -3354,15 +4091,53 @@ public class ParseFileData {
                         if (currentTagName.equals(ConstantParameters.XMLTermElementName)) {
 
                             targetTermName = "";
+                            translit = "";
+                            targetTermRefId =-1;
                             targetTermInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+                            
                         } else if (currentTagName.equals(ConstantParameters.XMLDescriptorElementName)) {
+                            
+                            String longStr = this.parseSpecificAttibuteValue(ConstantParameters.system_referenceIdAttribute_kwd, xpp);
+                            if(longStr!=null && longStr.length()>0){
+                                
+                                if(longStr!=null && longStr.trim().length()>0){
+                                    try{
+                                        targetTermRefId = Long.parseLong(longStr);
+                                    }
+                                    catch(Exception ex){
+                                        Utils.StaticClass.handleException(ex);
+                                    }
+                                }
+                            }
+                            if(targetTermRefId>0){
+                                if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
+                                    targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(""+targetTermRefId);
+                                }
+                            }
+                            
+                            if(Parameters.TransliterationAsAttribute){
+                                String targetValue = this.parseSpecificAttibuteValue(ConstantParameters.system_transliteration_kwd, xpp);
+                                if (targetValue != null && targetValue.trim().length() > 0) {
+                                    translit = this.readXMLTag(targetValue);                                    
+                                }
+                            }
+                            
                             String targetValue = this.parseSimpleContentElement(xpp);
 
                             if (targetValue != null && targetValue.trim().length() > 0) {
                                 targetTermName = this.readXMLTag(targetValue);
                             }
-                        } else {
+                        } else if(!Parameters.TransliterationAsAttribute && currentTagName.equals(ConstantParameters.system_transliteration_kwd)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                translit = this.readXMLTag(targetValue);
+                            }
+                        }
+                        else {
                             String languagePrefix = "";
+                            String matchType ="";
+                            String vocabId ="";
                             if (currentTagName.equals(ConstantParameters.translation_kwd)
                                     || currentTagName.equals(ConstantParameters.uf_translations_kwd)
                                     || currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
@@ -3374,50 +4149,63 @@ public class ParseFileData {
                                     }
                                 }
                             }
-
-                            String parsedValue = this.parseSimpleContentElement(xpp);
-                            if (parsedValue != null && parsedValue.trim().length() > 0) {
-                                parsedValue = readXMLTag(parsedValue);
+                            else if(currentTagName.equals(ConstantParameters.externalLink_kwd)){
+                                //no need to parse the attributes now it is a String container
+                                int howmanyAttributes = xpp.getAttributeCount();
+                                for (int k = 0; k < howmanyAttributes; k++) {
+                                    if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_matchType_kwd)) {
+                                        matchType = xpp.getAttributeValue(k);
+                                    }
+                                    else if (xpp.getAttributeName(k).equals(ConstantParameters.externalLink_attr_vocabId_kwd)) {
+                                        vocabId = xpp.getAttributeValue(k);
+                                    }
+                                }
                             }
 
+                            String parsedValue = this.parseSimpleContentElement(xpp);
+                            
+                            
+                            if (parsedValue != null && parsedValue.trim().length() > 0) {
+                                parsedValue = readXMLTag(parsedValue);
+                            
+                            
+                                if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
+                                        && currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
 
-                            if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
-                                    && currentTagName.equals(ConstantParameters.translations_scope_note_kwd)) {
+                                    targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator +" "+ parsedValue);
 
-                                targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator +" "+ parsedValue);
+                                    /*ArrayList<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
 
-                                /*Vector<String> existingTRSN = targetTermInfo.descriptorInfo.get(currentTagName);
-
-                                if (existingTRSN != null && existingTRSN.size() > 0) {
-                                    String existingStr = existingTRSN.get(0);
-                                    if (existingStr.length() > 0) {
-                                        existingStr += "\n";
+                                    if (existingTRSN != null && existingTRSN.size() > 0) {
+                                        String existingStr = existingTRSN.get(0);
+                                        if (existingStr.length() > 0) {
+                                            existingStr += "\n";
+                                        }
+                                        existingStr += languagePrefix + translationSeparator + "\n" + parsedValue;
+                                        existingTRSN.set(0, existingStr);
+                                    } else {
+                                        existingTRSN = new ArrayList<String>();
+                                        existingTRSN.add(languagePrefix + translationSeparator + "\n" + parsedValue);
                                     }
-                                    existingStr += languagePrefix + translationSeparator + "\n" + parsedValue;
-                                    existingTRSN.set(0, existingStr);
-                                } else {
-                                    existingTRSN = new Vector<String>();
-                                    existingTRSN.add(languagePrefix + translationSeparator + "\n" + parsedValue);
-                                }
-                                targetTermInfo.descriptorInfo.put(currentTagName, existingTRSN);*/
-                            } else if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
-                                    && targetTermInfo.descriptorInfo.get(currentTagName).contains(parsedValue) == false) {
-                                if (currentTagName.equals(ConstantParameters.translation_kwd)
-                                        || currentTagName.equals(ConstantParameters.uf_translations_kwd)) {
+                                    targetTermInfo.descriptorInfo.put(currentTagName, existingTRSN);*/
+                                } else if (targetTermInfo.descriptorInfo.containsKey(currentTagName)
+                                        && targetTermInfo.descriptorInfo.get(currentTagName).contains(parsedValue) == false) {
+                                    if (currentTagName.equals(ConstantParameters.translation_kwd)
+                                            || currentTagName.equals(ConstantParameters.uf_translations_kwd)) {
 
 
 
-                                    if (languagePrefix != null && languagePrefix.trim().length() > 0 && translationSeparator != null && translationSeparator.trim().length() > 0) {
-                                        targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator + parsedValue);
+                                        if (languagePrefix != null && languagePrefix.trim().length() > 0 && translationSeparator != null && translationSeparator.trim().length() > 0) {
+                                            targetTermInfo.descriptorInfo.get(currentTagName).add(languagePrefix + translationSeparator + parsedValue);
+                                        } else {
+                                            targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
+                                        }
                                     } else {
                                         targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
                                     }
-                                } else {
-                                    targetTermInfo.descriptorInfo.get(currentTagName).add(parsedValue);
                                 }
+                            
                             }
-
-
                         }
                     } //</editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Term Completed. also Check if all terms are completed">
@@ -3439,28 +4227,44 @@ public class ParseFileData {
                                 continue;
                             } else {
 
+                                if(translit==null || translit.length()==0){
+                                    translit = Utilities.getTransliterationString(targetTermName, false);
+                                }
+                                if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd)){
+                                    targetTermInfo.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(translit);
+                                }
                                 //if term info does not exist then add it
-                                if (termsInfo.containsKey(targetTermName) == false) {
+                                if (targetTermName.length()>0 && termsInfo.containsKey(targetTermName) == false) {
                                     termsInfo.put(targetTermName, targetTermInfo);
                                 } //if term inof existed then updated the old with the new parsed info
                                 else {
 
                                     NodeInfoStringContainer existingInfo = termsInfo.get(targetTermName);
-
-                                    for (Enumeration<String> e = targetTermInfo.descriptorInfo.keys(); e.hasMoreElements();) {
-                                        String code = e.nextElement();
-                                        Vector<String> values = targetTermInfo.descriptorInfo.get(code);
+                                    //ArrayList<String> refIdInfo = targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+                                    
+                                    Iterator<String> e = targetTermInfo.descriptorInfo.keySet().iterator();
+                                    while(e.hasNext()){
+                                        String code = e.next();
+                                        ArrayList<String> values = targetTermInfo.descriptorInfo.get(code);
 
                                         if (values != null && values.size() > 0) {
-                                            Vector<String> existingValues = existingInfo.descriptorInfo.get(code);
+                                            ArrayList<String> existingValues = existingInfo.descriptorInfo.get(code);
                                             if (existingValues == null) {
-                                                existingValues = new Vector<String>();
+                                                existingValues = new ArrayList<String>();
                                             }
 
                                             for (int i = 0; i < values.size(); i++) {
-                                                String val = values.elementAt(i);
-                                                if (existingValues.contains(val) == false) {
-                                                    existingValues.add(val);
+                                                String val = values.get(i);
+                                                if(val!=null && val.length()>0){
+                                                    if (existingValues.contains(val) == false) {
+                                                        if(existingValues.size()>0){
+                                                            if(code.equals(ConstantParameters.system_referenceUri_kwd)){
+                                                                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +" Term: " + targetTermName +" was found with 2 different Thesaurus referenceIds: " + val +" and "+existingValues.get(0));
+                                                                return false;
+                                                            }                           
+                                                        }
+                                                        existingValues.add(val);
+                                                    }
                                                 }
                                             }
                                             existingInfo.descriptorInfo.put(code, existingValues);
@@ -3470,13 +4274,13 @@ public class ParseFileData {
                                 }
 
                             
-                                Vector<String> bts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.bt_kwd);
-                                Vector<String> nts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.nt_kwd);
-                                Vector<String> rts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.rt_kwd);
+                                ArrayList<String> bts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.bt_kwd);
+                                ArrayList<String> nts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.nt_kwd);
+                                ArrayList<String> rts = termsInfo.get(targetTermName).descriptorInfo.get(ConstantParameters.rt_kwd);
 
                                 for (int k = 0; k < bts.size(); k++) {
                                     String checkExists = bts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {                                        
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);
@@ -3485,7 +4289,7 @@ public class ParseFileData {
                                 }
                                 for (int k = 0; k < nts.size(); k++) {
                                     String checkExists = nts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.bt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);
@@ -3493,7 +4297,7 @@ public class ParseFileData {
                                 }
                                 for (int k = 0; k < rts.size(); k++) {
                                     String checkExists = rts.get(k);
-                                    if (termsInfo.containsKey(checkExists) == false) {
+                                    if (checkExists.length()>0 && termsInfo.containsKey(checkExists) == false) {
                                         NodeInfoStringContainer newInfo = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
                                         newInfo.descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermName);
                                         termsInfo.put(checkExists,newInfo);
@@ -3512,12 +4316,15 @@ public class ParseFileData {
 
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
+        return true;
     }
 
-    private void parseTranslationCategories(XmlPullParser xpp, Vector<String> userSelectedTranslationWords, Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
+    private void parseTranslationCategories(XmlPullParser xpp, ArrayList<String> userSelectedTranslationWords, ArrayList<String> userSelectedTranslationIdentifiers, HashMap<String, String> userSelections) {
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
@@ -3599,7 +4406,165 @@ public class ParseFileData {
         return returnVal;
     }
 
-    private void parseGuideTermNodes(XmlPullParser xpp, String xmlSchemaType, Vector<String> xmlGuideTerms) {
+    private void parseExternalVocabularyNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+
+        try {
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+            } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
+                // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
+                if (xpp == null) {
+                    return;
+                }
+                String elementName = xpp.getName();
+                if (elementName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName) == false) {
+                    return;
+                }
+                //</editor-fold>
+
+                
+                String identifier = "";
+                ArrayList<String> uri = new ArrayList<>();
+                ArrayList<String> fullname = new ArrayList<>();
+                ArrayList<String> description = new ArrayList<>();
+                String versionstr ="";
+                String releasedate = "";
+
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    // <editor-fold defaultstate="collapsed" desc="Start Tag Case --> New Source Encountered">
+                    if (eventType == xpp.START_TAG) {
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesElementName)) {
+                            identifier = "";
+                            
+                            uri = new ArrayList<>();
+                            fullname = new ArrayList<>();
+                            description = new ArrayList<>();
+                            
+                            versionstr ="";
+                            releasedate = "";
+
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_ShortName)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                identifier = this.readXMLTag(targetValue);
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_FullName)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0 ) {
+                                String fnameStr  = this.readXMLTag(targetValue);
+                                if(!fullname.contains(fnameStr)){
+                                    fullname.add(fnameStr);
+                                }
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Description)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                String descStr  = this.readXMLTag(targetValue);
+                                if(!description.contains(descStr)){
+                                    description.add(descStr);
+                                }
+                            }
+                        } else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Version)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                versionstr = this.readXMLTag(targetValue);
+                            }
+                        } 
+                        else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                releasedate = this.readXMLTag(targetValue);
+                            }
+                        } 
+                        else if (currentTagName.equals(ConstantParameters.XMLExternalVocabularies_Uri)) {
+                            
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                String uriStr  = this.readXMLTag(targetValue);
+                                if(!uri.contains(uriStr)){
+                                    uri.add(uriStr);
+                                }
+                            }
+                        }                         
+                    } //</editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Source Completed. also Check if all Sources are completed">
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+
+                        //Check if hierarchies parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesWrapperElementName)) {
+                            break;
+                        }
+
+                        //Check if currentFacet parsing is completed
+                        if (currentTagName.equals(ConstantParameters.XMLExternalVocabulariesElementName)) {
+                            if (identifier != null && identifier.trim().length() > 0) {
+
+                                identifier = identifier.trim();
+                                final String searchId = identifier.trim().toLowerCase();
+                                 //if externalVocabulary info does not exist then add it
+                                Predicate<ExternalVocabulary> p1 = e -> e.vocabularyIdentifier.toLowerCase().equals(searchId);
+                                Optional<ExternalVocabulary> exists = vocabularyIdentifiers.stream().filter(p1).findFirst();
+                                
+                                ExternalVocabulary newVal = new ExternalVocabulary(identifier);
+                                newVal.vocabularyUri.addAll(uri);
+                                newVal.vocabularyFullName.addAll(fullname);
+                                newVal.vocabularyDescription.addAll(description);
+                                newVal.vocabularyVersionString = versionstr;
+                                newVal.vocabularyReleaseTimestamp = releasedate;
+                                if(exists.isPresent()){
+                                    //NOT SURE IT UPDATES THE CORRECT REFERENCE
+                                    //Checked and it does work as expected -- updates the vocabularyIdentifiers record
+                                    for(String str : fullname){
+                                        if(!exists.get().vocabularyFullName.contains(str)){
+                                            exists.get().vocabularyFullName.add(str);
+                                        }
+                                    }
+                                    for(String str : uri){
+                                        if(!exists.get().vocabularyUri.contains(str)){
+                                            exists.get().vocabularyUri.add(str);
+                                        }
+                                    }
+                                    for(String str : description){
+                                        if(!exists.get().vocabularyDescription.contains(str)){
+                                            exists.get().vocabularyDescription.add(str);
+                                        }
+                                    }                                    
+                                    exists.get().vocabularyVersionString =versionstr;
+                                    exists.get().vocabularyReleaseTimestamp =releasedate;
+                                }
+                                else{
+                                    vocabularyIdentifiers.add(newVal);
+                                }                                
+                            }
+
+                        }
+                    }
+                    //</editor-fold>
+                }
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+    
+    
+    private void parseGuideTermNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<String> xmlGuideTerms) {
 
         try {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
@@ -3643,8 +4608,9 @@ public class ParseFileData {
             Utils.StaticClass.handleException(ex);
         }
     }
-    private void parseFacetNodes(XmlPullParser xpp, String xmlSchemaType, Vector<String> xmlFacets) {
-
+    
+    private void parseFacetNodes(XmlPullParser xpp, String xmlSchemaType, ArrayList<String> xmlFacets) {
+        
         try {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
 
@@ -3707,19 +4673,107 @@ public class ParseFileData {
 
             } else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
+                HashMap<String,SortItem> xmlFacetsInSortItems = new HashMap<String,SortItem>();
+                
+                parseFacetNodesinSortItems(xpp, xmlSchemaType, xmlFacetsInSortItems);
+                xmlFacets.addAll(xmlFacetsInSortItems.keySet());
+                
+            }
+        } catch (XmlPullParserException ex) {
+            Utils.StaticClass.handleException(ex);
+        } catch (IOException ex) {
+            Utils.StaticClass.handleException(ex);
+        }
+    }
+
+    private boolean parseFacetNodesinSortItems(XmlPullParser xpp, String xmlSchemaType, HashMap<String, SortItem> xmlFacets) {
+
+        try {
+            
+            String targetFacetName = "";
+            String translit = "";
+            long refId = -1;
+            
+            // <editor-fold defaultstate="collapsed" desc="Skos case not supported yet..">
+            if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
+
+                
+                /*
+                targetFacetName = "";
+                boolean insideCollection = false;
+                while (xpp.getEventType() != xpp.END_DOCUMENT) {
+                    xpp.next();
+                    int eventType = xpp.getEventType();
+
+                    
+                    if (eventType == xpp.START_TAG) {
+
+
+                        String currentTagName = this.openingTagEncoutered(xpp, null);
+
+                        if (currentTagName.equals(ConstantParameters.XML_skos_collection)) {
+                            if (xpp.getDepth() == 2) {
+                                targetFacetName = "";
+                                insideCollection = true;
+                            }
+                        } else if (insideCollection && currentTagName.equals(ConstantParameters.XML_skos_prefLabel)) {
+                            int depth = xpp.getDepth();
+
+                            if (depth == 3) {
+                                String langCode = this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp);
+                                String targetValue = this.parseSimpleContentElement(xpp);
+
+                                //Utils.StaticClass.webAppSystemOutPrintln(targetValue + " " + langCode + " " + depth);
+
+                                if (langCode != null) {
+                                    if (langCode.toLowerCase().equals(Parameters.PrimaryLang.toLowerCase())) {
+                                        if (targetValue != null && targetValue.trim().length() > 0) {
+                                            targetFacetName = this.readXMLTag(targetValue);
+                                            if (xmlFacets.contains(targetFacetName) == false) {
+                                                xmlFacets.add(targetFacetName);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } 
+                    else if (eventType == xpp.END_TAG) {
+
+                        String currentTagName = this.closingTagEncoutered(xpp, null);
+
+                        if (currentTagName.equals(ConstantParameters.XML_skos_collection)) {
+                            if (xpp.getDepth() == 2) {
+                                insideCollection = false;
+                            }
+                        }
+                    }
+                    
+
+
+                }
+                //skos:Collection
+                //skos:prefLabel xml:lang="en"
+                */
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "parseFacetNodesSortItems SKOS schema is not yet supported.");
+                return false;
+            } 
+            //</editor-fold>
+            
+            // <editor-fold defaultstate="collapsed" desc="THEMAS schema..">
+            else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
+
 
                 // <editor-fold defaultstate="collapsed" desc="Check if the correct xpp element was given">
                 if (xpp == null) {
-                    return;
+                    return false;
                 }
                 String elementName = xpp.getName();
                 if (elementName.equals("facets") == false) {
-                    return;
+                    Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Failed to retrieve XML element facets.");
+                    return false;
                 }
                 //</editor-fold>
-
-
-                String targetFacetName = "";
 
                 while (xpp.getEventType() != xpp.END_DOCUMENT) {
                     xpp.next();
@@ -3730,12 +4784,42 @@ public class ParseFileData {
                         String currentTagName = this.openingTagEncoutered(xpp, null);
                         if (currentTagName.equals("facet")) {
                             targetFacetName = "";
+                            translit = "";
+                            refId = -1;
                         } else if (currentTagName.equals("name")) {
+                            
+                            String longStr = this.parseSpecificAttibuteValue(ConstantParameters.system_referenceIdAttribute_kwd, xpp);
+                            if(longStr!=null && longStr.length()>0){
+                                
+                                if(longStr!=null && longStr.trim().length()>0){
+                                    try{
+                                        refId = Long.parseLong(longStr);
+                                    }
+                                    catch(Exception ex){
+                                        Utils.StaticClass.handleException(ex);
+                                    }
+                                }
+                            }
+                            
+                            if(Parameters.TransliterationAsAttribute){
+                                String targetValue = this.parseSpecificAttibuteValue(ConstantParameters.system_transliteration_kwd, xpp);
+                                    if (targetValue != null && targetValue.trim().length() > 0) {
+                                    translit = this.readXMLTag(targetValue);
+                                }
+                            }
+                            
                             String targetValue = this.parseSimpleContentElement(xpp);
 
                             if (targetValue != null && targetValue.trim().length() > 0) {
                                 targetFacetName = this.readXMLTag(targetValue);
                             }
+                        }
+                        else if (!Parameters.TransliterationAsAttribute && currentTagName.equals(ConstantParameters.system_transliteration_kwd)) {
+                            String targetValue = this.parseSimpleContentElement(xpp);
+
+                            if (targetValue != null && targetValue.trim().length() > 0) {
+                                translit = this.readXMLTag(targetValue);
+                            }                            
                         }
                     } //</editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="End Tag Case --> Facet Completed. also Check if all Facets are completed">
@@ -3756,9 +4840,20 @@ public class ParseFileData {
                             } else {
 
                                 //if term info does not exist then add it
-
-                                if (xmlFacets.contains(targetFacetName) == false) {
-                                    xmlFacets.add(targetFacetName);
+                                if(translit==null || translit.trim().length()==0){
+                                    translit = Utilities.getTransliterationString(targetFacetName, false);
+                                }
+                                SortItem newFacetObj = new SortItem(targetFacetName,-1,translit,refId);
+                                
+                                
+                                if (xmlFacets.containsKey(targetFacetName) == false) {
+                                    xmlFacets.put(targetFacetName,newFacetObj);
+                                }
+                                else{
+                                    if(!newFacetObj.equals(xmlFacets.get(targetFacetName))){
+                                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + " Facet: "+targetFacetName + " is defined more than once.");
+                                        return false;
+                                    }
                                 }
                             }
 
@@ -3768,11 +4863,16 @@ public class ParseFileData {
                     //</editor-fold>
                 }
             }
+            //</editor-fold>
+            
         } catch (XmlPullParserException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         } catch (IOException ex) {
             Utils.StaticClass.handleException(ex);
+            return false;
         }
+        return true;
     }
 
     public String readXMLTag(String test) {
@@ -3863,14 +4963,14 @@ public class ParseFileData {
     }
     // </editor-fold>
 
-    public boolean readTranslationCategoriesFromTerms(Hashtable<String, NodeInfoStringContainer> termsInfo,
-            Vector<String> filterTerms,
-            Vector<String> userSelectedTranslationWords, Vector<String> userSelectedTranslationIdentifiers,
-            Hashtable<String, String> userSelections){
+    public boolean readTranslationCategoriesFromTerms(HashMap<String, NodeInfoStringContainer> termsInfo,
+            ArrayList<String> filterTerms,
+            ArrayList<String> userSelectedTranslationWords, ArrayList<String> userSelectedTranslationIdentifiers,
+            HashMap<String, String> userSelections){
         boolean applyFiltering = (filterTerms!=null && filterTerms.size()>0);
-        Enumeration<String> termEnum = termsInfo.keys();
-        while(termEnum.hasMoreElements()){
-            String targetTerm = termEnum.nextElement();
+        Iterator<String> termEnum = termsInfo.keySet().iterator();
+        while(termEnum.hasNext()){
+            String targetTerm = termEnum.next();
             if(applyFiltering){
                 if(filterTerms.contains(targetTerm)==false){
                     continue;
@@ -3878,12 +4978,12 @@ public class ParseFileData {
             }
             NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translation_kwd)){
-                Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
+                ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
                 for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -3903,12 +5003,12 @@ public class ParseFileData {
                 
             }
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.uf_translations_kwd)){
-                Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
+                ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
                 for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -3927,12 +5027,12 @@ public class ParseFileData {
                 }
             }
             if(targetInfo.descriptorInfo.containsKey(ConstantParameters.translations_scope_note_kwd)){
-               Vector<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
+               ArrayList<String> checkVals = targetInfo.descriptorInfo.get(ConstantParameters.translations_scope_note_kwd);
                for(int k=0; k<checkVals.size();k++){
                     String val = checkVals.get(k);
                     if(val.indexOf(Parameters.TRANSLATION_SEPERATOR)>0){
                         String langcode = val.substring(0, val.indexOf(Parameters.TRANSLATION_SEPERATOR));
-                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode);
+                        String langidentifier = Linguist.SupportedTHEMASLangcodes(langcode,true);
                         if(langidentifier.length()>0){
                             langidentifier = langidentifier.toUpperCase();
                             String langword = Linguist.SupportedLanguages(langidentifier);
@@ -3961,8 +5061,8 @@ public class ParseFileData {
         return true;
     }
 
-    public boolean readTranslationCategories(String xmlFilePath, String xmlSchemaType, Vector<String> userSelectedTranslationWords,
-            Vector<String> userSelectedTranslationIdentifiers, Hashtable<String, String> userSelections) {
+    public boolean readTranslationCategories(String xmlFilePath, String xmlSchemaType, ArrayList<String> userSelectedTranslationWords,
+            ArrayList<String> userSelectedTranslationIdentifiers, HashMap<String, String> userSelections) {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Start reading translation categories from file: " + xmlFilePath + ".");
 
@@ -3987,7 +5087,7 @@ public class ParseFileData {
                 boolean insideDescriptiveNote = false;
                 boolean insideTermLanguages = false;
 
-                Vector<String> langCodes = new Vector<String>();
+                ArrayList<String> langCodes = new ArrayList<String>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
@@ -4065,13 +5165,13 @@ public class ParseFileData {
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
-                Vector<String> langCodes = new Vector<String>();
+                ArrayList<String> langCodes = new ArrayList<>();
                 int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
 
                     if (eventType == xpp.START_TAG) {
-                        String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp));
+                        String langCode = Linguist.SupportedTHEMASLangcodes(this.parseSpecificAttibuteValue(ConstantParameters.XML_xml_lang, xpp),true);
                         if (langCode != null && langCode.length() > 0 && langCodes.contains(langCode.toUpperCase()) == false) {
                             langCodes.add(langCode.toUpperCase());
                         }
@@ -4131,22 +5231,22 @@ public class ParseFileData {
         return true;
     }
 
-    public Vector<String> getRecursiveNts(Vector<String> targetSet, Hashtable<String, NodeInfoStringContainer> termsInfo) {
+    public ArrayList<String> getRecursiveNts(ArrayList<String> targetSet, HashMap<String, NodeInfoStringContainer> termsInfo) {
         DBGeneral dbGen = new DBGeneral();
 
-        Vector<String> returnVals = new Vector<String>();
+        ArrayList<String> returnVals = new ArrayList<String>();
         returnVals.addAll(targetSet);
 
-        Vector<String> newVals = new Vector<String>();
+        ArrayList<String> newVals = new ArrayList<String>();
         newVals.addAll(targetSet);
 
-        Vector<String> loopVals = new Vector<String>();
+        ArrayList<String> loopVals = new ArrayList<String>();
         while (newVals.size() > 0) {
-            loopVals = new Vector<String>();
+            loopVals = new ArrayList<String>();
 
             for (int i = 0; i < newVals.size(); i++) {
                 String checkTerm = newVals.get(i);
-                Vector<String> nts = new Vector<String>();
+                ArrayList<String> nts = new ArrayList<String>();
                 if (termsInfo.containsKey(checkTerm)) {
                     nts.addAll(termsInfo.get(checkTerm).descriptorInfo.get(ConstantParameters.nt_kwd));
                 }
@@ -4187,4 +5287,11 @@ public class ParseFileData {
         }
         return "";
     }
+
+
+    
+
+    
+
+    
 }

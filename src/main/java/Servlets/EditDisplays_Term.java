@@ -51,6 +51,7 @@ import Utils.SessionWrapperClass;
 import Utils.Parameters;
 import Utils.Utilities;
 import Utils.SortItem;
+import Utils.SortItemComparator;
 import Utils.StringLocaleComparator;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,9 +63,9 @@ import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -117,11 +118,11 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             if(targetField==null || targetTerm==null){
                 
                 
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
                         Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf()+
-                        "<resultText>"+u.translateFromMessagesXML("root/EditTerm/Edit/NothingSpecified", null)+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditTerm/Edit/NothingSpecified", null,SessionUserInfo.UILang)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path +  "/xml-xsl/EditTermActions/Edit_Term.xsl");
@@ -140,9 +141,10 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
             
             Q.reset_name_scope();
             String results = "";
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));
+            ArrayList<String> currentValues = new ArrayList<>();
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));
             if(targetField.compareTo(ConstantParameters.term_create_kwd)==0){
-                
+                currentValues.add(Parameters.UnclassifiedTermsLogicalname);
                 xml.append("<current><term><bt><name>"+Utilities.escapeXML(Parameters.UnclassifiedTermsLogicalname) + "</name></bt></term></current><targetTerm></targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
@@ -151,8 +153,8 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 //data structures
                 StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
                 StringObject BTLinkObj = new StringObject();
-                Vector<SortItem> nts = new Vector<SortItem>();
-                Vector<String> existingGuideTermsVec = new Vector<String>(); 
+                ArrayList<SortItem> nts = new ArrayList<SortItem>();
+                ArrayList<String> existingGuideTermsVec = new ArrayList<String>(); 
                 
                 //collection of db data
                 dbtr.getThesaurusCategory_BT(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
@@ -172,14 +174,27 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
                 String[] output = new String[2];
                 output[0] = "name";
                 output[1] = targetField;
-                results = u.getTermResultsInXml(SessionUserInfo,targetTerm, output,Q,TA,sis_session,targetLocale);
-                xml.append(results);
+                ArrayList<String> skipCurrentValuesInXMLKeywords = new ArrayList<>();
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.bt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.nt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.rt_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.term_create_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.primary_found_in_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.translations_found_in_kwd);
+                skipCurrentValuesInXMLKeywords.add(ConstantParameters.uf_kwd);
+                if(skipCurrentValuesInXMLKeywords.contains(targetField)){
+                    currentValues.addAll(dbGen.returnResults(SessionUserInfo, targetTerm, targetField, Q, TA, sis_session));
+                }
+                else{
+                    results = u.getTermResultsInXml(SessionUserInfo,targetTerm, output,Q,TA,sis_session,targetLocale);
+                    xml.append(results);
+                }
                 xml.append("<targetTerm>"+Utilities.escapeXML(targetTerm)+"</targetTerm><targetEditField>"+targetField+"</targetEditField>"+Parameters.getXmlElementForConfigAtRenameSaveOldNameAsUf());
                 
             }
             
             if(targetField.compareTo(ConstantParameters.delete_term_kwd)!=0){
-                u.getAvailableValues(SessionUserInfo,targetField,Q, sis_session,xml,targetLocale);
+                getAvailableValues(SessionUserInfo,currentValues, targetField,Q, sis_session,xml,targetLocale);
 
                 if(targetField.compareTo(ConstantParameters.translation_kwd)==0 
                         || targetField.compareTo(ConstantParameters.uf_translations_kwd)==0
@@ -241,5 +256,179 @@ public class EditDisplays_Term extends ApplicationBasicServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    
+    private void getAvailableValues(UserInfoClass SessionUserInfo, ArrayList<String> currentValues, 
+                                    String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
+        DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
+
+        if (output.matches(ConstantParameters.bt_kwd) || 
+                output.matches(ConstantParameters.nt_kwd) || 
+                output.matches(ConstantParameters.rt_kwd) ||
+                output.matches(ConstantParameters.term_create_kwd)) {
+            int index = Parameters.CLASS_SET.indexOf("TERM");
+
+            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
+
+            Q.reset_name_scope();
+            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
+            Q.reset_set(set_terms);
+            ArrayList<SortItem> termNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_terms, true, Q, sis_session);
+            Q.free_set(set_terms);
+
+            Collections.sort(termNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            xml.append("<availableTerms>");
+            for (SortItem termName : termNames) {
+                xml.append("<name selected=\""+(currentValues.contains(termName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(termName.getLogName()));
+                xml.append("</name>");
+            }
+            xml.append("</availableTerms>");
+
+        }
+
+        if (output.matches(ConstantParameters.primary_found_in_kwd) ||
+                output.matches(ConstantParameters.translations_found_in_kwd)) {
+
+            Q.reset_name_scope();
+            Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
+            int set_sources = Q.get_all_instances(0);
+            Q.reset_set(set_sources);
+            ArrayList<SortItem> sourceNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_sources, true, Q, sis_session);
+            Q.free_set(set_sources);
+            
+            for (SortItem sourceName :  sourceNames) {
+                if(sourceName.log_name_transliteration==null || sourceName.log_name_transliteration.isEmpty()){
+                    sourceName.log_name_transliteration = Utilities.getTransliterationString(sourceName.getLogName(), false);
+                }
+            }
+            Collections.sort(sourceNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            
+            xml.append("<availableSources>");
+            for (SortItem sourceName :  sourceNames) {
+                xml.append("<name selected=\""+(currentValues.contains(sourceName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(sourceName.getLogName()));
+                xml.append("</name>");
+            }
+            xml.append("</availableSources>");
+        }
+
+        if (output.matches(ConstantParameters.translation_kwd)) {
+            //no option for selecting already defined values
+            /*
+            Q.reset_name_scope();
+            StringObject toTranslationsFromClass = new StringObject();
+            StringObject toTranslationsLink = new StringObject();
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translation_kwd, toTranslationsFromClass, toTranslationsLink, Q, sis_session);
+
+            int index = Parameters.CLASS_SET.indexOf("TERM");
+
+            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
+
+            Q.reset_name_scope();
+            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
+            Q.reset_set(set_terms);
+            int set_translation_term_links = Q.get_link_from_by_category(set_terms, toTranslationsFromClass, toTranslationsLink);
+            Q.reset_set(set_translation_term_links);
+
+
+            ArrayList<SortItem> translationNames = dbGen.get_To_SortItems_Of_LinkSet(set_translation_term_links, true, true, true, Q, sis_session);
+
+            Q.free_set(set_terms);
+            Q.free_set(set_translation_term_links);
+
+
+            Collections.sort(translationNames, new GuideTermSortItemComparator(targetLocale));
+            xml.append("<availableTranslations>");
+            for (int i = 0; i < translationNames.size(); i++) {
+            SortItem currentSortItem = translationNames.get(i);
+            xml.append("<name linkClass=\"" + currentSortItem.linkClass + "\">");
+            xml.append(Utilities.escapeXML(currentSortItem.log_name));
+            xml.append("</name>");
+            }
+            xml.append("</availableTranslations>");*/
+        }
+
+        if (output.matches(ConstantParameters.uf_translations_kwd)) {
+            //no option for selecting already defined values
+            /*
+            Q.reset_name_scope();
+            StringObject ufTranslationsFromClass = new StringObject();
+            StringObject ufTranslationsLink = new StringObject();
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.uf_translations_kwd, ufTranslationsFromClass, ufTranslationsLink, Q, sis_session);
+
+            int index = Parameters.CLASS_SET.indexOf("TERM");
+
+            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
+
+            Q.reset_name_scope();
+            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
+            Q.reset_set(set_terms);
+            int set_uftranslations_labels = Q.get_link_from_by_category(set_terms, ufTranslationsFromClass, ufTranslationsLink);
+            Q.reset_set(set_uftranslations_labels);
+            //
+            //int set_uftranslations = Q.get_to_value(set_uftranslations_labels);
+            //Q.reset_set(set_uftranslations);
+            //
+            //ArrayList<String> uftranslationsNames = dbGen.get_Node_Names_Of_Set(set_uftranslations, true, Q, sis_session);
+
+            ArrayList<SortItem> uftranslationsNames = dbGen.get_To_SortItems_Of_LinkSet(set_uftranslations_labels, true, true, false, Q, sis_session);
+
+
+            Q.free_set(set_terms);
+            Q.free_set(set_uftranslations_labels);
+            //Q.free_set(set_uftranslations);
+
+            
+            Collections.sort(uftranslationsNames, new GuideTermSortItemComparator(targetLocale));
+            xml.append("<availableUfTranslations>");
+            for (int i = 0; i < uftranslationsNames.size(); i++) {
+            SortItem currentSortItem = uftranslationsNames.get(i);
+            xml.append("<name linkClass=\"" + currentSortItem.linkClass + "\">");
+            xml.append(Utilities.escapeXML(currentSortItem.log_name));
+            xml.append("</name>");
+            }
+            xml.append("</availableUfTranslations>");
+             * 
+             */
+        }
+
+        if (output.matches(ConstantParameters.uf_kwd)) {
+
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
+            StringObject UsedForTermClass = new StringObject();
+            dbtr.getThesaurusClass_UsedForTerm(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), UsedForTermClass);
+            Q.reset_name_scope();
+
+            Q.set_current_node(UsedForTermClass);
+            int set_ufs = Q.get_all_instances(0);
+            Q.reset_set(set_ufs);
+            ArrayList<SortItem> ufNames = dbGen.get_Node_Names_Of_Set_In_SortItems(set_ufs, true, Q, sis_session);
+            Q.free_set(set_ufs);
+            
+            for (SortItem ufName :  ufNames) {
+                if(ufName.log_name_transliteration==null || ufName.log_name_transliteration.isEmpty()){
+                    ufName.log_name_transliteration = Utilities.getTransliterationString(ufName.getLogName(), false);
+                }
+            }
+            Collections.sort(ufNames, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+            
+            xml.append("<availableUfs>");
+            for (SortItem ufName :  ufNames) {
+                xml.append("<name selected=\""+(currentValues.contains(ufName.getLogName()) ? "yes\">":"no\">"));
+                xml.append(Utilities.escapeXML(ufName.getLogName()));
+                xml.append("</name>");
+            }
+            xml.append("</availableUfs>");
+        }
+
+
+
+    }
+
 
 }

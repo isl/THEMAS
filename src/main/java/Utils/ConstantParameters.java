@@ -117,9 +117,13 @@ public class ConstantParameters {
     public static final String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
     public static boolean DEVELOPING = true;
-    
+    public static String TypeAheadSeparator = "";// "###";
     //Group_Reader --> i.e. READER. This user can see only the published part of the thesaurus without creation/modfication data
+    public static final String AllThesauriIndicator = "*";
     public static final String Group_Reader = "READER";
+    public static final String Group_Library = "LIBRARY";
+    public static final String Group_ThesaurusTeam = "THESAURUS_TEAM";
+    public static final String Group_ThesaurusCommittee = "THESAURUS_COMMITTEE";
     
     //Group_External_Reader --> i.e. EXTERNALREADER. This user can see everything (apart from other user data) in a specific thesarus but cannot change anything 
     public static final String Group_External_Reader = "EXTERNALREADER";
@@ -164,6 +168,16 @@ public class ConstantParameters {
 
     
     public static final String XMLTermsWrapperElementName = "terms";
+    public static final String XMLExternalVocabulariesWrapperElementName = "external_vocabularies";
+    public static final String XMLExternalVocabulariesElementName = "external_vocabulary";
+    public static final String XMLExternalVocabularies_ShortName = "shortname"; //should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_FullName = "fullname";//should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_Description = "description";//should be multiple and lang attribute support
+    public static final String XMLExternalVocabularies_ReleaseTimestamp = "release_timestamp";
+    public static final String XMLExternalVocabularies_Version = "version";
+    
+    public static final String XMLExternalVocabularies_Uri = "uri"; //should be multiple
+    
     public static final String XMLSourcesWrapperElementName = "sources";
     public static final String XMLTermElementName = "term";
     public static final String XMLNodeLabelsWrapperElementName = "nodelabels";
@@ -172,11 +186,14 @@ public class ConstantParameters {
 
     public static final String XMLLinkClassAttributeName = "linkClass";
 
+    public static final String id_kwd = "id";
     public static final String facet_kwd = "facet";
     public static final String topterm_kwd = "topterm";
     public static final String translation_kwd = "translations";
     public static final String bt_kwd = "bt";
     public static final String nt_kwd = "nt";
+    //addition standing for output of recursive bts
+    public static final String rbt_kwd = "rbt";
     //addition standing for output of recursive nts
     public static final String rnt_kwd = "rnt";
     public static final String rt_kwd = "rt";
@@ -184,13 +201,19 @@ public class ConstantParameters {
     public static final String uf_translations_kwd ="uf_translations";
     public static final String dn_kwd = "dn";
     public static final String tc_kwd = "tc";
-    public static final String alt_kwd = "alt";    
+    public static final String alt_kwd = "alt"; 
+    public static final String externalLink_kwd = "externalLink";
+    public static final String externalLink_attr_matchType_kwd = "matchtype";
+    public static final String attr_matchType_exact_match_value = "exactMatch";
+    public static final String attr_matchType_close_match_value = "closeMatch";
+    public static final String externalLink_attr_vocabId_kwd = "vocabularyId";
     public static final String primary_found_in_kwd = "primary_found_in";
     public static final String translations_found_in_kwd = "translations_found_in";
     public static final String scope_note_kwd = "scope_note";
     public static final String translations_scope_note_kwd = "translations_scope_note";
     public static final String historical_note_kwd = "historical_note";
     public static final String comment_kwd= "comment";
+    public static final String note_kwd= "note";
     public static final String created_by_kwd = "created_by";
     public static final String modified_by_kwd ="modified_by";
     public static final String created_on_kwd ="created_on";
@@ -204,6 +227,11 @@ public class ConstantParameters {
 
     public static final String accepted_kwd ="accepted";
     public static final String status_kwd   ="status";
+    
+    public static final String system_referenceUri_kwd   ="ReferenceUri";
+    public static final String system_allHierarchicalUris_kwd = "HierarchicalReferenceUri";
+    public static final String system_referenceIdAttribute_kwd   ="referenceId";
+    public static final String system_transliteration_kwd   ="transliteration";
 
 
     public static final String editor_kwd ="editor";
@@ -301,10 +329,15 @@ public class ConstantParameters {
     public static final String XML_skos_collection = "skos:Collection";
 
     public static final String XML_xml_lang = "xml:lang";
+    public static final String XML_skos_conceptScheme = "skos:ConceptScheme";
     public static final String XML_skos_concept = "skos:Concept";
     public static final String XML_rdf_about = "rdf:about";
     public static final String XML_skos_topConceptOf ="skos:topConceptOf";
-
+    public static final String XML_skos_exactMatch ="skos:exactMatch";
+    public static final String XML_skos_closeMatch ="skos:closeMatch";
+    public static final String XML_owlSameAs = "owl:sameAs";
+    public static final String XML_rdfs_seeAlso   ="rdfs:seeAlso";
+    
     public static final String XML_skos_member = "skos:member";
     public static final String XML_rdf_resource = "rdf:resource";
 
@@ -313,12 +346,21 @@ public class ConstantParameters {
     public static final String XML_dc_creator = "dc:creator";//text
     public static final String XML_dc_date = "dc:date";//text
     public static final String XML_skos_altLabel = "skos:altLabel";//text //xml:lang
+    public static final String XML_skos_hiddenLabel = "skos:hiddenLabel";//text //xml:lang
     public static final String XML_skos_broader = "skos:broader";//rdf:resource
+    public static final String XML_skos_broaderTransitive = "skos:broaderTransitive";//rdf:resource
     public static final String XML_skos_inScheme = "skos:inScheme";//rdf:resource
+    
     public static final String XML_skos_narrower = "skos:narrower";//rdf:resource
-    public static final String XML_skos_Note = "skos:Note";//text
+    public static final String XML_skos_narrowerTransitive = "skos:narrowerTransitive";//rdf:resource
+    
     public static final String XML_skos_related = "skos:related";//rdf:resource
     public static final String XML_skos_scopeNote = "skos:scopeNote"; //xml:lang
+    public static final String XML_skos_historyNote = "skos:historyNote"; 
+    public static final String XML_skos_EditorialNote = "skos:editorialNote";//text
+    public static final String XML_skos_Note = "skos:note";//text
+    public static final String XML_skos_Notation = "skos:notation";//identifier
+    public static final String XML_iso_thes_status ="iso-thes:status";
 
 
     
@@ -361,6 +403,19 @@ public class ConstantParameters {
     //public static final int MAX_COMMENT_SIZE = 19000;
 
     //output option supported for specific servlets in order to provide the output as xml stream
+    //be carefull at the end of each servlet that supports it, not to update current session
+    //because this request usually will have been submitted from a different application.
+    //Also there is no meaning in keeping alive this session after the XMLStream has been produced
+    //so it will be good practice to invalidate the session.
     public static final String XMLSTREAM = "XMLSTREAM";
+    
+    public static final String searchOperatorEquals = "=";
+    public static final String searchOperatorTransliterationEquals = "transliteration=";
+    public static final String searchOperatorNotTransliterationEquals = "!transliteration=";
+    public static final String searchOperatorTransliterationContains = "transliteration~";
+    public static final String searchOperatorNotTransliterationContains = "!transliteration~";
+    public static final String searchOperatorContains = "~";
+    public static final String searchOperatorNotContains = "!~";
+    
     
 }

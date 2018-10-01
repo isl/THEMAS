@@ -53,7 +53,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.io.OutputStreamWriter;
 import java.io.OutputStream;
@@ -64,7 +64,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -145,57 +145,9 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval--------------------------
             if (updateSourceCriteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", updateSourceCriteria, request, u);
-                if(searchCriteria.input.size()==searchCriteria.value.size()){
-                    /*
-                    for(int k=0; k<searchCriteria.input.size(); k++){
-                        String inputKwd = searchCriteria.input.get(k);
-                        String value = searchCriteria.value.get(k);
-                        byte[] valbytes = value.getBytes("UTF-8");
-                        if(inputKwd.equals("name")){
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                            if(valbytes.length > dbtr.getMaxBytesForSource(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-                        }
-                        else if(inputKwd.equals(ConstantParameters.primary_found_in_kwd) || inputKwd.equals(ConstantParameters.translations_found_in_kwd)){
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                            if(valbytes.length > dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-                        }
-                        else if(inputKwd.equals(ConstantParameters.source_note_kwd)){
-                            if(valbytes.length > dbtr.getMaxBytesForCommentCategory(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-
-                                response.sendRedirect("Links?tab=SourcesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                        }
-                    }*/
-                }
-                else{
-                    Utils.StaticClass.webAppSystemOutPrintln("Search Input Error");
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", updateSourceCriteria, request, u);
+                if(searchCriteria.input.size()!=searchCriteria.value.size()){
+                    Utils.StaticClass.webAppSystemOutPrintln("Search Sources Input Error");
                 }
                 sessionInstance.setAttribute("SearchCriteria_Sources", searchCriteria);
                 
@@ -204,13 +156,13 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Sources", searchCriteria);
                 
             }
             
             if(usePreviousCriteria==false){ // used for view alla sources from edit term's SN, SN_TR or HN in order not to modify previously defined criteria
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Sources", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Sources", "*", request, u);
             }
             
             if (startRecord == null) { //read paging criteria
@@ -246,12 +198,12 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,true);
             //-------------------- paging info And criteria retrieval-------------------------- 
             long startTime = Utilities.startTimer();
 
 
-            Vector<String> allResultsSources = dbGen.getAllSearchSources(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
+            ArrayList<String> allResultsSources = dbGen.getAllSearchSources(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
 
 
             Collections.sort(allResultsSources, new StringLocaleComparator(targetLocale));
@@ -309,13 +261,13 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             }
 
 
-            Vector<String> resultsSources = new Vector<String>();
+            ArrayList<String> resultsSources = new ArrayList<String>();
             for (int i = 0; i < sourcesPagingListStep; i++) {
                 if (i + sourcesPagingFirst > sourcesPagingQueryResultsCount) {
                     break;
                 }
                 String tmp = allResultsSources.get(i + sourcesPagingFirst - 1);
-                resultsSources.addElement(tmp);
+                resultsSources.add(tmp);
             }
 
 
@@ -335,7 +287,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             xmlResults.append("</results>");
 
            
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_SOURCES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults.toString(), "SearchSourceResults"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -350,7 +302,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
         }
     }
 
-    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, Vector<String> allSources, Utilities u, String title, SearchCriteria sc, 
+    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allSources, Utilities u, String title, SearchCriteria sc, 
             String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, TMSAPIClass TA, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
     
         DBGeneral dbGen = new DBGeneral();
@@ -364,7 +316,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             String temp ="";
 
             temp += ConstantParameters.xmlHeader+
-                    "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
+                    "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
                     "<title>" + title + "</title>" +
                     "<query>" + sc.getQueryString(u) + "</query>";
             if(pathToSaveScriptingAndLocale!=null){
@@ -384,7 +336,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if(category.compareTo("id")==0 ||category.compareTo("name")==0 ){
+            if(category.compareTo(ConstantParameters.id_kwd)==0 ||category.compareTo("name")==0 ){
                 continue;
             }
             else{
@@ -407,7 +359,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                     temp.append("<name>" + Utilities.escapeXML(currentSource) + "</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Source(SessionUserInfo, allSources.get(i), output[j],Q , TA,sis_session);
+                    ArrayList<String> v = dbGen.returnResults_Source(SessionUserInfo, allSources.get(i), output[j],Q , TA,sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
                     
                     for (int k = 0; k < v.size(); k++) {

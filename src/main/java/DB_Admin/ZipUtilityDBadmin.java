@@ -40,7 +40,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -73,8 +73,8 @@ public class ZipUtilityDBadmin {
         zip();
     }
 
-    public Vector<Path> fileList(String directory) {
-        Vector<Path> fileNames = new Vector<Path>();
+    public ArrayList<Path> fileList(String directory) {
+        ArrayList<Path> fileNames = new ArrayList<Path>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directory))) {
             for (Path path : directoryStream) {
                 fileNames.add(path);
@@ -94,9 +94,9 @@ public class ZipUtilityDBadmin {
 
     public void zip() {
 
-        Vector<Path> fileNamesVec = fileList(strSource);
-        Vector<String> directories = new Vector<String>();
-        Vector<String> files = new Vector<String>();
+        ArrayList<Path> fileNamesVec = fileList(strSource);
+        ArrayList<String> directories = new ArrayList<String>();
+        ArrayList<String> files = new ArrayList<String>();
         //int counter = 1;
         for (Path fpath : fileNamesVec) {
             //Utils.StaticClass.webAppSystemOutPrintln((counter++) + ".\t" + fpath.toString() + "\t" + java.nio.file.Files.isDirectory(fpath, LinkOption.NOFOLLOW_LINKS));

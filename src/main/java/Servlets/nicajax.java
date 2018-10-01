@@ -68,6 +68,8 @@ public class nicajax extends ApplicationBasicServlet {
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
             
+            
+            
             QClass Q = new QClass();            
             IntegerObject sis_session = new IntegerObject();
             
@@ -76,7 +78,7 @@ public class nicajax extends ApplicationBasicServlet {
 
             DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-            Vector<String> Search_result = new Vector<String>();
+            ArrayList<String> Search_result = new ArrayList<String>();
 
             String inputType = u.getDecodedParameterValue(request.getParameter("inputType"));//params.get("inputType").toString();
             String inputvalue = u.getDecodedParameterValue(request.getParameter("inputvalue"));//params.get().toString();
@@ -173,27 +175,33 @@ public class nicajax extends ApplicationBasicServlet {
              else if(inputType.equals("inputvalue_Status")==true) { // Status suggestion                
                 if (inputvalue.length() == 1) {
                     
-                    Search_result.addElement(Parameters.Status_For_Insertion + "###");
-                    Search_result.addElement(Parameters.Status_Approved + "###");
-                    Search_result.addElement(Parameters.Status_For_Approval + "###");
-                    Search_result.addElement(Parameters.Status_Under_Construction + "###");
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);
+                    Search_result.add(Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved,SessionUserInfo) + Utils.ConstantParameters.TypeAheadSeparator);                    
                 }
             }  
             
-            String[] options = new String[Search_result.size()];
-            Search_result.toArray(options);
+            //String[] options = new String[Search_result.size()];
+            //Search_result.toArray(options);
 
             //end query and close connection
             Q.free_all_sets();
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
+            out.println("<results>");
+            for(String option : Search_result){
+                out.println("<option>"+Utilities.escapeXML(option)+"</option>");
+            }
+            /*
             for (int i = 0; i < options.length; i++) {
                 // BIG KOYLAMARA!!! (karam bug fix 16/12/2008)
                 //out.println(options[i]);
                 out.print(options[i]);
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"AJAX----------- " + options[i]);
-            }
+            }*/
+            out.println("</results>");
 
 
         } catch (Exception e) {

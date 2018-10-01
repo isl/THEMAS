@@ -42,11 +42,11 @@ import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 /**
  *
  * @author tzortzak
@@ -80,18 +80,20 @@ public class Rename_Facet extends ApplicationBasicServlet {
 
             
 
+            
             // open SIS and TMS connection
             QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
             IntegerObject tms_session = new IntegerObject();
 
-            DBGeneral dbGen = new DBGeneral();
+            DBGeneral dbGen = new DBGeneral();            
             Utilities u = new Utilities();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
             
             //StringBuffer xml = new StringBuffer();
             //String RenameResult = "Renamed succesfully!!";
             
-            String RenameResult =  u.translateFromMessagesXML("root/EditFacet/Rename/Success", null);
+            String RenameResult =  u.translateFromMessagesXML("root/EditFacet/Rename/Success", null,SessionUserInfo.UILang);
             
             String Xmlresult = "";
             StringObject ob = new StringObject();
@@ -113,35 +115,9 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ servlet " + this.getServletName());
                 return;
             }
-            DBThesaurusReferences dbtr = new DBThesaurusReferences();
-            /*
-            try {
-                Vector<String> errorArgs = new Vector<String>();
-                //String pathToMessagesXML = Utilities.getMessagesXml();
-                byte[] byteArray = newName.getBytes("UTF-8");
-                int maxTermChars = dbtr.getMaxBytesForFacet(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxTermChars) {
-                    //errorMsgObj.setValue("No facet selected for rename. Operation cancelled.");
-                        errorArgs.add("" + maxTermChars);
-                        errorArgs.add("" + byteArray.length);
-                        dbGen.Translate(ob, "root/EditFacet/Edit/LongName", errorArgs, pathToMessagesXML);
-                        //abort transaction and close connection
-                        Q.free_all_sets();
-                        Q.abort_transaction();
-                        dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
-
-                        out.println(ob.getValue());
-                        out.flush();
-                        return;
-
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
+            
+            
             Q.reset_name_scope();
-            DBGeneral dbG = new DBGeneral();
 
             
             String prefix = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
@@ -153,26 +129,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
 
 
             ret1 = TMSAPIClass.TMS_APISucc;
-            /*
-            try {
-                byte[] byteArray = newName.getBytes("UTF-8");
-
-                int maxFacetChars = dbtr.getMaxBytesForFacet(SessionUserInfo.selectedThesaurus, Q, sis_session);
-                if (byteArray.length > maxFacetChars) {
-                    Vector<String> errorArgs = new Vector<String>();
-                    errorArgs.add("" + maxFacetChars);
-                    errorArgs.add("" + byteArray.length);
-                    dbGen.Translate(ob, "root/EditFacet/Rename/LongName", errorArgs, pathToMessagesXML);
-                    ret1 = TMSAPIClass.TMS_APIFail;
-
-                    
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
-                Utils.StaticClass.handleException(ex);
-            }
-            */
-
+            
             if (ret1 == TMSAPIClass.TMS_APIFail) {
 
                 //abort transaction and close connection
@@ -183,7 +140,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((OldFacet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //OLD NAME NULL?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NoFacetSelected", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NoFacetSelected", null,SessionUserInfo.UILang));
                 //ob.setValue("No Facet selected for rename. Operation cancelled.");
                 
                 ret1 = TMSAPIClass.TMS_APIFail;
@@ -192,10 +149,10 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 Q.free_all_sets();
                 Q.TEST_abort_transaction();
                 dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
-            } else if (!dbG.check_exist(OldFacet.toString(), Q, sis_session)) {
+            } else if (!dbGen.check_exist(OldFacet.toString(), Q, sis_session)) {
 
                 //OLD NAME EXISTS?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
                 //ob.setValue("Facet selected for rename does not exist anymore. Please search again for this facet and try again. Operation cancelled.");
                 
                 //abort transaction and close connection
@@ -208,7 +165,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
             } else if ((facet.toString().trim()).equals(prefix.toString().trim())) {
 
                 //NEW NAME ONY PREFIX?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/EmptyNewName", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/EmptyNewName", null,SessionUserInfo.UILang));
                 //ob.setValue("A new facet name was not provided. Operation cancelled.");
                 //abort transaction and close connection
                 Q.free_all_sets();
@@ -216,9 +173,9 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
 
                 ret1 = TMSAPIClass.TMS_APIFail;
-            } else if (dbG.check_exist(facet, Q, sis_session)) {
+            } else if (dbGen.check_exist(facet, Q, sis_session)) {
                 //NEW NAME EXISTS?
-                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NewNameExists", null));
+                ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/NewNameExists", null,SessionUserInfo.UILang));
                 //ob.setValue("New Facet name already exists in the database. Operation cancelled.");
                 
                 //abort transaction and close connection
@@ -233,10 +190,27 @@ public class Rename_Facet extends ApplicationBasicServlet {
 
 
 
-                StringObject newFacet = new StringObject(prefix.concat(newName));
-                StringObject oldFacet = new StringObject(prefix.concat(oldName));
+                
+                //StringObject oldFacet = new StringObject(prefix.concat(oldName));
 
-                ret1 = TA.CHECK_RenameFacet(oldFacet, newFacet);
+                CMValue newFacet = new CMValue();
+                newFacet.assign_node(prefix.concat(newName), -1, Utilities.getTransliterationString(newName, false), -1);
+                
+                Q.reset_name_scope();
+                CMValue oldFacet = new CMValue();
+                long ret = Q.set_current_node_and_retrieve_Cmv(new StringObject(prefix.concat(oldName)), oldFacet);
+                if(ret<=0){
+                    ob.setValue(u.translateFromMessagesXML("root/EditFacet/Rename/OldNameDoesNotExist", null,SessionUserInfo.UILang));
+                    //errorMsgObj.setValue("Hierarchy selected for rename does not exist anymore. Please search again for this hierarchy and try again. Operation cancelled.");
+
+                    ret1 = TMSAPIClass.TMS_APIFail;
+                    //abort transaction and close connection
+                    Q.free_all_sets();
+                    Q.TEST_abort_transaction();
+                    dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
+                }
+                
+                ret1 = TA.CHECK_RenameFacetCMValue(oldFacet, newFacet);
 
                 TA.ALMOST_DONE_GetTMS_APIErrorMessage(ob);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "GetTMS_APIErrorMessage: " + ob.toString());
@@ -278,7 +252,7 @@ public class Rename_Facet extends ApplicationBasicServlet {
                 session.setAttribute("currentFacet", newName);
                 }*/
                 out.print("Success");
-                out.print("<newName>" + newName + "</newName>");
+                out.print("<newName>" + /*Utilities.escapeXML(newName)*/ newName + "</newName>");
                 out.println(RenameResult.trim());
             }
 

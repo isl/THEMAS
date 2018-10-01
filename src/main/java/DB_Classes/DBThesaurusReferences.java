@@ -702,6 +702,24 @@ public class DBThesaurusReferences {
         int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("Descriptor"), new StringObject("BT"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_relation")), card);
         return ret;
     }
+    
+    public int getThesaurusCategory_externalLink(String SelectedThesaurus, QClass Q, int SISsessionID, StringObject retObject) {
+        
+        Q.reset_name_scope();
+        long retL = Q.set_current_node(new StringObject(SelectedThesaurus.toUpperCase().concat("HierarchyTerm")));
+        if(retL<=0){
+            return QClass.APIFail;
+        }
+        StringObject tempVal = new StringObject(SelectedThesaurus.toUpperCase().concat("has_external_link"));
+        retL = Q.set_current_node(tempVal);
+        if(retL<=0){
+            return QClass.APIFail;
+        }
+        Q.reset_name_scope();
+        retObject.setValue(tempVal.getValue());
+        
+        return QClass.APISucc;
+    }
 
     /*----------------------------------------------------------------------
                          getThesaurusCategory_created()
@@ -861,6 +879,18 @@ public class DBThesaurusReferences {
         int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("ThesaurusConcept"), new StringObject("translations_scope_note"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_description")), card);
         return ret;
     }
+    
+    /*----------------------------------------------------------------------
+                         getThesaurusCategory_note()
+    ------------------------------------------------------------------------
+    gets the name of the scope_note category of current Thesaurus: g.e. ekt_note
+    ------------------------------------------------------------------------*/
+    public int getThesaurusCategory_note(String SelectedThesaurus, QClass Q, int SISsessionID, StringObject retObject) {
+        IntegerObject card = new IntegerObject();
+
+        int ret = getThesaurusObject(Q,SISsessionID, retObject, new StringObject("ThesaurusConcept"), new StringObject("note"), new StringObject(SelectedThesaurus.concat("ThesaurusNotionType")), new StringObject(SelectedThesaurus.concat("_description")), card);
+        return ret;
+    }
     /*----------------------------------------------------------------------
                          getThesaurusCategory_taxonomic_code()
     ------------------------------------------------------------------------
@@ -949,13 +979,14 @@ public class DBThesaurusReferences {
         Q.reset_name_scope();
         Q.set_current_node(thesThesaurusClass);
         int set = Q.get_link_from_by_category( 0, new StringObject("ThesaurusClassType"), new StringObject("Class`UsesAsPrefix"));
-        Q.reset_set( set);
+        Q.reset_set(set);
 
         StringObject cls = new StringObject();
         StringObject label = new StringObject();
         CMValue cmv = new CMValue();
         Q.return_link( set, cls, label, cmv);
         Q.free_set( set);
+        //Q.reset_name_scope();
 
         String prefix = cmv.getString();
         return prefix;
@@ -1023,7 +1054,7 @@ public class DBThesaurusReferences {
         StringObject label = new StringObject();
         CMValue cmv = new CMValue();
         Q.return_link( set, cls, label, cmv);
-        Q.free_set( set);
+        Q.free_set(set);
 
         String prefix = cmv.getString();
         return prefix;
@@ -1054,8 +1085,6 @@ public class DBThesaurusReferences {
 
         String prefix = cmv.getString();
         return prefix;
-
-
     }
 
     /*----------------------------------------------------------------------

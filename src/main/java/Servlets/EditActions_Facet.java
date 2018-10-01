@@ -49,7 +49,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.Locale;
 
 /**
@@ -102,7 +102,7 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             Locale targetLocale = new Locale(language, country);
             String targetFacet  = u.getDecodedParameterValue(request.getParameter("targetFacet"));           
             String targetField  = u.getDecodedParameterValue(request.getParameter("targetEditField"));
-            String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
+            
 
             
             if(targetField.compareTo("facet_create")==0){
@@ -125,7 +125,7 @@ public class EditActions_Facet extends ApplicationBasicServlet {
             if(targetField.compareTo("facet_create")==0){
                     
                 succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, "create",  null, errorMsg,true);
+                         dbGen,  targetFacet, "create",  null, errorMsg,true, SessionUserInfo.UILang);
             }
             if(targetField.compareTo("delete_facet")==0){
                     
@@ -133,7 +133,7 @@ public class EditActions_Facet extends ApplicationBasicServlet {
                 boolean continueDeletion = consistencies.check_facet_deletion(SessionUserInfo, Q, sis_session, dbGen, targetFacet,errorMsg, targetLocale);
                 
                 succeded = creation_modificationOfFacet.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,
-                         dbGen,  targetFacet, "modify",  "delete", errorMsg,true);
+                         dbGen,  targetFacet, "modify",  "delete", errorMsg,true, SessionUserInfo.UILang);
             }
             
             //check result of transaction. Prepend with Success or Failure any message returned and write it to PrintWriter out for ajax handling

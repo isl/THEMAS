@@ -55,7 +55,7 @@ import javax.servlet.http.*;
 import java.util.*;
 import java.io.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
 CreateThesaurus
@@ -109,7 +109,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             Utilities u = new Utilities();
 
             // get form parameters
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             String NewThesaurusName = params.get("Create_Thesaurus_NewName_NAME").toString();
             NewThesaurusName = NewThesaurusName.trim();
             NewThesaurusName = NewThesaurusName.replaceAll(" ", "_");
@@ -133,7 +133,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
 
             // Get the existing Thesaurus in DB
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<>();
             thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector, Q, sis_session);
 
 
@@ -150,9 +150,9 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             StringObject InitializeDBResultMessage = new StringObject("");
             Boolean DBInitializationSucceded = true;
             if (InitializeDB != null || DataBaseIsInitialized == false) {
-                boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, NewThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded);
+                boolean DBCanBeInitialized = dbAdminUtils.DBCanBeInitialized(config, common_utils, NewThesaurusNameDBformatted, InitializeDBResultMessage, DBInitializationSucceded, SessionUserInfo.UILang);
                 if (DBCanBeInitialized == true) {
-                    DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage);
+                    DBInitializationSucceded = dbAdminUtils.InitializeDB(common_utils, InitializeDBResultMessage,SessionUserInfo.UILang);
                     // clear the vector with the existing Thesaurus in DB after DB initialization
                     thesaurusVector.clear();
                     
@@ -166,10 +166,11 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             Boolean CreateThesaurusSucceded = true;
             if (DBInitializationSucceded == true) {
                 // check if the given NewThesaurusName exists
-                boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesaurusVector, NewThesaurusName, NewThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded);
+                boolean GivenThesaurusCanBeCreated = dbAdminUtils.GivenThesaurusCanBeCreated(config, common_utils, thesaurusVector, NewThesaurusName, NewThesaurusNameDBformatted, CreateThesaurusResultMessage, CreateThesaurusSucceded,SessionUserInfo.UILang);
                 if (GivenThesaurusCanBeCreated == true) {
 
-                    CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(common_utils, NewThesaurusNameDBformatted,CreateThesaurusResultMessage, "backup_before_creating_new_thesaurus", DBbackupFileNameCreated);
+                    
+                    CreateThesaurusSucceded = dbAdminUtils.CreateThesaurus(SessionUserInfo,common_utils, NewThesaurusNameDBformatted,CreateThesaurusResultMessage, "backup_before_creating_new_thesaurus", DBbackupFileNameCreated);
                     // after finishing the job and in case SIS server is not running, restart it
                     // ATTENTION!!! the following must be done so as to fix the SARUMAN bug
                     // where after the creation of the Thesaurus, the SIS server was NOT restarted!
@@ -202,14 +203,15 @@ public class CreateThesaurus extends ApplicationBasicServlet {
                     // inform current user's rights with the new thesaurus 
                     UsersClass tmsUsers = new UsersClass();
                     tmsUsers.AddNewThesaurusForCurrentTMSUser(WebAppUsersFileName, sessionInstance, NewThesaurusName);
-                    tmsUsers.SetSessionAttributeSessionUser(sessionInstance,this.getServletContext(), SessionUserInfo.name, SessionUserInfo.password, NewThesaurusNameDBformatted, SessionUserInfo.userGroup);
+                    String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+                    tmsUsers.SetSessionAttributeSessionUser(sessionInstance,this.getServletContext(), SessionUserInfo.name, SessionUserInfo.password, NewThesaurusNameDBformatted, SessionUserInfo.userGroup,targetLang);
                     tmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, NewThesaurusName);
                     
                 }
             }
 
-            Vector<String> allHierarchies = new Vector<String>();
-            Vector<String> allGuideTerms = new Vector<String>();
+            ArrayList<String> allHierarchies = new ArrayList<>();
+            ArrayList<String> allGuideTerms = new ArrayList<>();
 
             // open SIS and TMS connection
             Q = new neo4j_sisapi.QClass(); TMSAPIClass TA = new TMSAPIClass();
@@ -227,12 +229,12 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
             dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies,allGuideTerms);
 
-            Vector<String> status = new Vector<String>();
+            ArrayList<String> status = new ArrayList<>();
             status.addAll(dbGen.returnResults(SessionUserInfo, Parameters.UnclassifiedTermsLogicalname, ConstantParameters.status_kwd,Q, TA,sis_session));
 
 
             StringObject resultObj = new StringObject("");
-            if(status.size()==0){
+            if(status.isEmpty()){
                 DBImportData dbImport = new DBImportData();
                 dbImport.specifyOrphansStatus(SessionUserInfo, Q, TA, sis_session, tms_session, resultObj);
 
@@ -253,8 +255,8 @@ public class CreateThesaurus extends ApplicationBasicServlet {
             
          
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(common_utils, thesaurusVector, NewThesaurusName, InitializeDBResultMessage, CreateThesaurusResultMessage, CreateThesaurusSucceded));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -279,7 +281,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
     -----------------------------------------------------------------------
     OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
     ----------------------------------------------------------------------*/
-    public String getXMLMiddle(CommonUtilsDBadmin common_utils, Vector thesaurusVector, String NewThesaurusName, StringObject InitializeDBResultMessage, StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
+    public String getXMLMiddle(CommonUtilsDBadmin common_utils, ArrayList thesaurusVector, String NewThesaurusName, StringObject InitializeDBResultMessage, StringObject CreateThesaurusResultMessage, Boolean CreateThesaurusSucceded) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
         // in case there are other active sessions => write their number to XML, 

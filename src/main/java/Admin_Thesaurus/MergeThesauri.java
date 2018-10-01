@@ -44,7 +44,6 @@ import Utils.Utilities;
 import Utils.Parameters;
 import Utils.SessionWrapperClass;
 
-import Utils.ConsistensyCheck;
 import Utils.ConstantParameters;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -53,13 +52,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletContext;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import neo4j_sisapi.TMSAPIClass;
 import java.io.OutputStreamWriter;
 
 /*
@@ -73,6 +69,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
      *
      * @param request servlet request
      * @param response servlet response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     //final String LogFilesFolderName = "LogFiles";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -192,7 +190,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
      -----------------------------------------------------------------------
      OUTPUT: - String XMLMiddleStr: an XML string with the necessary data of this servlet
      ----------------------------------------------------------------------*/
-    public String getXMLMiddle(Vector<String> thesaurusVector, String MergeThesaurusMessage) {
+    public String getXMLMiddle(ArrayList<String> thesaurusVector, String MergeThesaurusMessage) {
         String XMLMiddleStr = "<content_Admin_Thesaurus>";
 
         XMLMiddleStr += "<CurrentShownDIV>" + "CreateThesaurus_DIV" + "</CurrentShownDIV>";
@@ -228,19 +226,19 @@ public class MergeThesauri extends ApplicationBasicServlet {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + resultObj.getValue());
 
         StringObject result = new StringObject("");
         UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
-
-        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup);
+        String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+        wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, context, SessionUserInfo.name, SessionUserInfo.password, initiallySelectedThesaurus, SessionUserInfo.userGroup, targetLang);
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + DBbackupFileNameCreated.getValue());
 
-        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, SessionUserInfo.UILang);
         thesauriNames.remove(mergedThesaurusName);
 
         if (restored) {
@@ -260,10 +258,10 @@ public class MergeThesauri extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Did not manage to restore : " + DBbackupFileNameCreated.getValue());
         }
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null) + resultObj.getValue()));
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/abortActionsMergeThesauri/MergeFailure", null, SessionUserInfo.UILang) + resultObj.getValue()));
         
         //xml.append(getXMLMiddle(thesauriNames, "Merge of thesauri failure. " + resultObj.getValue()));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -286,9 +284,9 @@ public class MergeThesauri extends ApplicationBasicServlet {
 
         UsersClass wtmsUsers = new UsersClass();
         StringBuffer xml = new StringBuffer();
-        Vector<String> thesauriNames = new Vector<String>();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
 
         UserInfoClass refSessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
@@ -303,8 +301,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
         Q.TEST_end_transaction();
         dbGen.CloseDBConnection(Q, TA, sis_session, tms_session, true);
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
-        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies, allGuideTerms, targetLocale));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));
+        xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies, allGuideTerms, targetLocale));
         xml.append("<mergewarnings>");
         xml.append(mergeNotes);
         xml.append("</mergewarnings>");
@@ -312,7 +310,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
         xml.append(Filename);
         xml.append("</mergeReportFile>");
         
-        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/commitActionsMergeThesauri/MergeSucceeded", new String[]{mergedThesaurusName})));        
+        xml.append(getXMLMiddle(thesauriNames, u.translateFromMessagesXML("root/commitActionsMergeThesauri/MergeSucceeded", new String[]{mergedThesaurusName}, SessionUserInfo.UILang)));        
         //xml.append(getXMLMiddle(thesauriNames, "Thesauri merge finished successfully. New thesaurus  " + mergedThesaurusName + " was set as current thesaurus."));
         xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());

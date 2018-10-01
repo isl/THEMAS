@@ -33,34 +33,166 @@
  This file is part of the THEMAS system.
 -->
 <TMS_DB_ADMIN_COFIGURATIONS>
+    <!--<Neo4j_DB_FOLDER_PATH>/home/tzortzak/Projects/THEMAS_NEO4J_Database</Neo4j_DB_FOLDER_PATH>
+    
+    <Neo4j_DB_PATH>/Database</Neo4j_DB_PATH>
+    <Neo4j_DB_Backups_SubPATH>/Backups/db_backups</Neo4j_DB_Backups_SubPATH>
+    <Neo4j_XML_Backups_SubPATH>/Backups/xml_backups</Neo4j_XML_Backups_SubPATH>
+    <Neo4j_ExportFileDirectory>/TSVs/</Neo4j_ExportFileDirectory>
+    <Neo4j_GenericTSVFile>/TSVs/System/Generic.tsv</Neo4j_GenericTSVFile>
+    <Neo4j_SpecificTSVFile>/TSVs/System/Specific_el.tsv</Neo4j_SpecificTSVFile>
+      
+    <PrimaryLanguage>Greek</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
+    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
+    
+    -->
+    
     <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS_DB_Folder</Neo4j_DB_FOLDER_PATH>
+    
     <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
-      
+    <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
+     
+<!--   
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
-    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_el.tsv</Neo4j_SpecificTSVFile>
+    <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
+    <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>    
+-->
+          
+    <PrimaryLanguage>English</PrimaryLanguage><!-- no spaces-->
+    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix><!-- 2 letter code preferrably -->
+    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName> <!-- Proposed Format UPPERCASE -->
+    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName> <!-- Proposed Format: Capitalize first letter --> 
+    
 
-     <!-- 
-    <PrimaryLanguage>English</PrimaryLanguage>
-    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
-    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    <Neo4j_SpecificTSVFile>\TSVs\System\Specific_en.tsv</Neo4j_SpecificTSVFile>
-	-->
-
+    <SupportedUILangCodes>
+        <!-- mapcode should exist as lang code in the XML files contained in translations folder -->
+        <!-- text of langcode refers to the acceptable language parameter that will be mapped to mapcode -->
+        <!-- for greek both el and gr language parameters lead to el lang code that is used in the XML files of translations folder-->
+        <!-- display attribute determines whether this will be shown to the available language options of user -->
+        <langcode mapcode="en" display="yes" displayText="English (en)">en</langcode>
+        <langcode mapcode="el" display="no" displayText="Ελληνικά (gr)">gr</langcode>
+        <langcode mapcode="el" display="yes"  displayText="Ελληνικά (el)">el</langcode>        
+    </SupportedUILangCodes>
+    
     <BehaviorConfigs>
+        <XMLImport_Resolve_NodeLabels_DeclaredAsTerms>false</XMLImport_Resolve_NodeLabels_DeclaredAsTerms>
         <AtRenameStoreOldNameAsUf>true</AtRenameStoreOldNameAsUf>  
+        <Transliterations toLowerCase="true">
+            <!-- source https://el.wikipedia.org/wiki/%CE%A0%CE%BF%CE%BB%CF%85%CF%84%CE%BF%CE%BD%CE%B9%CE%BA%CE%AE_%CE%B3%CF%81%CE%B1%CF%86%CE%AE_%CF%84%CE%B7%CF%82_%CE%B5%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CE%AE%CF%82_%CE%B3%CE%BB%CF%8E%CF%83%CF%83%CE%B1%CF%82 -->
+            <!-- Tested with the folowing string
+            äàáâãåæœç¢ëèéêìíîïñöôòóøõýÿüùûúάἀἁἂἃἄἅἆἇὰάᾀᾁᾂᾃᾄᾅᾆᾇᾰᾱᾲᾳᾴᾶᾷέἐἑἒἓἔἕὲέήἠἡἢἣἤἥἦἧὴήᾐᾑᾒᾓᾔᾕᾖᾗῂῃῄῆῇϊΐίἰἱἲἳἴἵἶἷὶίῐῑῒΐῖῗόὀὁὂὃὄὅὸόϋΰύὐὑὒὓὔὕὖὗὺύῠῡῢΰῦῧῤῥώὠὡὢὣὤὥὦὧὼώᾠᾡᾢᾣᾤᾥᾦᾧῲῳῴῶῷß
+            -->
+
+            <ReplacementGroup>
+                <Source delimeterChar=";">æ</Source>
+                <Replacement>ae</Replacement>
+            </ReplacementGroup> 
+            <ReplacementGroup>
+                <Source delimeterChar=";">œ</Source>
+                <Replacement>ce</Replacement>
+            </ReplacementGroup> 
+            <ReplacementGroup>
+                <Source delimeterChar=";">¢</Source>
+                <Replacement>c</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ø</Source>
+                <Replacement>o</Replacement>
+            </ReplacementGroup>   
+            <ReplacementGroup>
+                <Source delimeterChar=";">ß</Source>
+                <Replacement>ss</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">·,</Source>
+                <Replacement> </Replacement>
+            </ReplacementGroup>
+            <!-- THIS SHOULD ALSO BE PROVIDED AS A FIX DB OPERATION 
+            <ReplacementGroup>
+                <Source delimeterChar=";">ç;¢</Source>
+                <Replacement>c</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ä;à;á;â;ã;å</Source>
+                <Replacement>a</Replacement>
+            </ReplacementGroup>
+            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ë;è;é;ê</Source>
+                <Replacement>e</Replacement>
+            </ReplacementGroup>
+            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ì;í;î;ï</Source>
+                <Replacement>i</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ñ</Source>
+                <Replacement>n</Replacement>
+            </ReplacementGroup>            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ö;ô;ò;ó;ø;õ</Source>
+                <Replacement>o</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ý;ÿ</Source>
+                <Replacement>y</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ü;ù;û;ú</Source>
+                <Replacement>u</Replacement>
+            </ReplacementGroup>            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ß</Source>
+                <Replacement>ss</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ά;ἀ;ἁ;ἂ;ἃ;ἄ;ἅ;ἆ;ἇ;ὰ;ά;ᾀ;ᾁ;ᾂ;ᾃ;ᾄ;ᾅ;ᾆ;ᾇ;ᾰ;ᾱ;ᾲ;ᾳ;ᾴ;ᾶ;ᾷ</Source>
+                <Replacement>α</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">έ;ἐ;ἑ;ἒ;ἓ;ἔ;ἕ;ὲ;έ;</Source>
+                <Replacement>ε</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ή;ἠ;ἡ;ἢ;ἣ;ἤ;ἥ;ἦ;ἧ;ὴ;ή;ᾐ;ᾑ;ᾒ;ᾓ;ᾔ;ᾕ;ᾖ;ᾗ;ῂ;ῃ;ῄ;;ῆ;ῇ</Source>
+                <Replacement>η</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ϊ;ΐ;ί;ἰ;ἱ;ἲ;ἳ;ἴ;ἵ;ἶ;ἷ;ὶ;ί;ῐ;ῑ;ῒ;ΐ;ῖ;ῗ</Source>
+                <Replacement>ι</Replacement>
+            </ReplacementGroup>            
+            <ReplacementGroup>
+                <Source delimeterChar=";">ό;ὀ;ὁ;ὂ;ὃ;ὄ;ὅ;ὸ;ό</Source>
+                <Replacement>ο</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ϋ;ΰ;ύ;ὐ;ὑ;ὒ;ὓ;ὔ;ὕ;ὖ;ὗ;ὺ;ύ;ῠ;ῡ;ῢ;ΰ;ῦ;ῧ</Source>
+                <Replacement>υ</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ῤ;ῥ</Source>
+                <Replacement>ρ</Replacement>
+            </ReplacementGroup>
+            <ReplacementGroup>
+                <Source delimeterChar=";">ώ;ὠ;ὡ;ὢ;ὣ;ὤ;ὥ;ὦ;ὧ;ὼ;ώ;ᾠ;ᾡ;ᾢ;ᾣ;ᾤ;ᾥ;ᾦ;ᾧ;ῲ;ῳ;ῴ;ῶ;ῷ</Source>
+                <Replacement>ω</Replacement>
+            </ReplacementGroup>-->
+            <!--<ReplacementGroup>
+                <Source delimeterChar=";">ς</Source>
+                <Replacement>σ</Replacement>
+            </ReplacementGroup>--> 
+                    
+        </Transliterations>
     </BehaviorConfigs>
     
     <CreatorInAlphabeticalTerm>
-    <!-- If <DisplayCreator>true</DisplayCreator> add the following line in labels.xml -->
-    <!--
-        <message id="CREATED_BY" name_el="Δημ/ός" name_en="Creator" legend_descr_el="Δημιουργός του Όρου" legend_descr_en="Creator of Term" order="20"/> 
-    -->
         <DisplayCreator>false</DisplayCreator>  
     </CreatorInAlphabeticalTerm>
     
@@ -128,6 +260,7 @@
             <!--<ClassName>Servlets.SearchResults_Users</ClassName>-->
             <ClassName>Servlets.Statistics</ClassName>
             <ClassName>Servlets.SystemIsUnderMaintenance</ClassName>
+            <ClassName>Servlets.Thesaurus_ReferenceId_Info</ClassName>
             <!--<ClassName>Servlets.UndoRenameResults</ClassName>-->
             <ClassName>Servlets.WaitForDownload</ClassName>
         </ReaderPermittedServlets>        

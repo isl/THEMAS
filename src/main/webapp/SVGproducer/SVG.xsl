@@ -70,10 +70,9 @@
                     <xsl:value-of select="//page/TargetNameWithoutPrefix"/>
                 </title>
                 <!-- css -->
-                <link rel="stylesheet" type="text/css" href="SVGproducer/SVG.css"/>
+                <link rel="stylesheet" type="text/css" href="SVGproducer/SVG.css?v=@DeploymentTimestamp@"/>
                 <script language="JavaScript">
-                    <xsl:attribute name="src">Javascript/graphicalView.js
-                    </xsl:attribute>
+                    <xsl:attribute name="src">Javascript/graphicalView.js?v=@DeploymentTimestamp@</xsl:attribute>
                 </script>
             </head>
             <body>

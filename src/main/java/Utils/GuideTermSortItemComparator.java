@@ -37,6 +37,7 @@ package Utils;
 import java.util.*;
 import java.text.Collator;
 
+//abandoned replaced by SortItemComparator(LINKCLASS_TRANSLITERATION_LOGNAME)
 public class GuideTermSortItemComparator implements Comparator{
 
 

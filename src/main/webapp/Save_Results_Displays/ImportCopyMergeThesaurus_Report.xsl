@@ -103,7 +103,7 @@
                     </tr>
                 </table>
                 <xsl:choose>
-                    <xsl:when test="count(//targetTerm)=0 ">
+                    <xsl:when test="count(//targetTerm)=0 and count(//targetHierarchy)=0 and count(//targetFacet)=0 ">
                         <table>
                             <tr>
                                 <td align="left" valign="top" colspan="5">
@@ -148,7 +148,7 @@
                                     <hr/>
                                 </td>
                             </tr>
-                            <xsl:for-each select="//targetHierarchy | //targetTerm">
+                            <xsl:for-each select="//targetFacet | //targetHierarchy | //targetTerm">
                                 <tr valign="top" onMouseOver="this.bgColor = '#F2F2F2'" onMouseOut="this.bgColor = '#FFFFFF'" bgcolor="#FFFFFF">
                                     <td>
                                         <xsl:value-of select="position()"/>
@@ -182,6 +182,9 @@
                                             </xsl:when>
                                             <xsl:when test="$relation='rt'">
                                                 <xsl:value-of select="$localespecific/rt/option[@lang=$lang]"/>
+                                            </xsl:when>
+                                            <xsl:when test="$relation='referenceId'">
+                                                <xsl:value-of select="$localespecific/referenceId/option[@lang=$lang]"/>
                                             </xsl:when>
                                             <xsl:when test="$relation='translations'">
                                                 <xsl:value-of select="$localespecific/translations/option[@lang=$lang]"/>

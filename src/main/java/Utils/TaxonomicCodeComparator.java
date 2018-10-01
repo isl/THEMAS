@@ -65,15 +65,17 @@ public class TaxonomicCodeComparator implements Comparator{
         int returnValue = 0; 
         
 
-        Collator gr_GRCollator = Collator.getInstance(currentLocale);
+        //Collator gr_GRCollator = Collator.getInstance(currentLocale);
             
         if(m1PartsDefined > n1PartsDefined){
 
             for(int k=0; k< n1PartsDefined; k++){
  
-                if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
+                if(m1.codeParts.get(k).compareTo(n1.codeParts.get(k))!=0){
+                //if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
                     
-                    returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    //returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    returnValue =  m1.codeParts.get(k).compareTo(n1.codeParts.get(k));
                     break;
                 }
             }
@@ -87,9 +89,11 @@ public class TaxonomicCodeComparator implements Comparator{
 
             for(int k=0; k< m1PartsDefined; k++){
 
-                if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
+                //if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
+                if(m1.codeParts.get(k).compareTo(n1.codeParts.get(k))!=0){
                  
-                    returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    //returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    returnValue =  m1.codeParts.get(k).compareTo(n1.codeParts.get(k));
                     break;
                 }
             }
@@ -102,14 +106,26 @@ public class TaxonomicCodeComparator implements Comparator{
 
             for(int k=0; k< m1PartsDefined; k++){
 
-                if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
+                //if(gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k)) != 0){
+                if(m1.codeParts.get(k).compareTo(n1.codeParts.get(k))!=0){
                  
-                    returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    //returnValue =  gr_GRCollator.compare(m1.codeParts.get(k), n1.codeParts.get(k));
+                    returnValue =  m1.codeParts.get(k).compareTo(n1.codeParts.get(k));
                     break;
                 }
             }
             
             if(returnValue ==0) {
+                String m1Translit = m1.nodeNameTransliteration;
+                String n1Translit = n1.nodeNameTransliteration;
+                if(m1Translit!=null && n1Translit!=null){
+                    m1Translit = m1Translit.replaceAll(" ", "_");
+                    n1Translit = n1Translit.replaceAll(" ", "_");
+                    if(m1Translit.compareTo(n1Translit)!=0){
+                        return m1Translit.compareTo(n1Translit);
+                    }
+                }
+                
                 String m1Str = m1.nodeName;
                 String n1Str = n1.nodeName;
                 // bug fix by karam: Collator method compare()
@@ -120,7 +136,8 @@ public class TaxonomicCodeComparator implements Comparator{
                 m1Str = m1Str.replaceAll(" ", "_");
                 n1Str = n1Str.replaceAll(" ", "_");                        
                 
-                returnValue = gr_GRCollator.compare(m1Str, n1Str);
+                //returnValue = gr_GRCollator.compare(m1Str, n1Str);
+                returnValue = m1Str.compareTo(n1Str);
                 //returnValue = gr_GRCollator.compare(m1.nodeName, n1.nodeName);
             }
         }

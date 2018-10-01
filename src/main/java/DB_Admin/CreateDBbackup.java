@@ -101,7 +101,7 @@ public class CreateDBbackup extends ApplicationBasicServlet {
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
             
-            Hashtable params = u.getFormParams(request);
+            HashMap params = u.getFormParams(request);
             backupDescription = params.get("Create_DB_backup_Description_NAME").toString();
 
             // create the configuration class
@@ -112,10 +112,10 @@ public class CreateDBbackup extends ApplicationBasicServlet {
             // do the creation of the backup
             CreateDBbackupResultMessage = new StringObject("");
             StringObject DBbackupFileNameCreated = new StringObject("");
-            CreateDBbackupSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated);
+            CreateDBbackupSucceded = common_utils.CreateDBbackup(backupDescription, CreateDBbackupResultMessage, DBbackupFileNameCreated, SessionUserInfo.UILang);
 
             // write the XML results
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));
             //xml.append(u.getDBAdminHierarchiesAndStatusesXML(allHierarcies, dbGen));  
             xml.append(getXMLMiddle());
             xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -145,7 +145,7 @@ public class CreateDBbackup extends ApplicationBasicServlet {
         // in case there are other active sessions => write their number to XML, 
         // so as to warn user for their existence
         // GetListOfDBbackups
-        Vector<String> filesInDBBackupFolder = new Vector<String>();
+        ArrayList<String> filesInDBBackupFolder = new ArrayList<String>();
         filesInDBBackupFolder = common_utils.GetListOfDBbackups();
         int filesInDBBackupFolderCount = filesInDBBackupFolder.size();
         XMLMiddleStr += "<filesInDBBackupFolder>";

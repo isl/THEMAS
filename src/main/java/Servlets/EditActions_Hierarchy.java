@@ -47,9 +47,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -98,7 +98,6 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
             Locale targetLocale = new Locale(language, country);
-            String pathToMessagesXML = getServletContext().getRealPath("/translations/Messages.xml");
             String targetHierarchy  = u.getDecodedParameterValue(request.getParameter("targetHierarchy"));           
             String targetField = u .getDecodedParameterValue(request.getParameter("targetEditField"));
             String NewtargetField = targetField;
@@ -114,7 +113,7 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             
             String[] values = request.getParameterValues(NewtargetField);
             //values are always read in decodedValues vector from values[] --> if hierarchy_create then values[] are filled with facets  
-            Vector<String> decodedValues = new Vector<String>();
+            ArrayList<String> decodedValues = new ArrayList<String>();
             if(values!=null){
                 for(int i=0; i< values.length ;i++){
                     String temp =u.getDecodedParameterValue(values[i]);
@@ -157,7 +156,7 @@ public class EditActions_Hierarchy extends ApplicationBasicServlet {
             else if(targetField.compareTo(DBCreate_Modify_Hierarchy.hierarchy_delete_kwd)==0){
                 //creation_modificationOfHierarchy.Create_Or_ModifyHierarchy(session, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  decodedValues,"modify", "delete",SessionUserInfo.name, targetLocale,  errorMsg,true);                
                 // replaced by karam with new method: DeleteHierarchy()
-                creation_modificationOfHierarchy.DeleteHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  errorMsg);
+                creation_modificationOfHierarchy.DeleteHierarchy(SessionUserInfo, Q, TA,  sis_session,  tms_session,  dbGen,  targetHierarchy,  errorMsg);                
             }
             
             //check result of transaction. Prepend with Success or Failure any message returned and write it to PrintWriter out for ajax handling

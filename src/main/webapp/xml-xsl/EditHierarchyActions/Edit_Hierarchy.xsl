@@ -170,9 +170,10 @@
 					</td>
 				</tr>
 				<tr valign="top">
-					<td bgcolor="#F2F2F2" align="center" width="45%">
+					<td bgcolor="#F2F2F2" align="center" colspan="3">
                                             <xsl:value-of select="$specificlocale/create/selectedfacets/option[@lang=$lang]"/>
 					</td>
+                                        <!--
 					<td rowspan="2" width="10%" valign="middle" align="center">
 						<input type="button" onclick="copyOption('edit_Avail_Hier_FacetID','edit_Sel_Hier_FacetID');">
                                                     <xsl:attribute name="value">
@@ -189,12 +190,43 @@
 					</td>
 					<td bgcolor="#F2F2F2" align="center" width="45%">
                                             <xsl:value-of select="$specificlocale/create/existingfacets/option[@lang=$lang]"/>
-					</td>
+					</td>-->
 				</tr>
-				<tr valign="top">
+                                <tr valign="top">
+                                    <td colspan="3"  class="chosenContainerClass">
+                                        <select id="edit_Sel_Hier_FacetID" name="facets" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                                <!--<xsl:for-each select="//current/term/bt/name">
+                                                    <xsl:sort select="."/> leave sorting as it was
+                                                    <option selected="selected">
+                                                        <xsl:attribute name="value">
+                                                            <xsl:value-of select="."/>
+                                                        </xsl:attribute>
+                                                        <xsl:value-of select="."/>
+                                                    </option>
+                                                </xsl:for-each>-->
+                                                 <xsl:for-each select="//availableFacets/name">
+                                                    <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                                    <option>
+                                                        <xsl:if test="./@selected='yes'">
+                                                            <xsl:attribute name="selected">
+                                                                <xsl:text>selected</xsl:text>
+                                                            </xsl:attribute>
+                                                        </xsl:if>
+                                                        <xsl:attribute name="value">
+                                                            <xsl:value-of select="."/>
+                                                        </xsl:attribute>
+                                                        <xsl:value-of select="."/>
+                                                    </option>
+                                                </xsl:for-each>
+                                        </select>
+                                    </td>
+                                </tr>
+                                
+				<!--<tr valign="top">
+                                    
 					<td>
 						<select id="edit_Sel_Hier_FacetID" onmouseover="refreshCreateNew();" onchange="refreshCreateNew();" onmouseout="refreshCreateNew();" onfocus="refreshCreateNew();" onblur="refreshCreateNew();" name="facets" size="10" style="width:100%;" ondblclick="copyOption('edit_Sel_Hier_FacetID','edit_Avail_Hier_FacetID');">
-							<!--ondblclick="copyOption(edit_Avail_Hier_FacetID,edit_Sel_Hier_FacetID);"    >-->
+							
 							<xsl:for-each select="//current/hierarchy/facet/name">
 								<xsl:sort select="."/>
 								<option>
@@ -215,12 +247,12 @@
 							</xsl:for-each>
 						</select>
 					</td>
-				</tr>
+				</tr>-->
 			</table>
-                        <input type="text" name="targetHierarchy" style="visibility:hidden;">
+                        <input type="text" name="targetHierarchy" class="hiddenInput">
                                 <xsl:attribute name="value"><xsl:value-of select="//targetHierarchy"/></xsl:attribute>
                         </input>
-                        <input type="text" name="targetEditField" style="visibility:hidden;">
+                        <input type="text" name="targetEditField" class="hiddenInput">
                                 <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
                         </input>
                         </fieldset>
@@ -323,11 +355,11 @@
                         <br/>
                         <br/>
                         <br/>
-                        <input type="text" name="targetHierarchy" style="visibility:hidden;">
+                        <input type="text" name="targetHierarchy" class="hiddenInput">
                             <xsl:attribute name="value"><xsl:value-of select="//targetHierarchy"/></xsl:attribute>
                         </input>
 
-                        <input type="text" name="targetEditField" style="visibility:hidden;">
+                        <input type="text" name="targetEditField" class="hiddenInput">
                             <xsl:attribute name="value"><xsl:value-of select="$targetEditField"/></xsl:attribute>
                         </input>
                         <!--<table>
@@ -368,10 +400,11 @@
                 <table border="0" width="100%" align="center">
                     <tr valign="top">
                         
-                        <td bgcolor="#F2F2F2" align="center" width="45%">
+                        <td bgcolor="#F2F2F2" align="center" colspan="3">
                             <xsl:value-of select="$specificlocale/editfacets/selectedfacets/option[@lang=$lang]"/>
                         </td>
 			
+                        <!--
                         <td rowspan="2" width="10%" valign="middle" align="center">
                             <input type="button" onclick="copyOption('edit_Avail_Hier_FacetID','edit_Sel_Hier_FacetID');">
                                 <xsl:attribute name="value">
@@ -389,9 +422,38 @@
                        
                        <td bgcolor="#F2F2F2" align="center" width="45%">
                            <xsl:value-of select="$specificlocale/editfacets/existingfacets/option[@lang=$lang]"/>
-                       </td>
+                       </td>-->
                     </tr>
-                    
+                    <tr valign="top">
+                        <td colspan="3"  class="chosenContainerClass">
+                            <select id="edit_Sel_Hier_FacetID" name="hierarchy_facets" multiple="true" data-placeholder="-------------" class="chosen-select">
+                                    <!--<xsl:for-each select="//current/term/bt/name">
+                                        <xsl:sort select="."/> leave sorting as it was
+                                        <option selected="selected">
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="."/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="."/>
+                                        </option>
+                                    </xsl:for-each>-->
+                                     <xsl:for-each select="//availableFacets/name">
+                                        <!-- <xsl:sort select="."/>  leave sorting as it was-->
+                                        <option>
+                                            <xsl:if test="./@selected='yes'">
+                                                <xsl:attribute name="selected">
+                                                    <xsl:text>selected</xsl:text>
+                                                </xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="."/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="."/>
+                                        </option>
+                                    </xsl:for-each>
+                            </select>
+                        </td>
+                    </tr>
+                    <!--
                     <tr valign="top">
                         <td>
                             <select id="edit_Sel_Hier_FacetID" name="hierarchy_facets" size="12" style="width:100%;" ondblclick="copyOption('edit_Sel_Hier_FacetID', 'edit_Avail_Hier_FacetID');">
@@ -419,15 +481,15 @@
                             </select>
 			</td>
                         
-                    </tr>
+                    </tr>-->
 		
                 </table>
                 
-                <input type="text" name="targetHierarchy" style="visibility:hidden;">
+                <input type="text" name="targetHierarchy" class="hiddenInput">
                     <xsl:attribute name="value"><xsl:value-of select="//targetHierarchy"/></xsl:attribute>
                 </input>
                 
-		<input type="text" name="targetEditField" style="visibility:hidden;">
+		<input type="text" name="targetEditField" class="hiddenInput">
                     <xsl:attribute name="value"><xsl:value-of select="$targetEditField"/></xsl:attribute>
 		</input>
                 
@@ -498,20 +560,15 @@
                 </table>
                                 
                 
-                <input type="text" name="targetHierarchy" style="visibility:hidden;">
+                <input type="text" name="targetHierarchy" class="hiddenInput">
                     <xsl:attribute name="value"><xsl:value-of select="//targetHierarchy"/></xsl:attribute>
                 </input>
                 
-		<input type="text" name="targetEditField" style="visibility:hidden;">
+		<input type="text" name="targetEditField" class="hiddenInput">
                     <xsl:attribute name="value"><xsl:value-of select="$targetEditField"/></xsl:attribute>
 		</input>
           </fieldset>
           <table width="100%">
-                <tr>
-                    <td>
-                        <br/>
-                    </td>
-                </tr>
                 
                 <tr>
                     <td id="resultOf_Edit">
@@ -524,7 +581,7 @@
                     <td valign="bottom" align="right">
                         <input type="button" class="button" onclick="getDeleteResult('EditActions_Hierarchy','edit_hierarchy_delete', '','')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                                <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
                             </xsl:attribute>
                         </input>
                         &#160;

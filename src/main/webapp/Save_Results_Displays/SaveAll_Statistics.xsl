@@ -393,7 +393,7 @@
                 <xsl:value-of select="//selectedThesaurus"/>
             </legend>
             <br/>
-            <!-- Συνολικός αριθμός μικροθησαυρών -->
+            <!-- Total Facets Number -->
             <table>
                 <tr>
                     <td>
@@ -403,7 +403,7 @@
                 </tr>
             </table>
             <br/>
-            <!-- Αριθμός ιεραρχιών, όρων και Μεταφράσεων ανά μικροθησαυρό -->
+            <!-- Number of Hierarchies, Terms and translations per Facet -->
             <fieldset>
                 <legend>
                     <xsl:value-of select="$localespecific/subfieldlegend/option[@lang=$lang]"/>

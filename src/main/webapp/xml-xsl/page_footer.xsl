@@ -47,7 +47,8 @@
                 </td>
             </tr>
             <tr valign="middle" style="height:26px;" >
-                <td  width="316" valign="middle" style="height:12px; color:#898a5e; font-size:9px; text-align:left; padding-left:5px; padding-right:5px;">
+                <!--  border:2px solid #999999; -->
+                <td  width="200" valign="middle" style="height:12px; color:#898a5e; font-size:9px; text-align:left; padding-left:5px; padding-right:5px;">
                         <xsl:choose>
                             <xsl:when test="//THEMASUserInfo/name">
                                  <i>
@@ -60,11 +61,13 @@
                                                     
                                             </xsl:when>
                                             <xsl:otherwise>
+                                                
+                                                <xsl:value-of select="$locale/footer/userprefix/option[@lang=$lang]"/>
                                                     <a href="#" style="color:#898a5e; text-decoration:underline;" title="Αλλαγή κωδικού">
                                                             <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('','change_password','EditDisplays_User');</xsl:text></xsl:attribute>
                                                             <xsl:value-of select="//THEMASUserInfo/name"/>
                                                     </a>
-                                                    <xsl:text>, </xsl:text>
+                                                    <br/>
                                             </xsl:otherwise>
                                     </xsl:choose>					
                                    <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
@@ -77,10 +80,64 @@
                         </xsl:choose>
                         
                 </td>
-                <td width="380"  valign="middle" style="color:#898B5E; font-size:10px; text-align:center; padding-left:5px; padding-right:5px;">
-                    <xsl:value-of disable-output-escaping="yes" select="$locale/footer/owner/option[@lang=$lang]"/>
+                <!-- border:2px solid #999999; -->
+                <td width="612"  valign="middle" style="color:#898B5E; font-size:10px; text-align:center; padding-left:5px; padding-right:5px;  ">
+                    <u>
+                            <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
+                                <xsl:attribute name="href">
+                                    <xsl:value-of select="$locale/footer/usagetermsurl/option[@lang=$lang]"/>
+                                </xsl:attribute>                                
+                                <xsl:value-of select="$locale/footer/usageterms/option[@lang=$lang]"/>
+                            </a>
+                        </u>
+                    
+                    <xsl:text> | </xsl:text>
+                    <u>
+                        <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
+                            <xsl:attribute name="href">
+                                <xsl:value-of select="$locale/footer/privacypolicyurl/option[@lang=$lang]"/>
+                            </xsl:attribute>                                
+                            <xsl:value-of select="$locale/footer/privacypolicy/option[@lang=$lang]"/>
+                        </a>
+                    </u>                        
+                    
+                    <xsl:text> | </xsl:text>
+                    
+                    <xsl:text>© 2015</xsl:text><span id="untilYear"> - 2018 </span><script language="javascript" type="text/javascript"> var d = new Date(); document.getElementById("demo").innerHTML = ('- ' + d.getFullYear()+' ');</script>
+                    <u>
+                            <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
+                                <xsl:attribute name="href">
+                                    <xsl:value-of select="$locale/footer/tooltiphref/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="onmouseover"><!-- dark yellow of left menu = #e8e9be light yellow #feffd9 body grey = #eaead9-->
+                                    <xsl:text>javascript:this.T_ABOVE = false;this.T_OFFSETY='20';this.T_BGCOLOR='#FFFFFF';this.T_FONTSIZE='8pt';this.T_FONTFACE='verdana';</xsl:text>
+                                    <xsl:text>return escape('&lt;b&gt;</xsl:text>
+                                    <xsl:value-of select="$locale/footer/tooltipappnameandversion/option[@lang=$lang]"/>
+                                    <xsl:text> </xsl:text>
+                                    <xsl:value-of select="$locale/version/option[@lang=$lang]"/>
+                                    <xsl:text> &lt;br/&gt;Copyright </xsl:text>
+                                    <xsl:value-of select="$locale/footer/tooltipcreator/option[@lang=$lang]"/>
+                                    <xsl:text>.&lt;/b&gt;');</xsl:text>
+                                    <!--<xsl:text>. All rights reserved.&lt;/b&gt;');</xsl:text>-->
+                                </xsl:attribute>
+                                <xsl:value-of select="$locale/footer/creator/option[@lang=$lang]"/>
+                            </a>
+                        </u>
+                    <xsl:text> | </xsl:text>
+                    
+                    <xsl:value-of disable-output-escaping="yes" select="$locale/footer/licencePrefixText/option[@lang=$lang]"/>
+                    <u>
+                        <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
+                            <xsl:attribute name="href">
+                                <xsl:value-of select="$locale/footer/licenceHrefUrl/option[@lang=$lang]"/>
+                            </xsl:attribute>                                
+                            <xsl:value-of select="$locale/footer/licenceHrefText/option[@lang=$lang]"/>
+                        </a>
+                    </u>
+                    
                 </td>
-                <td  width="316" valign="middle"  style="color:#898a5e; font-size:9px; text-align:right; padding-left:5px; padding-right:5px;">
+                <!--  border:2px solid #999999; -->
+                <td  width="200" valign="middle"  style="color:#898a5e; font-size:9px; text-align:right; padding-left:5px; padding-right:5px;">
                     <!--<b>target="_blank" href="http://www.ics.forth.gr/isl/cci-gr.html"-->
                     <i>
                         <xsl:choose>
@@ -91,40 +148,19 @@
                                     </xsl:attribute>
                                     <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/>
                                 </a>
-                                <a style="color:#898B5E;">
+                                <!--<a style="color:#898B5E;">
                                     <xsl:text> © 2015 </xsl:text>
-                                </a>
+                                </a>-->
                             </xsl:when>
                             <xsl:otherwise>
                                 <a style="color:#898B5E;">
-                                    <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/><xsl:text> © 2015 </xsl:text>
+                                    <xsl:value-of select="$locale/footer/appname/option[@lang=$lang]"/>
                                 </a>
                             </xsl:otherwise>
                         </xsl:choose>                        
                     </i>
-                    <i>
-                        <u>
-                            <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
-                                <xsl:attribute name="href">
-                                    <xsl:value-of select="$locale/footer/tooltiphref/option[@lang=$lang]"/>
-                                </xsl:attribute>
-                                <xsl:attribute name="onmouseover"><!-- dark yellow of left menu = #e8e9be light yellow #feffd9 body grey = #eaead9-->
-                                    <xsl:text>javascript:this.T_ABOVE = false;this.T_OFFSETY='20';this.T_BGCOLOR='#FFFFFF';this.T_FONTSIZE='8pt';this.T_FONTFACE='verdana';</xsl:text>
-                                    <xsl:text>return escape('&lt;b&gt;</xsl:text>
-                                    <xsl:value-of select="$locale/footer/tooltipappnameandversion/option[@lang=$lang]"/>
-                                    <xsl:text> &lt;br/&gt;Copyright </xsl:text>
-                                    <xsl:value-of select="$locale/footer/tooltipcreator/option[@lang=$lang]"/>
-                                    <xsl:text>.&lt;/b&gt;');</xsl:text>
-                                    <!--<xsl:text>. All rights reserved.&lt;/b&gt;');</xsl:text>-->
-                                </xsl:attribute>
-                                <xsl:value-of select="$locale/footer/creator/option[@lang=$lang]"/>
-                            </a>
-                        </u>
-                    </i>
-                    <i>
-                    </i>
                     
-                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js"></script>
+                    <script language="JavaScript" type="text/javascript" src="third-party-javascript/wztooltip/wz_tooltip.js?v=@DeploymentTimestamp@"></script>
                     <!--</b>-->
                 </td>
             </tr>

@@ -36,8 +36,8 @@ package Utils;
 
 
 import Utils.SortItem;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 /**
  *
  * @author tzortzak
@@ -48,24 +48,24 @@ public class NodeInfoSortItemContainer {
     public static final String CONTAINER_TYPE_SOURCE = "SOURCE";
     public static final String CONTAINER_TYPE_UF = "USEDFORTERM";
     public String containerType;
-    public Hashtable<String,Vector<SortItem>> descriptorInfo = null;
+    public HashMap<String,ArrayList<SortItem>> descriptorInfo = null;
     
     public NodeInfoSortItemContainer(String type, String[] output){
        
         containerType = new String(type);
         if(type.compareTo(CONTAINER_TYPE_TERM)==0 ||type.compareTo(CONTAINER_TYPE_SOURCE)==0){
             
-            descriptorInfo = new Hashtable<String,Vector<SortItem>>();
+            descriptorInfo = new HashMap<String,ArrayList<SortItem>>();
             for(int i=0; i< output.length ; i++){
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 descriptorInfo.put(output[i], values);               
             }
         }
         else if(type.compareTo(CONTAINER_TYPE_UF)==0 ){
-            descriptorInfo = new Hashtable<String,Vector<SortItem>>();
-            Vector<SortItem> idsvalues = new Vector<SortItem>();
-            Vector<SortItem> usevalues = new Vector<SortItem>();
-            descriptorInfo.put("id", idsvalues);       
+            descriptorInfo = new HashMap<String,ArrayList<SortItem>>();
+            ArrayList<SortItem> idsvalues = new ArrayList<SortItem>();
+            ArrayList<SortItem> usevalues = new ArrayList<SortItem>();
+            descriptorInfo.put(ConstantParameters.id_kwd, idsvalues);       
             descriptorInfo.put("use", usevalues);       
             
         }

@@ -81,26 +81,39 @@
                                             <strong>#</strong>
                                     </td>
                             </xsl:if>-->
+                            
                             <xsl:for-each select="//results/user[1]/node()">
-                                <td height="5">
-                                    <strong>
-                                        <xsl:choose>
-                                            <xsl:when test="name() = 'name' ">
-                                                <xsl:value-of select="$userslocale/tableresults/columns/username/option[@lang=$lang]"/>
-                                            </xsl:when>
-                                            <!--<xsl:when test="name() = 'DBname' ">Όνομα βάσης χρήστη</xsl:when>-->
-                                            <xsl:when test="name() = 'thesaurusSet' ">
+                                <xsl:choose>
+                                    <xsl:when test="name() = 'thesaurusSet'">
+                                        <td height="5" style="width:30%;">                                            
+                                            <strong>
                                                 <xsl:value-of select="$userslocale/tableresults/columns/userproperties/option[@lang=$lang]"/>
-                                            </xsl:when>
-                                            <xsl:when test="name() = 'description' ">
-                                                <xsl:value-of select="$userslocale/tableresults/columns/userdescription/option[@lang=$lang]"/>
-                                            </xsl:when>
-                                            <xsl:otherwise>
-                                                <xsl:value-of select="name()"/>
-                                            </xsl:otherwise>
-                                        </xsl:choose>
-                                    </strong>
-                                </td>
+                                            </strong>
+                                        </td>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <td height="5">
+                                            <strong>
+                                                <xsl:choose>
+                                                    <xsl:when test="name() = 'name' ">
+                                                        <xsl:value-of select="$userslocale/tableresults/columns/username/option[@lang=$lang]"/>
+                                                    </xsl:when>
+                                                    <!--<xsl:when test="name() = 'DBname' ">Όνομα βάσης χρήστη</xsl:when>
+                                                    <xsl:when test="name() = 'thesaurusSet' ">
+                                                        <xsl:value-of select="$userslocale/tableresults/columns/userproperties/option[@lang=$lang]"/>
+                                                    </xsl:when>-->
+                                                    <xsl:when test="name() = 'description' ">
+                                                        <xsl:value-of select="$userslocale/tableresults/columns/userdescription/option[@lang=$lang]"/>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:value-of select="name()"/>
+                                                    </xsl:otherwise>
+                                                </xsl:choose>
+                                            </strong>
+                                        </td>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                                
                             </xsl:for-each>
                             <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
                                 <td>
@@ -186,10 +199,16 @@
                                                             <xsl:sort select="."/>
                                                             <xsl:variable name="groupVar" select="./@group"/>
                                                             <a>
-                                                                <xsl:value-of select="."/>
+                                                                <xsl:choose>
+                                                                    <xsl:when test="./text()='*'">
+                                                                        <xsl:value-of select="$userslocale/tableresults/columns/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                                    </xsl:when>
+                                                                    <xsl:otherwise>
+                                                                        <xsl:value-of select="."/>
+                                                                    </xsl:otherwise>
+                                                                </xsl:choose>                                                                
                                                                 <xsl:if test=". != '' "> - </xsl:if>
-                                                                <xsl:value-of select="$locale/usergroups/node()[name()=$groupVar]/option[@lang=$lang]"/>
-                                                                                                                                
+                                                                <xsl:value-of select="$locale/usergroups/node()[name()=$groupVar]/option[@lang=$lang]"/>                                                                                                                                
                                                             </a>
                                                             <xsl:choose>
                                                                 <xsl:when test="position()!= $howmanyFields">

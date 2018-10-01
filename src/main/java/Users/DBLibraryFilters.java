@@ -99,7 +99,7 @@ public class DBLibraryFilters {
         //StringObject label = new StringObject();
         //CMValue cmv = new CMValue();
         boolean termIsEditable = false;
-        Vector<Return_Link_Row> retVals = new Vector<Return_Link_Row>();
+        ArrayList<Return_Link_Row> retVals = new ArrayList<>();
         if(Q.bulk_return_link(linkSet, retVals)!=QClass.APIFail){
             for(Return_Link_Row row:retVals){
                 if (userLogicalName.getValue().equals(row.get_v3_cmv().getString())) {

@@ -52,9 +52,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -130,7 +130,7 @@ public class FixAdminData extends ApplicationBasicServlet {
             String time = Utilities.GetNow();
             StringObject Save_Results_file_name = new StringObject("functionality_not_supported_" + time);
             StringObject XSL_fileNameObject = new StringObject("ERROR### XSL Not Determined");
-            Vector<String> thesaurusVector = new Vector<String>();
+            ArrayList<String> thesaurusVector = new ArrayList<String>();
             
             //open sis connection
             Q.TEST_create_SIS_CS_Session(Utils.StaticClass.getDBService()/*Parameters.server_host, Integer.parseInt(Parameters.server_port),Parameters.db_username, Parameters.db_password*/);
@@ -145,7 +145,8 @@ public class FixAdminData extends ApplicationBasicServlet {
             dbGen.GetExistingThesaurus(true, thesaurusVector, Q, sis_session);
             if(thesaurusVector.contains(selectedThesaurus)){
                 UsersClass wtmsUsers = new UsersClass();
-                wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, getServletContext(), SessionUserInfo.name, SessionUserInfo.password, selectedThesaurus, SessionUserInfo.userGroup);
+                String targetLang = (SessionUserInfo ==null || SessionUserInfo.UILang==null) ? Parameters.UILang : SessionUserInfo.UILang;
+                wtmsUsers.SetSessionAttributeSessionUser(sessionInstance, getServletContext(), SessionUserInfo.name, SessionUserInfo.password, selectedThesaurus, SessionUserInfo.userGroup, targetLang);
                 SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             }
             else{

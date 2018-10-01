@@ -32,6 +32,32 @@
  * This file is part of the THEMAS system.
  */
 
+
+
+//chosen configuration
+var config = {
+    '.chosen-select': {width: '100%', search_contains: true, allow_single_deselect: true},
+    '.chosen-select-deselect': {allow_single_deselect: true},
+    '.chosen-select-no-single': {disable_search_threshold: 10},
+    '.chosen-select-no-results': {no_results_text: 'Oops, nothing found!'},
+    '.chosen-select-rtl': {rtl: true},
+    '.chosen-select-width': {width: '95%'}
+}
+
+function updateSelectDropDowns(){
+    /*
+    $('select').select2(
+            {
+                language: UILanguage
+            }
+        );
+    */    
+    //applying chosen configuration
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+}
+
 /* used in order to copy the selected option from an html select field (sourceSel) to 
  * another html select field (destSel). Finally the selected option (if any) is deleted 
  * from sourceSel using remove option function.
@@ -309,6 +335,45 @@ var charPriorities = new Array(0,10,10,20,20,30,30,40,40,50,50,60,60,70,70,80,80
         }
    }
    
+   function addNewValueInChosen(destSel_id, inputID){
+       var targetInput = document.getElementById(inputID);
+       var destSel = document.getElementById(destSel_id);
+       
+       
+      if (destSel.length == 0) {
+           
+           //Create First Option To Destination select Element
+           
+           destSel.options.add(new Option(targetInput.value, targetInput.value, false,true));
+           //destSel.selectedIndex = 0;
+           
+       }
+       else{
+           var i=0;
+           
+           for(i=0; i< destSel.length; i++){
+               
+               if(destSel.options[i].value == targetInput.value){
+                   alert(translate(34));
+                   //alert('Η τιμή αυτή έχει ήδη επιλεχθεί.')
+                   return;
+               }
+           }
+           //Create First Option To Destination select Element
+           destSel.options.add(new Option(targetInput.value, targetInput.value , false,true));
+           //destSel.selectedIndex = 0;
+                      
+       } 
+       targetInput.value='';
+       if(document.getElementById('DisplayCardArea').style.visibility == 'visible'){
+            document.getElementById('DisplayCardArea').style.visibility = 'hidden';
+            document.getElementById('DisplayCardArea').style.visibility = 'visible';
+        }
+      
+      $("#"+destSel_id).trigger("chosen:updated");
+       
+   }
+   
    function addNewValue(destSel_id, inputID){
        var targetInput = document.getElementById(inputID);
        var destSel = document.getElementById(destSel_id);
@@ -319,8 +384,6 @@ var charPriorities = new Array(0,10,10,20,20,30,30,40,40,50,50,60,60,70,70,80,80
            var newOpt1 = new Option(targetInput.value, targetInput.value);
            destSel.options[0] = newOpt1;
            destSel.selectedIndex = 0;
-           
-           
            
        }
        else{

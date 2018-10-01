@@ -34,37 +34,34 @@
 package Admin_Thesaurus;
 
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 
-import DB_Admin.CommonUtilsDBadmin;
-import Utils.NodeInfoSortItemContainer;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
+
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
+import Utils.ExternalLink;
+import Utils.ExternalVocabulary;
 import Utils.Utilities;
 import Utils.Parameters;
-import Utils.SessionWrapperClass;
-
 import Utils.SortItem;
-import Utils.StringLocaleComparator;
-import Utils.GuideTermSortItemComparator;
+import Utils.NodeInfoSortItemContainer;
 import Utils.NodeInfoStringContainer;
-import Utils.SortItemLocaleComparator;
 
 import XMLHandling.WriteFileData;
-import java.io.IOException;
-import javax.servlet.http.*;
-import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Vector;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Enumeration;
+
+import neo4j_sisapi.IntegerObject;
+import neo4j_sisapi.QClass;
+import neo4j_sisapi.Return_Nodes_Row;
+import neo4j_sisapi.StringObject;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -73,19 +70,21 @@ import java.util.Enumeration;
 public class DBexportData {
 
     public DBexportData() {
+        
     }
 
     public void exportThesaurusActions(UserInfoClass SessionUserInfo, /*CommonUtilsDBadmin common_utils,*/
             String exprortThesaurus,
             String exportSchemaName,
             OutputStreamWriter logFileWriter,
-            Vector<String> thesauriNames,
-            Vector<String> allHierarchies,
-            Vector<String> allGuideTerms){
+            ArrayList<String> thesauriNames,
+            ArrayList<String> allHierarchies,
+            ArrayList<String> allGuideTerms){
 
         DBGeneral dbGen = new DBGeneral();
 
-        QClass Q = new QClass(); TMSAPIClass TA = new TMSAPIClass();
+        QClass Q = new QClass(); 
+        TMSAPIClass TA = new TMSAPIClass();
         IntegerObject sis_session = new IntegerObject();
 
         WriteFileData writer = new WriteFileData();
@@ -93,23 +92,28 @@ public class DBexportData {
         DBMergeThesauri dbMerge = new DBMergeThesauri();
         DBImportData dbImport = new DBImportData();
 
-        Hashtable<String, String> translationCategories = new Hashtable<String, String>();
-        Vector<String> xmlFacets = new Vector<String>();
-        Hashtable<String, Vector<String>> hierarchyFacets = new Hashtable<String, Vector<String>>();
+        HashMap<String, String> translationCategories = new HashMap<>();
+        
+        ArrayList<SortItem> xmlFacetsInSortItem = new ArrayList<>();
+        HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets;
+        
 
         
-        Vector<String> guideTerms = new Vector<String>();
-        Hashtable<String, String> XMLsources = new Hashtable<String, String>();
-        Hashtable<String, Vector<SortItem>> XMLguideTermsRelations = new Hashtable<String, Vector<SortItem>>();
+        ArrayList<String> guideTerms = new ArrayList<>();
+        HashMap<String, String> XMLsources = new HashMap<>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
 
-        Vector<String> topTerms = new Vector<String>();
-        Hashtable<String, Vector<String>> descriptorRts = new Hashtable<String, Vector<String>>();
-        Hashtable<String, Vector<String>> descriptorUfs = new Hashtable<String, Vector<String>>();
-        Vector<Hashtable<String, Vector<String>>> allLevelsOfImportThes = new Vector<Hashtable<String, Vector<String>>>();
+        ArrayList<String> topTerms = new ArrayList<>();
+        HashMap<String, ArrayList<String>> descriptorRts = new HashMap<>();
+        HashMap<String, ArrayList<String>> descriptorUfs = new HashMap<>();
+        ArrayList<HashMap<String, ArrayList<String>>> allLevelsOfImportThes = new ArrayList<>();
 
-
-        Hashtable<String, NodeInfoStringContainer> termsInfo = new Hashtable<String, NodeInfoStringContainer>();
-
+        HashMap<String,ArrayList<ExternalLink>> termExtLinks = new HashMap<>();
+        ArrayList<ExternalVocabulary> vocabularyIdentifiers = new ArrayList<>();
+        
+        
+        HashMap<String, NodeInfoStringContainer> termsInfo = new HashMap<>();
+        
 
             //open connection and start Query
             if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, null, true) == QClass.APIFail) {
@@ -129,20 +133,24 @@ public class DBexportData {
 
 
             translationCategories = dbGen.getThesaurusTranslationCategories(Q, TA, sis_session, exprortThesaurus, null, false, true);
-            String defaultFacet = dbMerge.getDefaultFacet(SessionUserInfo, Q, sis_session, exprortThesaurus);
+            
+            SortItem defaultFacetSortItem = dbMerge.getDefaultFacetSortItem(SessionUserInfo, Q, sis_session, exprortThesaurus);
+            SortItem defaultHierarchySortItem = dbMerge.getDefaultUnclassifiedTopTermSortItem(SessionUserInfo, Q, sis_session, exprortThesaurus);
+            defaultHierarchySortItem.setLogName(dbGen.removePrefix(defaultHierarchySortItem.getLogName()));
+            
+            xmlFacetsInSortItem.addAll(dbMerge.ReadThesaurusFacetsInSortItems(SessionUserInfo, Q, sis_session, exprortThesaurus, null));
 
-            xmlFacets.addAll(dbMerge.ReadThesaurusFacets(SessionUserInfo, Q, sis_session, exprortThesaurus, null));
-
-            if (xmlFacets.contains(defaultFacet) == false) {
-                xmlFacets.add(defaultFacet);
+            if (xmlFacetsInSortItem.contains(defaultFacetSortItem) == false) {
+                xmlFacetsInSortItem.add(defaultFacetSortItem);
             }
 
             //read hierarchies
-            hierarchyFacets = dbMerge.ReadThesaurusHierarchies(SessionUserInfo, Q, sis_session, exprortThesaurus, null);
-            if (hierarchyFacets.containsKey(Parameters.UnclassifiedTermsLogicalname) == false) {
-                Vector<String> unclassifiedFacets = new Vector<String>();
-                unclassifiedFacets.add(defaultFacet);
-                hierarchyFacets.put(Parameters.UnclassifiedTermsLogicalname, unclassifiedFacets);
+            hierarchyFacets = dbMerge.ReadThesaurusHierarchiesInSortItems(SessionUserInfo, Q, sis_session, exprortThesaurus, null);
+            
+            if (hierarchyFacets.containsKey(defaultHierarchySortItem) == false) {
+                ArrayList<SortItem> unclassifiedFacets = new ArrayList<>();
+                unclassifiedFacets.add(defaultFacetSortItem);
+                hierarchyFacets.put(defaultHierarchySortItem, unclassifiedFacets);
             }
 
 
@@ -150,11 +158,33 @@ public class DBexportData {
             dbMerge.ReadThesaurusTerms(SessionUserInfo, Q,TA, sis_session, exprortThesaurus, null,
                     termsInfo, guideTerms, XMLguideTermsRelations);
 
+            
+        
+            dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
+            
             guideTerms.clear();
             guideTerms.addAll(dbGen.collectGuideLinks(exprortThesaurus, Q, sis_session));
+            HashMap<String, ArrayList<String>> hierarchyFacetsStrFormat = new HashMap<>();
+            hierarchyFacets.forEach( (key,value) -> {
+                hierarchyFacetsStrFormat.put(key.getLogName(), new ArrayList<String>(value.stream().map(item -> item.getLogName()).collect(Collectors.toList())));
+            });
+            
             //read terms
-            dbImport.processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacets, topTerms, allLevelsOfImportThes);
+            dbImport.processXMLTerms(termsInfo, descriptorRts, descriptorUfs, hierarchyFacetsStrFormat, topTerms, allLevelsOfImportThes);
 
+            
+            if(Parameters.createSKOSHierarchicalUris){
+                //create term uris (exact match terms) that resemble their hierarchical status
+                for(String str : termsInfo.keySet()){
+
+                    ArrayList<String> hierarchicalUris = new ArrayList<>();
+                    hierarchicalUris.add(str);
+                    recursivelyConstructHierarchicalUri(str,hierarchicalUris, termsInfo);    
+                    termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd).clear();
+                    termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd).addAll(hierarchicalUris);   
+                }
+            }
+            
             //read sources
             dbMerge.ReadThesaurusSources(SessionUserInfo, Q,TA, sis_session, XMLsources);
 
@@ -167,8 +197,10 @@ public class DBexportData {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
              //check if tcs are defined for skos case
+             /*
             if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)) {
-                Vector<String> termNames = new Vector<String>(termsInfo.keySet());
+                
+                ArrayList<String> termNames = new ArrayList<String>(termsInfo.keySet());
                 Collections.sort(termNames);
                 int howmanyWithoutTc = 0;
                 String homanytermNames = "000" + termNames.size();
@@ -177,9 +209,9 @@ public class DBexportData {
                 for (int k = 0; k < termNames.size(); k++) {
                     String targetTerm = termNames.get(k);
                     NodeInfoStringContainer targetInfo = termsInfo.get(targetTerm);
-                    Vector<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
+                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
                     if (tcs == null || tcs.size() == 0) {
-                        Vector<String> newTcs = new Vector<String>();
+                        ArrayList<String> newTcs = new ArrayList<String>();
                         howmanyWithoutTc++;
 
                         String newTCValue = exprortThesaurus+formatter.format(howmanyWithoutTc);
@@ -187,19 +219,20 @@ public class DBexportData {
                         targetInfo.descriptorInfo.put(ConstantParameters.tc_kwd, newTcs);
                     }
                 }
-            }
+            }*/
 
 
             try{
 
-                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus);
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
                 writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
 
-                writer.WriteFacets(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacets, hierarchyFacets, termsInfo, null, null);
-                writer.WriteHierarchies(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, null);
-                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, null);
+                writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
+                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
                 writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
                 writer.WriteFileEnd(logFileWriter, exportSchemaName);
             }catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in DBexportData exportThesaurusActions() Message:" + e.getMessage());
@@ -210,9 +243,59 @@ public class DBexportData {
 
     }
     
+    private void recursivelyConstructHierarchicalUri(String str, ArrayList<String> hierarchicalUrls, HashMap<String, NodeInfoStringContainer> termsInfo)
+    {
+        if(termsInfo!=null && str!=null && str.length()>0 && termsInfo.containsKey(str)){
+     
+            ArrayList<String> bts = termsInfo.get(str).descriptorInfo.get(ConstantParameters.bt_kwd);                    
+            if(bts.size()>0){
+                //if it has bts then prepend to hierarchicalUrls if the string contained starts with str 
+                //ArrayList<String> urls = termsInfo.get(str).descriptorInfo.get(ConstantParameters.system_allHierarchicalUris_kwd);
+                ArrayList<String> newUrls  = new ArrayList<>();
+                for(String bt : bts){
+                    
+                    for(String url : hierarchicalUrls){
+                        if(url.startsWith(str)){
+                            
+                            if(!newUrls.contains(bt+"/"+url)){
+                                newUrls.add(bt+"/"+url);
+                            }
+                        }
+                        else{
+                            if(!newUrls.contains(url)){
+                                newUrls.add(url);
+                            }
+                        }
+                    }
+                }
+                //hierarchicalUrls
+                hierarchicalUrls.clear();
+                hierarchicalUrls.addAll(newUrls);
+                
+                for(String bt : bts){
+                    recursivelyConstructHierarchicalUri(bt, hierarchicalUrls, termsInfo);
+                }
+                
+            }
+            else{
+                //no need to do so
+                
+                /*
+                //top term reached just add the prefix / to each url produced
+                
+                for(int i=0; i<hierarchicalUrls.size();i++){
+                    if(hierarchicalUrls.get(i).startsWith(str)){
+                        hierarchicalUrls.set(i, "/"+hierarchicalUrls.get(i));
+                    }
+                }*/
+                
+            }
+        }        
+    }
+    
     public void ReadTermStatuses(String selectedThesaurus, QClass Q, IntegerObject sis_session, 
-            Vector<String> output, Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo,
-            Vector<Long> resultNodesIds) throws IOException {
+            ArrayList<String> output, ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo,
+            ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         if (output.contains(ConstantParameters.status_kwd) == false) {
@@ -230,7 +313,7 @@ public class DBexportData {
         StringObject THESstatusForApproval = new StringObject();
         StringObject THESstatusApproved = new StringObject();
 
-        Vector<StringObject> allStatuses = new Vector<StringObject>();
+        ArrayList<StringObject> allStatuses = new ArrayList<StringObject>();
 
         //READING FROM THES1 
         dbtr.getThesaurusClass_StatusForInsertion(selectedThesaurus, THESstatusForInsertion);
@@ -252,7 +335,7 @@ public class DBexportData {
 
             Q.reset_set(set_all_such_terms);
             
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_all_such_terms, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -325,7 +408,7 @@ public class DBexportData {
     }
 
     public void ReadTermCommentCategories(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session, 
-            Vector<String> output, Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+            ArrayList<String> output, ArrayList<String> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -340,7 +423,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.scope_note_kwd)) {
             //SCOPE NOTES 
-            Vector<String> terms_with_sn_Vec = new Vector<String>();
+            ArrayList<String> terms_with_sn_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject scopenoteFromClassObj = new StringObject();
             StringObject scopenoteLinkObj = new StringObject();
@@ -357,7 +440,7 @@ public class DBexportData {
             Q.free_set(set_all_links_sn);
 
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_sn, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -405,7 +488,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.translations_scope_note_kwd)) {
             //SCOPE NOTES EN
-            Vector<String> terms_with_sn_TR_Vec = new Vector<String>();
+            ArrayList<String> terms_with_sn_TR_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject scopenote_TR_FromClassObj = new StringObject();
             StringObject scopenote_TR_LinkObj = new StringObject();
@@ -421,7 +504,7 @@ public class DBexportData {
             Q.reset_set(set_terms_with_sn_tr);
             Q.free_set(set_all_links_sn_tr);
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_sn_tr, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -459,8 +542,8 @@ public class DBexportData {
                 if (commentObject.getValue().length() > 0) {
 
                     //break in parts
-                    Hashtable<String,String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
-                    Vector<String> langCodes = new Vector<String>(trSns.keySet());
+                    HashMap<String,String> trSns = u.getTranslationScopeNotes(commentObject.getValue());
+                    ArrayList<String> langCodes = new ArrayList<String>(trSns.keySet());
                     Collections.sort(langCodes);
                     for(int m=0;m<langCodes.size();m++){
                         String lang = langCodes.get(m);
@@ -480,7 +563,7 @@ public class DBexportData {
 
         if (output.contains(ConstantParameters.historical_note_kwd)) {
             //HISTORICAL NOTES 
-            Vector<String> terms_with_hn_Vec = new Vector<String>();
+            ArrayList<String> terms_with_hn_Vec = new ArrayList<String>();
             Q.reset_name_scope();
             StringObject historicalnoteFromClassObj = new StringObject();
             StringObject historicalnoteLinkObj = new StringObject();
@@ -495,7 +578,7 @@ public class DBexportData {
             Q.reset_set(set_terms_with_hn);
             Q.free_set(set_all_links_hn);
 
-            Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
             if(Q.bulk_return_nodes(set_terms_with_hn, retVals)!=QClass.APIFail){
                 for(Return_Nodes_Row row:retVals){
                     if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
@@ -540,11 +623,124 @@ public class DBexportData {
                 TA.SetThesaurusName(prevThes.getValue());
             }
         }
+        
+        
+        if (output.contains(ConstantParameters.comment_kwd)) {
+            //Comment NOTES 
+            ArrayList<String> terms_with_comment_Vec = new ArrayList<String>();
+            Q.reset_name_scope();
+            StringObject commentFromClassObj = new StringObject();
+            StringObject commentLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.comment_kwd, commentFromClassObj, commentLinkObj, Q, sis_session);
+            Q.reset_name_scope();
+
+            Q.set_current_node(commentFromClassObj);
+            Q.set_current_node(commentLinkObj);
+            int set_all_links_comment = Q.get_all_instances(0);
+            Q.reset_set(set_all_links_comment);
+            int set_terms_with_comment = Q.get_from_value(set_all_links_comment);
+            Q.reset_set(set_terms_with_comment);
+            Q.free_set(set_all_links_comment);
+
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
+            if(Q.bulk_return_nodes(set_terms_with_comment, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
+                        String targetTerm = row.get_v1_cls_logicalname();
+                        terms_with_comment_Vec.add(targetTerm);
+                    }
+                }
+            }
+            
+            Q.free_set(set_terms_with_comment);
+
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(selectedThesaurus);
+            }
+            for (int i = 0; i < terms_with_comment_Vec.size(); i++) {
+
+                String targetDBTerm = terms_with_comment_Vec.get(i);
+                String targetUITerm = dbGen.removePrefix(targetDBTerm);
+                StringObject commentObject = new StringObject("");
+                TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, commentFromClassObj, commentLinkObj);
+                if (termsInfo.containsKey(targetUITerm) == false) {
+                    NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                    termsInfo.put(targetUITerm, newContainer);
+                    allTerms.add(targetUITerm);
+                }
+
+                if (commentObject.getValue().length() > 0) {
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.comment_kwd).add(new SortItem(commentObject.getValue(), -1));
+                }
+            }
+            //reset to previous thesaurus name if needed
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(prevThes.getValue());
+            }
+        }
+        
+        if (output.contains(ConstantParameters.note_kwd)) {
+            //Comment NOTES 
+            ArrayList<String> terms_with_note_Vec = new ArrayList<String>();
+            Q.reset_name_scope();
+            StringObject noteFromClassObj = new StringObject();
+            StringObject noteLinkObj = new StringObject();
+            dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.note_kwd, noteFromClassObj, noteLinkObj, Q, sis_session);
+            Q.reset_name_scope();
+
+            Q.set_current_node(noteFromClassObj);
+            Q.set_current_node(noteLinkObj);
+            int set_all_links_note = Q.get_all_instances(0);
+            Q.reset_set(set_all_links_note);
+            int set_terms_with_note = Q.get_from_value(set_all_links_note);
+            Q.reset_set(set_terms_with_note);
+            Q.free_set(set_all_links_note);
+
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
+            if(Q.bulk_return_nodes(set_terms_with_note, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    if (resultNodesIds.contains(row.get_Neo4j_NodeId())) {
+                        String targetTerm = row.get_v1_cls_logicalname();
+                        terms_with_note_Vec.add(targetTerm);
+                    }
+                }
+            }
+            
+            Q.free_set(set_terms_with_note);
+
+            StringObject prevThes = new StringObject();
+            TA.GetThesaurusNameWithoutPrefix(prevThes);
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(selectedThesaurus);
+            }
+            for (int i = 0; i < terms_with_note_Vec.size(); i++) {
+
+                String targetDBTerm = terms_with_note_Vec.get(i);
+                String targetUITerm = dbGen.removePrefix(targetDBTerm);
+                StringObject commentObject = new StringObject("");
+                TA.GetDescriptorComment(new StringObject(targetDBTerm), commentObject, noteFromClassObj, noteLinkObj);
+                if (termsInfo.containsKey(targetUITerm) == false) {
+                    NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                    termsInfo.put(targetUITerm, newContainer);
+                    allTerms.add(targetUITerm);
+                }
+
+                if (commentObject.getValue().length() > 0) {
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.note_kwd).add(new SortItem(commentObject.getValue(), -1));
+                }
+            }
+            //reset to previous thesaurus name if needed
+            if(prevThes.getValue().equals(selectedThesaurus)==false){
+                TA.SetThesaurusName(prevThes.getValue());
+            }
+        }
     }
 
     public void ReadTermFacetAndHierarchies(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,
-            int set_terms, Vector<String> output, Vector<String> allTerms, 
-            Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<Long> resultNodesIds) throws IOException {
+            int set_terms, ArrayList<String> output, ArrayList<String> allTerms, 
+            HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
 
         DBGeneral dbGen = new DBGeneral();
         
@@ -570,9 +766,9 @@ public class DBexportData {
             if (cardinalityOfFacets > cardinalityOfTerms) {
 
                 //set current node for each term
-                Vector<String> terms = new Vector<String>();
+                ArrayList<String> terms = new ArrayList<String>();
                 Q.reset_set(set_terms);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         terms.add(row.get_v1_cls_logicalname());
@@ -604,7 +800,7 @@ public class DBexportData {
 
                             if (termsInfo.containsKey(targetUITerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                                 termsInfo.put(targetUITerm, newContainer);
                                 allTerms.add(targetUITerm);
                             }
@@ -618,7 +814,7 @@ public class DBexportData {
 
                         if (termsInfo.containsKey(targetUITerm) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                             termsInfo.put(targetUITerm, newContainer);
                             allTerms.add(targetUITerm);
                         }
@@ -632,9 +828,9 @@ public class DBexportData {
             } else { //set current node for each facet
 
 
-                Vector<String> facets = new Vector<String>();
+                ArrayList<String> facets = new ArrayList<String>();
                 Q.reset_set(set_f);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_f, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         facets.add(row.get_v1_cls_logicalname());
@@ -663,7 +859,7 @@ public class DBexportData {
                             if (resultNodesIds.contains(targetTermIdL)) {
                                 if (termsInfo.containsKey(targetTerm) == false) {
                                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                    newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermIdL, targetTermIdL));
+                                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL));
                                     termsInfo.put(targetTerm, newContainer);
                                     allTerms.add(targetTerm);
                                 }
@@ -678,7 +874,7 @@ public class DBexportData {
                         if (resultNodesIds.contains(targetTermId)) {
                             if (termsInfo.containsKey(targetTerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId));
                                 termsInfo.put(targetTerm, newContainer);
                                 allTerms.add(targetTerm);
                             }
@@ -712,9 +908,9 @@ public class DBexportData {
             if (cardinalityOfHierarchies > cardinalityOfTerms) { //set current node for each term
 
                 //set current node for each term
-                Vector<String> terms = new Vector<String>();
+                ArrayList<String> terms = new ArrayList<String>();
                 Q.reset_set(set_terms);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         terms.add(row.get_v1_cls_logicalname());
@@ -746,7 +942,7 @@ public class DBexportData {
 
                             if (termsInfo.containsKey(targetUITerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + termIdL, termIdL));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
                                 termsInfo.put(targetUITerm, newContainer);
                                 allTerms.add(targetUITerm);
                             }
@@ -761,7 +957,7 @@ public class DBexportData {
 
                         if (termsInfo.containsKey(targetUITerm) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                            newContainer.descriptorInfo.get("id").add(new SortItem("" + termId, termId));
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termId, termId));
                             termsInfo.put(targetUITerm, newContainer);
                             allTerms.add(targetUITerm);
                         }
@@ -774,9 +970,9 @@ public class DBexportData {
 
             } else { //set current node for each hierarchy
 
-                Vector<String> hierarchies = new Vector<String>();
+                ArrayList<String> hierarchies = new ArrayList<String>();
                 Q.reset_set(set_h);
-                Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+                ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
                 if(Q.bulk_return_nodes(set_h, retVals)!=QClass.APIFail){
                     for(Return_Nodes_Row row:retVals){
                         hierarchies.add(row.get_v1_cls_logicalname());
@@ -827,7 +1023,7 @@ public class DBexportData {
                             if (resultNodesIds.contains(targetTermIdL)) {
                                 if (termsInfo.containsKey(targetTerm) == false) {
                                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                    newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermIdL, targetTermIdL));
+                                    newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL));
                                     termsInfo.put(targetTerm, newContainer);
                                     allTerms.add(targetTerm);
                                 }
@@ -842,7 +1038,7 @@ public class DBexportData {
                         if (resultNodesIds.contains(targetTermId)) {
                             if (termsInfo.containsKey(targetTerm) == false) {
                                 NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-                                newContainer.descriptorInfo.get("id").add(new SortItem("" + targetTermId, targetTermId));
+                                newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermId, targetTermId));
                                 termsInfo.put(targetTerm, newContainer);
                                 allTerms.add(targetTerm);
                             }
@@ -859,9 +1055,186 @@ public class DBexportData {
 
 
     }
+    
+    public void ReadTermFacetAndHierarchiesInSortItems(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session,
+            int set_terms, ArrayList<String> output, ArrayList<String> allTerms, 
+            HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<Long> resultNodesIds) throws IOException {
+
+        DBGeneral dbGen = new DBGeneral();
+        
+        String[] outputTable = new String[output.size()];
+        output.toArray(outputTable);
+        int cardinalityOfTerms = Q.set_get_card(set_terms);
+
+        IntegerObject sysIdObj = new IntegerObject();
+        //StringObject nodeName = new StringObject();
+        StringObject cls = new StringObject();
+
+        if (output.contains(ConstantParameters.facet_kwd)) {
+
+            int facetIndex = Parameters.CLASS_SET.indexOf("FACET");
+            String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(facetIndex).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(facetIndex).toArray(FacetClasses);
+
+            int set_f = dbGen.get_Instances_Set(FacetClasses, Q, sis_session);
+            Q.reset_set(set_f);
+
+            //int cardinalityOfFacets = Q.set_get_card(set_f);
+
+
+            //set current node for each term
+            ArrayList<SortItem> terms = new ArrayList<SortItem>();
+            Q.reset_set(set_terms);
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+            if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+                    terms.add(newTermSortItem);
+                }
+            }
+            /*
+            while (Q.retur_nodes(set_terms, nodeName) != QClass.APIFail) {
+                terms.add(nodeName.getValue());
+            }*/
+
+            for (SortItem targetTermSortItem : terms) {
+
+                StringObject targetTerm = new StringObject(targetTermSortItem.getLogName());
+                String targetUITerm = dbGen.removePrefix(targetTermSortItem.getLogName());
+
+                Q.reset_name_scope();
+                long termIdL = Q.set_current_node_id(targetTermSortItem.getSysId());
+                int set_all_classes = Q.get_all_classes(0);
+                Q.reset_set(set_all_classes);
+                Q.reset_set(set_f);
+                Q.set_intersect(set_all_classes, set_f);
+                Q.reset_set(set_all_classes);
+
+                retVals.clear();
+                if(Q.bulk_return_nodes(set_all_classes, retVals)!=QClass.APIFail){
+                    for(Return_Nodes_Row row:retVals){
+                        String targetFacet = dbGen.removePrefix(row.get_v1_cls_logicalname());
+                        long targetFacetIdL = row.get_Neo4j_NodeId();
+                        long targetFacetRefIdL = row.get_v2_long_referenceId();
+                        String targetFacetTransliteration = row.get_v3_cls_transliteration();
+
+                        if (termsInfo.containsKey(targetUITerm) == false) {
+                            NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL,targetTermSortItem.getLogNameTransliteration(),targetTermSortItem.getThesaurusReferenceId()));
+                            termsInfo.put(targetUITerm, newContainer);
+                            allTerms.add(targetUITerm);
+                        }
+                        termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.facet_kwd).add(new SortItem(targetFacet, targetFacetIdL,targetFacetTransliteration,targetFacetRefIdL));
+                    }
+                }
+                /*
+                while (Q.retur_full_nodes(set_all_classes, sysIdObj, nodeName, cls) != QClass.APIFail) {
+                    String targetFacet = dbGen.removePrefix(nodeName.getValue());
+                    int targetFacetId = sysIdObj.getValue();
+
+                    if (termsInfo.containsKey(targetUITerm) == false) {
+                        NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                        newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL));
+                        termsInfo.put(targetUITerm, newContainer);
+                        allTerms.add(targetUITerm);
+                    }
+                    termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.facet_kwd).add(new SortItem(targetFacet, targetFacetId));
+
+                }
+                */
+                Q.free_set(set_all_classes);
+            }
+            Q.free_set(set_f);
+        }
+
+        if (output.contains(ConstantParameters.topterm_kwd)) {
+
+            StringObject belongsToHierarchyClass = new StringObject();
+            StringObject belongsToHierarchyLink = new StringObject();
+            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierarchyClass, belongsToHierarchyLink, Q, sis_session);
+
+            int hierIndex = Parameters.CLASS_SET.indexOf("HIERARCHY");
+            String[] HierarchyClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(hierIndex).size()];
+            SessionUserInfo.CLASS_SET_INCLUDE.get(hierIndex).toArray(HierarchyClasses);
+
+
+            int set_h = dbGen.get_Instances_Set(HierarchyClasses, Q, sis_session);
+            Q.reset_set(set_h);
+
+            int cardinalityOfHierarchies = Q.set_get_card(set_h);
+
+             //set current node for each term
+
+            //set current node for each term
+            ArrayList<SortItem> terms = new ArrayList<SortItem>();
+            Q.reset_set(set_terms);
+            ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+            if(Q.bulk_return_nodes(set_terms, retVals)!=QClass.APIFail){
+                for(Return_Nodes_Row row:retVals){
+                    SortItem newTermSortItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId(),row.get_v3_cls_transliteration(),row.get_v2_long_referenceId());
+                    terms.add(newTermSortItem);
+                }
+            }
+            /*while (Q.retur_nodes(set_terms, nodeName) != QClass.APIFail) {
+                terms.add(nodeName.getValue());
+            }*/
+
+            /*
+            if(Parameters.OnlyTopTermsHoldReferenceId){
+                int set_topterms = Q.get_from_node_by_category(set_sub_classes, belongsToHierClass, belongsToHierarchyLink);
+                results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
+            }
+            else{
+                results.addAll(get_Node_Names_Of_Set_In_SortItems(set_sub_classes, true, Q, sis_session));
+            }*/
+            for (SortItem targetTerm: terms) {
+
+                String targetUITerm = dbGen.removePrefix(targetTerm.getLogName());
+
+                Q.reset_name_scope();
+                long termIdL = Q.set_current_node_id(targetTerm.getSysId());
+                int set_all_classes = Q.get_classes(0);
+                Q.reset_set(set_all_classes);
+
+                Q.reset_set(set_h);
+                Q.set_intersect(set_all_classes, set_h);
+                Q.reset_set(set_all_classes);
+
+
+                if(Parameters.OnlyTopTermsHoldReferenceId){
+                    set_all_classes = Q.get_from_node_by_category(set_all_classes, belongsToHierarchyClass, belongsToHierarchyLink);
+                }
+
+                retVals.clear();
+                if(Q.bulk_return_nodes(set_all_classes, retVals)!=QClass.APIFail){
+                    for(Return_Nodes_Row row:retVals){
+                        String targetHierarchy = dbGen.removePrefix(row.get_v1_cls_logicalname());
+                        long targetHierarchyIdL = row.get_Neo4j_NodeId();
+                        long targetHierarchyRefIdL = row.get_v2_long_referenceId();
+                        String targetHierarchyTransliteration = row.get_v3_cls_transliteration();
+
+                        if (termsInfo.containsKey(targetUITerm) == false) {
+                            NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
+                            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + termIdL, termIdL,targetTerm.getLogNameTransliteration(),targetTerm.getThesaurusReferenceId()));
+                            termsInfo.put(targetUITerm, newContainer);
+                            allTerms.add(targetUITerm);
+                        }
+                        termsInfo.get(targetUITerm).descriptorInfo.get(ConstantParameters.topterm_kwd).add(new SortItem(targetHierarchy, targetHierarchyIdL,targetHierarchyTransliteration,targetHierarchyRefIdL));
+
+                    }
+                }                   
+                Q.free_set(set_all_classes);
+            }
+
+            Q.free_set(set_h);
+        }
+
+
+
+    }
 
     public void ReadRelatedSources(String selectedThesaurus, QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            int set_terms, Hashtable<String, NodeInfoSortItemContainer> sourcesInfo, Vector<String> allSources) {
+            int set_terms, HashMap<String, NodeInfoSortItemContainer> sourcesInfo, ArrayList<String> allSources) {
         //Abandoned Code that filtered only these sources that were referenced
         //It is not expected to see less sources after a scheduled backup (export 2 XML - import from XML)
         /*
@@ -875,13 +1248,13 @@ public class DBexportData {
         StringObject etLinkObj      = new StringObject();
         StringObject sourceNoteFromObj = new StringObject();
         StringObject sourceNoteLinkObj = new StringObject();      
-        Vector<SortItem> referencedSources = new Vector<SortItem>(); 
+        ArrayList<SortItem> referencedSources = new ArrayList<SortItem>(); 
         
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.primary_found_in_kwd, gtFromClassObj, gtLinkObj, Q, sis_session);
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.translations_found_in_kwd, etFromClassObj, etLinkObj, Q, sis_session);
         dbGen.getKeywordPair(sessionInstance, ConstantParameters.source_note_kwd, sourceNoteFromObj, sourceNoteLinkObj, Q, sis_session);
         
-        String[] output = {"id",ConstantParameters.source_note_kwd}; 
+        String[] output = {ConstantParameters.id_kwd,ConstantParameters.source_note_kwd}; 
         
         Q.reset_set(set_terms);
         
@@ -937,7 +1310,7 @@ public class DBexportData {
         //else{
         //    sourcesInfo.put(targetSourceUIFormat, new String(""));
         //}
-        newContainer.descriptorInfo.get("id").add(new SortItem(""+sourceItemId,sourceItemId));
+        newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem(""+sourceItemId,sourceItemId));
         sourcesInfo.put(targetSourceUIFormat,newContainer);
 
         allSources.add(targetSourceUIFormat);
@@ -945,7 +1318,7 @@ public class DBexportData {
          */
 
 
-        Vector<SortItem> targetSources = new Vector<SortItem>();
+        ArrayList<SortItem> targetSources = new ArrayList<SortItem>();
         DBGeneral dbGen = new DBGeneral();
         //DBThesaurusReferences dbtr = new DBThesaurusReferences();
         Q.reset_name_scope();
@@ -953,7 +1326,7 @@ public class DBexportData {
         int set_sources = Q.get_instances(0);
         Q.reset_set(set_sources);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_sources, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 SortItem sourceItem = new SortItem(row.get_v1_cls_logicalname(), row.get_Neo4j_NodeId());
@@ -979,7 +1352,7 @@ public class DBexportData {
         StringObject sourceNoteFromObj = new StringObject();
         StringObject sourceNoteLinkObj = new StringObject();
         dbGen.getKeywordPair(selectedThesaurus, ConstantParameters.source_note_kwd, sourceNoteFromObj, sourceNoteLinkObj, Q, sis_session);
-        String[] output = {"id", ConstantParameters.source_note_kwd};
+        String[] output = {ConstantParameters.id_kwd, ConstantParameters.source_note_kwd};
 
         StringObject prevThes = new StringObject();
         TA.GetThesaurusNameWithoutPrefix(prevThes);
@@ -1006,7 +1379,7 @@ public class DBexportData {
             //else{
             //    sourcesInfo.put(targetSourceUIFormat, new String(""));
             //}
-            newContainer.descriptorInfo.get("id").add(new SortItem("" + sourceItemIdL, sourceItemIdL));
+            newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + sourceItemIdL, sourceItemIdL));
             sourcesInfo.put(targetSourceUIFormat, newContainer);
 
             allSources.add(targetSourceUIFormat);

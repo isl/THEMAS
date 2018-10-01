@@ -96,9 +96,24 @@
                     <td class="criteriaInSaves">
                         <xsl:value-of disable-output-escaping="yes" select="$localecommon/searchcriteria/option[@lang=$lang]"/>
                         <br/> 
-                        <!--<xsl:value-of select="//query/base" />Ιεραρχική παρουσίαση όρων της ιεραρχίας:-->
-                        <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
-                        <b><xsl:value-of select="//query/arg1"/></b>.
+                        <xsl:choose>
+                            <xsl:when test="count(//query/arg1) = 1 ">
+                                <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
+                                <b><xsl:value-of select="//query/arg1"/></b>.
+                            </xsl:when>
+                            <xsl:otherwise>                                
+                                <xsl:value-of select="$localespecific/baselabelformultiple/option[@lang=$lang]"/>
+                                <xsl:variable name="howManyTopTerms" select="count(//query/arg1)"/>
+                                <xsl:for-each select="//query/arg1">
+                                    <b><xsl:value-of select="."/></b>
+                                    <xsl:if test="position() != $howManyTopTerms">
+                                        <xsl:text>, </xsl:text>
+                                    </xsl:if>
+                                </xsl:for-each>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        
+                        
                     </td>
                        
                        <td align="right">
@@ -137,19 +152,28 @@
                         </strong>
                     </td>
                     </tr></table>
-            </xsl:when>
-            <xsl:otherwise>
-                
-                <strong ><span class="row"><xsl:value-of select="//topterm/name"/></span></strong>
-                <xsl:call-template name="list-nts">
-                    <xsl:with-param name="node" select="//topterm"/>
-                    <xsl:with-param name="howmany" select="$numOfIndent+1" ></xsl:with-param>
-                </xsl:call-template>
-            </xsl:otherwise>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- <strong ><span class="row"><xsl:value-of select="//topterm/name"/></span></strong>
+                    <xsl:call-template name="list-nts">
+                        <xsl:with-param name="node" select="//topterm"/>
+                        <xsl:with-param name="howmany" select="$numOfIndent+1" ></xsl:with-param>
+                    </xsl:call-template> -->
+                    <xsl:for-each select="//topterm">
+                        <br/>
+                        <br/>
+                        <strong><span class="row"><xsl:value-of select="./name"/></span></strong>
+
+                        <xsl:call-template name="list-nts">
+                            <xsl:with-param name="node" select="."/>
+                            <xsl:with-param name="howmany" select="$numOfIndent+1" ></xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </xsl:otherwise>            
             </xsl:choose>
-            </body>
-        </html>
-    </xsl:template>
+        </body>
+    </html>
+</xsl:template>
     
     <xsl:template name="list-nts">
         <xsl:param name="node"/>

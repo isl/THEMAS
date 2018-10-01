@@ -39,9 +39,6 @@ import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
 import Users.UsersClass;
-import Utils.StringLocaleComparator;
-import Utils.GuideTermSortItemComparator;
-import Utils.SortItemLocaleComparator;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
@@ -51,10 +48,8 @@ import javax.servlet.http.*;
 import java.text.SimpleDateFormat;
 import java.net.URLDecoder;
 
-import javax.xml.transform.*;
 
 import javax.xml.transform.Result;
-import javax.servlet.ServletContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Templates;
@@ -67,15 +62,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.xpath.*;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import java.util.regex.Matcher;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
-import org.w3c.dom.Element;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
 Utilities
@@ -122,26 +114,32 @@ public class Utilities {
         }
         return returnVal;
     }
+    
+    public String getXMLStart(String LeftMenuMode,final String uiLang) {
+        return getXMLStart(LeftMenuMode, false, uiLang);
+    }
     /*---------------------------------------------------------------------
     getXMLStart()
     -----------------------------------------------------------------------
     OUTPUT: - String XMLStart: an XML string
     CALLED BY: all servlets in order to get the first part of their XML representation
     ----------------------------------------------------------------------*/
-    public String getXMLStart(String LeftMenuMode) {
+    public String getXMLStart(String LeftMenuMode, boolean skipLeftMenu,final String uiLang) {
         String XMLStart =
                 //"<?xml version=\"1.0\" encoding=\"windows-1253\"?>" +
                 // changed by karam (6/2/2008) and also the xslTransform() 
                 // method of this class so as to work properly.
                 // the xslTransform_OLD() was working ONLY for encoding "windows-1253" and NOT for UTF-8 !!!
-                ConstantParameters.xmlHeader
-                + // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
+                ConstantParameters.xmlHeader+
+                 // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\" mode=\"insert\">"
-                + "\r\n<leftmenu>"
-                + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
-                + "</leftmenu>";
+                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                if(!skipLeftMenu){
+                    XMLStart+= "\r\n<leftmenu>"
+                    + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
+                    + "</leftmenu>";
+                }
 
         return XMLStart;
     }
@@ -221,7 +219,8 @@ public class Utilities {
 
         String XMLTHEMASUserInfo = "<THEMASUserInfo>";
         XMLTHEMASUserInfo += "<name>" + SessionUserInfo.name + "</name>";
-        XMLTHEMASUserInfo += "<userGroup tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\">" + SessionUserInfo.userGroup + "</userGroup>";
+        // tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\"
+        XMLTHEMASUserInfo += "<userGroup>" + SessionUserInfo.userGroup + "</userGroup>";
         XMLTHEMASUserInfo += "<selectedThesaurus>" + SessionUserInfo.selectedThesaurus + "</selectedThesaurus>";
         XMLTHEMASUserInfo += "<selectedThesaurusLowerCase>" + SessionUserInfo.selectedThesaurus.toLowerCase() + "</selectedThesaurusLowerCase>";
         XMLTHEMASUserInfo += "</THEMASUserInfo>";
@@ -280,25 +279,31 @@ public class Utilities {
         return elapsedTimeSec;
     }
 
-    //ALMOST IDENTICAL TO getResultsInXml
-    public void getResultsInXmlGuideTermSorting(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+    //ALMOST IDENTICAL TO getResultsInXml_ForTableLayout
+    public void getResultsInXmlGuideTermSorting(ArrayList<String> allTerms, 
+                      HashMap<String, NodeInfoSortItemContainer> termsInfo, 
+                      ArrayList<String> output, StringBuffer xmlResults, 
+                      QClass Q, IntegerObject sis_session, 
+                      Locale targetLocale, 
+                      UserInfoClass SessionUserInfo, boolean skipOutput, boolean skipIds) {
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
 
-        xmlResults.append("<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
-        xmlResults.append("<output>");
-        for (int m = 0; m < output.size(); m++) {
+        
+        xmlResults.append("<data thesaurus=\"").append(SessionUserInfo.selectedThesaurus.toUpperCase()).append("\" translationsSeperator=\"").append(Parameters.TRANSLATION_SEPERATOR).append("\" displayCreatorInAlphabetical=\"").append(Parameters.CreatorInAlphabeticalTermDisplay).append("\">");
+        if(!skipOutput){
+            xmlResults.append("<output>");
+            for (int m = 0; m < output.size(); m++) {
 
-            String category = output.get(m);
-            if (category.compareTo("id") == 0) {
-                continue;
-            } else {
-                xmlResults.append("<" + category + "/>");
+                String category = output.get(m);
+                if (category.compareTo(ConstantParameters.id_kwd) != 0) {
+                    xmlResults.append("<" + category + "/>");
+                }
             }
+            xmlResults.append("</output>");
         }
-        xmlResults.append("</output>");
-
         xmlResults.append("<terms>");
         for (int i = 0; i < allTerms.size(); i++) {
 
@@ -308,16 +313,16 @@ public class Utilities {
 
             if (type.compareTo(NodeInfoSortItemContainer.CONTAINER_TYPE_UF) == 0) {//Perhaps it is uf link
                 xmlResults.append("<ufterm index=\"" + (i + 1) + "\">");
-                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                xmlResults.append("<ufname"+(skipIds?"":(" id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\"")) +">");
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get("use"));
                 Collections.sort(values, sortComparator);
 
                 for (int k = 0; k < values.size(); k++) {
-                    xmlResults.append("<use id=\"" + values.get(k).getSysId() + "\" >");
+                    xmlResults.append("<use"+(skipIds?"":(" id=\"" + values.get(k).getSysId() + "\""))+">");
                     xmlResults.append(escapeXML(values.get(k).getLogName()));
                     xmlResults.append("</use>");
                 }
@@ -327,58 +332,120 @@ public class Utilities {
 
             xmlResults.append("<term index=\"" + (i + 1) + "\">");
 
-            long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
-            xmlResults.append("<descriptor id=\"" + targetSysIdL + "\" >");
+            long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
+            long refIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+            String transliteration = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getLogNameTransliteration();
+            
+            xmlResults.append("<descriptor").append(skipIds?"":(" id=\"" + targetSysIdL + "\""));
+            
+            if(refIdL>0){
+                xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
+                if(Parameters.ShowReferenceURIalso){
+                    xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
+                }
+            }
+            /*
+            if(transliteration!=null && transliteration.length()>0){
+                xmlResults.append(" "+ConstantParameters.system_transliteration_kwd+"=\""+transliteration+"\""); 
+            }*/
             //xmlResults.append("<descriptor>");
+            xmlResults.append(">");
             xmlResults.append(escapeXML(targetTerm));
             xmlResults.append("</descriptor>");
 
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
-                if (category.compareTo("id") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                     continue;
                 }
-                Vector<SortItem> values = new Vector<SortItem>();
+                else if (category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
+                    xmlResults.append("<" + category + ">");
+                    xmlResults.append(escapeXML(transliteration));
+                    xmlResults.append("</" + category + ">");
+                    continue;
+                }
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
-                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || 
+                        category.compareTo(ConstantParameters.translation_kwd) == 0 || 
+                        category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                     Collections.sort(values, guideTermComparator);
                 } else {
                     Collections.sort(values, sortComparator);
                 }
-                if (category.compareTo(ConstantParameters.uf_kwd) == 0
+                
+                if (category.compareTo(ConstantParameters.facet_kwd) == 0
+                        || category.compareTo(ConstantParameters.uf_kwd) == 0
+                        || category.compareTo(ConstantParameters.topterm_kwd) == 0
                         || category.compareTo(ConstantParameters.bt_kwd) == 0
+                        || category.compareTo(ConstantParameters.rt_kwd) == 0
                         || category.compareTo(ConstantParameters.nt_kwd) == 0
                         || category.compareTo(ConstantParameters.translation_kwd) == 0
                         || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) { // add id info in order to add anchors in paging
-                    for (int k = 0; k < values.size(); k++) {
-                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + values.get(k).getLinkClass() + "\" >");
-                        xmlResults.append(escapeXML(values.get(k).getLogName()));
+                    for (SortItem valueSortItem : values) {
+                        
+                        long linkRefIdL = valueSortItem.getThesaurusReferenceId();
+                        String linkTransliteration =valueSortItem.getLogNameTransliteration();
+            
+                        ReferenceUriKind whatKind = (category.compareTo(ConstantParameters.facet_kwd) == 0)? ReferenceUriKind.FACET: ReferenceUriKind.TERM;
+                        xmlResults.append("<" + category + (skipIds?"":(" id=\"" + valueSortItem.getSysId() + "\"")));
+                        
+                        if(category.compareTo(ConstantParameters.nt_kwd) == 0 || 
+                                category.compareTo(ConstantParameters.translation_kwd) == 0 ||
+                                category.compareTo(ConstantParameters.uf_translations_kwd)==0  ){
+                            if(valueSortItem.getLinkClass()!=null && valueSortItem.getLinkClass().length()>0){
+                                xmlResults.append(" linkClass=\"" + escapeXML(valueSortItem.getLinkClass()) + "\"");
+                            }
+                        }
+                        if(linkRefIdL>0){
+                          xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefIdL+"\"");
+                          if(Parameters.ShowReferenceURIalso){
+                              xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), whatKind, linkRefIdL)+"\"");
+                          } 
+                        }
+                        if(Parameters.ShowTransliterationInAllXMLStream){
+                            if(linkTransliteration!=null && linkTransliteration.length()>0){
+                                xmlResults.append(" "+ConstantParameters.system_transliteration_kwd+"=\""+linkTransliteration+"\""); 
+                            }
+                        }
+                        
+                        xmlResults.append(">");
+                        xmlResults.append(escapeXML(valueSortItem.getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
                 } else if (category.compareTo(ConstantParameters.translations_scope_note_kwd) == 0) {
                     String checkStr = "";
-                    for (int k = 0; k < values.size(); k++) {
-                        if (k > 0) {
+                    for (SortItem valueSortItem : values) {
+                        if (checkStr.length() > 0) {
                             checkStr += "\n";
                         }
-                        checkStr += values.get(k).log_name;
+                        checkStr += valueSortItem.getLogName();
                     }
-                    Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                    Vector<String> langcodes = new Vector<String>(trSns.keySet());
-                    Collections.sort(langcodes);
-                    for (int k = 0; k < langcodes.size(); k++) {
-                        String linkClass = langcodes.get(k);
-                        String val = trSns.get(linkClass);
-                        xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                        xmlResults.append(escapeXML(val));
-                        xmlResults.append("</" + category + ">");
+                    if(checkStr.length()>0){
+                        HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                        ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
+                        Collections.sort(langcodes);
+
+                        for (String linkClass : langcodes) {
+                            String val = trSns.get(linkClass);
+                            xmlResults.append("<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">");
+                            xmlResults.append(escapeXML(val));
+                            xmlResults.append("</" + category + ">");
+                        }
                     }
 
-                } else {
-                    for (int k = 0; k < values.size(); k++) {
+                } else if (category.compareTo(ConstantParameters.status_kwd) == 0) {
+                    for (SortItem valueSortItem : values) {
                         xmlResults.append("<" + category + ">");
-                        xmlResults.append(escapeXML(values.get(k).getLogName()));
+                        xmlResults.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo)));
+                        xmlResults.append("</" + category + ">");
+                    }
+                }
+                else {
+                    for (SortItem valueSortItem : values) {
+                        xmlResults.append("<" + category + ">");
+                        xmlResults.append(escapeXML(valueSortItem.getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
                 }
@@ -394,23 +461,29 @@ public class Utilities {
 
     //ALMOST IDENTICAL TO getResultsInXmlGuideTermSorting
     /*---------------------------------------------------------------------
-    getResultsInXml()
+    getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
     INPUT: - Vector allTerms: the Vector with the terms to be parsed
     - String[] output: the properties of each term to be collected
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public void getResultsInXml(Vector<String> allTerms, Hashtable<String, NodeInfoSortItemContainer> termsInfo, Vector<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+    public void getResultsInXml_ForTableLayout(UserInfoClass SessionUserInfo, ArrayList<SortItem> allTerms, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> output, StringBuffer xmlResults, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        
+        //SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
         xmlResults.append("<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
         xmlResults.append("<output>");
         for (int m = 0; m < output.size(); m++) {
 
             String category = output.get(m);
-            if (category.compareTo("id") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 
+                    || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0
+                    || category.compareTo(ConstantParameters.system_referenceIdAttribute_kwd) == 0
+                    || category.compareTo(ConstantParameters.system_referenceUri_kwd) == 0) {
                 continue;
             } else {
                 xmlResults.append("<" + category + "/>");
@@ -420,18 +493,18 @@ public class Utilities {
 
         xmlResults.append("<terms>");
         for (int i = 0; i < allTerms.size(); i++) {
-
-            String targetTerm = allTerms.get(i);
+            SortItem targetSortItem = allTerms.get(i);                    
+            String targetTerm = targetSortItem.getLogName();
             NodeInfoSortItemContainer targetTermInfo = termsInfo.get(targetTerm);
             String type = targetTermInfo.containerType;
 
             if (type.compareTo(NodeInfoSortItemContainer.CONTAINER_TYPE_UF) == 0) {//Perhaps it is uf link
                 xmlResults.append("<ufterm index=\"" + (i + 1) + "\">");
-                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                xmlResults.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\">");
                 xmlResults.append(escapeXML(targetTerm));
                 xmlResults.append("</ufname>");
 
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get("use"));
 
 
@@ -446,7 +519,7 @@ public class Utilities {
 
             xmlResults.append("<term index=\"" + (i + 1) + "\">");
 
-            long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
+            long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
             xmlResults.append("<descriptor id=\"" + targetSysIdL + "\" >");
             //xmlResults.append("<descriptor>");
             xmlResults.append(escapeXML(targetTerm));
@@ -455,12 +528,13 @@ public class Utilities {
             for (int m = 0; m < output.size(); m++) {
 
                 String category = output.get(m);
-                if (category.compareTo("id") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0) {
                     continue;
                 }
-                Vector<SortItem> values = new Vector<SortItem>();
+                ArrayList<SortItem> values = new ArrayList<SortItem>();
                 values.addAll(targetTermInfo.descriptorInfo.get(category));
-                if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if ( //category.compareTo(ConstantParameters.nt_kwd) == 0 || no need to sort nts with sortitem comparator
+                        category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                     Collections.sort(values, guideTermComparator);
                 } else {
                     Collections.sort(values, sortComparator);
@@ -468,11 +542,11 @@ public class Utilities {
 
                 if (category.compareTo(ConstantParameters.uf_kwd) == 0
                         || category.compareTo(ConstantParameters.bt_kwd) == 0
-                        || category.compareTo(ConstantParameters.nt_kwd) == 0
+                        || category.compareTo(ConstantParameters.nt_kwd) == 0 
                         || category.compareTo(ConstantParameters.translation_kwd) == 0
                         || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) { // add id info in order to add anchors in paging
                     for (int k = 0; k < values.size(); k++) {
-                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + values.get(k).getLinkClass() + "\" >");
+                        xmlResults.append("<" + category + " id=\"" + values.get(k).getSysId() + "\" linkClass=\"" + escapeXML(values.get(k).getLinkClass()) + "\" >");
                         xmlResults.append(escapeXML(values.get(k).getLogName()));
                         xmlResults.append("</" + category + ">");
                     }
@@ -485,18 +559,24 @@ public class Utilities {
                         }
                         checkStr += values.get(k).log_name;
                     }
-                    Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                    Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                    HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                    ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
                     Collections.sort(langcodes);
                     for (int k = 0; k < langcodes.size(); k++) {
                         String linkClass = langcodes.get(k);
                         String val = trSns.get(linkClass);
-                        xmlResults.append("<" + category + " linkClass=\"" + linkClass + "\">");
+                        xmlResults.append("<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">");
                         xmlResults.append(escapeXML(val));
                         xmlResults.append("</" + category + ">");
                     }
 
-                } else {
+                }else if (category.compareTo(ConstantParameters.status_kwd) == 0) {
+                    for (int k = 0; k < values.size(); k++) {
+                        xmlResults.append("<" + category + ">");
+                        xmlResults.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(values.get(k).getLogName(), SessionUserInfo)));
+                        xmlResults.append("</" + category + ">");
+                    }
+                }else {
                     for (int k = 0; k < values.size(); k++) {
                         xmlResults.append("<" + category + ">");
                         xmlResults.append(escapeXML(values.get(k).getLogName()));
@@ -513,6 +593,9 @@ public class Utilities {
     }
 
     public void getResultsInXml(UserInfoClass SessionUserInfo, Vector allTerms, String[] output, StringBuffer XMLresults, QClass Q,TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+        
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        
         XMLresults.append("<results>");
 
         int resultsLIMIT = allTerms.size();
@@ -542,18 +625,19 @@ public class Utilities {
                     XMLresults += "</kind>";
                      */
                 } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
-                    Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), currentTerm, Q, sis_session);
-                    Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                    ArrayList<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), currentTerm, Q, sis_session);
+                    //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                    Collections.sort(vtranslations, guideTermComparator);
                     XMLresults.append("<" + output[j] + ">");
                     for (int k = 0; k < vtranslations.size(); k++) {
-                        XMLresults.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
+                        XMLresults.append("<name linkClass=\"" + escapeXML(vtranslations.get(k).linkClass) + "\">");
                         XMLresults.append(escapeXML(vtranslations.get(k).log_name));
                         XMLresults.append("</name>");
                     }
                     XMLresults.append("</" + output[j] + ">");
                 } else {
 
-                    Vector v = dbGen.returnResults(SessionUserInfo, currentTerm, output[j], Q,TA, sis_session);
+                    ArrayList v = dbGen.returnResults(SessionUserInfo, currentTerm, output[j], Q,TA, sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
                     XMLresults.append("<" + output[j] + ">");
                     for (int k = 0; k < v.size(); k++) {
@@ -578,13 +662,13 @@ public class Utilities {
     }
 
     /*---------------------------------------------------------------------
-    getResultsInXml()
+    getResultsInXml_ForTableLayout()
     -----------------------------------------------------------------------
     INPUT:  Vector availableFacets: contains all available facets (either new or released)
     OUTPUT: a String with the XML representation of the available facets
     CALLED BY: Create_Modify_Hierarchy servlet
     ----------------------------------------------------------------------
-    public String getResultsInXml_Hierarchy(Vector<String> availableFacets) {
+    public String getResultsInXml_Hierarchy(ArrayList<String> availableFacets) {
 
     String XMLresults = "";
     XMLresults += "<currentcreatehierarchy>";
@@ -602,7 +686,7 @@ public class Utilities {
     }
      */
     /*getResultsinXml_Hierarchy()*/
-    public String getResultsinXml_Hierarchy(UserInfoClass SessionUserInfo, Vector displayHierarchies, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+    public String getResultsinXml_Hierarchy(UserInfoClass SessionUserInfo, ArrayList displayHierarchies, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -612,7 +696,7 @@ public class Utilities {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
                 XMLresults.append("<" + category + "/>");
@@ -632,7 +716,7 @@ public class Utilities {
                     XMLresults.append("</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, displayHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
+                    ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, displayHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
                     }
@@ -651,7 +735,7 @@ public class Utilities {
         return XMLresults.toString();
     }
 
-    public void getResultsInXml_Source(UserInfoClass SessionUserInfo, Vector<String> displaySources, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, StringBuffer xmlResults) {
+    public void getResultsInXml_Source(UserInfoClass SessionUserInfo, ArrayList<String> displaySources, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, StringBuffer xmlResults) {
 
         DBGeneral dbGen = new DBGeneral();
 
@@ -661,7 +745,7 @@ public class Utilities {
         for (int m = 0; m < output.length; m++) {
 
             String category = output[m];
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+            if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
                 xmlResults.append("<" + category + "/>");
@@ -681,7 +765,7 @@ public class Utilities {
                     xmlResults.append("<name>" + escapeXML(currentSource) + "</name>");
 
                 } else {
-                    Vector<String> v = dbGen.returnResults_Source(SessionUserInfo, displaySources.get(i), output[j], Q,TA, sis_session);
+                    ArrayList<String> v = dbGen.returnResults_Source(SessionUserInfo, displaySources.get(i), output[j], Q,TA, sis_session);
                     Collections.sort(v, new StringLocaleComparator(targetLocale));
 
                     for (int k = 0; k < v.size(); k++) {
@@ -707,15 +791,14 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
     ----------------------------------------------------------------------*/
-    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, Vector displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, ArrayList<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
 
         StringBuffer XMLresults = new StringBuffer();
         ;
         XMLresults.append("<data>");
         XMLresults.append("<output>");
-        for (int m = 0; m < output.length; m++) {
+        for (String category : output) {
 
-            String category = output[m];
             if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
                 continue;
             } else {
@@ -725,19 +808,18 @@ public class Utilities {
         XMLresults.append("</output>");
 
         XMLresults.append("<facets>");
-        int resultsLIMIT = displayFacets.size();
-        for (int i = 0; i < resultsLIMIT; i++) {
+        
+        for (String currentFacet : displayFacets) {
             XMLresults.append("<facet>");
             for (int j = 0; j < output.length; j++) {
                 if (output[j].equals("name")) {
-                    String currentFacet = (String) (displayFacets.get(i));
                     XMLresults.append("<name>");
                     XMLresults.append(escapeXML(currentFacet));
                     XMLresults.append("</name>");
 
                 } else {
-
-                    Vector<String> v = dbGen.returnResults_Facet(SessionUserInfo, displayFacets.get(i).toString(), output[j], Q, sis_session, targetLocale);
+            
+                    ArrayList<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
                     if (v != null && v.size() > 0) {
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
                     }
@@ -746,6 +828,80 @@ public class Utilities {
                         XMLresults.append("<" + output[j] + ">");
                         XMLresults.append(escapeXML(v.get(k)));
                         XMLresults.append("</" + output[j] + ">");
+                            }
+                            
+                        }
+                    }
+            XMLresults.append("</facet>");
+        }
+        XMLresults.append("</facets>");
+        XMLresults.append("</data>");
+
+        return XMLresults.toString();
+    }
+        
+    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, ArrayList<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
+
+        StringBuffer XMLresults = new StringBuffer();
+        
+        XMLresults.append("<data thesaurus=\""+SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
+        if(!skipOutput){
+            XMLresults.append("<output>");
+            for (int m = 0; m < output.length; m++) {
+
+                String category = output[m];
+                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
+                    continue;
+                } else {
+                    XMLresults.append("<" + category + "/>");
+                }
+            }
+            XMLresults.append("</output>");
+        }
+        XMLresults.append("<facets>");
+        for (SortItem currentFacetsortItem : displayFacets) {
+            
+            XMLresults.append("<facet>");
+            for (String outputField : output) {
+                
+                if (outputField.equals("name")) {
+                    String appendVal = "<name";
+                    if(currentFacetsortItem.getThesaurusReferenceId()>0){
+                        appendVal += " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+currentFacetsortItem.getThesaurusReferenceId()+"\"";
+                        if(Parameters.ShowReferenceURIalso){
+                            appendVal += " "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.FACET, currentFacetsortItem.getThesaurusReferenceId())) +"\"";
+                        }
+                    }
+                    appendVal+=">";
+                    XMLresults.append(appendVal);
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogName()));
+                    XMLresults.append("</name>");
+
+                } else if(outputField.equals(ConstantParameters.system_transliteration_kwd) && currentFacetsortItem.getLogNameTransliteration()!=null && currentFacetsortItem.getLogNameTransliteration().length()>0){
+                    XMLresults.append("<"+ConstantParameters.system_transliteration_kwd+">");
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogNameTransliteration()));
+                    XMLresults.append("</"+ConstantParameters.system_transliteration_kwd+">");
+                }
+                else {
+
+                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
+                    if (v != null && v.size() > 0) {
+                        Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+                    }
+
+                    for (SortItem hierItem : v) {
+                        String appendVal = "<" + outputField;
+                        if(hierItem.getThesaurusReferenceId()>0){
+                            appendVal+=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+hierItem.getThesaurusReferenceId()+"\"";
+                            if(Parameters.ShowReferenceURIalso){
+                                appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.TOPTERM, hierItem.getThesaurusReferenceId())) +"\"";
+                            }
+                            
+                        }
+                        appendVal+=">";
+                        XMLresults.append(appendVal);
+                        XMLresults.append(escapeXML(hierItem.getLogName()));
+                        XMLresults.append("</" + outputField + ">");
                     }
 
                 }
@@ -952,8 +1108,8 @@ public class Utilities {
     }
 
     /**Returns the terms which criterion has as value, String value*/
-    public Vector<String> getEquals(UserInfoClass SessionUserInfo, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getEquals(UserInfoClass SessionUserInfo, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.add(value);
@@ -982,8 +1138,8 @@ public class Utilities {
     }
 
     /**Returns the terms which criterion contains String value (*value*)
-    public Vector<String> getContains(THEMASUserInfo SessionUserInfo, String criterion, String value, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
-        Vector<String> v = new Vector<String>();
+    public ArrayList<String> getContains(THEMASUserInfo SessionUserInfo, String criterion, String value, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.addAll(dbGen.getMatchedByName(SessionUserInfo.selectedThesaurus, value, Q, sis_session));
@@ -1013,9 +1169,9 @@ public class Utilities {
     */
 
     /**Returns the terms which criterion isn't equal with value*/
-    public Vector<String> getNotEquals(String selectedThesaurus, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
+    public ArrayList<String> getNotEquals(String selectedThesaurus, String criterion, String value, String[] links, QClass Q, IntegerObject sis_session, DBGeneral dbGen) {
         /*HINT: Prwta 8a elegxoume an autes oi times uparxoun sto sunolo ws exei ws twra k 8a ta bgazoume apo kei.. *-) */
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
 
         if (criterion.equals("name")) {
             v.addAll(dbGen.getNotEqualsByName(selectedThesaurus, value, Q, sis_session));
@@ -1047,7 +1203,7 @@ public class Utilities {
     /*
     public boolean checkTerm(UserInfoClass SessionUserInfo, String[] criteria, String[] operators, String[] values, String term, String[] links, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen) {
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
 
         for (int i = 0; i < criteria.length; i++) {
             if (operators[i].equals("=")) {
@@ -1095,7 +1251,7 @@ public class Utilities {
     public Vector getAllTerms(UserInfoClass SessionUserInfo, String[] criteria, String[] operators, String[] values, String op, String[] links,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
 
-        Vector<String> terms = new Vector<String>();
+        ArrayList<String> terms = new ArrayList<String>();
 
         //retainAll -> AND periptwsh -> lambanoume up'opsh mono ta koina
 
@@ -1273,20 +1429,20 @@ public class Utilities {
     getFormParams()
     -----------------------------------------------------------------------
     INPUT: - HttpServletRequest request: the request of the current servlet
-    OUTPUT: - Hashtable paramsHashtable: a Hashtable with the parameters of the current servlet
-    FUNCTION: gets to a Hashtable the parameters of the current servlet
+    OUTPUT: - HashMap paramsHashMap: a HashMap with the parameters of the current servlet
+    FUNCTION: gets to a HashMap the parameters of the current servlet
     CALLED BY: all servlets in order to get their parameters
     ----------------------------------------------------------------------*/
-    public Hashtable<String, Object> getFormParams(HttpServletRequest request) {
+    public HashMap<String, Object> getFormParams(HttpServletRequest request) {
 
-        Hashtable<String, Object> paramsHashtable = new Hashtable<String, Object>();
+        HashMap<String, Object> paramsHashMap = new HashMap<String, Object>();
         Enumeration paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
             String paramName = (String) paramNames.nextElement();
             String[] paramValues = request.getParameterValues(paramName);
             if (paramValues.length == 1) {
                 String paramValue = paramValues[0];
-                paramsHashtable.put(paramName, paramValue);
+                paramsHashMap.put(paramName, paramValue);
 
             } else {
                 //params.put(paramName, paramValues);
@@ -1297,10 +1453,10 @@ public class Utilities {
                         sb.append(",");
                     }
                 }
-                paramsHashtable.put(paramName, sb.toString());
+                paramsHashMap.put(paramName, sb.toString());
             }
         }
-        return paramsHashtable;
+        return paramsHashMap;
     }
 
     /*---------------------------------------------------------------------
@@ -1384,9 +1540,9 @@ public class Utilities {
         return param_decoded;
     }
 
-    public Vector<String> getDecodedParameterValues(String[] encodedParams) throws java.io.UnsupportedEncodingException {
+    public ArrayList<String> getDecodedParameterValues(String[] encodedParams) throws java.io.UnsupportedEncodingException {
 
-        Vector<String> returnParams_decoded = new Vector<String>();
+        ArrayList<String> returnParams_decoded = new ArrayList<String>();
         if (encodedParams != null) {
             for (int i = 0; i < encodedParams.length; i++) {
                 String param_decoded = URLDecoder.decode(encodedParams[i], "UTF-8").trim();
@@ -1490,9 +1646,9 @@ public class Utilities {
     }
 
     //Turn a comma seperated String to Vector --> No dublicates
-    public Vector<String> get_Vector_from_String(String str, String delimeter) {
+    public ArrayList<String> get_Vector_from_String(String str, String delimeter) {
 
-        Vector<String> result = new Vector<String>();
+        ArrayList<String> result = new ArrayList<String>();
 
         if (str == null) {
             return result;
@@ -1537,6 +1693,8 @@ public class Utilities {
         returnVal = returnVal.replaceAll("'", "&apos;");
         returnVal = returnVal.replaceAll("\"", "&quot;");
         returnVal = returnVal.replaceAll(" +", " ");
+        //escaping double hyphen that may cause an error in comments
+        
 
 
         /*
@@ -1549,7 +1707,17 @@ public class Utilities {
         }*/
         return returnVal;
     }
+    
+    public static String escapeXMLComment(String target) {
+        if (target == null) {
+            return "";
+        }
+        String returnVal = escapeXML(target);
+        returnVal = returnVal.replaceAll("--", "&#x002D;&#x002D;");
+        return returnVal;
+    }
 
+    
     /*---------------------------------------------------------------------
     InformSearchOperatorsAndValuesWithSpecialCharacters()
     -----------------------------------------------------------------------
@@ -1560,21 +1728,74 @@ public class Utilities {
     This is done so as the user don't have to type this special character
     CALLED BY: SearchResults_Terms, SearchResults_Hierarchies and SearchResults_Facets servlets
     ----------------------------------------------------------------------*/
-    public void InformSearchOperatorsAndValuesWithSpecialCharacters(String[] searchOperators, String[] searchInputValues) {
+    public void InformSearchOperatorsAndValuesWithSpecialCharacters(String[] input,String[] searchOperators, String[] searchInputValues, boolean nameRefersToSource) {
         int len = searchOperators.length;
         for (int i = 0; i < len; i++) {
+            
             if (searchOperators[i].compareTo("~*") == 0) { // starts with
-                searchOperators[i] = "~";
+                searchOperators[i] = ConstantParameters.searchOperatorContains;
                 searchInputValues[i] = searchInputValues[i] + "*";
             } else if (searchOperators[i].compareTo("*~") == 0) { // ends with
-                searchOperators[i] = "~";
+                searchOperators[i] = ConstantParameters.searchOperatorContains;
                 searchInputValues[i] = "*" + searchInputValues[i];
             } else if (searchOperators[i].compareTo("!~*") == 0) { // not starts with
-                searchOperators[i] = "!~";
+                searchOperators[i] = ConstantParameters.searchOperatorNotContains;
                 searchInputValues[i] = searchInputValues[i] + "*";
             } else if (searchOperators[i].compareTo("!*~") == 0) { // not ends with
-                searchOperators[i] = "!~";
+                searchOperators[i] = ConstantParameters.searchOperatorNotContains;
                 searchInputValues[i] = "*" + searchInputValues[i];
+            }
+            else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorContains)==0){
+                String relevantInput = input[i];
+                ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
+                //if(!nameRefersToSource)// sources can also be serarched via transliteration
+                    keywordsThatShouldBeSearchedWithTransliteration.add("name");
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rnt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
+                //if(nameRefersToSource){ sources can also be serarched via transliteration
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translation_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_translations_kwd);
+                
+                if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
+                    searchOperators[i] = ConstantParameters.searchOperatorTransliterationContains;
+                }
+            }
+            else if (searchOperators[i].compareTo(ConstantParameters.searchOperatorNotContains)==0){
+                String relevantInput = input[i];
+                ArrayList<String> keywordsThatShouldBeSearchedWithTransliteration = new ArrayList<>();
+                //if(!nameRefersToSource){ // sources can also be serarched via transliteration
+                    keywordsThatShouldBeSearchedWithTransliteration.add("name");
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.bt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.nt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rbt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rnt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.rt_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.topterm_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.facet_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add("term");//hierarchy or facet case
+                //if(nameRefersToSource){ // sources can also be serarched via transliteration
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.primary_found_in_kwd);
+                    keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translations_found_in_kwd);
+                //}
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.translation_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_kwd);
+                keywordsThatShouldBeSearchedWithTransliteration.add(ConstantParameters.uf_translations_kwd);
+                
+                if(keywordsThatShouldBeSearchedWithTransliteration.contains(relevantInput)){
+                    searchOperators[i] = ConstantParameters.searchOperatorNotTransliterationContains;
+                }
             }
         }
     }
@@ -1732,8 +1953,10 @@ public class Utilities {
         }
     }
 
-    public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, Vector<SortItem> btsORnts, Vector<String> existingGuideTermsVec, Locale targetLocale) {
+    public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, ArrayList<SortItem> btsORnts, ArrayList<String> existingGuideTermsVec, Locale targetLocale) {
 
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+        
         StringBuffer sb = new StringBuffer();
         sb.append("<current>");
         sb.append("<term>");
@@ -1741,11 +1964,11 @@ public class Utilities {
 
 
         if (!btsORnts.isEmpty()) {
-            Collections.sort(btsORnts, new SortItemLocaleComparator(targetLocale));
+            Collections.sort(btsORnts, sortComparator);
             sb.append("<" + attribute + ">");
-            for (int k = 0; k < btsORnts.size(); k++) {
-                sb.append("<name linkClass=\"" + btsORnts.get(k).getLinkClass().replaceFirst(GuideTermPrefix, "") + "\">");
-                sb.append(escapeXML(btsORnts.get(k).getLogName()));
+            for (SortItem btOrNtSortItem : btsORnts) {
+                sb.append("<name linkClass=\"" + escapeXML(btOrNtSortItem.getLinkClass().replaceFirst(GuideTermPrefix, "")) + "\">");
+                sb.append(escapeXML(btOrNtSortItem.getLogName()));
                 sb.append("</name>");
             }
             sb.append("</" + attribute + ">");
@@ -1756,7 +1979,7 @@ public class Utilities {
 
         sb.append("<GuideTerms>");
         for (int i = 0; i < existingGuideTermsVec.size(); i++) {
-            sb.append("<GuideTerm>" + existingGuideTermsVec.get(i) + "</GuideTerm>");
+            sb.append("<GuideTerm>" + escapeXML(existingGuideTermsVec.get(i)) + "</GuideTerm>");
         }
         sb.append("</GuideTerms>");
 
@@ -1772,56 +1995,16 @@ public class Utilities {
     OUTPUT: a String with the XML representation of the results
     CALLED BY: servlets: ViewInfo with output = {"name", ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd,  "uk_alt", "uf_translations", ConstantParameters.dn_kwd, "comment", "et"}
     ----------------------------------------------------------------------*/
-
     public String getTermResultsInXml(UserInfoClass SessionUserInfo, String term, String[] output, QClass Q, TMSAPIClass TA, IntegerObject sis_session, Locale targetLocale) {
         DBGeneral dbGen = new DBGeneral();
 
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         sb.append("<current translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
         sb.append("<term>");
-
-        // karam - add the information about the term if it is to be deleted
-        // (delete icon was pressed from Search results TAB)
-        /*sb.append("<for_deletion>");
-        if (for_deletion != null) {
-        sb.append("true");
-        }
-        sb.append("</for_deletion>");
-         */
-        // karam - add the information about the term if it is a new or a released descriptor
-        /*sb.append("<is_released>");
-        // looking for Descriptor prefix (EL`)
-        DBThesaurusReferences dbtr = new DBThesaurusReferences();
-        String prefix = dbtr.getThesaurusPrefix_Descriptor(Q,sis_session.getValue());
-        // convert target Descriptor to DB encoding with prefix
-        StringObject targetDescriptorObj = new StringObject(prefix.concat(term));
-        boolean isReleased = dbGen.IsReleasedDescriptor(targetDescriptorObj,Q,sis_session);
-        if (isReleased == true) {
-        sb.append("true");
-        } else {
-        sb.append("false");
-        }
-        sb.append("</is_released>");
-        // karam - in case of released descriptor, add the information about the term if it is obsolete or not
-        sb.append("<is_obsolete>");
-        if (isReleased == true) {
-        // looking for EKTObsoleteDescriptor
-        StringObject thesObsoleteDescriptor = new StringObject();
-        dbtr.getThesaurusClass_ObsoleteDescriptor(Q,sis_session.getValue(),thesObsoleteDescriptor);
-        boolean isObsolete = dbGen.NodeBelongsToClass(targetDescriptorObj, thesObsoleteDescriptor, false,Q,sis_session);
-        if (isObsolete == true) {
-        sb.append("true");
-        } else {
-        sb.append("false");
-        }
-        }
-        sb.append("</is_obsolete>");
-         */
-        // for each value of output : e.g. some of  {"name", "translations",  ConstantParameters.dn_kwd, ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, "uf_translations", "alt",
-        //"uk_alt",  "gt",  "et", "created", "created_by", "modified",  "modified_by", "scope_note"}*/
 
         for (int j = 0; j < output.length; j++) {
 
@@ -1829,11 +2012,12 @@ public class Utilities {
                 sb.append("<name>" + escapeXML(term) + "</name>");
             } else if (output[j].equals(ConstantParameters.translation_kwd) || output[j].equals(ConstantParameters.uf_translations_kwd)) {
 
-                Vector<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), term, Q, sis_session);
-                Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                ArrayList<SortItem> vtranslations = dbGen.getTranslationLinkValues(SessionUserInfo.selectedThesaurus, output[j].equals(ConstantParameters.translation_kwd), term, Q, sis_session);
+                //Collections.sort(vtranslations, new GuideTermSortItemComparator(targetLocale));
+                Collections.sort(vtranslations, guideTermComparator);
                 sb.append("<" + output[j] + ">");
                 for (int k = 0; k < vtranslations.size(); k++) {
-                    sb.append("<name linkClass=\"" + vtranslations.get(k).linkClass + "\">");
+                    sb.append("<name linkClass=\"" + escapeXML(vtranslations.get(k).linkClass) + "\">");
                     sb.append(escapeXML(vtranslations.get(k).log_name));
                     sb.append("</name>");
                 }
@@ -1847,8 +2031,8 @@ public class Utilities {
                     String translationsScopeNoteStr = v.get(0).toString();
 
                     if (translationsScopeNoteStr != null && translationsScopeNoteStr.length() > 0) {
-                        Hashtable<String, String> trs = getTranslationScopeNotes(translationsScopeNoteStr);
-                        Vector<String> trSns = new Vector<String>(trs.keySet());
+                        HashMap<String, String> trs = getTranslationScopeNotes(translationsScopeNoteStr);
+                        ArrayList<String> trSns = new ArrayList<String>(trs.keySet());
                         Collections.sort(trSns);
                         for (int k = 0; k < trSns.size(); k++) {
                             String writeVal = trSns.get(k);
@@ -1878,7 +2062,12 @@ public class Utilities {
                     for (int k = 0; k < v.size(); k++) {
 
                         sb.append("<name>");
-                        sb.append(escapeXML(v.get(k).toString()));
+                        /*if (output[j].equals(ConstantParameters.status_kwd)){
+                           sb.append(escapeXML(Parameters.getStatusRepresentation_ForDisplay(v.get(k).toString(), SessionUserInfo)));
+                        }
+                        else{*/
+                                sb.append(escapeXML(v.get(k).toString()));
+                        //}
                         sb.append("</name>");
 
                         /*if (v.size() > 1 && k < v.size() - 1) {
@@ -1896,9 +2085,9 @@ public class Utilities {
         return sb.toString();
     }
 
-    public Hashtable<String, String> getTranslationScopeNotes(String scopeNoteValStr) {
+    public HashMap<String, String> getTranslationScopeNotes(String scopeNoteValStr) {
         String scopeNoteVal = scopeNoteValStr;
-        Hashtable<String, String> returnVals = new Hashtable<String, String>();
+        HashMap<String, String> returnVals = new HashMap<String, String>();
 
         scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
         scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
@@ -1974,7 +2163,7 @@ public class Utilities {
 
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         sb.append("<current>");
         sb.append("<hierarchy>");
@@ -1997,7 +2186,7 @@ public class Utilities {
                     if (!v.isEmpty()) {
                         Collections.sort(v, strCompar);
                         for (int k = 0; k < v.size(); k++) {
-                            Vector<String> temp = new Vector<String>();
+                            ArrayList<String> temp = new ArrayList<String>();
                             //temp.addAll((Vector) v.get(k)); //BUG??
                             temp.add(v.get(k));
 
@@ -2041,181 +2230,29 @@ public class Utilities {
         return sb.toString();
     }
 
-    public void getAvailableValues(UserInfoClass SessionUserInfo, String output, QClass Q, IntegerObject sis_session, StringBuffer xml, Locale targetLocale) {
-        DBGeneral dbGen = new DBGeneral();
-        Utilities u = new Utilities();
-
-        if (output.matches(ConstantParameters.bt_kwd) || output.matches(ConstantParameters.nt_kwd) || output.matches(ConstantParameters.rt_kwd) || output.matches(ConstantParameters.term_create_kwd)) {
-            int index = Parameters.CLASS_SET.indexOf("TERM");
-
-            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
-            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
-
-            Q.reset_name_scope();
-            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Q.reset_set(set_terms);
-            Vector<String> termNames = dbGen.get_Node_Names_Of_Set(set_terms, true, Q, sis_session);
-            Q.free_set(set_terms);
-
-            Collections.sort(termNames, new StringLocaleComparator(targetLocale));
-            xml.append("<availableTerms>");
-            for (int i = 0; i < termNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(termNames.get(i)));
-                xml.append("</name>");
-            }
-            xml.append("</availableTerms>");
-
-        }
-
-        if (output.matches(ConstantParameters.primary_found_in_kwd) || output.matches(ConstantParameters.translations_found_in_kwd)) {
-
-            Q.reset_name_scope();
-            Q.set_current_node(new StringObject(ConstantParameters.SourceClass));
-            int set_sources = Q.get_all_instances(0);
-            Q.reset_set(set_sources);
-            Vector<String> sourceNames = dbGen.get_Node_Names_Of_Set(set_sources, true, Q, sis_session);
-            Q.free_set(set_sources);
-            Collections.sort(sourceNames, new StringLocaleComparator(targetLocale));
-            xml.append("<availableSources>");
-            for (int i = 0; i < sourceNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(sourceNames.get(i)));
-                xml.append("</name>");
-            }
-            xml.append("</availableSources>");
-        }
-
-        if (output.matches(ConstantParameters.translation_kwd)) {
-
-            /*
-            Q.reset_name_scope();
-            StringObject toTranslationsFromClass = new StringObject();
-            StringObject toTranslationsLink = new StringObject();
-            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.translation_kwd, toTranslationsFromClass, toTranslationsLink, Q, sis_session);
-
-            int index = Parameters.CLASS_SET.indexOf("TERM");
-
-            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
-            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
-
-            Q.reset_name_scope();
-            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Q.reset_set(set_terms);
-            int set_translation_term_links = Q.get_link_from_by_category(set_terms, toTranslationsFromClass, toTranslationsLink);
-            Q.reset_set(set_translation_term_links);
-
-
-            Vector<SortItem> translationNames = dbGen.get_To_SortItems_Of_LinkSet(set_translation_term_links, true, true, true, Q, sis_session);
-
-            Q.free_set(set_terms);
-            Q.free_set(set_translation_term_links);
-
-
-            Collections.sort(translationNames, new GuideTermSortItemComparator(targetLocale));
-            xml.append("<availableTranslations>");
-            for (int i = 0; i < translationNames.size(); i++) {
-            SortItem currentSortItem = translationNames.get(i);
-            xml.append("<name linkClass=\"" + currentSortItem.linkClass + "\">");
-            xml.append(Utilities.escapeXML(currentSortItem.log_name));
-            xml.append("</name>");
-            }
-            xml.append("</availableTranslations>");*/
-        }
-
-        if (output.matches(ConstantParameters.uf_translations_kwd)) {
-
-            /*
-            Q.reset_name_scope();
-            StringObject ufTranslationsFromClass = new StringObject();
-            StringObject ufTranslationsLink = new StringObject();
-            dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.uf_translations_kwd, ufTranslationsFromClass, ufTranslationsLink, Q, sis_session);
-
-            int index = Parameters.CLASS_SET.indexOf("TERM");
-
-            String[] DescriptorClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
-            SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(DescriptorClasses);
-
-            Q.reset_name_scope();
-            int set_terms = dbGen.get_Instances_Set(DescriptorClasses, Q, sis_session);
-            Q.reset_set(set_terms);
-            int set_uftranslations_labels = Q.get_link_from_by_category(set_terms, ufTranslationsFromClass, ufTranslationsLink);
-            Q.reset_set(set_uftranslations_labels);
-            //
-            //int set_uftranslations = Q.get_to_value(set_uftranslations_labels);
-            //Q.reset_set(set_uftranslations);
-            //
-            //Vector<String> uftranslationsNames = dbGen.get_Node_Names_Of_Set(set_uftranslations, true, Q, sis_session);
-
-            Vector<SortItem> uftranslationsNames = dbGen.get_To_SortItems_Of_LinkSet(set_uftranslations_labels, true, true, false, Q, sis_session);
-
-
-            Q.free_set(set_terms);
-            Q.free_set(set_uftranslations_labels);
-            //Q.free_set(set_uftranslations);
-
-            
-            Collections.sort(uftranslationsNames, new GuideTermSortItemComparator(targetLocale));
-            xml.append("<availableUfTranslations>");
-            for (int i = 0; i < uftranslationsNames.size(); i++) {
-            SortItem currentSortItem = uftranslationsNames.get(i);
-            xml.append("<name linkClass=\"" + currentSortItem.linkClass + "\">");
-            xml.append(Utilities.escapeXML(currentSortItem.log_name));
-            xml.append("</name>");
-            }
-            xml.append("</availableUfTranslations>");
-             * 
-             */
-        }
-
-        if (output.matches(ConstantParameters.uf_kwd)) {
-
-            DBThesaurusReferences dbtr = new DBThesaurusReferences();
-            StringObject UsedForTermClass = new StringObject();
-            dbtr.getThesaurusClass_UsedForTerm(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue(), UsedForTermClass);
-            Q.reset_name_scope();
-
-            Q.set_current_node(UsedForTermClass);
-            int set_ufs = Q.get_all_instances(0);
-            Q.reset_set(set_ufs);
-            Vector<String> ufNames = dbGen.get_Node_Names_Of_Set(set_ufs, true, Q, sis_session);
-            Q.free_set(set_ufs);
-            Collections.sort(ufNames, new StringLocaleComparator(targetLocale));
-            xml.append("<availableUfs>");
-            for (int i = 0; i < ufNames.size(); i++) {
-                xml.append("<name>");
-                xml.append(Utilities.escapeXML(ufNames.get(i)));
-                xml.append("</name>");
-            }
-            xml.append("</availableUfs>");
-        }
-
-
-
-    }
-
-    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(Vector<String> allHierarcies, Vector<String> allGuideTerms, Locale targetLocale) {
+    
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
 
         StringBuffer dataNeeded = new StringBuffer();
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
         dataNeeded.append("<availableHierarchies>");
         for (int i = 0; i < allHierarcies.size(); i++) {
-            dataNeeded.append("<hierarchy>" + allHierarcies.get(i) + "</hierarchy>");
+            dataNeeded.append("<hierarchy>" + escapeXML(allHierarcies.get(i)) + "</hierarchy>");
         }
         dataNeeded.append("</availableHierarchies>");
 
         dataNeeded.append("<availableStatuses>");
-        dataNeeded.append("<status>" + Parameters.Status_Under_Construction + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_For_Approval + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_For_Insertion + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo) + "</status>");
         //dataNeeded.append("<status>" + dbGen.Status_For_Reinspection + "</status>");
-        dataNeeded.append("<status>" + Parameters.Status_Approved + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo) + "</status>");
         dataNeeded.append("</availableStatuses>");
 
         Collections.sort(allGuideTerms, new StringLocaleComparator(targetLocale));
         dataNeeded.append("<availableGuideTerms>");
         for (int i = 0; i < allGuideTerms.size(); i++) {
-            dataNeeded.append("<GuideTerm>" + allGuideTerms.get(i) + "</GuideTerm>");
+            dataNeeded.append("<GuideTerm>" + escapeXML(allGuideTerms.get(i)) + "</GuideTerm>");
         }
         dataNeeded.append("</availableGuideTerms>");
 
@@ -2226,17 +2263,18 @@ public class Utilities {
         
     }
     
-    public void writeResultsInXMLFile(PrintWriter outStream, Vector<String> allTerms, String startXML, Vector<String> output, 
+    public void writeResultsInXMLFile(PrintWriter outStream, ArrayList<String> allTerms, String startXML, ArrayList<String> output, 
             String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, 
-            QClass Q, IntegerObject sis_session, Hashtable<String, NodeInfoSortItemContainer> termsInfo, 
-            Vector<Long> resultNodesIds, Locale targetLocale) {
+            QClass Q, IntegerObject sis_session, HashMap<String, NodeInfoSortItemContainer> termsInfo, 
+            ArrayList<Long> resultNodesIds, Locale targetLocale, UserInfoClass SessionUserInfo, boolean skipIds,boolean sortNtsViaLinkClassFirst) {
 
 
 
         String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
 
-        GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
-        SortItemLocaleComparator sortComparator = new SortItemLocaleComparator(targetLocale);
+        //GuideTermSortItemComparator guideTermComparator = new GuideTermSortItemComparator(targetLocale);
+        SortItemComparator guideTermComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.LINKCLASS_TRANSLITERATION_LOGNAME);
+        SortItemComparator sortComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
 
         boolean streamOutput = false;
         if(outStream!=null){
@@ -2264,17 +2302,26 @@ public class Utilities {
         }
         
         try {
-            appendVal = "<data translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">"+"<output>";
-            for (int m = 0; m < output.size(); m++) {
+            
+            appendVal = "<data thesaurus=\"" +SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\" displayCreatorInAlphabetical=\""+Parameters.CreatorInAlphabeticalTermDisplay+"\">";
+            if(!streamOutput){
+                //not of interest in xmlstream
+                appendVal+="<output>";
+                for (String category : output) {
 
-                String category = output.get(m);
-                if (category.compareTo("id") == 0) {
-                    continue;
-                } else {
-                    appendVal+="<" + category + "/>";
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_referenceUri_kwd) == 0
+                            || category.compareTo(ConstantParameters.system_referenceIdAttribute_kwd) == 0
+                            ) {
+                        continue;
+                    } else {
+                        appendVal+="<" + category + "/>";
+                    }
                 }
+                appendVal+="</output>";
             }
-            appendVal+="</output><terms>";
+            appendVal+="<terms count=\""+allTerms.size()+"\">";
             
             if(streamOutput){
                 outStream.append(appendVal);
@@ -2293,11 +2340,15 @@ public class Utilities {
                     
                     
                     //out.append("<ufterm index=\"" + (i + 1) + "\">");
-                    //out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">");
+                    //out.append("<ufname id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\">");
                     //out.append(escapeXML(targetTerm));
                     //out.append("</ufname>");
 
-                    appendVal = "<ufterm index=\"" + (i + 1) + "\">"+"<ufname id=\"" + targetTermInfo.descriptorInfo.get("id").get(0).getSysId() + "\">"+escapeXML(targetTerm)+"</ufname>";
+                    appendVal = "<ufterm index=\"" + (i + 1) + "\">"+"<ufname";
+                    if(!skipIds){
+                        appendVal += " id=\"" + targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId() + "\"";
+                    }
+                    appendVal +=">"+escapeXML(targetTerm)+"</ufname>";
                     
                     if(streamOutput){
                         outStream.append(appendVal);
@@ -2306,14 +2357,14 @@ public class Utilities {
                         out.append(appendVal);
                     }
                     
-                    Vector<SortItem> values = new Vector<SortItem>();
+                    ArrayList<SortItem> values = new ArrayList<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get("use"));
                     Collections.sort(values, sortComparator);
 
                     for (int k = 0; k < values.size(); k++) {
                         long valueIDL = values.get(k).getSysId();
                         
-                        if (resultNodesIds.contains(valueIDL)) {
+                        if (resultNodesIds.contains(valueIDL) && !skipIds) {
                             appendVal = "<use id=\"" + valueIDL + "\">";
                         } else {
                             appendVal = "<use>";
@@ -2337,11 +2388,46 @@ public class Utilities {
                     continue;
                 }
                 
-                long targetSysIdL = targetTermInfo.descriptorInfo.get("id").get(0).getSysId();
+                long targetSysIdL = targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getSysId();
+                long refIdL =  targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+                String transliteration =  targetTermInfo.descriptorInfo.get(ConstantParameters.id_kwd).get(0).getLogNameTransliteration();
                 //out.append("<term index=\"" + (i + 1) + "\">");
-                appendVal = "<term index=\"" + (i + 1) + "\">" +"<descriptor id=\"" + targetSysIdL + "\" >"+escapeXML(targetTerm)+"</descriptor>";
+                appendVal = "<term index=\"" + (i + 1) + "\">" +
+                        "<descriptor";
+                if(!skipIds){
+                    appendVal+=" " + ConstantParameters.id_kwd+"=\"" + targetSysIdL + "\"";
+                }
+                /*
+                if(refIdL>0){
+                    appendVal+="\t\t\t<" + ConstantParameters.system_referenceUri_kwd + " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\">";
+                    appendVal+=Utilities.escapeXML(consrtuctReferenceUri(selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL));
+                    appendVal+="</" + ConstantParameters.system_referenceUri_kwd + ">\r\n";
+                }
+                if(transliteration!=null && transliteration.length()>0){
+                    appendVal+="\t\t\t<" + ConstantParameters.system_transliteration_kwd+">";
+                    appendVal+=Utilities.escapeXML(transliteration);
+                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">\r\n";
+                }
+                */
+                if(refIdL>0){
+                    appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"";
+                    if(Parameters.ShowReferenceURIalso){
+                        appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\"";
+                    }
+                 }
+                /*
+                 if(transliteration!=null && transliteration.length()>0){
+                     appendVal +=" "+ConstantParameters.system_transliteration_kwd+"=\""+transliteration+"\""; 
+                 }
+                  */              
+                                
 
-                
+                appendVal+=">"+escapeXML(targetTerm)+"</descriptor>";
+                if(transliteration!=null && transliteration.length()>0){
+                    appendVal+="<" + ConstantParameters.system_transliteration_kwd+">";
+                    appendVal+=Utilities.escapeXML(transliteration);
+                    appendVal+="</" + ConstantParameters.system_transliteration_kwd + ">";
+                }
 
                 //out.append("<descriptor id=\"" + targetSysIdL + "\" >");
                 //out.append(escapeXML(targetTerm));
@@ -2356,19 +2442,33 @@ public class Utilities {
                 for (int m = 0; m < output.size(); m++) {
 
                     String category = output.get(m);
-                    if (category.compareTo("id") == 0) {
+                    if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
                         continue;
                     }
-                    Vector<SortItem> values = new Vector<SortItem>();
+                    /*
+                    else if (category.compareTo(ConstantParameters.system_transliteration_kwd) == 0) {
+                        if(streamOutput){
+                            outStream.append("<" + category + ">"+escapeXML(transliteration)+"</" + category + ">");                            
+                        }
+                        else{
+                            out.append("<" + category + ">"+escapeXML(transliteration)+"</" + category + ">");                            
+                        }    
+                        continue;
+                    }
+                    */
+                    ArrayList<SortItem> values = new ArrayList<SortItem>();
                     values.addAll(targetTermInfo.descriptorInfo.get(category));
-                    if (category.compareTo(ConstantParameters.nt_kwd) == 0 || category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                    if ( (category.compareTo(ConstantParameters.nt_kwd) == 0  && sortNtsViaLinkClassFirst) || //no need to sort nts by link class as this xml will only be shown in table - simple list format
+                            category.compareTo(ConstantParameters.translation_kwd) == 0 || category.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
                         Collections.sort(values, guideTermComparator);
                     } else {
                         Collections.sort(values, sortComparator);
                     }
 
-                    if (category.compareTo(ConstantParameters.bt_kwd) == 0
+                    if (category.compareTo(ConstantParameters.facet_kwd) == 0
+                            || category.compareTo(ConstantParameters.bt_kwd) == 0
                             || category.compareTo(ConstantParameters.nt_kwd) == 0
+                            || category.compareTo(ConstantParameters.rbt_kwd) == 0
                             || category.compareTo(ConstantParameters.rnt_kwd) == 0
                             || category.compareTo(ConstantParameters.topterm_kwd) == 0
                             || category.compareTo(ConstantParameters.rt_kwd) == 0
@@ -2378,32 +2478,54 @@ public class Utilities {
 
                         if(values.size()>0){
                             for (int k = 0; k < values.size(); k++) {
+                                ReferenceUriKind whatKind = (category.compareTo(ConstantParameters.facet_kwd) == 0) ? ReferenceUriKind.FACET : ReferenceUriKind.TERM;
+                                
                                 appendVal ="";
                                 SortItem currentItem = values.get(k);
                                 long valueIDL = currentItem.getSysId();
                                 String linkClass = currentItem.getLinkClass();
+                                
+                                long linkRefId = currentItem.getThesaurusReferenceId();
+                                String linkTransliteration = currentItem.getLogNameTransliteration();
+                                
                                 if (resultNodesIds.contains(valueIDL)) {
                                     if (linkClass == null || linkClass.length() == 0) {
                                         //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >");
-                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"\" >";
+                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"");// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + " id=\"" + valueIDL + "\" linkClass=\"" + linkClass + "\">";
-                                    }
+                                        appendVal += "<" + category + (skipIds?"":" id=\"" + valueIDL + "\"")+" linkClass=\"" + escapeXML(linkClass) + "\"";
+                                    }                                    
+                                    
                                 } else {
                                     //Error in xslt transofrmation detected if linkClass attribute is missing (even if empty) in nt guide terms definitions
                                     if (linkClass == null || linkClass.length() == 0) {
                                         //out.append("<" + category + " linkClass=\"\">");
-                                        appendVal += "<" + category + " linkClass=\"\">";
+                                        appendVal += "<" + category + "";// linkClass=\"\"";
                                     } else {
                                         //out.append("<" + category + " linkClass=\"" + linkClass + "\">");
-                                        appendVal += "<" + category + " linkClass=\"" + linkClass + "\">";
+                                        appendVal += "<" + category + " linkClass=\"" + escapeXML(linkClass) + "\"";
                                     }
                                 }
+                                
+                                if(linkRefId>0){
+                                       appendVal +=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+linkRefId+"\"";
+                                       if(Parameters.ShowReferenceURIalso){
+                                            appendVal +=" " +ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), whatKind, linkRefId)+"\""; 
+                                       }
+                                }
+                                if(Parameters.ShowTransliterationInAllXMLStream)
+                                {
+                                    if(linkTransliteration!=null && linkTransliteration.length()>0){
+                                        appendVal +=" "+ConstantParameters.system_transliteration_kwd+"=\""+linkTransliteration+"\""; 
+                                    }
+                                }
+                                
+                                appendVal+=">";
 
                                 //out.append(escapeXML(values.get(k).getLogName()));
                                 //out.append("</" + category + ">");
-                                appendVal +=escapeXML(values.get(k).getLogName())+"</" + category + ">";
+                                appendVal +=escapeXML(currentItem.getLogName())+"</" + category + ">";
                                 if(streamOutput){
                                     outStream.append(appendVal);
                                 }
@@ -2423,19 +2545,19 @@ public class Utilities {
                         }
                     } else if (category.equals(ConstantParameters.translations_scope_note_kwd)) {
                         String checkStr = "";
-                        for (int k = 0; k < values.size(); k++) {
-                            if (k > 0) {
+                        for (SortItem valueSortItem :values) {
+                            if (checkStr.length()>0) {
                                 checkStr += "\n";
                             }
-                            checkStr += values.get(k).log_name;
+                            checkStr += valueSortItem.getLogName();
                         }
-                        Hashtable<String, String> trSns = this.getTranslationScopeNotes(checkStr);
-                        Vector<String> langcodes = new Vector<String>(trSns.keySet());
+                        HashMap<String, String> trSns = this.getTranslationScopeNotes(checkStr);
+                        ArrayList<String> langcodes = new ArrayList<String>(trSns.keySet());
                         Collections.sort(langcodes);
                         for (int k = 0; k < langcodes.size(); k++) {
                             String linkClass = langcodes.get(k);
                             String val = trSns.get(linkClass);
-                            appendVal = "<" + category + " linkClass=\"" + linkClass + "\">"+escapeXML(val)+"</" + category + ">";
+                            appendVal = "<" + category + " linkClass=\"" + escapeXML(linkClass) + "\">"+escapeXML(val)+"</" + category + ">";
                             if(streamOutput){
                                  outStream.append(appendVal);
                             }
@@ -2445,14 +2567,26 @@ public class Utilities {
                         }
 
 
-                    } else {
+                    } else if(category.compareTo(ConstantParameters.status_kwd)==0){
 
-                        for (int k = 0; k < values.size(); k++) {
+                        for (SortItem valueSortItem : values) {
                             if(streamOutput){
-                                outStream.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                                outStream.append("<" + category + ">"+ escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo)) +"</" + category + ">");                            
                             }
                             else{
-                                out.append("<" + category + ">"+escapeXML(values.get(k).getLogName())+"</" + category + ">");                            
+                                out.append("<" + category + ">"+escapeXML(Parameters.getStatusRepresentation_ForDisplay(valueSortItem.getLogName(), SessionUserInfo))+"</" + category + ">");                            
+                            }                            
+                        }
+
+                    }
+                    else {
+
+                        for (SortItem valueSortItem : values) {
+                            if(streamOutput){
+                                outStream.append("<" + category + ">"+escapeXML(valueSortItem.getLogName())+"</" + category + ">");                            
+                            }
+                            else{
+                                out.append("<" + category + ">"+escapeXML(valueSortItem.getLogName())+"</" + category + ">");                            
                             }                            
                         }
 
@@ -2496,20 +2630,20 @@ public class Utilities {
 
         String returnXML = "";
         DBGeneral dbGen = new DBGeneral();
-        Hashtable<String, String> translationHash = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, targetThesaurus, null, startQueryAndConnection, true);
+        HashMap<String, String> translationHash = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, targetThesaurus, null, startQueryAndConnection, true);
         returnXML = writeXMLTranslations(targetThesaurus, translationHash, extraTranslationXML);
         return returnXML;
     }
 
-    public String writeXMLTranslations(String targetThesaurus, Hashtable<String, String> translationHash, String extraTranslationXML) {
+    public String writeXMLTranslations(String targetThesaurus, HashMap<String, String> translationHash, String extraTranslationXML) {
         String returnXML = "";
-        returnXML += "<Translations ofthes=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
 
         if (translationHash != null) {
-            Enumeration<String> languagesEnumeration = translationHash.keys();
+            Iterator<String> languagesEnumeration = translationHash.keySet().iterator();
 
-            while (languagesEnumeration.hasMoreElements()) {
-                String languageWord = languagesEnumeration.nextElement();
+            while (languagesEnumeration.hasNext()) {
+                String languageWord = languagesEnumeration.next();
                 String languageId = translationHash.get(languageWord);
 
                 returnXML += "<TranslationPair>";
@@ -2539,7 +2673,7 @@ public class Utilities {
 
             Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Restore Backup Nedded. Creating Backup before restoration.");
             CommonUtilsDBadmin common_utils = new CommonUtilsDBadmin(config);
-            if (common_utils.CreateDBbackup("BackUp_before_Automatic_BackUp_Restore", new StringObject(), new StringObject()) == false) {
+            if (common_utils.CreateDBbackup("BackUp_before_Automatic_BackUp_Restore", new StringObject(), new StringObject(), Parameters.UILang) == false) {
                 Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Error in creating Backup before Automatic BackUp Restore.");
                 return;
             }
@@ -2555,7 +2689,7 @@ public class Utilities {
 
                 if (BackUpName != null && BackUpName.length() > 0) {
                     Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "Trying to restore " + BackUpName);
-                    boolean restored = common_utils.RestoreDBbackup(BackUpName, new StringObject());
+                    boolean restored = common_utils.RestoreDBbackup(BackUpName, new StringObject(), Parameters.UILang);
                     if (restored) {
                         Utils.StaticClass.webAppSystemOutPrintln(SystemOutPrefix + "BackUp Restoration of '" + BackUpName + "' Successfully completed.");
                     } else {
@@ -2579,52 +2713,52 @@ public class Utilities {
 
     }
 
-    public String translateFromMessagesXML( String messageXPath, String[] args){
-        
-        Vector<String> argsVector = null;
+    public String translateFromMessagesXML(String messageXPath, String[] args, final String uiLang){
+        //String uiLang = Parameters.UILang;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
             }
             
         }       
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getMessagesXml());
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
+        return translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
     }
     
-    public String translateFromTranslationsXML(String messageXPath, String[] args){
+    public String translateFromTranslationsXML(String messageXPath, String[] args, final String uiLang){
         
-        Vector<String> argsVector = null;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
             }
             
         }        
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
         return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
     }
     
-    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args){
+    public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args, final String uiLang){
         
-        Vector<String> argsVector = null;
+        ArrayList<String> argsVector = null;
         if(args!=null){            
-            argsVector = new Vector<String>();
+            argsVector = new ArrayList<String>();
             int howmany = args.length;
             for(int i=0; i< howmany; i++){
                 argsVector.add(args[i]);
             }            
         }        
-        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + Parameters.UILang + "\"]";
+        String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
         return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
     }
     
     
-    public String translate(String messageXPath, Vector<String> args, String pathToErrorsXML) {
+    public String translate(String messageXPath, ArrayList<String> args, String pathToErrorsXML) {
 
         String widgetNodeStr = "";
 
@@ -2659,50 +2793,348 @@ public class Utilities {
     }
 
     public static String[] getSortedTermAllOutputArray(){
-        String[] output = {ConstantParameters.bt_kwd, ConstantParameters.nt_kwd, ConstantParameters.rt_kwd, ConstantParameters.uf_kwd, ConstantParameters.tc_kwd,
-            ConstantParameters.translation_kwd, ConstantParameters.status_kwd, ConstantParameters.uf_translations_kwd,
-            ConstantParameters.translations_found_in_kwd, ConstantParameters.primary_found_in_kwd,
-            ConstantParameters.created_by_kwd, ConstantParameters.created_on_kwd, ConstantParameters.modified_by_kwd,
-            ConstantParameters.modified_on_kwd, ConstantParameters.scope_note_kwd, ConstantParameters.translations_scope_note_kwd, ConstantParameters.historical_note_kwd
-        };
-        return output;
+        String[] commonOutput = {
+                ConstantParameters.bt_kwd, 
+                ConstantParameters.nt_kwd, 
+                ConstantParameters.rt_kwd,
+                ConstantParameters.uf_kwd, 
+                ConstantParameters.tc_kwd,
+                ConstantParameters.translation_kwd, 
+                ConstantParameters.status_kwd, 
+                ConstantParameters.uf_translations_kwd,
+                ConstantParameters.primary_found_in_kwd,
+                ConstantParameters.translations_found_in_kwd,             
+                ConstantParameters.created_by_kwd, 
+                ConstantParameters.created_on_kwd, 
+                ConstantParameters.modified_by_kwd,
+                ConstantParameters.modified_on_kwd, 
+                ConstantParameters.scope_note_kwd,
+                ConstantParameters.translations_scope_note_kwd, 
+                ConstantParameters.historical_note_kwd, 
+                ConstantParameters.comment_kwd, 
+                ConstantParameters.note_kwd, 
+                ConstantParameters.system_referenceUri_kwd, 
+                ConstantParameters.system_allHierarchicalUris_kwd, 
+                ConstantParameters.system_transliteration_kwd,
+                ConstantParameters.externalLink_kwd
+            };
+        
+        if(Parameters.createSKOSHierarchicalUris){
+            String[] output = new String[commonOutput.length+1];
+            System.arraycopy(commonOutput, 0, output, 0, commonOutput.length);            
+            output[commonOutput.length] = ConstantParameters.system_allHierarchicalUris_kwd;
+                
+            return output;
+        }
+        else{
+            return commonOutput;
+        }
     }
 
-    public static String[] getSortedTermAllOutputArray(String[] selectedOutput){
+    public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TOPTERM,TERM /*,SOURCE*/};
 
-
-        Vector<String> initiallySelected = new Vector<String>();
-        for(int k=0;k<selectedOutput.length;k++){
-            initiallySelected.add(selectedOutput[k]);
-        }
-
-        String[] output = getSortedTermAllOutputArray();
-        Vector<String> filteredOutput = new Vector<String>();
-        for(int k=0;k<output.length;k++){
-            String targetOutput = output[k];
-            if(targetOutput!=null && targetOutput.length()>0 &&
-                    initiallySelected.contains(targetOutput) &&
-                    filteredOutput.contains(targetOutput) == false){
-                filteredOutput.add(targetOutput);
+    public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
+        String retVal ="";
+        retVal="/"+thesaurusName+"/"+((kind == ReferenceUriKind.FACET) ? XMLHandling.WriteFileData.Skos_Facet :  XMLHandling.WriteFileData.Skos_Concept)+"/"+referenceId;
+        
+        
+        /*
+        switch(kind){
+            case FACET:{
+                retVal = "/"+Servlets.CardOf_Facet.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
             }
+            case HIERARCHY:{
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            case TOPTERM:{
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            case TERM:{
+                retVal = "/"+Servlets.CardOf_Term.class.getSimpleName()+"?"+ConstantParameters.system_referenceIdAttribute_kwd+"="+referenceId;//+"&external_user=ExternalReader&external_thesaurus="+thesaurusName.toUpperCase();//+"&mode=XMLSTREAM";
+                break;
+            }
+            default:{
+                break;
+            }
+        }*/
+        /*
+        if(thesaurusName!=null && thesaurusName.length()>0){
+            retVal += thesaurusName+"/";
         }
-
-        String[] returnArray = new String[filteredOutput.size()];
-        for(int k=0;k<filteredOutput.size();k++){
-            returnArray[k] = filteredOutput.get(k);
+        
+        switch(kind){
+            
+            case FACET:{
+                
+                retVal += "Facet/";
+                break;
+            }
+            case HIERARCHY:{
+                if(thesaurusName!=null && thesaurusName.length()>0){
+                    retVal += thesaurusName+"/";
+                }
+                retVal += "Hierarchy/";
+                break;
+            }
+            case TERM:{
+                if(thesaurusName!=null && thesaurusName.length()>0){
+                    retVal += thesaurusName+"/";
+                }
+                retVal += "Term/";
+                break;
+            }
+//            
+//            Source might raise issues during merge thesauri operations.
+//            It is not unique per thesaurus -> Thus logicalname may have 
+//            different 
+//            case SOURCE:{
+//                retVal += "Source/";
+//                break;
+//            }
+//            
+            default:{
+                break;
+            }
+            
+            
         }
-
-
-        return returnArray;
+        */
+        //retVal += String.format("%07d", referenceId);
+        
+        return escapeXML(retVal);
     }
-
-    public static String getMessagesXml() {
+    
+    public static String getXml_For_Messages() {
         return Utilities.getTranslationsXml("Messages.xml");
     }
 
+    public static String getXml_For_ConsistencyChecks() {
+        return Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
+    }
+    
+    public static String getXml_For_SaveAll_Locale_And_Scripting() {
+        return Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
+    }
+    
     public static String getTranslationsXml(String fileName) {
         return Parameters.BaseRealPath + File.separator + "translations" + File.separator + fileName;
     }
+    
+    public static String getTransliterationString(String originalLogicalNameWithoutPrefix, boolean removePrefix){
+        String transliterationString = "";
+        if(removePrefix){
+            if (originalLogicalNameWithoutPrefix.contains("`")) {
+                transliterationString = originalLogicalNameWithoutPrefix.substring(originalLogicalNameWithoutPrefix.indexOf("`") + 1);
+            } else {
+                transliterationString = originalLogicalNameWithoutPrefix;
+            }
+        }
+        else{
+            transliterationString = originalLogicalNameWithoutPrefix;
+        }
+        
+        if(Parameters.TransliterationsToLowerCase){
+            transliterationString = transliterationString.toLowerCase();
+        }
+        //if apache remove accents needs some changes these can be applies by useing these filters before it is applies 
+        for (String key : Parameters.TransliterationsReplacements.keySet()) {
+            String replaceRegEx = "["+key+"]";
+            String replaceWith = Parameters.TransliterationsReplacements.get(key);
+
+            transliterationString = transliterationString.replaceAll(replaceRegEx, replaceWith);
+        }
+        
+        //apache remove accents 
+        transliterationString = org.apache.commons.lang3.StringUtils.stripAccents(transliterationString);
+        //System.out.println(transliterationString +" --> "+ org.apache.commons.lang3.StringUtils.stripAccents(transliterationString));
+        
+        //normalize gaps keep just one if multiple defined
+        transliterationString = transliterationString.replaceAll(" +", " ");
+        
+        
+        return transliterationString;
+    }
+    
+    public static long retrieveDatabaseIdFromNodeInfoStringContainer(NodeInfoStringContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
+                    try{
+                        retVal = Long.parseLong(valStr);
+                    }
+                    catch(Exception ex){
+                        Utils.StaticClass.handleException(ex);
+                    }
+                }
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
+    public static long retrieveThesaurusReferenceFromNodeInfoStringContainer(NodeInfoStringContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 && valStr.trim().compareTo("-1")!=0 && valStr.trim().compareTo("0")!=0 ){
+                    try{
+                        retVal = Long.parseLong(valStr);
+                    }
+                    catch(Exception ex){
+                        Utils.StaticClass.handleException(ex);
+                    }
+                }
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
+    public static long retrieveThesaurusReferenceFromNodeInfoSortItemContainer(NodeInfoSortItemContainer container){
+        long retVal = -1;
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            ArrayList<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0 && vals.get(0)!=null){
+                SortItem valSortItem = vals.get(0);
+                retVal = valSortItem.getThesaurusReferenceId();                
+            }
+        }
+        
+        return retVal>0 ? retVal:-1;
+    }
+    
+    public static String retrieveTransliterationStringFromNodeInfoStringContainer(NodeInfoStringContainer container, String originalName, boolean removePrefix){
+        String retVal = "";
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.system_transliteration_kwd)){
+            ArrayList<String> vals = container.descriptorInfo.get(ConstantParameters.system_transliteration_kwd);
+            if(vals!=null && vals.size()>0){
+                String valStr = vals.get(0);
+                if(valStr!=null && valStr.trim().length()>0 ){
+                    retVal = valStr.trim();
+                }
+                else{
+                    retVal = Utilities.getTransliterationString(originalName, removePrefix);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    public static String retrieveTransliterationStringFromNodeInfoSortItemContainer(NodeInfoSortItemContainer container, String originalName, boolean removePrefix){
+        String retVal = "";
+        
+        if(container!=null && container.descriptorInfo.containsKey(ConstantParameters.id_kwd)){
+            ArrayList<SortItem> vals = container.descriptorInfo.get(ConstantParameters.id_kwd);
+            if(vals!=null && vals.size()>0 && vals.get(0)!=null){
+                
+                SortItem valSortItem = vals.get(0);
+                String valStr = valSortItem.getLogNameTransliteration();
+                if(valStr!=null && valStr.trim().length()>0 ){
+                    retVal = valStr.trim();
+                }
+                else{
+                    retVal = Utilities.getTransliterationString(originalName, removePrefix);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    public static ArrayList<String> getStringVectorFromSortItemVector(ArrayList<SortItem> v){
+        
+        ArrayList<String>  returnResults = new ArrayList<String>();
+        if(v!=null){
+            for(SortItem item : v){
+                returnResults.add(item.getLogName());
+            }
+        }
+        return returnResults;
+    }
+    
+    public static ArrayList<SortItem> getSortItemVectorFromStringVector(ArrayList<String> v, boolean removeTransliterationPrefix){
+        
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        if(v!=null){
+            for(String item : v){
+                returnResults.add(new SortItem( item,-1,Utilities.getTransliterationString(item, removeTransliterationPrefix),-1));
+            }
+        }
+        return returnResults;
+    }
+    
+    
+    public static ArrayList<SortItem> getSortItemVectorFromTermsInfo(HashMap<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        if(termsInfo!=null){
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
+                NodeInfoStringContainer targetInfo = termsInfo.get(termName);
+                long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
+                String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
+                long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                returnResults.add(new SortItem(termName,id,transliteration,refId));
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    public static ArrayList<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(HashMap<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        if(termsInfo!=null){
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
+                NodeInfoSortItemContainer targetInfo = termsInfo.get(termName);
+                long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoSortItemContainer(targetInfo);
+                String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoSortItemContainer(targetInfo, termName, removeTransliterationPrefix);
+                long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                returnResults.add(new SortItem(termName,id,transliteration,refId));
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    
+    public static ArrayList<SortItem> getSortItemVectorFromStringVectorAndTermsInfo(ArrayList<String> filterVector, HashMap<String, NodeInfoStringContainer> termsInfo, boolean removeTransliterationPrefix){
+    
+        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        if(termsInfo!=null && filterVector!=null){
+            Iterator<String> termEnum = termsInfo.keySet().iterator();
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
+                if(filterVector.contains(termName)){
+                    NodeInfoStringContainer targetInfo = termsInfo.get(termName);
+                    long refId = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetInfo);
+                    String transliteration = Utilities.retrieveTransliterationStringFromNodeInfoStringContainer(targetInfo, termName, removeTransliterationPrefix);
+                    long id = -1;//retrieveDatabaseIdFromNodeInfoStringContainer(targetInfo);
+                    returnResults.add(new SortItem(termName,id,transliteration,refId));
+                }
+            }
+        }        
+        
+        return returnResults;
+    }
+    
+    
 }
 
 

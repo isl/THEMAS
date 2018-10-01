@@ -123,7 +123,7 @@ _____________________________________________________________________________ --
             
             <table border="0" align="center">
                 
-                <!--  Όνομα Χρήστη: -->
+                <!--  UserName: -->
                 <tr>
                     <td width="15%" align="right">
                         <b>
@@ -141,7 +141,7 @@ _____________________________________________________________________________ --
                     </td>
                 </tr>
                 
-                <!--  Κωδικός Χρήστη: -->
+                <!--  Password: -->
                 <tr>
                     <td width="15%" align="right">
                         <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/passwordprompt/option[@lang=$lang]"/>
@@ -153,14 +153,14 @@ _____________________________________________________________________________ --
                     </td>
                 </tr>
                 
-                <!--  Περιγραφή: -->
+                <!--  User Description: -->
                 <tr>                    
                     <td width="15%" align="right">
                         <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/descriptionprompt/option[@lang=$lang]"/>
                     </td>
                     
                     <td style="color:#898a5e; font-size:9px;">
-                        <input id="newUserDescription_Id" type="text" size="60" name="newDescription_User"/>
+                        <input id="newUserDescription_Id" type="text" style="width:90%;" name="newDescription_User"/>
                         <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/descriptionnote/option[@lang=$lang]"/>
                     </td>
                 </tr>
@@ -181,7 +181,7 @@ _____________________________________________________________________________ --
                 
             </table>
             
-            <!--  Θησαυροί - Γκρουπ -->
+            <!--  Groups - Thesauri -->
             <hr/>
 
             <table border="0" align="center" id="thesaurusGroupTable" style="margin:auto;">
@@ -189,13 +189,13 @@ _____________________________________________________________________________ --
                     <!-- header -->
                     <tr class="contentHeadText" align="center">
                         <td bgcolor="#FFFFFF"></td>
-                        <td style="width:160px;">
+                        <td class="thesaurusFieldWidth">
                             <b>
                                 <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
                             </b>
                         </td>
                         
-                        <td style="width:160px;">
+                        <td class="thesaurusFieldWidth">
                             <b>
                                 <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
                             </b>
@@ -204,32 +204,89 @@ _____________________________________________________________________________ --
                         <td bgcolor="#FFFFFF" style="width:50px;"></td>
                         <td bgcolor="#FFFFFF" ></td>
                     </tr>
-                    
-                    <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName">
-                        <!-- Θησαυρός -->
+                    <!-- HIDDEN row in case there is none role has been assigned to this user. This row will be used for the add button functionality. -->
+                    <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName" class="hiddenInput" style="visibility:collapse;">
+                        <!-- Thesaurus -->
                         <td bgcolor="#FFFFFF" ></td>
-                        <td >
-                            <select id="selectThesaurus_ID" name="selectThesaurus" style="width:160px;">
+                        <td>
+                            <select id="selectThesaurus_ID" name="selectThesaurus" size="1" style="width: 100%;" disabled="disabled">
                                 <xsl:for-each select="$existingThesaurusName">
                                     <xsl:sort select="."/>
                                     <option>
-                                        <xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-                                        <xsl:value-of select="."/>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:choose>
+                                            <xsl:when test="./text()='*'">
+                                                <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:value-of select="."/>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </option>
+                                </xsl:for-each>                                
+                            </select>
+                        </td>
+                        <!-- Group -->
+                        <td>
+                            <select id="selectUserGroup_ID" name="selectUserGroup" size="1" style="width: 100%;" disabled="disabled">
+                                <xsl:for-each select="$THEMASUsersGroupName">
+                                    <option>
+                                        <xsl:variable name="currentChoice" select="."/>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
                                     </option>
                                 </xsl:for-each>
-                                <!-- όλοι -->
-                                <!--
-                                <option>
-                                    <xsl:attribute name="value">*</xsl:attribute>
-                                    <xsl:text>Όλοι</xsl:text>
-                                </option>
-                                -->
+                            </select>
+                        </td>
+                        <td>
+                            <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                <xsl:attribute name="src">
+                                    <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="title">
+                                    <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                            </img>
+                        </td>                                            
+                    </tr>
+
+                                        
+                    
+                    <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName">
+                        <!-- Thesaurus -->
+                        <td bgcolor="#FFFFFF" ></td>
+                        <td>
+                            <select id="selectThesaurus_ID" name="selectThesaurus" style="width: 100%;">
+                                <!--<option value="*">
+                                    <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                </option>-->
+                                <xsl:for-each select="$existingThesaurusName">
+                                    <xsl:sort select="."/>
+                                    <option>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:choose>
+                                            <xsl:when test="./text()='*'">                                                
+                                                <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>                                                
+                                            </xsl:when>
+                                            <xsl:otherwise>                                                
+                                                <xsl:value-of select="."/>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                        
+                                    </option>
+                                </xsl:for-each>                                
                             </select>
                         </td>
                         
-                        <!-- Γκρουπ -->
+                        <!-- Group -->
                         <td >
-                            <select id="selectUserGroup_ID" name="selectUserGroup">
+                            <select id="selectUserGroup_ID" name="selectUserGroup" style="width: 100%;">
                                 <xsl:for-each select="$THEMASUsersGroupName">
                                     <option>
                                         <xsl:variable name="currentChoice" select="."/>
@@ -260,7 +317,7 @@ _____________________________________________________________________________ --
                 
             </table>
           
-            <!-- Προσθήκη: -->
+            <!-- Addition: -->
             <hr/>
   
             
@@ -284,7 +341,7 @@ _____________________________________________________________________________ --
                 </tr>
                 
             </table>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
             </input>
         
@@ -369,7 +426,7 @@ _____________________________________________________________________________ --
                     </td>
                     
                     <td>
-                        <input id="newUserDescription_Id" type="text" size="60" name="newDescription_User" >
+                        <input id="newUserDescription_Id" type="text" style="width:90%;" name="newDescription_User" >
                             <xsl:attribute name="value"><xsl:value-of select="//newUserInfo/description"/></xsl:attribute>
                         </input>
                     </td>
@@ -390,11 +447,11 @@ _____________________________________________________________________________ --
                                 <xsl:if test=" . != '' ">
                                 <xsl:value-of select="$specificlocale/createmerge/inthesaurus/option[@lang=$lang]"/>
                                 <xsl:value-of select="."/>
-                                <input name="selectThesaurus" size="2" type="text" style="visibility:hidden; height:5px;">
+                                <input name="selectThesaurus" size="2" type="text" class="hiddenInput">
                                     <xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
                                 </input>
                             </xsl:if>
-                            <input name="selectUserGroup" size="2" type="text" style="visibility:hidden; height:5px;"><xsl:attribute name="value"><xsl:value-of select="./@group"/></xsl:attribute></input>
+                            <input name="selectUserGroup" size="2" type="text" class="hiddenInput"><xsl:attribute name="value"><xsl:value-of select="./@group"/></xsl:attribute></input>
                             <br/>
                         </xsl:for-each>
                     </td>
@@ -499,9 +556,9 @@ _____________________________________________________________________________ --
             </legend>
             <br/>
             <table border="0" width="100%" align="center">
-                <!--  Όνομα Χρήστη για Login: -->
+                <!--  user Login name: -->
                 <tr>
-                    <td width="15%" align="right">
+                    <td width="18%" align="right">
                         <b>
                             <xsl:value-of select="$specificlocale/edituser/username/option[@lang=$lang]"/>
                         </b>
@@ -520,46 +577,267 @@ _____________________________________________________________________________ --
                         </input>
                     </td>
                 </tr>
-                
-                <!--  Περιγραφή: -->
+                <!--  Description -->
                 <tr>
-                    <td width="15%" align="right">
+                    <td width="18%" align="right">
                         <b>
                             <xsl:value-of select="$specificlocale/edituser/description/option[@lang=$lang]"/>
                         </b>
                     </td>
                     
                     <td>
-                        <input id="newUserDescription_Id" type="text" size="60" name="newDescription_User">
-                            <xsl:attribute name="value"><xsl:value-of select="//userForEditingInfo/description"/></xsl:attribute>
+                        <input id="newUserDescription_Id" type="text" style="width:90%;" name="newDescription_User">
+                            
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="//userForEditingInfo/description"/>
+                            </xsl:attribute>
+                            
                         </input>
                     </td>
                 </tr>
-                
-                <!--  Ρόλοι: -->
-                <tr>
-                    <td width="15%" align="right">
+                <!-- is Admin checkBox -->
+                <xsl:if test="//THEMASUserInfo/userGroup = 'ADMINISTRATOR' ">
+                    <tr>
+                        <td width="15%" align="right">
+                            <b>
+                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/adminprompt/option[@lang=$lang]"/>
+                            </b>
+                        </td>
+                        
+                        <td>
+                            <input id="administratorCheckBoxId" name="administratorCheckBox" type="checkbox" onclick="administratorCheckBoxClick(this)">
+                                <xsl:if test="count(//thesaurus[./@group ='ADMINISTRATOR']) > 0">
+                                    <xsl:attribute name="checked">
+                                        <xsl:text>checked</xsl:text>                                            
+                                    </xsl:attribute>
+                                </xsl:if>                                
+                            </input>
+                        </td>
+                    </tr>
+                </xsl:if>
+                <!--  User roles: -->
+                <tr id="rolesDefinitionRow">
+                    <xsl:if test="count(//thesaurus[./@group ='ADMINISTRATOR']) > 0">
+                        <xsl:attribute name="style">
+                            <xsl:text>display:none;</xsl:text>                                            
+                        </xsl:attribute>
+                    </xsl:if>
+                    <td width="18%" align="right" style="vertical-align: text-top;">
                         <b>
                             <xsl:value-of select="$specificlocale/edituser/groups/option[@lang=$lang]"/>
                         </b>
-                    </td>
-                    
+                    </td>                     
                     <td>
-                        <xsl:for-each select="//userForEditingInfo/thesaurus">
-                            <xsl:variable name="currentChoice" select="./@group"/>
-                            <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
-                            <xsl:if test=" . != '' ">
-                                <xsl:value-of select="$specificlocale/edituser/inthesaurus/option[@lang=$lang]"/>
-                                <xsl:value-of select="."/>
-                            </xsl:if>
-                            <br/>
-                        </xsl:for-each>
+                        <xsl:choose>
+                            <xsl:when test="//THEMASUserInfo/userGroup = 'ADMINISTRATOR'">
+                                <xsl:variable name="existingThesaurusName" select="//existingThesaurus/existingThesaurusName"/>
+                                <xsl:variable name="THEMASUsersGroupName" select="//THEMASUsersGroups/THEMASUsersGroupName"/>
+                                
+                                <table border="0" align="center" id="thesaurusGroupTable" style="width: 500px;">
+                                    <tbody id="thesaurusGroupBody">
+                                        <!-- header labels -->
+                                        <tr class="contentHeadText" align="center">
+                                            <td class="thesaurusFieldWidth">
+                                                <b>
+                                                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
+                                                </b>
+                                            </td>
+                                            
+                                            <td class="thesaurusFieldWidth">
+                                                <b>
+                                                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
+                                                </b>
+                                            </td>
+                                            
+                                            <td bgcolor="#FFFFFF" style="width:50px;"></td>                                            
+                                        </tr>
+                                        
+                                        <!-- HIDDEN row in case there is none role has been assigned to this user. This row will be used for the add button functionality. -->
+                                        <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName" class="hiddenInput" style="visibility:collapse;">
+                                            <!-- Thesaurus -->
+                                            <td  class="thesaurusFieldWidth">
+                                                <select id="selectThesaurus_ID" name="selectThesaurus" class="thesaurusFieldWidth" size="1" disabled="disabled">
+                                                    <xsl:for-each select="$existingThesaurusName">
+                                                        <xsl:sort select="."/>
+                                                        <option>
+                                                            <xsl:attribute name="value">
+                                                                <xsl:value-of select="."/>
+                                                            </xsl:attribute>
+                                                            <xsl:choose>
+                                                                <xsl:when test="./text()='*'">
+                                                                    <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                                </xsl:when>
+                                                                <xsl:otherwise>
+                                                                    <xsl:value-of select="."/>
+                                                                </xsl:otherwise>
+                                                            </xsl:choose>
+                                                        </option>
+                                                    </xsl:for-each>                                
+                                                </select>
+                                            </td>
+                                            <!-- Group -->
+                                            <td style="width:150px;">
+                                                <select id="selectUserGroup_ID" name="selectUserGroup" size="1" disabled="disabled">
+                                                    <xsl:for-each select="$THEMASUsersGroupName">
+                                                        <option>
+                                                            <xsl:variable name="currentChoice" select="."/>
+                                                            <xsl:attribute name="value">
+                                                                <xsl:value-of select="."/>
+                                                            </xsl:attribute>
+                                                            <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
+                                                        </option>
+                                                    </xsl:for-each>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                                    </xsl:attribute>
+                                                </img>
+                                            </td>                                            
+                                        </tr>
+                                        <!-- for each user role -->
+                                        <xsl:for-each select="//userForEditingInfo/thesaurus">
+                                            <xsl:variable name="currentChoice" select="./@group"/>
+                                            <xsl:variable name="thesaurusChoice" select="."/>
+                                            <!--<xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>-->
+                                            <xsl:if test=" $thesaurusChoice != '' ">
+                                                
+                                                <tr align="center" id="thesaurusGroupCouple" name="thesaurusGroupCoupleName">
+                                                    
+                                                    <td>
+                                                        <select id="selectThesaurus_ID" name="selectThesaurus" class="thesaurusFieldWidth">
+                                                            <xsl:for-each select="$existingThesaurusName">
+                                                                <xsl:sort select="."/>
+                                                                <option>
+                                                                    <xsl:if test="$thesaurusChoice = ./text()">
+                                                                        <xsl:attribute name="selected">
+                                                                            <xsl:text>selected</xsl:text>
+                                                                        </xsl:attribute>
+                                                                    </xsl:if>
+                                                                    <xsl:attribute name="value">
+                                                                        <xsl:value-of select="."/>
+                                                                    </xsl:attribute>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="./text()='*'">
+                                                                            <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                                        </xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:value-of select="."/>
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </option>
+                                                            </xsl:for-each>                                
+                                                        </select>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <select id="selectUserGroup_ID" name="selectUserGroup">
+                                                            <xsl:for-each select="$THEMASUsersGroupName">
+                                                                <option>
+                                                                    <xsl:variable name="optionVal" select="."/>
+                                                                    <xsl:if test="$currentChoice = $optionVal">
+                                                                        <xsl:attribute name="selected">
+                                                                            <xsl:text>selected</xsl:text>
+                                                                        </xsl:attribute>
+                                                                    </xsl:if>
+                                                                    <xsl:attribute name="value">
+                                                                        <xsl:value-of select="."/>
+                                                                    </xsl:attribute>
+                                                                    <xsl:value-of select="$specificlocale/usergroups/node()[name()=$optionVal]/option[@lang=$lang]"/>
+                                                                </option>
+                                                            </xsl:for-each>
+                                                        </select>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                                            <xsl:attribute name="src">
+                                                                <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                                            </xsl:attribute>
+                                                            <xsl:attribute name="title">
+                                                                <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                                            </xsl:attribute>
+                                                        </img>
+                                                    </td>
+
+                                                <!--<xsl:value-of select="$specificlocale/edituser/inthesaurus/option[@lang=$lang]"/>
+                                                <xsl:choose>
+                                                    <xsl:when test="./text()='*'">
+                                                        <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:otherwise>
+                                                </xsl:choose>             
+                                                -->                   
+                                                
+                                                </tr>
+                                            </xsl:if>
+                                            
+                                        </xsl:for-each>
+                                  
+                                    
+                                    </tbody>
+                                </table>
+                                
+                                <!-- Addition -->
+                                
+                                <hr/>
+
+                                <table style="width:100px; vertical-align:middle;">
+                                    <tr>
+                                        <td style="text-align:right;">
+                                            <xsl:value-of select="$specificlocale/create/addition/option[@lang=$lang]"/>
+                                        </td>
+                                        <td>
+                                            <img width="20" height="20" border="0" onClick="AddThesaurusGroupInput('thesaurusGroupBody',  'thesaurusGroupCouple');">
+                                                <xsl:attribute name="src">
+                                                    <xsl:value-of select="$specificlocale/create/addimage/src/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="title">
+                                                    <xsl:value-of select="$specificlocale/create/addimage/title/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                            </img>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <br/>
+                                
+                            </xsl:when>
+                            <xsl:otherwise>
+                                 <xsl:for-each select="//userForEditingInfo/thesaurus">
+                                     <xsl:variable name="currentChoice" select="./@group"/>
+                                     <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
+                                     <xsl:if test=" . != '' ">
+                                         <xsl:value-of select="$specificlocale/edituser/inthesaurus/option[@lang=$lang]"/>
+                                         <xsl:choose>
+                                             <xsl:when test="./text()='*'">
+                                                 <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                             </xsl:when>
+                                             <xsl:otherwise>
+                                                 <xsl:value-of select="."/>
+                                             </xsl:otherwise>
+                                         </xsl:choose>                                
+                                     </xsl:if>
+                                     <br/>
+                                 </xsl:for-each>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        
+            
+                       
                     </td>
                 </tr>
                 
-                <!--  Διαγραφή Κωδικού check box -->
+                <!--  Delete password check box -->
                 <tr>
-                    <td width="15%" align="right">
+                    <td width="18%" align="right">
                         <b>
                             <xsl:value-of select="$specificlocale/edituser/deletepassword/option[@lang=$lang]"/>
                         </b>
@@ -569,16 +847,14 @@ _____________________________________________________________________________ --
                         <input id="deletePasswordCheckBoxId" name="deletePasswordCheckBox" type="checkbox"/>
                     </td>
                 </tr>
-                
                 <tr>
                     <td colspan="2">
                         <hr/>
                     </td>
                 </tr>
-                
-                <!--  Διαγραφή Χρήστη check box -->
+                <!--  Delete User check box -->
                 <tr>
-                    <td width="15%" align="right">
+                    <td width="18%" align="right">
                         <b>
                             <xsl:value-of select="$specificlocale/edituser/deleteuser/option[@lang=$lang]"/>
                         </b>
@@ -588,13 +864,12 @@ _____________________________________________________________________________ --
                         <input id="deleteUserCheckBoxId" name="deleteUserCheckBox" type="checkbox" onclick="deleteUserCheckBoxClick('deleteUserCheckBoxId')"/>
                     </td>
                 </tr>
-                
             </table>
             
-            <input id="targetUserID" type="text" name="targetUser" style="visibility:hidden;">
+            <input id="targetUserID" type="text" name="targetUser" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
             </input>
-            <input type="text" name="targetEditField" style="visibility:hidden;">
+            <input type="text" name="targetEditField" class="hiddenInput">
                 <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
             </input>
             
@@ -628,124 +903,132 @@ _____________________________________________________________________________ --
 
 <!-- _____________________________________________________________________________
 
-TEMPLATE FOR RENAME OF USER TO A USER THAT EXISTS IN DB BUT NOT IN WebAppUSERS.xml
-_______________________________________________________________________________-->
-        <xsl:template name="rename_target_and_older_user">
-            <xsl:param name="specificlocale"/>
-            <xsl:param name="lang" />
-            <xsl:variable name="targetRenameUser" select="//targetUser"/>
-            <xsl:variable name="olderRename" select="//olderUser"/>
-            <fieldset id="rename_target_and_older_user_edit">
-                <legend>
-                    <xsl:value-of select="$specificlocale/editusermerge/title/option[@lang=$lang]"/>
-                </legend>          
-                <br/>
-                <table>
-                    <tr>
-                        <td>
-                            <b>
-                                <xsl:value-of select="$specificlocale/editusermerge/renameinfo/option[@lang=$lang]"/>
-                            </b>
-                        </td>
-                        <td>
-                            <input size="30" name="targetUser" disabled="disabled" class="disabledbutton" >
-                                <xsl:attribute name="value"><xsl:value-of select="$targetRenameUser"/></xsl:attribute>
-                            </input>
-                        </td>
-                        <td>
-                            <b>
-                                <xsl:value-of select="$specificlocale/editusermerge/renameto/option[@lang=$lang]"/>
-                            </b>
-                        </td>
-                        <td>
-                            <input size="30" name="olderUser" disabled="disabled" class="disabledbutton" >
-                                <xsl:attribute name="value"><xsl:value-of select="$olderRename"/></xsl:attribute>
-                            </input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>
-                                <xsl:value-of select="$specificlocale/editusermerge/withdescription/option[@lang=$lang]"/>
-                            </b>
-                        </td>
-                        <td colspan="3">
-                            <input id="targetUserDescription_Id" type="text" size="60" name="targetDescription_User">
-                                <xsl:attribute name="value"><xsl:value-of select="//targetUserDescription"/></xsl:attribute>
-                            </input>
-                        </td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <td colspan="2">
-                            <br/>
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart1/option[@lang=$lang]"/>
-                            <xsl:value-of select="$olderRename"/>
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart2/option[@lang=$lang]"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart3/option[@lang=$lang]"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td valign="middle">
-                            <input name="olderUserRenameChoice" type="radio" value="CommitInitialRenameUser" />
-                        </td>
-                        <td>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice1a/option[@lang=$lang]"/>
-                            <b>
-                                <xsl:value-of select="$targetRenameUser"/>
-                            </b>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice1b/option[@lang=$lang]"/>
-                            <b>
-                                <xsl:value-of select="$olderRename"/>
-                            </b>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice1c/option[@lang=$lang]"/>
-                        </td>
-                    
-                    </tr>
-                    <tr>
-                        <td valign="middle">
-                            <input name="olderUserRenameChoice" type="radio" value="RenameOlderAndThenTargetUser" checked="checked"/>
-                        </td>
-                        <td>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice2a/option[@lang=$lang]"/>
-                            <b>
-                                <xsl:value-of select="$olderRename"/>
-                            </b>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice2b/option[@lang=$lang]"/>
-                            <input size="30" id="olderUserRenameName_Id" name="olderUserRenameName" type="text" /> 
-                            <xsl:value-of select="$specificlocale/editusermerge/choice2c/option[@lang=$lang]"/>
-                            <b>
-                                <xsl:value-of select="$targetRenameUser"/>
-                            </b>
-                            <xsl:value-of select="$specificlocale/editusermerge/choice2d/option[@lang=$lang]"/>
-                            <b>
-                                <xsl:value-of select="$olderRename"/>
-                            </b>
-                            <xsl:text>.</xsl:text>
-                        </td>
-                    </tr>
-                    
-                </table>
-                
-                <input type="text" name="targetEditField" style="visibility:hidden;">
-                    <xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
-                </input>
-            </fieldset>
+    TEMPLATE FOR RENAME OF USER TO A USER THAT EXISTS IN DB BUT NOT IN WebAppUSERS.xml
+    _______________________________________________________________________________-->
+    <xsl:template name="rename_target_and_older_user">
+        <xsl:param name="specificlocale"/>
+        <xsl:param name="lang" />
+        <xsl:variable name="targetRenameUser" select="//targetUser"/>
+        <xsl:variable name="olderRename" select="//olderUser"/>
+        <fieldset id="rename_target_and_older_user_edit">
+            <legend>
+                <xsl:value-of select="$specificlocale/editusermerge/title/option[@lang=$lang]"/>
+            </legend>          
             <br/>
-            <table width="100%">
+            <table>
                 <tr>
-                    <td id="resultOf_Edit">
+                    <td>
+                        <b>
+                            <xsl:value-of select="$specificlocale/editusermerge/renameinfo/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <input size="30" name="targetUser" disabled="disabled" class="disabledbutton" >
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="$targetRenameUser"/>
+                            </xsl:attribute>
+                        </input>
+                    </td>
+                    <td>
+                        <b>
+                            <xsl:value-of select="$specificlocale/editusermerge/renameto/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <input size="30" name="olderUser" disabled="disabled" class="disabledbutton" >
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="$olderRename"/>
+                            </xsl:attribute>
+                        </input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>
+                            <xsl:value-of select="$specificlocale/editusermerge/withdescription/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td colspan="3">
+                        <input id="targetUserDescription_Id" type="text" style="width:90%;" name="targetDescription_User">
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="//targetUserDescription"/>
+                            </xsl:attribute>
+                        </input>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td colspan="2">
                         <br/>
+                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart1/option[@lang=$lang]"/>
+                        <xsl:value-of select="$olderRename"/>
+                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart2/option[@lang=$lang]"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart3/option[@lang=$lang]"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="middle">
+                        <input name="olderUserRenameChoice" type="radio" value="CommitInitialRenameUser" />
+                    </td>
+                    <td>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice1a/option[@lang=$lang]"/>
+                        <b>
+                            <xsl:value-of select="$targetRenameUser"/>
+                        </b>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice1b/option[@lang=$lang]"/>
+                        <b>
+                            <xsl:value-of select="$olderRename"/>
+                        </b>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice1c/option[@lang=$lang]"/>
                     </td>
                     
-                    <td valign="bottom" align="right" width="220">
-                        <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','rename_target_and_older_user_edit', '','selectedIndexOnly')">
-                            <xsl:attribute name="value">
+                </tr>
+                <tr>
+                    <td valign="middle">
+                        <input name="olderUserRenameChoice" type="radio" value="RenameOlderAndThenTargetUser" checked="checked"/>
+                    </td>
+                    <td>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice2a/option[@lang=$lang]"/>
+                        <b>
+                            <xsl:value-of select="$olderRename"/>
+                        </b>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice2b/option[@lang=$lang]"/>
+                        <input size="30" id="olderUserRenameName_Id" name="olderUserRenameName" type="text" /> 
+                        <xsl:value-of select="$specificlocale/editusermerge/choice2c/option[@lang=$lang]"/>
+                        <b>
+                            <xsl:value-of select="$targetRenameUser"/>
+                        </b>
+                        <xsl:value-of select="$specificlocale/editusermerge/choice2d/option[@lang=$lang]"/>
+                        <b>
+                            <xsl:value-of select="$olderRename"/>
+                        </b>
+                        <xsl:text>.</xsl:text>
+                    </td>
+                </tr>
+                    
+            </table>
+                
+            <input type="text" name="targetEditField"  class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetEditField"/>
+                </xsl:attribute>
+            </input>
+        </fieldset>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td id="resultOf_Edit">
+                    <br/>
+                </td>
+                    
+                <td valign="bottom" align="right" width="220">
+                    <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','rename_target_and_older_user_edit', '','selectedIndexOnly')">
+                        <xsl:attribute name="value">
                             <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
                         </xsl:attribute>
                     </input>
@@ -755,349 +1038,475 @@ _______________________________________________________________________________-
                             <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
                         </xsl:attribute>
                     </input>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+    <!-- _____________________________________________________________________________
+                      TEMPLATE: Share_Thesaurus
+    _____________________________________________________________________________ -->
+    <xsl:template name="Share_Thesaurus">
+        <xsl:param name="specificlocale"/>
+        <xsl:param name="lang" />
+        <fieldset id="edit_share_thesaurus">
+            <legend>
+                <xsl:value-of select="$specificlocale/sharethesaurus/title/option[@lang=$lang]"/>
+                <xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
+            </legend>
+            <br/>
+            <xsl:variable name="currentUserGroup" select="//THEMASUserInfo/userGroup"/>
+                                        
+            <table border="0" align="center" id="userGroupTable" style="margin:auto;">
+                <tbody id="userGroupBody">
+                    <!-- header -->
+                    <tr class="contentHeadText" align="center" >
+                        <td bgcolor="#FFFFFF"></td>
+                                    
+                        <td style="width:150px;">
+                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/user/option[@lang=$lang]"/>
+                        </td>
+                                    
+                        <td style="width:150px;">
+                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/usergroup/option[@lang=$lang]"/>
+                        </td>
+                                    
+                        <td bgcolor="#FFFFFF" style="width:150px;"></td>
+                                    
+                        <td bgcolor="#FFFFFF"></td>
+				
+                    </tr>
+                                
+                    <!-- _________________________________ HIDDEN row in case there is none user for this thesaurus _________________________________ 
+                    <xsl:if test="count(//ThesaurusUsers_Groups/user) = 0">-->
+                    <tr align="center" id="userGroupCouple" name="userGroupCoupleName" class="hiddenInput" style="visibility:collapse;">
+                        <!-- User -->
+                        <td></td>
+                        <td style="width:150px;">
+                            <select id="selectUser_ID" name="selectUser" size="1" disabled="disabled">
+                                <xsl:for-each select="//AllTHEMASUsers/user">
+                                    <xsl:sort select="."/>
+                                    <option>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="."/>
+                                    </option>
+                                </xsl:for-each>
+                            </select>
+                        </td>
+                        <!-- Group -->
+                        <td style="width:150px;">
+                            <select id="selectUserGroup_ID" name="selectUserGroup" disabled="disabled">
+                                <xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName">
+                                    <!-- <xsl:sort select="."/> -->
+                                    <!-- do not sort groups (better to be displayed with the specifies order in XML) -->
+                                    <option>
+                                        <xsl:attribute name="value">
+                                            <xsl:value-of select="."/>
+                                        </xsl:attribute>
+                                        <xsl:variable name="currentChoice" select="."/>
+                                        <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>                                
+                                    </option>
+                                </xsl:for-each>
+                            </select>
+                        </td>
+                        <!-- icon (-) -->
+                        <td>
+                            <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                <xsl:attribute name="src">
+                                    <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="title">
+                                    <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                </xsl:attribute>
+                            </img>
+                                                                    
+                        </td>
+                        <td></td>
+                    </tr>
+                        
+                        
+                    <!-- for each user-group couple with global thesaurus access -->
+                    <xsl:for-each select="//ThesaurusUsers_Groups/allThesauriUser">
+                        <xsl:variable name="currentAllThesUser">
+                            <xsl:value-of select="."/>
+                        </xsl:variable>
+                        <xsl:variable name="currentAllThesUserGroup">
+                            <xsl:value-of select="./@group"/>
+                        </xsl:variable>
+                        <tr align="center" id="userGroupCouple" name="userGroupCoupleName">
+                            <td></td>                                
+                            <xsl:choose>
+                                <xsl:when test="$currentUserGroup='ADMINISTRATOR'">
+                                    <td>
+                                        <select size="1" disabled="disabled">
+                                            <xsl:for-each select="//AllTHEMASUsers/user">
+                                                <xsl:sort select="."/>
+                                                <option>
+                                                    <xsl:if test=". = $currentAllThesUser ">
+                                                        <xsl:attribute name="selected">true</xsl:attribute>
+                                                    </xsl:if>
+                                                    <xsl:attribute name="value">
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:attribute>
+                                                    <xsl:value-of select="."/>
+                                                </option>
+                                            </xsl:for-each>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select  disabled="disabled">
+                                            <xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName" >
+                                                <option>                                                                                    
+                                                    <xsl:if test=". = $currentAllThesUserGroup">
+                                                        <xsl:attribute name="selected">true</xsl:attribute>
+                                                    </xsl:if>
+                                                    <xsl:attribute name="value">
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:attribute>
+                                                    <xsl:variable name="currentAllThesChoice" select="."/>
+                                                    <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentAllThesChoice]/option[@lang=$lang]"/>
+                                                </option>
+                                            </xsl:for-each>
+                                        </select>
+                                    </td>
+                                    <!--<td>
+                                        <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                            <xsl:attribute name="src">
+                                                <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                            </xsl:attribute>
+                                            <xsl:attribute name="title">
+                                                <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                            </xsl:attribute>
+                                        </img>
+                                    </td>-->
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <td>
+                                        <select size="1" disabled="disabled">
+                                            <xsl:for-each select="//AllTHEMASUsers/user">
+                                                <xsl:sort select="."/>
+                                                <option>
+                                                    <xsl:if test=". = $currentAllThesUser ">
+                                                        <xsl:attribute name="selected">true</xsl:attribute>
+                                                    </xsl:if>
+                                                    <xsl:attribute name="value">
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:attribute>
+                                                    <xsl:value-of select="."/>
+                                                </option>
+                                            </xsl:for-each>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select  disabled="disabled">
+                                            <xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName" >
+                                                <option>                                                                                    
+                                                    <xsl:if test=". = $currentAllThesUserGroup ">
+                                                        <xsl:attribute name="selected">true</xsl:attribute>
+                                                    </xsl:if>
+                                                    <xsl:attribute name="value">
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:attribute>
+                                                    <xsl:variable name="currentAllThesChoice" select="."/>
+                                                    <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentAllThesChoice]/option[@lang=$lang]"/>
+                                                </option>
+                                            </xsl:for-each>
+                                        </select>
+                                    </td>
+                                    
+                                                                    
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <td style="vertical-align: bottom;">
+                                <label style="font-style:italic;" diabled="disabled">
+                                    <xsl:value-of select="$specificlocale/sharethesaurus/allThesauriDisplayText/option[@lang=$lang]"/>
+                                </label>
+                            </td>    
+                            <td></td>
+                        </tr>
+                    </xsl:for-each>
+                                        
+                                        
+                    <!-- for each user-group couple -->
+                    <xsl:for-each select="//ThesaurusUsers_Groups/user">
+                        <xsl:variable name="currentUser">
+                            <xsl:value-of select="."/>
+                        </xsl:variable>
+                        <xsl:variable name="currentUserGroup">
+                            <xsl:value-of select="./@group"/>
+                        </xsl:variable>
+                        <tr align="center" id="userGroupCouple" name="userGroupCoupleName">
+                            <!-- Χρήστης -->
+                            <td></td>
+                            <td>
+                                <select id="selectUser_ID" name="selectUser" size="1">
+                                    <xsl:for-each select="//AllTHEMASUsers/user">
+                                        <xsl:sort select="."/>
+                                        <option>
+                                            <xsl:if test=". = $currentUser ">
+                                                <xsl:attribute name="selected">true</xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="."/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="."/>
+                                        </option>
+                                    </xsl:for-each>
+                                </select>
+                            </td>
+                            <!-- Γκρουπ -->
+                            <td>
+                                <select id="selectUserGroup_ID" name="selectUserGroup">
+                                    <xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName">
+                                        <!-- <xsl:sort select="."/> -->
+                                        <!-- do not sort groups (better to be displayed with the specifies order in XML) -->
+                                        <option>
+                                                                                    
+                                            <xsl:if test=". = $currentUserGroup ">
+                                                <xsl:attribute name="selected">true</xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:attribute name="value">
+                                                <xsl:value-of select="."/>
+                                            </xsl:attribute>
+                                            <xsl:variable name="currentChoice" select="."/>
+                                            <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
+                                        </option>
+                                    </xsl:for-each>
+                                </select>
+                            </td>
+                            <!-- icon (-) -->
+                            <td>
+                                <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
+                                    <xsl:attribute name="src">
+                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="title">
+                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                    </xsl:attribute>
+                                </img>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </xsl:for-each>
+                </tbody>
+            </table>
+            <!-- Add row: -->
+            <hr/>
+            <table border="0" align="center" id="TableWithPlusIconId" style="margin:auto;">
+                <tr>
+                    <td/>
+                    <td width="50%" align="right" valign="middle">
+                        <xsl:value-of select="$specificlocale/sharethesaurus/addition/option[@lang=$lang]"/>                                                
+                    </td>
+                    <td width="50%" align="left" valign="middle">
+                        <img width="20" height="20" border="0" onClick="AddUserGroupInput('userGroupBody',  'userGroupCouple');"  align="bottom">
+                            <xsl:attribute name="src">
+                                <xsl:value-of select="$specificlocale/sharethesaurus/addimage/src/option[@lang=$lang]"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="title">
+                                <xsl:value-of select="$specificlocale/sharethesaurus/addimage/title/option[@lang=$lang]"/>
+                            </xsl:attribute>
+                        </img>
+                    </td>
+                    <td/>
+                </tr>
+            </table>
+            <input type="text" name="targetUser" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetUser"/>
+                </xsl:attribute>
+            </input>
+            <input type="text" name="targetEditField" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetEditField"/>
+                </xsl:attribute>
+            </input>
+        </fieldset>
+        <!-- _______________ END of fieldset ______________ -->
+        <table width="100%">
+            <tr>
+                <td id="resultOf_Edit">
+                    <br/>
+                </td>
+            </tr>
+            <tr>
+                <td valign="bottom" align="right">
+                    <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_share_thesaurus', '','selectedIndexOnly')">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
+					&#160;
+                    <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+        
+    <!-- _____________________________________________________________________________
+                      TEMPLATE: Edit_Password
+    _____________________________________________________________________________ -->
+    <xsl:template name="Edit_Password">
+        <xsl:param name="specificlocale"/>
+        <xsl:param name="lang" />
+        <fieldset id="edit_password">
+            <legend>
+                <xsl:value-of select="$specificlocale/editpassword/title/option[@lang=$lang]"/>
+            </legend>
+            <br/>
+            <table border="0" width="100%" align="center">
+                <!--  Παλιός Κωδικός: -->
+                <tr>
+                    <td width="15%" align="right">
+                        <b>
+                            <xsl:value-of select="$specificlocale/editpassword/oldcode/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <input id="oldUserPassword_Id" type="password" size="30" name="oldUserPassword">
+                        </input>
+                    </td>
+                </tr>
+                <!--  Νέος Κωδικός: -->
+                <tr>
+                    <td width="15%" align="right">
+                        <b>
+                            <xsl:value-of select="$specificlocale/editpassword/newcode/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <input id="newUserPassword_Id1" type="password" size="30" name="newUserPassword1">
+                        </input>
+                    </td>
+                </tr>
+                <!--  Επιβεβαίωση Κωδικού: -->
+                <tr>
+                    <td width="15%" align="right">
+                        <b>
+                            <xsl:value-of select="$specificlocale/editpassword/confirmcode/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <input id="newUserPassword_Id2" type="password" size="30" name="newUserPassword2">
+                        </input>
                     </td>
                 </tr>
             </table>
-        </xsl:template>
-	<!-- _____________________________________________________________________________
-			TEMPLATE: Share_Thesaurus
-      _____________________________________________________________________________ -->
-	<xsl:template name="Share_Thesaurus">
-            <xsl:param name="specificlocale"/>
-            <xsl:param name="lang" />
-		<fieldset id="edit_share_thesaurus">
-			<legend>
-				<xsl:value-of select="$specificlocale/sharethesaurus/title/option[@lang=$lang]"/>
-				<xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
-			</legend>
-			<br/>
-			<table border="0" align="center" id="userGroupTable" style="margin:auto;">
-                            <tbody id="userGroupBody">
-                                <!-- header -->
-                                <tr class="contentHeadText" align="center" >
-                                    <td bgcolor="#FFFFFF"></td>
-                                    
-                                    <td style="width:150px;">
-                                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/user/option[@lang=$lang]"/>
-                                    </td>
-                                    
-                                    <td style="width:150px;">
-                                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/usergroup/option[@lang=$lang]"/>
-                                    </td>
-                                    
-                                    <td bgcolor="#FFFFFF" style="width:50px;"></td>
-                                    
-                                    <td bgcolor="#FFFFFF"></td>
-				
-                                </tr>
-                                
-					<!-- _________________________________ HIDDEN row in case there is none user for this thesaurus _________________________________ -->
-					<xsl:if test="count(//ThesaurusUsers_Groups/user) = 0">
-						<tr align="center" id="userGroupCouple" name="userGroupCoupleName" style="visibility:hidden;">
-							<!-- Χρήστης -->
-                                                        <td></td>
-							<td style="width:150px;">
-								<select id="selectUser_ID" name="selectUser" size="1">
-									<xsl:for-each select="//AllTHEMASUsers/user">
-										<xsl:sort select="."/>
-										<option>
-											<xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-											<xsl:value-of select="."/>
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-							<!-- Γκρουπ -->
-							<td style="width:150px;">
-								<select id="selectUserGroup_ID" name="selectUserGroup">
-									<xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName">
-										<!-- <xsl:sort select="."/> -->
-										<!-- do not sort groups (better to be displayed with the specifies order in XML) -->
-										<option>
-											<xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-											<xsl:variable name="currentChoice" select="."/>
-                                                                                        <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>                                
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-							<!-- icon (-) -->
-							<td>
-								<img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
-                                                                    <xsl:attribute name="src">
-                                                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
-                                                                    </xsl:attribute>
-                                                                    <xsl:attribute name="title">
-                                                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
-                                                                    </xsl:attribute>
-                                                                </img>
-                                                                    
-							</td>
-                                                        <td></td>
-						</tr>
-					</xsl:if>
-                                        
-					<!-- for each user-group couple -->
-					<xsl:for-each select="//ThesaurusUsers_Groups/user">
-						<xsl:variable name="currentUser">
-							<xsl:value-of select="."/>
-						</xsl:variable>
-						<xsl:variable name="currentUserGroup">
-							<xsl:value-of select="./@group"/>
-						</xsl:variable>
-						<tr align="center" id="userGroupCouple" name="userGroupCoupleName">
-							<!-- Χρήστης -->
-                                                        <td></td>
-							<td>
-								<select id="selectUser_ID" name="selectUser" size="1">
-									<xsl:for-each select="//AllTHEMASUsers/user">
-										<xsl:sort select="."/>
-										<option>
-											<xsl:if test=". = $currentUser ">
-												<xsl:attribute name="selected">true</xsl:attribute>
-											</xsl:if>
-											<xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-											<xsl:value-of select="."/>
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-							<!-- Γκρουπ -->
-							<td>
-								<select id="selectUserGroup_ID" name="selectUserGroup">
-									<xsl:for-each select="//THEMASUsersGroups/THEMASUsersGroupName">
-										<!-- <xsl:sort select="."/> -->
-										<!-- do not sort groups (better to be displayed with the specifies order in XML) -->
-										<option>
-                                                                                    
-											<xsl:if test=". = $currentUserGroup ">
-												<xsl:attribute name="selected">true</xsl:attribute>
-											</xsl:if>
-											<xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-											<xsl:variable name="currentChoice" select="."/>
-                                                                                        <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-							<!-- icon (-) -->
-							<td>
-								<img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
-                                                                    <xsl:attribute name="src">
-                                                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
-                                                                    </xsl:attribute>
-                                                                    <xsl:attribute name="title">
-                                                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
-                                                                    </xsl:attribute>
-                                                                </img>
-							</td>
-                                                        <td></td>
-						</tr>
-					</xsl:for-each>
-				</tbody>
-			</table>
-			<!-- Προσθήκη: -->
-			<hr/>
-			<table border="0" align="center" id="TableWithPlusIconId" style="margin:auto;">
-				<tr>
-                                    <td/>
-					<td width="50%" align="right" valign="middle">
-						<xsl:value-of select="$specificlocale/sharethesaurus/addition/option[@lang=$lang]"/>                                                
-					</td>
-					<td width="50%" align="left" valign="middle">
-						<img width="20" height="20" border="0" onClick="AddUserGroupInput('userGroupBody',  'userGroupCouple');"  align="bottom">
-                                                    <xsl:attribute name="src">
-                                                        <xsl:value-of select="$specificlocale/sharethesaurus/addimage/src/option[@lang=$lang]"/>
-                                                    </xsl:attribute>
-                                                    <xsl:attribute name="title">
-                                                        <xsl:value-of select="$specificlocale/sharethesaurus/addimage/title/option[@lang=$lang]"/>
-                                                    </xsl:attribute>
-                                                </img>
-					</td>
-					<td/>
-				</tr>
-			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
-			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
-			</input>
-		</fieldset>
-		<!-- _______________ END of fieldset ______________ -->
-		<table width="100%">
-			<tr>
-				<td id="resultOf_Edit">
-					<br/>
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom" align="right">
-					<input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_share_thesaurus', '','selectedIndexOnly')">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
+            <input type="text" name="targetUser" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetUser"/>
+                </xsl:attribute>
+            </input>
+            <input type="text" name="targetEditField" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetEditField"/>
+                </xsl:attribute>
+            </input>
+        </fieldset>
+        <!-- _______________ END of fieldset ______________ -->
+        <table width="100%">
+            <tr>
+                <td id="resultOf_Edit">
+                    <br/>
+                </td>
+            </tr>
+            <tr>
+                <td valign="bottom" align="right">
+                    <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_password', '','selectedIndexOnly')">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
 					&#160;
-                                        <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
-				</td>
-			</tr>
-		</table>
-	</xsl:template>
-        
-	<!-- _____________________________________________________________________________
-			TEMPLATE: Edit_Password
-      _____________________________________________________________________________ -->
-	<xsl:template name="Edit_Password">
-            <xsl:param name="specificlocale"/>
-            <xsl:param name="lang" />
-		<fieldset id="edit_password">
-			<legend>
-                                <xsl:value-of select="$specificlocale/editpassword/title/option[@lang=$lang]"/>
-			</legend>
-			<br/>
-			<table border="0" width="100%" align="center">
-				<!--  Παλιός Κωδικός: -->
-				<tr>
-					<td width="15%" align="right">
-						<b>
-							<xsl:value-of select="$specificlocale/editpassword/oldcode/option[@lang=$lang]"/>
-						</b>
-					</td>
-					<td>
-						<input id="oldUserPassword_Id" type="password" size="30" name="oldUserPassword">
-						</input>
-					</td>
-				</tr>
-				<!--  Νέος Κωδικός: -->
-				<tr>
-					<td width="15%" align="right">
-						<b>
-							<xsl:value-of select="$specificlocale/editpassword/newcode/option[@lang=$lang]"/>
-						</b>
-					</td>
-					<td>
-						<input id="newUserPassword_Id1" type="password" size="30" name="newUserPassword1">
-						</input>
-					</td>
-				</tr>
-				<!--  Επιβεβαίωση Κωδικού: -->
-				<tr>
-					<td width="15%" align="right">
-						<b>
-							<xsl:value-of select="$specificlocale/editpassword/confirmcode/option[@lang=$lang]"/>
-						</b>
-					</td>
-					<td>
-						<input id="newUserPassword_Id2" type="password" size="30" name="newUserPassword2">
-						</input>
-					</td>
-				</tr>
-			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
-			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
-			</input>
-		</fieldset>
-		<!-- _______________ END of fieldset ______________ -->
-		<table width="100%">
-			<tr>
-				<td id="resultOf_Edit">
-					<br/>
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom" align="right">
-					<input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_password', '','selectedIndexOnly')">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
+                    <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+    <!-- _____________________________________________________________________________
+                      TEMPLATE: Edit_Thesaurus
+    _____________________________________________________________________________ -->
+    <xsl:template name="Edit_Thesaurus">
+        <xsl:param name="specificlocale"/>
+        <xsl:param name="lang" />
+        <xsl:variable name="currentUserThesaurus">
+            <xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
+        </xsl:variable>
+        <fieldset id="edit_thesaurus">
+            <legend>
+                <xsl:value-of select="$specificlocale/editthesaurus/title/option[@lang=$lang]"/>				
+            </legend>
+            <br/>
+            <table border="0" width="100%" align="center">
+                <!--  Επιλέξτε Θησαυρό: -->
+                <tr>
+                    <td width="150" align="right">
+                        <b>
+                            <xsl:value-of select="$specificlocale/editthesaurus/selectthesaurus/option[@lang=$lang]"/>
+                        </b>
+                    </td>
+                    <td>
+                        <select id="selectThesaurus_ID" name="selectThesaurus" size="1" class="thesaurusFieldWidth">
+                            <xsl:for-each select="//userForEditingThesaurusInfo/thesaurusOfUser/thesaurus">
+                                <xsl:sort select="."/>
+                                <option>
+                                    <xsl:if test=". = $currentUserThesaurus ">
+                                        <xsl:attribute name="selected">
+                                            <xsl:text>selected</xsl:text>
+                                        </xsl:attribute>
+                                    </xsl:if>
+                                    <xsl:attribute name="value">
+                                        <xsl:value-of select="."/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="."/>
+                                </option>
+                            </xsl:for-each>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <input type="text" name="targetUser" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetUser"/>
+                </xsl:attribute>
+            </input>
+            <input type="text" name="targetEditField" class="hiddenInput">
+                <xsl:attribute name="value">
+                    <xsl:value-of select="//targetEditField"/>
+                </xsl:attribute>
+            </input>
+        </fieldset>
+        <!-- _______________ END of fieldset ______________ -->
+        <table width="100%">
+            <tr>
+                <td id="resultOf_Edit">
+                    <br/>
+                </td>
+            </tr>
+            <tr>
+                <td valign="bottom" align="right">
+                    <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_thesaurus', '','selectedIndexOnly')">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/editthesaurus/okbutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
 					&#160;
-                                        <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
-				</td>
-			</tr>
-		</table>
-	</xsl:template>
-	<!-- _____________________________________________________________________________
-			TEMPLATE: Edit_Thesaurus
-      _____________________________________________________________________________ -->
-	<xsl:template name="Edit_Thesaurus">
-            <xsl:param name="specificlocale"/>
-            <xsl:param name="lang" />
-		<xsl:variable name="currentUserThesaurus">
-			<xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
-		</xsl:variable>
-		<fieldset id="edit_thesaurus">
-			<legend>
-                            <xsl:value-of select="$specificlocale/editthesaurus/title/option[@lang=$lang]"/>				
-			</legend>
-			<br/>
-			<table border="0" width="100%" align="center">
-				<!--  Επιλέξτε Θησαυρό: -->
-				<tr>
-					<td width="150" align="right">
-						<b>
-							<xsl:value-of select="$specificlocale/editthesaurus/selectthesaurus/option[@lang=$lang]"/>
-						</b>
-					</td>
-					<td>
-						<select id="selectThesaurus_ID" name="selectThesaurus" size="1" style="width:160px;">
-							<xsl:for-each select="//userForEditingThesaurusInfo/thesaurusOfUser/thesaurus">
-								<xsl:sort select="."/>
-								<option>
-									<xsl:if test=". = $currentUserThesaurus ">
-										<xsl:attribute name="selected">
-                                                                                    <xsl:text>selected</xsl:text>
-                                                                                </xsl:attribute>
-									</xsl:if>
-									<xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
-									<xsl:value-of select="."/>
-								</option>
-							</xsl:for-each>
-						</select>
-					</td>
-				</tr>
-			</table>
-			<input type="text" name="targetUser" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
-			</input>
-			<input type="text" name="targetEditField" style="visibility:hidden;">
-				<xsl:attribute name="value"><xsl:value-of select="//targetEditField"/></xsl:attribute>
-			</input>
-		</fieldset>
-		<!-- _______________ END of fieldset ______________ -->
-		<table width="100%">
-			<tr>
-				<td id="resultOf_Edit">
-					<br/>
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom" align="right">
-					<input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_thesaurus', '','selectedIndexOnly')">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/editthesaurus/okbutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
-					&#160;
-                                        <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
-                                            <xsl:attribute name="value">
-                                                <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
-                                            </xsl:attribute>
-                                        </input>
-				</td>
-			</tr>
-		</table>
-	</xsl:template>
+                    <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
+                        <xsl:attribute name="value">
+                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                        </xsl:attribute>
+                    </input>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
 </xsl:stylesheet>

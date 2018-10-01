@@ -33,24 +33,10 @@
  */
 package Utils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import neo4j_sisapi.IntegerObject;
-import neo4j_sisapi.QClass;
-import neo4j_sisapi.StringObject;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 
 
@@ -73,6 +59,10 @@ public class StaticClass {
     public static String getGraphDbFolderPath() {
         return graphdbPath;
     }
+    /*
+    public static java.io.File getGraphDbFolder() {
+        return graphDBDirectory;
+    }*/
     //Pavlos Machine Configurations
     //private static final String graphdbPath = "C:\\Development\\New DB Implementations\\Implementation1";
     
@@ -105,7 +95,6 @@ public class StaticClass {
         }
         Utils.StaticClass.webAppSystemOutPrintln("closeDb FINISHED");
         
-        return;
     }
 
     public static boolean isDbready() {
@@ -122,7 +111,7 @@ public class StaticClass {
     }
 
     
-    
+    public static java.io.File graphDBDirectory = null;
     
     public static void initializeDatabasePath(String path){
         
@@ -130,10 +119,12 @@ public class StaticClass {
             
             graphdbPath = path;
             
+            graphDBDirectory = new java.io.File(path);
             //redirectSystemOutIfNeeded();
         
         }
     }
+    
     public static void handleException(Exception ex){
         
         Logger.getLogger(StaticClass.class.getName()).log(Level.SEVERE, null, ex);        
@@ -233,46 +224,49 @@ public class StaticClass {
         
     }
     */
+    private static final int maxSleepTimes = 100;
     
     public static GraphDatabaseService getDBService() {
+        int trials = 1;
         if (graphDb == null) {
             if(graphdbPath.length()==0){
                 return null;
             }
             try {
                 
-                
-
+                /*
+                //removed this tricky staff 
                 //graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(graphdbPath);
-                graphDb = new GraphDatabaseFactory()
-                        .newEmbeddedDatabaseBuilder(graphdbPath)
+                graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(graphDBDirectory)
                         //.setConfig(GraphDatabaseSettings.allow_store_upgrade, "true")
                         //.setConfig(GraphDatabaseSettings.keep_logical_logs, "2000k txs")
-                        .setConfig(GraphDatabaseSettings.keep_logical_logs, "false")
-                        .setConfig(GraphDatabaseSettings.pagecache_memory, "128M")                        
+                        .setConfig(GraphDatabaseSettings.keep_logical_logs, "false")                   
                         //.setConfig(GraphDatabaseSettings.cache_type, "none")
                         .newGraphDatabase();
-                while (graphDb.isAvailable(500) == false) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Waiting for 0.5 sec");
+                
+                while (graphDb.isAvailable(500) == false && trials<=maxSleepTimes ) {
+                    Utils.StaticClass.webAppSystemOutPrintln(trials++ +" Waiting for 0.5 sec");
                     Thread.sleep(500);
                 }
                 graphDb.shutdown();
-                Thread.sleep(500);
+                Thread.sleep(500);*/
                 graphDb = new GraphDatabaseFactory()
-                        .newEmbeddedDatabaseBuilder(graphdbPath)
+                        .newEmbeddedDatabaseBuilder(graphDBDirectory)
                         //.setConfig(GraphDatabaseSettings.allow_store_upgrade, "true")
                         //.setConfig(GraphDatabaseSettings.keep_logical_logs, "2000k txs")
                         .setConfig(GraphDatabaseSettings.keep_logical_logs, "false")
+                        .setConfig(GraphDatabaseSettings.pagecache_memory, "128M")         
                         //.setConfig(GraphDatabaseSettings.pagecache_memory, "512000000")                                               
                         //.setConfig(GraphDatabaseSettings.cache_type, "none")
                         .newGraphDatabase();
-                while (graphDb.isAvailable(500) == false) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Waiting for 0.5 sec");
+                
+                while (graphDb.isAvailable(500) == false && trials<=maxSleepTimes) {
+                    Utils.StaticClass.webAppSystemOutPrintln(trials++ +" Waiting for 0.5 sec");
                     Thread.sleep(500);
                 }
                 registerShutdownHook();
-                while (graphDb.isAvailable(500) == false) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Waiting for 0.5 sec");
+                while (graphDb.isAvailable(500) == false && trials<=maxSleepTimes) {
+                    Utils.StaticClass.webAppSystemOutPrintln(trials++ +" Waiting for 0.5 sec");
                     Thread.sleep(500);
                 }
 
@@ -284,8 +278,8 @@ public class StaticClass {
         }
         else{
             try{
-                while (graphDb.isAvailable(500) == false) {
-                    Utils.StaticClass.webAppSystemOutPrintln("Waiting for 0.5 sec");
+                while (graphDb.isAvailable(500) == false && trials<=maxSleepTimes) {
+                    Utils.StaticClass.webAppSystemOutPrintln(trials++ +" Waiting for 0.5 sec");
                     Thread.sleep(500);
                 }
             } catch (Exception ex) {
@@ -295,7 +289,6 @@ public class StaticClass {
             }
         }
         return graphDb;
-
     }
 
     private static void registerShutdownHook() {

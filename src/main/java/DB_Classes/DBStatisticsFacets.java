@@ -42,7 +42,7 @@ import Utils.ConstantParameters;
 
 import Utils.StringLocaleComparator;
 import java.util.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
@@ -68,29 +68,29 @@ public class DBStatisticsFacets {
     /*----------------------------------------------------------------------
               GetNumberOfHierarchiesAndTermsAndEnglishWordsPerFacet()
     -----------------------------------------------------------------------
-    OUTPUT: - Vector<String> FacetsVector: a sorted Vector with the existing facets (DB encoded)
-            - Vector<IntegerObject> FacetsHierarciesCountVector: parallel Vector with the 
+    OUTPUT: - ArrayList<String> FacetsVector: a sorted Vector with the existing facets (DB encoded)
+            - ArrayList<IntegerObject> FacetsHierarciesCountVector: parallel Vector with the 
                              cardinality of the hierarcies of the corresponding facet
-            - Vector<IntegerObject> FacetsTermsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> FacetsTermsCountVector: parallel Vector with the 
                              cardinality of the terms of the corresponding facet
-            - Vector<IntegerObject> FacetsNonPrefferedTermsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> FacetsNonPrefferedTermsCountVector: parallel Vector with the 
                              cardinality of the NonPreffered terms of the corresponding facet (XA)
-            - Vector<IntegerObject> FacetsEnglishWordsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> FacetsEnglishWordsCountVector: parallel Vector with the 
                              cardinality of the EnglishWords of the corresponding facet
-            - Vector<IntegerObject> FacetsNonPrefferedEnglishWordsCountVector: parallel Vector with the 
+            - ArrayList<IntegerObject> FacetsNonPrefferedEnglishWordsCountVector: parallel Vector with the 
                              cardinality of the EnglishWords of the corresponding facet (UF)
     ------------------------------------------------------------------------*/
     public void GetNumberOfHierarchiesAndTermsAndTranslationsPerFacet(QClass Q, IntegerObject sis_session,
             UserInfoClass SessionUserInfo, Locale targetLocale,
-            Vector<String> FacetsVector, Vector<IntegerObject> FacetsHierarciesCountVector, 
-            Vector<IntegerObject> FacetsTermsCountVector, Vector<IntegerObject> FacetsNonPrefferedTermsCountVector, 
-            Vector<IntegerObject> FacetsEnglishWordsCountVector, Vector<IntegerObject> FacetsNonPrefferedEnglishWordsCountVector) {
+            ArrayList<String> FacetsVector, ArrayList<IntegerObject> FacetsHierarciesCountVector, 
+            ArrayList<IntegerObject> FacetsTermsCountVector, ArrayList<IntegerObject> FacetsNonPrefferedTermsCountVector, 
+            ArrayList<IntegerObject> FacetsEnglishWordsCountVector, ArrayList<IntegerObject> FacetsNonPrefferedEnglishWordsCountVector) {
         DBFilters dbf = new DBFilters();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         //THEMASUserInfo SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
         // get all Facets
         int set_f = GetAllFacets(Q, sis_session, SessionUserInfo);
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
 	if(Q.bulk_return_nodes(set_f, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
                 FacetsVector.add(row.get_v1_cls_logicalname());
@@ -106,7 +106,7 @@ public class DBStatisticsFacets {
         
         // copy FacetsVector to FacetsVectorSortedUI (sorted and UI encoded)
         DBGeneral dbGen = new DBGeneral();
-        Vector<String> FacetsVectorSortedUI = new Vector<String>();      
+        ArrayList<String> FacetsVectorSortedUI = new ArrayList<String>();      
         
         int FacetsVectorSize = FacetsVector.size();
         for (int i = 0; i < FacetsVectorSize; i++) {

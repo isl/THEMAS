@@ -47,7 +47,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -104,7 +104,7 @@ public class Create_Modify_Hierarchy extends ApplicationBasicServlet {
             String targetHierFacetName =  u.getDecodedParameterValue(request.getParameter("hierarchyFacetName"));
             String facetsStrArr[] = request.getParameterValues("edit_Sel_Hier_Facet");
             
-            Vector<String> targetHierarchyFacets = new Vector<String>();
+            ArrayList<String> targetHierarchyFacets = new ArrayList<String>();
             StringObject resultObj = new StringObject("");
             
             //open connection and start Transaction
@@ -116,7 +116,7 @@ public class Create_Modify_Hierarchy extends ApplicationBasicServlet {
             
             if (createORmodify.equals("create")) {
                 
-                targetHierarchyFacets.addElement(targetHierFacetName);
+                targetHierarchyFacets.add(targetHierFacetName);
                 
             } else { //modify
 
@@ -124,7 +124,7 @@ public class Create_Modify_Hierarchy extends ApplicationBasicServlet {
                     
                     for (int i = 0; i < facetsStrArr.length; i++) {
 
-                        targetHierarchyFacets.addElement(u.getDecodedParameterValue(facetsStrArr[i]));
+                        targetHierarchyFacets.add(u.getDecodedParameterValue(facetsStrArr[i]));
                     }
                 }
             }

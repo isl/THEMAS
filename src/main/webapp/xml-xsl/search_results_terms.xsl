@@ -269,7 +269,16 @@
                             <xsl:if test="count($outputVar/scope_note)!=0">   
                                 <!--<td width="400" style="WORD-BREAK:BREAK-ALL;">-->
                                 <td>
-                                    <xsl:value-of disable-output-escaping="yes" select="./scope_note"/>
+                                <xsl:choose>
+                                    <xsl:when test="./scope_note/text()!=''">
+                                        <span class="showDecorations">
+                                            <xsl:value-of disable-output-escaping="yes" select="./scope_note"/>
+                                        </span>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <a>-</a>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                                 </td>                             
                                    <!-- <xsl:call-template name="drawAttributeTd">
                                         <xsl:with-param disable-output-escaping="yes" name="nodeSet" select="./scope_note"/>
@@ -277,7 +286,8 @@
                                     </xsl:call-template>   -->
                             </xsl:if>
                             
-                            <xsl:if test="count($outputVar/translations_scope_note)!=0">                                
+                            <xsl:if test="count($outputVar/translations_scope_note)!=0">   
+                                       
                                 <xsl:call-template name="drawTranslationTd">
                                     <xsl:with-param name="nodeSet" select="./translations_scope_note"/>
                                     <xsl:with-param name="translationSeparator" select="$trsSeparator"/>
@@ -286,6 +296,7 @@
                                         <xsl:with-param name="nodeSet" select="./translations_scope_note"/>
                                         <xsl:with-param name="popUpCard"><xsl:text>false</xsl:text></xsl:with-param>
                                     </xsl:call-template>                      -->
+                         
                             </xsl:if>
                             
                             <xsl:if test="count($outputVar/facet)!=0">                                
@@ -347,7 +358,7 @@
                         <td align="center" width="10%">
 				
                             <a href="#">
-                                <img width="16" height="16" border="0">
+                                <img width="16" height="16" border="0"  style="margin-left:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$tableresultslocale/hierarchicalimage/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -362,7 +373,7 @@
                                 </img>
                             </a>    
                             <a href="#">
-                                <img width="16" height="16" border="0" >
+                                <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="$tableresultslocale/graphicalimage/src/option[@lang=$lang]"/>
                                     </xsl:attribute>
@@ -380,7 +391,7 @@
                             <!-- DISABLE editing in case of user of group READER -->
                             <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'">
                                 <a href="#">
-                                    <img width="16" height="16" border="0" >
+                                    <img width="16" height="16" border="0"  style="margin-right:4px;">
                                         <xsl:attribute name="src">
                                             <xsl:value-of select="$tableresultslocale/editimage/src/option[@lang=$lang]"/>
                                         </xsl:attribute>

@@ -44,7 +44,7 @@ package Utils;
  */
 
 import java.io.*;
-import java.util.Hashtable;
+import java.util.HashMap;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 import org.apache.commons.fileupload.*;
@@ -59,7 +59,7 @@ import org.apache.commons.fileupload.*;
  */
 public class UpDownFiles {
     
-    public static Hashtable<String, String> uploadParams = new Hashtable<String, String>();
+    public static HashMap<String, String> uploadParams = new HashMap<String, String>();
     
     /**
      *

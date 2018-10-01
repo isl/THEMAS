@@ -47,7 +47,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
                             UndoRenameResults
@@ -99,7 +99,7 @@ public class UndoRenameResults extends ApplicationBasicServlet {
             String TargetTermName = u.getDecodedParameterValue(request.getParameter("target"));
 
 
-            if(UndoRenameAction(SessionUserInfo.selectedThesaurus, TargetTermName,UndoRenameResultsMessage, Q,sis_session,TA, tms_session)){
+            if(UndoRenameAction(SessionUserInfo.selectedThesaurus, TargetTermName,UndoRenameResultsMessage, Q,sis_session,TA, tms_session,SessionUserInfo.UILang)){
                 //commit transaction and close connection
                 Q.free_all_sets();
                 Q.TEST_end_transaction();
@@ -115,7 +115,7 @@ public class UndoRenameResults extends ApplicationBasicServlet {
             
             // XML output of servlet - START
             StringBuffer xml = new StringBuffer();
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS));	
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, SessionUserInfo.UILang));	
 
             // write the necessary data to be used by Move to Hierarchy operation to XML
             String xmlResults = UndoRenameResultsXML(TargetTermName, UndoRenameResultsMessage);                
@@ -171,7 +171,7 @@ public class UndoRenameResults extends ApplicationBasicServlet {
     /*---------------------------------------------------------------------
                       UndoRenameAction()
     ----------------------------------------------------------------------*/                                
-    boolean UndoRenameAction(String selectedThesaurus, String TargetTermName,StringObject UndoRenameResultsMessage, QClass Q,IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session) {
+    boolean UndoRenameAction(String selectedThesaurus, String TargetTermName,StringObject UndoRenameResultsMessage, QClass Q,IntegerObject sis_session,TMSAPIClass TA, IntegerObject tms_session, final String uiLang) {
         // begin transaction
         Q.TEST_begin_transaction();    
         
@@ -187,7 +187,7 @@ public class UndoRenameResults extends ApplicationBasicServlet {
         UndoRenameResultsMessage = new StringObject();
         if (ret == TMSAPIClass.TMS_APISucc) { // SUCCESS
             Utilities u = new Utilities();
-            UndoRenameResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/UndoRenameSuccess", new String[]{TargetTermName}));
+            UndoRenameResultsMessage.setValue(u.translateFromMessagesXML("root/EditTerm/Rename/UndoRenameSuccess", new String[]{TargetTermName}, uiLang));
             //UndoRenameResultsMessage.setValue("Undo rename operation of term " + TargetTermName + " was successfully completed.");
             return true;
         }

@@ -60,7 +60,7 @@ public class DBadmin extends ApplicationBasicServlet {
    
     ConfigDBadmin config;
     CommonUtilsDBadmin common_utils;  
-    Vector<String> thesaurusVector; // the existing Thesaurus in DB
+    ArrayList<String> thesaurusVector; // the existing Thesaurus in DB
     // servlet parameters
     String CurrentShownDIV; // Create_DB_backup_DIV / Restore_DB_backup_DIV / Fix_DB_DIV / Create_Thesaurus_DIV (DIV ids defined in DBadmin_contents.xsl)
 
@@ -111,7 +111,7 @@ public class DBadmin extends ApplicationBasicServlet {
 
 
             // Get the existing Thesaurus in DB
-            thesaurusVector = new Vector<String>();
+            thesaurusVector = new ArrayList<String>();
             thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector,Q,sis_session);        
 
 
@@ -121,7 +121,7 @@ public class DBadmin extends ApplicationBasicServlet {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE));  
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_DATABASE, SessionUserInfo.UILang));  
             xml.append(getXMLMiddle());
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -166,7 +166,7 @@ public class DBadmin extends ApplicationBasicServlet {
             }
             XMLMiddleStr += "</existingThesaurus>";                        
             // GetListOfDBbackups
-            Vector<String> filesInDBBackupFolder = new Vector<String>();
+            ArrayList<String> filesInDBBackupFolder = new ArrayList<String>();
             filesInDBBackupFolder = common_utils.GetListOfDBbackups();
             int filesInDBBackupFolderCount = filesInDBBackupFolder.size();
             XMLMiddleStr += "<filesInDBBackupFolder>";

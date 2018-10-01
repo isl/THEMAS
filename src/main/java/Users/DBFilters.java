@@ -158,14 +158,14 @@ public class DBFilters {
         
         boolean termIsEditable = true;
         // in case of LIBRARY user
-        if (SessionUserInfo.userGroup.equals("LIBRARY") == true) {
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) == true) {
             DBLibraryFilters dblf = new DBLibraryFilters();
             termIsEditable = dblf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
         }
         
         if(Parameters.ThesTeamEditOnlyCreatedByTerms){
             //ThesTeamEditOnlyCreatedByTerms
-            if(SessionUserInfo.userGroup.equals("THESAURUS_TEAM")==true){
+            if(SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam)==true){
                 DBThesaurusTeamFilters dbteamf = new DBThesaurusTeamFilters();
                 termIsEditable = dbteamf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
             }
@@ -180,14 +180,14 @@ public class DBFilters {
     public String GetDefaultStatusForTermCreation(UserInfoClass SessionUserInfo) {
         
             
-        if (SessionUserInfo.userGroup.equals("THESAURUS_TEAM") == true) {
-            return Parameters.Status_Under_Construction;
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam) == true) {
+            return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo);
         }
-        if (SessionUserInfo.userGroup.equals("THESAURUS_COMMITTEE") == true) {
-            return Parameters.Status_Under_Construction;
+        if (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusCommittee) == true) {
+            return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction,SessionUserInfo);
         }        
                 
-        return Parameters.Status_For_Insertion;
+        return Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion,SessionUserInfo);
     }                                        
 }
 

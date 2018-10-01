@@ -102,9 +102,9 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             }
             
 
-            Vector<String> availableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
+            ArrayList<String> availableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
 
-           // String xmlResults = getResultsInXml(currentHierName_utf8, currentFacetName_utf8, availableFacets);
+           // String xmlResults = getResultsInXml_ForTableLayout(currentHierName_utf8, currentFacetName_utf8, availableFacets);
             
             //end query and close connection
             Q.free_all_sets();
@@ -124,7 +124,7 @@ public class Preview_Available_Facets extends ApplicationBasicServlet {
             }
                   
             
-            String outPutAnswer = u.translateFromMessagesXML("root/EditHierarchy/Edit/AvailableFacets", null)+
+            String outPutAnswer = u.translateFromMessagesXML("root/EditHierarchy/Edit/AvailableFacets", null,SessionUserInfo.UILang)+
                     " <select id=\"new_Hier_FacetID\" name=\"new_Hier_Facet\" size=\"5\" style=\"min-width:100px;\" onchange=\"hierarchyFacetName.value=new_Hier_Facet.options[new_Hier_Facet.selectedIndex].value;\"  >";
             
             for(int i=0;i<availableFacets.size();i++){

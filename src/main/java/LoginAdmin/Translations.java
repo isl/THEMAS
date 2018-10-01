@@ -41,32 +41,18 @@ import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.SessionWrapperClass;
 
-import Utils.Parameters;
 import Utils.Utilities;
 import java.util.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.servlet.ServletContext;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 /**
  *
  * @author tzortzak
@@ -132,12 +118,12 @@ public class Translations extends ApplicationBasicServlet {
             //parameters
             String functionallity = u.getDecodedParameterValue(request.getParameter("functionallity"));
             String selectedThesaurus = u.getDecodedParameterValue(request.getParameter("selectedThesaurus"));
-            Vector<String> userSelectedTranslationIdentifiers = u.getDecodedParameterValues(request.getParameterValues("LanguageIdentifier"));
-            Vector<String> userSelectedTranslationWords = u.getDecodedParameterValues(request.getParameterValues("LanguageName"));
+            ArrayList<String> userSelectedTranslationIdentifiers = u.getDecodedParameterValues(request.getParameterValues("LanguageIdentifier"));
+            ArrayList<String> userSelectedTranslationWords = u.getDecodedParameterValues(request.getParameterValues("LanguageName"));
 
             String pathToMessagesXML = context.getRealPath("/translations/Messages.xml");
-            Hashtable<String, String> currentTranslationCategories = null;
-            Hashtable<String, String> userSelections = new Hashtable<String, String>();
+            HashMap<String, String> currentTranslationCategories = null;
+            HashMap<String, String> userSelections = new HashMap<String, String>();
             StringObject resultMessageStrObj = new StringObject("");
             String XMLMiddleStr= "";
 
@@ -193,7 +179,7 @@ public class Translations extends ApplicationBasicServlet {
 
             if(resultMessageStrObj.getValue().length()>0){
 
-                Hashtable<String,String> originalUserSelection = new Hashtable<String,String>();
+                HashMap<String,String> originalUserSelection = new HashMap<String,String>();
                 for(int i=0; i<userSelectedTranslationWords.size(); i++ ){
                     String word =userSelectedTranslationWords.get(i);
                     String id ="";
@@ -212,7 +198,7 @@ public class Translations extends ApplicationBasicServlet {
                 dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, tms_session, selectedThesaurus, queryInsteadOfTransaction);
 
                 //read current thesauri and current translation categories
-                Vector<String> thesaurusVector = new Vector<String>();
+                ArrayList<String> thesaurusVector = new ArrayList<String>();
                 thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector, Q, sis_session);
                 if(thesaurusVector.contains(selectedThesaurus)){
                     currentTranslationCategories = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, selectedThesaurus, null, false, true);
@@ -234,11 +220,11 @@ public class Translations extends ApplicationBasicServlet {
 
                     dbGen.synchronizeTranslationCategories(currentTranslationCategories,
                             userSelections, userSelectedTranslationWords, userSelectedTranslationIdentifiers, selectedThesaurus,
-                            resultMessageStrObj, pathToMessagesXML, Q, TA, sis_session,  tms_session);
+                            resultMessageStrObj, pathToMessagesXML, Q, TA, sis_session,  tms_session, SessionUserInfo.UILang);
 
                     if(resultMessageStrObj.getValue().length()>0)
                     {
-                        Hashtable<String,String> originalUserSelection = new Hashtable<String,String>();
+                        HashMap<String,String> originalUserSelection = new HashMap<String,String>();
                         for(int i=0; i<userSelectedTranslationWords.size(); i++ ){
                             String word =userSelectedTranslationWords.get(i);
                             String id ="";

@@ -36,16 +36,12 @@ package Admin_Thesaurus;
 import DB_Admin.CommonUtilsDBadmin;
 import DB_Admin.ConfigDBadmin;
 import DB_Admin.DBAdminUtilities;
-import DB_Admin.FixDB;
 import DB_Admin.TSVExportsImports;
 import DB_Classes.DBGeneral;
 import Users.UserInfoClass;
 import Users.UsersClass;
 import Utils.ConstantParameters;
-import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
-import Utils.SessionListener;
-import Utils.SortItem;
 import Utils.Utilities;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,19 +49,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.Locale;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.StringObject;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -157,7 +147,7 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             Utils.StaticClass.webAppSystemOutPrintln("3) Full path to the TSV to be loaded.");
             Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
-                    
+            Utils.StaticClass.webAppSystemOutPrintln("5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).");        
             return;
         }    
         if(mode.equals(exportToTsvMode)){
@@ -199,6 +189,7 @@ public class OfflineToolsClass {
         }
         return returnVal;
     }
+    
     private static String GetCurrentDateAndTime() {
         Calendar rightNow = Calendar.getInstance();
         int current_year = rightNow.get(Calendar.YEAR);
@@ -240,7 +231,7 @@ public class OfflineToolsClass {
 
         Utils.StaticClass.setJustSimpleSystemOut(true);
         Utils.StaticClass.webAppSystemOutPrintln("OfflineToolsClass called at: " + Utilities.GetNow());
-        Vector<String> arguements = new Vector<String>();
+        ArrayList<String> arguements = new ArrayList<String>();
         
         boolean unlockSystem = true;
         boolean oldFilterVal = ConstantParameters.filterBts_Nts_Rts;
@@ -315,7 +306,7 @@ public class OfflineToolsClass {
             UserInfoClass refSessionUserInfo = new UserInfoClass();
             refSessionUserInfo.selectedThesaurus = "";
             refSessionUserInfo.name = "admin";
-            refSessionUserInfo.userGroup = "ADMINISTRATOR";
+            refSessionUserInfo.userGroup = ConstantParameters.Group_Administrator;
             Utilities u = new Utilities();
             
             
@@ -365,9 +356,9 @@ public class OfflineToolsClass {
                 
 
                 Locale targetLocale = new Locale("el", "GR");
-                String pathToErrorsXML = baseApplicationFilePath.concat("/translations/Consistencies_Error_Codes.xml");
+                String pathToErrorsXML = Utilities.getTranslationsXml("Consistencies_Error_Codes.xml");
                 //String pathToSaveScriptingAndLocale = baseApplicationFilePath.concat("\\translations\\SaveAll_Locale_And_Scripting.xml");
-                String pathToSaveScriptingAndLocale = Parameters.BaseRealPath.concat("/translations/SaveAll_Locale_And_Scripting.xml");
+                String pathToSaveScriptingAndLocale = Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml");
 
                 
                 
@@ -403,23 +394,23 @@ public class OfflineToolsClass {
                     logFileWriter.append(ConstantParameters.xmlHeader );//+ "\r\n"
 
 
-                    logFileWriter.append("<page language=\"" + Parameters.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
-                    logFileWriter.append("<title>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/importreporttitle", new String[]{importThesaurusName,time})+"</title>\r\n");
+                    logFileWriter.append("<page language=\"" + refSessionUserInfo.UILang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">\r\n");
+                    logFileWriter.append("<title>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/importreporttitle", new String[]{importThesaurusName,time},refSessionUserInfo.UILang)+"</title>\r\n");
 
                     logFileWriter.append("<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale +"</pathToSaveScriptingAndLocale>\r\n");
 
-                    if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
+                    if (imp.thesaurusImportActions(refSessionUserInfo, common_utils, false, config, targetLocale, pathToErrorsXML, inputFilePath, xmlSchemaType, importThesaurusName, backUpDescription, DBbackupFileNameCreated, resultObj, logFileWriter) == false) {
                         Utils.StaticClass.webAppSystemOutPrintln("Failure");
-                        abortActions( common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj);
+                        abortActions( common_utils, initiallySelectedThesaurus, importThesaurusName, DBbackupFileNameCreated, resultObj, refSessionUserInfo.UILang);
                         return;
                     }
 
                     Utils.StaticClass.closeDb();
-                    commitActions(importThesaurusName, Filename.concat(".html"));
+                    commitActions(importThesaurusName, Filename.concat(".html"), refSessionUserInfo.UILang);
 
                     Utils.StaticClass.webAppSystemOutPrintln("IMPORT PROCESS FINISHED SUCCESSFULLY at time: " + Utilities.GetNow());
                     
-                    logFileWriter.append("\r\n<creationInfo>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/creationinfomsg", new String[]{importThesaurusName,inputFilePath})+"</creationInfo>\r\n");
+                    logFileWriter.append("\r\n<creationInfo>"+u.translateFromSaveAllLocaleAndScriptingXML("root/importcopymerge/creationinfomsg", new String[]{importThesaurusName,inputFilePath},refSessionUserInfo.UILang)+"</creationInfo>\r\n");
 
                     if(logFileWriter!=null){
                         logFileWriter.append("</page>");
@@ -462,7 +453,7 @@ public class OfflineToolsClass {
                     return;
                 }
 
-                Vector<String> allthesauriNames = new Vector<String>();
+                ArrayList<String> allthesauriNames = new ArrayList<String>();
                 dbGen.GetExistingThesaurus(false, allthesauriNames, Q, sis_session);
                 
                 Q.free_all_sets();
@@ -504,9 +495,9 @@ public class OfflineToolsClass {
                         Utils.StaticClass.handleException(ex);
                     }
 
-                    Vector<String> thesauriNames = new Vector<String>();
-                    Vector<String> allHierarchies = new Vector<String>();
-                    Vector<String> allGuideTerms = new Vector<String>();
+                    ArrayList<String> thesauriNames = new ArrayList<String>();
+                    ArrayList<String> allHierarchies = new ArrayList<String>();
+                    ArrayList<String> allGuideTerms = new ArrayList<String>();
 
                     exp.exportThesaurusActions(refSessionUserInfo, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
@@ -602,7 +593,7 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="fixDbMode">
             if(mode.equals(fixDbMode)){
                 StringObject FixDBResultMessage_Global = new StringObject("");
-                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global);
+                boolean dbFixed = common_utils.FixDB(true, FixDBResultMessage_Global,refSessionUserInfo.UILang);
                 if(!dbFixed){
                     unlockSystem = false;
                     Utils.StaticClass.webAppSystemOutPrintln("Fix DB failed");
@@ -616,7 +607,7 @@ public class OfflineToolsClass {
             // <editor-fold defaultstate="collapsed" desc="tsvImport">
             if(mode.equals(importFromTsvMode)){
                 
-                if(arguements.size()!=3){
+                if(arguements.size()!=4){
                     printExpectedParametersAccordingToMode(mode);
                     return;
                 }
@@ -624,6 +615,10 @@ public class OfflineToolsClass {
                 boolean genericImport =false;
                 if(arguements.get(2).toLowerCase().trim().equals("true")|| arguements.get(2).toLowerCase().trim().equals("yes")){
                     genericImport = true;
+                }
+                boolean recomputeTransliterations =false;
+                if(arguements.get(3).toLowerCase().trim().equals("true")|| arguements.get(3).toLowerCase().trim().equals("yes")){
+                    recomputeTransliterations = true;
                 }
                 
                 TSVExportsImports expimp = new TSVExportsImports();
@@ -636,10 +631,10 @@ public class OfflineToolsClass {
                 boolean importCompleted = false;
 
                 if(genericImport){
-                    importCompleted = expimp.importGenericFromFile(import_export_file);
+                    importCompleted = expimp.importGenericFromFile(import_export_file,recomputeTransliterations);
                 }
                 else{
-                    importCompleted = expimp.importSpecificFromFile(import_export_file);
+                    importCompleted = expimp.importSpecificFromFile(import_export_file,recomputeTransliterations);
                 }
 
                 if(importCompleted==false){
@@ -734,7 +729,7 @@ public class OfflineToolsClass {
 
     }
 
-    public static void commitActions(String importThesaurusName, String reportFile) {
+    public static void commitActions(String importThesaurusName, String reportFile,final String uiLang) {
 
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();
@@ -743,9 +738,9 @@ public class OfflineToolsClass {
 
         
         StringBuffer xml = new StringBuffer();
-        Vector<String> allHierarchies = new Vector<String>();
-        Vector<String> allGuideTerms = new Vector<String>();
-        Vector<String> thesauriNames = new Vector<String>();
+        ArrayList<String> allHierarchies = new ArrayList<String>();
+        ArrayList<String> allGuideTerms = new ArrayList<String>();
+        ArrayList<String> thesauriNames = new ArrayList<String>();
 
 
         String importMethodChoice  = "thesaurusImport";
@@ -774,12 +769,12 @@ public class OfflineToolsClass {
 
         
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, uiLang));
         xml.append("<"+resultFileTagName+">");
         xml.append(reportFile);
         xml.append("</"+resultFileTagName+">");
 
-        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/sucessresultmsg", null),importMethodChoice));
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/sucessresultmsg", null, uiLang),importMethodChoice));
 
 
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
@@ -795,7 +790,7 @@ public class OfflineToolsClass {
 
     public static void abortActions(
             CommonUtilsDBadmin common_utils, String initiallySelectedThesaurus,
-            String mergedThesaurusName, StringObject DBbackupFileNameCreated, StringObject resultObj) {
+            String mergedThesaurusName, StringObject DBbackupFileNameCreated, StringObject resultObj,final String uiLang) {
 
         Utilities u = new Utilities();
         DBGeneral dbGen = new DBGeneral();
@@ -820,16 +815,16 @@ public class OfflineToolsClass {
 
         
         StringBuffer xml = new StringBuffer();
-        //Vector<String> thesauriNames = new Vector<String>();
-        //Vector<String> allHierarchies = new Vector<String>();
-        //Vector<String> allGuideTerms = new Vector<String>();
+        //ArrayList<String> thesauriNames = new ArrayList<String>();
+        //ArrayList<String> allHierarchies = new ArrayList<String>();
+        //ArrayList<String> allGuideTerms = new ArrayList<String>();
         String importMethodChoice  = "thesaurusImport";
         StringObject result = new StringObject("");
 
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+DBbackupFileNameCreated.getValue());
 
-        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result);
+        boolean restored = common_utils.RestoreDBbackup(DBbackupFileNameCreated.getValue(), result, uiLang);
         //thesauriNames.remove(mergedThesaurusName);
 
         if (restored) {
@@ -854,10 +849,10 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Did not manage to restore : " + DBbackupFileNameCreated.getValue());
         }
 
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI));
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, uiLang));
         //xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(allHierarchies,allGuideTerms,targetLocale));
         
-        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/abortresultmsg", new String[]{resultObj.getValue()}),importMethodChoice));
+        xml.append(getXMLMiddle(u.translateFromSaveAllLocaleAndScriptingXML( "root/importcopymerge/abortresultmsg", new String[]{resultObj.getValue()}, uiLang),importMethodChoice));
         //xml.append(u.getXMLUserInfo(SessionUserInfo));
         xml.append(u.getXMLEnd());
 

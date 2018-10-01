@@ -357,7 +357,7 @@
                                                     <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
                                                      <xsl:text>');</xsl:text>
                                                 </xsl:attribute>
-                                                <img width="16" height="16" border="0">
+                                                <img width="16" height="16" border="0" class="disabledImage">
                                                     <xsl:attribute name="src">
                                                         <xsl:value-of select="$locale/leftmenu/sources/actions/new/image/src/option[@lang=$lang]"/>
                                                     </xsl:attribute>
@@ -393,6 +393,13 @@
                                                 <xsl:attribute name="title">
                                                     <xsl:value-of select="$locale/leftmenu/sources/actions/new/image/title/option[@lang=$lang]"/>
                                                 </xsl:attribute>
+                                                 <xsl:choose>
+                                                     <xsl:when test="$THEMASUserInfo_userGroup = 'LIBRARY'">
+                                                        <xsl:attribute name="class">
+                                                            <xsl:text>disabledImage</xsl:text>
+                                                        </xsl:attribute> 
+                                                     </xsl:when>
+                                                 </xsl:choose>
                                             </img>
                                         </a>
                                     </xsl:otherwise>
@@ -459,7 +466,7 @@
                                                     <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
                                                      <xsl:text>');</xsl:text>
                                                 </xsl:attribute>
-                                            <img width="16" height="16" border="0">
+                                            <img width="16" height="16" border="0"  class="disabledImage">
                                                 <xsl:attribute name="src">
                                                     <xsl:value-of select="$locale/leftmenu/statistics/actions/showstatistics/image/src/option[@lang=$lang]"/>
                                                 </xsl:attribute>
@@ -545,7 +552,7 @@
                                                         <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
                                                          <xsl:text>');</xsl:text>
                                                     </xsl:attribute>
-                                                <img width="16" height="16" border="0">
+                                                <img width="16" height="16" border="0"  class="disabledImage">
                                                     <xsl:attribute name="src">
                                                         <xsl:value-of select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option[@lang=$lang]"/>
                                                     </xsl:attribute>
@@ -622,14 +629,14 @@
                             <tr>
                                 <td>
                                     <xsl:choose>
-                                        <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' ">
+                                        <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' or $THEMASUserInfo_userGroup = 'THESAURUS_TEAM' ">
                                             <a href="#" >
                                                 <xsl:attribute name="onclick">
                                                         <xsl:text>alert('</xsl:text>
                                                         <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
                                                          <xsl:text>');</xsl:text>
                                                     </xsl:attribute>
-                                                <img width="16" height="16" border="0">
+                                                <img width="16" height="16" border="0"  class="disabledImage">
                                                     <xsl:attribute name="src">
                                                         <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
                                                     </xsl:attribute>
@@ -641,7 +648,10 @@
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <a>
-                                                <!-- Η Ομάδα Θησαυρού (THESAURUS_TEAM) από τις διαχειριστικές λειτουργίες μπορεί να κάνει μόνο Επιδιόρθωση Βάσης -->
+                                                <xsl:attribute name="href">
+                                                    <xsl:text>DBadmin?DIV=Create_Restore_DB_backup_DIV</xsl:text>
+                                                </xsl:attribute>
+                                                <!-- Η Ομάδα Θησαυρού (THESAURUS_TEAM) από τις διαχειριστικές λειτουργίες μπορεί να κάνει μόνο Επιδιόρθωση Βάσης 
                                                 <xsl:choose>
                                                     <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_TEAM'">
                                                         <xsl:attribute name="href">
@@ -653,7 +663,8 @@
                                                             <xsl:text>DBadmin?DIV=Fix_DB_DIV</xsl:text>
                                                         </xsl:attribute>
                                                     </xsl:otherwise>
-                                                </xsl:choose>
+                                                </xsl:choose>-->
+                                                
                                                 <img width="16" height="16" border="0">
                                                     <xsl:attribute name="src">
                                                         <xsl:value-of select="$locale/leftmenu/db/actions/managedb/image/src/option[@lang=$lang]"/>
@@ -705,7 +716,7 @@
                                                     <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
                                                      <xsl:text>');</xsl:text>
                                                 </xsl:attribute>
-                                                <img width="16" height="16" border="0">
+                                                <img width="16" height="16" border="0" class="disabledImage">
                                                     <xsl:attribute name="src">
                                                         <xsl:value-of select="$locale/leftmenu/users/actions/new/image/src/option[@lang=$lang]"/>
                                                     </xsl:attribute>
@@ -716,84 +727,121 @@
                                             </a>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <a href="#">
-                                            <xsl:choose>
-                                                <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
+                                        <xsl:choose>
+                                            <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
+                                                <a href="#">
                                                     <xsl:attribute name="onclick">
                                                         <xsl:text>alert('</xsl:text>
                                                         <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
-                                                         <xsl:text>');</xsl:text>
+                                                        <xsl:text>');</xsl:text>
                                                     </xsl:attribute>
-                                                </xsl:when>
-                                                <xsl:otherwise>
+                                                    
+                                                    <img width="16" height="16" border="0" class="disabledImage">
+                                                        <xsl:attribute name="src">
+                                                            <xsl:value-of select="$locale/leftmenu/users/actions/new/image/src/option[@lang=$lang]"/>
+                                                        </xsl:attribute>
+                                                        <xsl:attribute name="title">
+                                                            <xsl:value-of select="$locale/leftmenu/users/actions/new/image/title/option[@lang=$lang]"/>
+                                                        </xsl:attribute>
+                                                    </img>
+                                                </a>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <a href="#">
                                                     <xsl:attribute name="onClick">
                                                         <xsl:text>showEditFieldCard('','user_create','EditDisplays_User');</xsl:text>
                                                     </xsl:attribute>
-                                                </xsl:otherwise>
-                                            </xsl:choose>
-                                            <img width="16" height="16" border="0">
-                                                <xsl:attribute name="src">
-                                                    <xsl:value-of select="$locale/leftmenu/users/actions/new/image/src/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                                <xsl:attribute name="title">
-                                                    <xsl:value-of select="$locale/leftmenu/users/actions/new/image/title/option[@lang=$lang]"/>
-                                                </xsl:attribute>
-                                            </img>
-                                        </a>
+                                                    
+                                                    <img width="16" height="16" border="0">
+                                                        <xsl:attribute name="src">
+                                                            <xsl:value-of select="$locale/leftmenu/users/actions/new/image/src/option[@lang=$lang]"/>
+                                                        </xsl:attribute>
+                                                        <xsl:attribute name="title">
+                                                            <xsl:value-of select="$locale/leftmenu/users/actions/new/image/title/option[@lang=$lang]"/>
+                                                        </xsl:attribute>
+                                                    </img>
+                                                </a>
+                                            </xsl:otherwise>
+                                        </xsl:choose>                                            
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </td>
                             <td>
-                                <a href="#" >
-                                    <xsl:choose>
-                                        <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
+                                 <xsl:choose>
+                                     <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
+                                        <a href="#" >
                                             <xsl:attribute name="onclick">
                                                 <xsl:text>alert('</xsl:text>
                                                 <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
-                                                 <xsl:text>');</xsl:text>
+                                                <xsl:text>');</xsl:text>
                                             </xsl:attribute>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:attribute name="onclick">
+                                            
+                                            <img width="16" height="16" border="0"  class="disabledImage">
+                                                <xsl:attribute name="src">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/src/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="title">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/title/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                            </img>
+                                        </a>
+                                     </xsl:when>
+                                     <xsl:otherwise>
+                                         <a href="#" >                                   
+                                           <xsl:attribute name="onclick">
                                                 <xsl:text>updateCriteria("SearchCriteria_Users","*");</xsl:text>
                                             </xsl:attribute>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                    <img width="16" height="16" border="0">
-                                        <xsl:attribute name="src">
-                                            <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/src/option[@lang=$lang]"/>
-                                        </xsl:attribute>
-                                        <xsl:attribute name="title">
-                                            <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/title/option[@lang=$lang]"/>
-                                        </xsl:attribute>
-                                    </img>
-                                 </a>
+                                            <img width="16" height="16" border="0">
+                                                <xsl:attribute name="src">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/src/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="title">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/viewall/image/title/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                            </img>
+                                         </a>
+                                     </xsl:otherwise>
+                                 </xsl:choose>
                             </td>
                             <td>
-                                <a href="#">
-                                    <xsl:choose>
-                                        <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
-                                            <xsl:attribute name="onclick">
+                                <xsl:choose>
+                                    <xsl:when test="$THEMASUserInfo_userGroup != 'THESAURUS_COMMITTEE' and $THEMASUserInfo_userGroup != 'ADMINISTRATOR' ">
+                                        <a href="#">
+                                            <xsl:attribute name="onClick">
                                                 <xsl:text>alert('</xsl:text>
                                                 <xsl:value-of select="$locale/generalmessages/disabledfunction/option[@lang=$lang]"/>
-                                                 <xsl:text>');</xsl:text>
+                                                <xsl:text>');</xsl:text>
                                             </xsl:attribute>
-                                        </xsl:when>
-                                        <xsl:otherwise>
+
+                                            <img width="16" height="16" border="0" class="disabledImage">
+                                                <xsl:attribute name="src">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/src/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="title">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/title/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                            </img>
+                                        </a>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <a href="#">
                                             <xsl:attribute name="onClick">
                                                 <xsl:text>showEditFieldCard('','share_thesaurus','EditDisplays_User');</xsl:text>
                                             </xsl:attribute>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                    <img width="16" height="16" border="0">
-                                        <xsl:attribute name="src">
-                                            <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/src/option[@lang=$lang]"/>
-                                        </xsl:attribute>
-                                        <xsl:attribute name="title">
-                                            <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/title/option[@lang=$lang]"/>
-                                        </xsl:attribute>
-                                    </img>
-                                </a>
+
+                                            <img width="16" height="16" border="0">
+                                                <xsl:attribute name="src">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/src/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="title">
+                                                    <xsl:value-of select="$locale/leftmenu/users/actions/sharethesaurus/image/title/option[@lang=$lang]"/>
+                                                </xsl:attribute>
+                                            </img>
+                                        </a>
+                                        
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                                    
                             </td>
                         </tr>
                     </table>

@@ -41,9 +41,9 @@ import Utils.Utilities;
 import Utils.Parameters;
 import java.util.*;
 import javax.servlet.http.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
                             DBStatistics
@@ -134,16 +134,16 @@ public class DBStatistics {
         XMLStr += "<total>" + DBSH.GetTotalNumber(Q, sis_session, SessionUserInfo) + "</total>";
 
         
-        Vector<String> HierarchiesVector = new Vector<String>();
-        Vector<IntegerObject> HierarchiesTermsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> HierarchiesNonPrefferedTermsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> HierarchiesTranslationsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> HierarchiesNonPrefferedTranslationsCountVector = new Vector<IntegerObject>();
+        ArrayList<String> HierarchiesVector = new ArrayList<String>();
+        ArrayList<IntegerObject> HierarchiesTermsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> HierarchiesNonPrefferedTermsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> HierarchiesTranslationsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> HierarchiesNonPrefferedTranslationsCountVector = new ArrayList<IntegerObject>();
         DBSH.GetNumberOfTermsAndTranslationsPerHierarchy(Q, sis_session, SessionUserInfo, targetLocale,
              HierarchiesVector, HierarchiesTermsCountVector, HierarchiesNonPrefferedTermsCountVector, 
              HierarchiesTranslationsCountVector, HierarchiesNonPrefferedTranslationsCountVector);
         // copy HierarchiesVector to HierarchiesVectorSortedUI (UI encoded without prefix)
-        Vector<String> HierarchiesVectorSortedUI = new Vector<String>();      
+        ArrayList<String> HierarchiesVectorSortedUI = new ArrayList<String>();      
         
         int HierarchiesVectorSize = HierarchiesVector.size();
         for (int i = 0; i < HierarchiesVectorSize; i++) {
@@ -190,18 +190,18 @@ public class DBStatistics {
         XMLStr += "<total>" + DBSF.GetTotalNumber(Q, sis_session, SessionUserInfo) + "</total>";
         
         // <NumberOfHierarchiesAndTermsAndEnglishWordsPerFacet>
-        Vector<String> FacetsVector = new Vector<String>();
-        Vector<IntegerObject> FacetsHierarciesCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> FacetsTermsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> FacetsNonPrefferedTermsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> FacetsTranslationsCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> FacetsNonPrefferedTranslationsCountVector = new Vector<IntegerObject>();
+        ArrayList<String> FacetsVector = new ArrayList<String>();
+        ArrayList<IntegerObject> FacetsHierarciesCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> FacetsTermsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> FacetsNonPrefferedTermsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> FacetsTranslationsCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> FacetsNonPrefferedTranslationsCountVector = new ArrayList<IntegerObject>();
         DBSF.GetNumberOfHierarchiesAndTermsAndTranslationsPerFacet(Q, sis_session, SessionUserInfo, targetLocale,
                 FacetsVector, FacetsHierarciesCountVector, 
                 FacetsTermsCountVector, FacetsNonPrefferedTermsCountVector, 
                 FacetsTranslationsCountVector, FacetsNonPrefferedTranslationsCountVector);
         // copy FacetsVector to FacetsVectorSortedUI (UI encoded without prefix)
-        Vector<String> FacetsVectorSortedUI = new Vector<String>();      
+        ArrayList<String> FacetsVectorSortedUI = new ArrayList<String>();      
         
         int FacetsVectorSize = FacetsVector.size();
         for (int i = 0; i < FacetsVectorSize; i++) {
@@ -249,12 +249,12 @@ public class DBStatistics {
         XMLStr += "<total>" + DBSS.GetTotalNumber(Q, sis_session, SessionUserInfo) + "</total>";
         
         // <NumberOfTermsPerSourceGrEn>
-        Vector<String> SourcesVector = new Vector<String>();
-        Vector<IntegerObject> TermsSourceGrCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> TermsSourceEnCountVector = new Vector<IntegerObject>();
+        ArrayList<String> SourcesVector = new ArrayList<String>();
+        ArrayList<IntegerObject> TermsSourceGrCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> TermsSourceEnCountVector = new ArrayList<IntegerObject>();
         DBSS.GetNumberOfTermsPerSourceGrEn(Q, sis_session, SessionUserInfo, targetLocale, SourcesVector, TermsSourceGrCountVector, TermsSourceEnCountVector);
         // copy SourcesVector to SourcesVectorSortedUI (UI encoded without prefix)
-        Vector<String> SourcesVectorSortedUI = new Vector<String>();      
+        ArrayList<String> SourcesVectorSortedUI = new ArrayList<String>();      
         
         int SourcesVectorSize = SourcesVector.size();
         for (int i = 0; i < SourcesVectorSize; i++) {
@@ -297,12 +297,12 @@ public class DBStatistics {
         XMLStr += "<total>" + DBSU.GetTotalNumber(Q, sis_session, SessionUserInfo) + "</total>";
         
         // <NumberOfTermsCreatedAndLastModifiedPerUser>
-        Vector<String> UsersVector = new Vector<String>();
-        Vector<IntegerObject> TermsCreatedCountVector = new Vector<IntegerObject>();
-        Vector<IntegerObject> TermsLastModifiedCountVector = new Vector<IntegerObject>();
+        ArrayList<String> UsersVector = new ArrayList<String>();
+        ArrayList<IntegerObject> TermsCreatedCountVector = new ArrayList<IntegerObject>();
+        ArrayList<IntegerObject> TermsLastModifiedCountVector = new ArrayList<IntegerObject>();
         DBSU.GetNumberOfTermsCreatedAndLastModifiedPerUser(Q, sis_session, SessionUserInfo, targetLocale, UsersVector, TermsCreatedCountVector, TermsLastModifiedCountVector);
         // copy UsersVector to UsersVectorSortedUI (UI encoded without prefix)
-        Vector<String> UsersVectorSortedUI = new Vector<String>();      
+        ArrayList<String> UsersVectorSortedUI = new ArrayList<String>();      
         
         int UsersVectorSize = UsersVector.size();
         for (int i = 0; i < UsersVectorSize; i++) {

@@ -47,7 +47,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import neo4j_sisapi.*;
@@ -98,17 +98,17 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             
             if(targetField==null || targetHierarchy==null){
                 
-                xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+                xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
                 xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>" +
                         "<targetEditField>"+targetField+"</targetEditField>" +
-                        "<resultText>"+u.translateFromMessagesXML("root/EditHierarchy/Edit/NothingSpecified", null)+"</resultText>");
+                        "<resultText>"+u.translateFromMessagesXML("root/EditHierarchy/Edit/NothingSpecified", null,SessionUserInfo.UILang)+"</resultText>");
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append(u.getXMLEnd());
                 u.XmlPrintWriterTransform(out,xml ,sessionInstance.path + "/xml-xsl/EditHierarchyActions/Edit_Hierarchy.xsl");
                 return;
             }
-            Vector<String> availableFacets = new Vector<String>();
-            Vector<String> currentFacets = new Vector<String>();
+            ArrayList<String> availableFacets = new ArrayList<String>();
+            ArrayList<String> currentFacets = new ArrayList<String>();
 
             //open connection and start Query
             if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
@@ -118,20 +118,20 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             }
 
 
-            if(targetField.compareTo("hierarchy_create")==0){
+            if(targetField.compareTo("hierarchy_create")==0 || targetField.compareTo("hierarchy_facets")==0){
                 
                 availableFacets.addAll(dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q, sis_session, targetLocale));
             }
-            else if(targetField.compareTo("hierarchy_facets")==0){
-                Vector<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
+            if(targetField.compareTo("hierarchy_facets")==0){
+                //ArrayList<String> tempAvailableFacets = dbGen.getAvailableFacets(SessionUserInfo.selectedThesaurus, Q,sis_session,targetLocale);
                 
                 currentFacets.addAll(dbGen.getSelectedFacets(SessionUserInfo.selectedThesaurus,targetHierarchy, Q, sis_session, targetLocale));
-                
+                /*
                 for (int i = 0; i < tempAvailableFacets.size(); i++) {
                     if (!currentFacets.contains(tempAvailableFacets.get(i))) {
-                        availableFacets.addElement(tempAvailableFacets.get(i));
+                        availableFacets.add(tempAvailableFacets.get(i));
                     }
-                }
+                }*/
             }
             
             //end query and close connection
@@ -141,23 +141,23 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
             
             if(targetField.compareTo("hierarchy_create")==0){
                 
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
-                    xml.append("<name>");
-                    xml.append(availableFacets.get(i));
+                    xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
+                    xml.append(Utilities.escapeXML(availableFacets.get(i)));
                     xml.append("</name>");
                 }
 
                 xml.append("</availableFacets>");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
             }
             else if(targetField.compareTo("hierarchy_facets")==0){
                 
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
-                
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                /*
                 xml.append("<currentFacets>");
                 for(int i=0 ; i<currentFacets.size();i++){
                     xml.append("<name>");
@@ -166,23 +166,23 @@ public class EditDisplays_Hierarchy extends ApplicationBasicServlet {
                 }
 
                 xml.append("</currentFacets>");
-                
+                */
                 xml.append("<availableFacets>");
                 for(int i=0 ; i<availableFacets.size();i++){
-                    xml.append("<name>");
-                    xml.append(availableFacets.get(i));
+                    xml.append("<name selected=\""+(currentFacets.contains(availableFacets.get(i)) ? "yes\">":"no\">"));
+                    xml.append(Utilities.escapeXML(availableFacets.get(i)));
                     xml.append("</name>");
                 }
 
                 xml.append("</availableFacets>");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
                 
             }
             else{
-                xml.append("<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
-                xml.append("<targetHierarchy>"+targetHierarchy+"</targetHierarchy>");
+                xml.append("<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append("<targetHierarchy>"+Utilities.escapeXML(targetHierarchy)+"</targetHierarchy>");
                 xml.append("<targetEditField>"+targetField+"</targetEditField>");
                 xml.append("</page>");
             }

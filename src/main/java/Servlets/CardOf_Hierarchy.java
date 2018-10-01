@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletContext;
 import neo4j_sisapi.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Collections;
 /**
@@ -113,7 +113,7 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             
             if(targetHierarchy==null || targetHierarchy.length()==0){
                 
-                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfHierarchy/NoHierarchySelected", null)+"</errorMsg>";
+                String errorMsg = "<errorMsg>"+u.translateFromMessagesXML("root/CardOfHierarchy/NoHierarchySelected", null,SessionUserInfo.UILang)+"</errorMsg>";
                 prepareErrorMsg(errorMsg,out,sessionInstance,outputMode);
                 return;
             }
@@ -131,7 +131,7 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             Q.TEST_end_query();
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
           
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults + "<hierarchyName>" + Utilities.escapeXML(targetHierarchy) + "</hierarchyName>", "HierarchyDetails"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -154,7 +154,8 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
     void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode){
         StringBuffer xml = new StringBuffer();
         Utilities u = new Utilities();
-        xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+        UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
+        xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
         xml.append(u.getXMLMiddle(errorMsg, "Details"));
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());

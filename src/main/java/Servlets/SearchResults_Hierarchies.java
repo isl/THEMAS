@@ -56,7 +56,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -129,7 +129,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             int hierarchiesPagingQueryResultsCount = 0;
 
             if (updateTermsCirteria != null) { // detect if search was pressed or left menu option was triggered
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Hierarchies", updateTermsCirteria, request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Hierarchies", updateTermsCirteria, request, u);
                 if(searchCriteria.input.size()==searchCriteria.value.size()){
                     /*
                     for(int k=0; k<searchCriteria.input.size(); k++){
@@ -163,7 +163,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             }
 
             if (searchCriteria == null) {//tab pressed without any criteria previously set -- > default == list all with default output
-                searchCriteria = SearchCriteria.createSearchCriteriaObject("SearchCriteria_Hierarchies", "*", request, u);
+                searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Hierarchies", "*", request, u);
                 sessionInstance.setAttribute("SearchCriteria_Hierarchies", searchCriteria);
 
             }
@@ -202,15 +202,14 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             searchCriteria.output.toArray(output);
 
             // handle search operators (not) starts / ends with
-            u.InformSearchOperatorsAndValuesWithSpecialCharacters(ops, inputValue);
+            u.InformSearchOperatorsAndValuesWithSpecialCharacters(input,ops, inputValue,false);
             //-------------------- paging info And criteria retrieval-------------------------- 
 
             StringBuffer xml = new StringBuffer();
-
             
             long startTime = Utilities.startTimer();
 
-            Vector<String> allResultsHierarchies = getAllSearchHierarchies(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
+            ArrayList<String> allResultsHierarchies = getAllSearchHierarchies(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
             Collections.sort(allResultsHierarchies, new StringLocaleComparator(targetLocale));
 
             //Get only those hierarchies that will appear in next page
@@ -265,13 +264,13 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                 return;
             }
 
-            Vector<String> resultsHierarchies = new Vector<String>();
+            ArrayList<String> resultsHierarchies = new ArrayList<String>();
             for (int i = 0; i < hierarchiesPagingListStep; i++) {
                 if (i + hierarchiesPagingFirst > hierarchiesPagingQueryResultsCount) {
                     break;
                 }
                 String tmp = allResultsHierarchies.get(i + hierarchiesPagingFirst - 1).toString();
-                resultsHierarchies.addElement(tmp);
+                resultsHierarchies.add(tmp);
             }
             String xmlResults = u.getResultsinXml_Hierarchy(SessionUserInfo, resultsHierarchies, output, Q, sis_session, targetLocale);
 
@@ -287,7 +286,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             xmlResults += (u.writePagingInfoXML(hierarchiesPagingListStep, hierarchiesPagingFirst, hierarchiesPagingQueryResultsCount, elapsedTimeSec, "SearchResults_Hierarchies"));
             xmlResults += "</results>";
 
-            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES));
+            xml.append(u.getXMLStart(ConstantParameters.LMENU_HIERARCHIES, SessionUserInfo.UILang));
             xml.append(u.getXMLMiddle(xmlResults, "SearchHierarchyResults"));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());
@@ -305,12 +304,12 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
     }
 
     /**Returns a Vector with the hierarchies which match with criteria*/
-    public Vector<String> getAllSearchHierarchies(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, 
+    public ArrayList<String> getAllSearchHierarchies(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, 
             String globalOperator, QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         DBGeneral dbGen = new DBGeneral();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
-        Vector<String> globalHierachyResults = new Vector<String>();
+        ArrayList<String> globalHierachyResults = new ArrayList<String>();
 
         int sisSessionId = sis_session.getValue();
         int set_global_hierarchy_results = -1;
@@ -385,9 +384,9 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                 }
 
                 //Case Of Hierarchy Name criteria
-                if (input[i].toString().equalsIgnoreCase("name")) {
+                if (input[i].equalsIgnoreCase("name")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (operators[i].equals(ConstantParameters.searchOperatorEquals)) {
 
                         if (searchVal != null && searchVal.trim().length() > 0) {
                             if (Q.set_current_node( new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
@@ -405,7 +404,8 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                                 Q.reset_set( set_partial_hierarchy_results);
                             }
                         }
-                    } else if (operators[i].toString().equals("~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains">
 
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
@@ -417,15 +417,27 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_partial_hierarchy_results = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //set_partial_hierarchy_results = Q.get_matched( set_h, ptrn_set);
-                        set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        //set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_partial_hierarchy_results = Q.get_matched_CaseInsensitive(set_h, searchVal, true);                            
+                        }
+                        else{
+                            set_partial_hierarchy_results = Q.get_matched_ToneAndCaseInsensitive(set_h, searchVal, false);
+                        }
 
                         Q.reset_set( set_partial_hierarchy_results);
+                        // </editor-fold>
 
-                    } else if (operators[i].toString().equals("!")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorTransliterationContains)) {
+                        Q.reset_set(set_h);
+                        set_partial_hierarchy_results = TA.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        Q.reset_set(set_partial_hierarchy_results);
+                    }
+                    else if (operators[i].equals("!")) {
 
                         int set_exclude_hierarchies = Q.set_get_new();
 
-                        if (Q.set_current_node( new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
+                        if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
                             /*
                             CMValue prm_val = new CMValue();
                             prm_val.assign_string(searchVal);
@@ -450,7 +462,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.reset_set( set_exclude_hierarchies);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //int set_exclude_hierarchies = Q.set_get_new();
 
@@ -464,7 +476,15 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Decided Not case insensitive logo problimatow me ta tonoumena
                         //set_exclude_hierarchies = Q.get_matched_case_insensitive( set_h, ptrn_set,1);
                         //set_exclude_hierarchies = Q.get_matched( set_h, ptrn_set);
-                        int set_exclude_hierarchies = Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        int set_exclude_hierarchies;
+                        //Q.get_matched_ToneAndCaseInsensitive( set_h, searchVal, Parameters.SEARCH_MODE_CASE_TONE_INSENSITIVE);
+                        
+                        if(Parameters.SEARCH_MODE_CASE_INSENSITIVE ){
+                            set_exclude_hierarchies = Q.get_matched_CaseInsensitive(set_h, searchVal, true);                            
+                        }
+                        else{
+                            set_exclude_hierarchies = Q.get_matched_ToneAndCaseInsensitive(set_h, searchVal, false);
+                        }
                         Q.reset_set( set_exclude_hierarchies);
 
                         Q.reset_set( set_h);
@@ -477,10 +497,24 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.reset_set( set_exclude_hierarchies);
                     }
+                    else if (operators[i].equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
+
+                        Q.reset_set(set_h);
+                        int set_exclude_hierarchies = TA.get_matched_OnTransliteration(set_h, Utilities.getTransliterationString(searchVal,false),false);
+                        
+                        Q.reset_set(set_h);
+                        Q.reset_set(set_partial_hierarchy_results);
+                        Q.set_copy(set_partial_hierarchy_results, set_h);
+
+                        Q.reset_set(set_partial_hierarchy_results);
+                        Q.reset_set(set_exclude_hierarchies);
+                        Q.set_difference(set_partial_hierarchy_results, set_exclude_hierarchies);
+                        Q.reset_set(set_partial_hierarchy_results);
+                    }
                 } //Case Of letter_code's value criteria // NOT USED BECAUSE OF CRITERIA HIERARCHIES XSL 
                 else if (input[i].toString().equalsIgnoreCase("letter_code")) {
 
-                    if (operators[i].toString().equals("=")) {
+                    if (operators[i].toString().equals(ConstantParameters.searchOperatorEquals)) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -491,7 +525,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row:retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -570,18 +604,17 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
 
 
-                    } else if (operators[i].toString().equals("~")) {
-
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorContains)) {
+                        // <editor-fold defaultstate="collapsed" desc="Code for Contains letter code">
                         //get all hierarchies that have letter codes
-                        int linkFromSet = Q.set_get_new();
                         Q.reset_set( set_h);
-                        linkFromSet = Q.get_inher_link_from( set_h);
+                        int linkFromSet  = Q.get_inher_link_from( set_h);
                         Q.reset_set( linkFromSet);
 
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -657,9 +690,8 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //Union of these 2 partial results (hierarchyletter codes and inherieted letter codes)
                         Q.set_union( set_partial_hierarchy_results, additional_hiers_set);
                         Q.reset_set( set_partial_hierarchy_results);
-
-
-                    } else if (operators[i].toString().equals("!")) {
+                        // </editor-fold>
+                    } else if (operators[i].equals("!")) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -670,7 +702,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -762,7 +794,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         Q.reset_set( set_partial_hierarchy_results);
                         Q.free_set( set_exclude_facets);
 
-                    } else if (operators[i].toString().equals("!~")) {
+                    } else if (operators[i].equals(ConstantParameters.searchOperatorNotContains)) {
 
                         //get all hierarchies that have letter codes
                         int linkFromSet = Q.set_get_new();
@@ -773,7 +805,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         //select only those that have one letter code value equal to searchVal
                         int filteredSet = Q.set_get_new();
 
-                        Vector<Return_Full_Link_Id_Row> retVals = new Vector<Return_Full_Link_Id_Row>();
+                        ArrayList<Return_Full_Link_Id_Row> retVals = new ArrayList<Return_Full_Link_Id_Row>();
                         if(Q.bulk_return_full_link_id(linkFromSet, retVals)!=QClass.APIFail){
                             for(Return_Full_Link_Id_Row row: retVals){
                                 if (row.get_v5_categ().equals("letter_code") == false) {
@@ -908,10 +940,10 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
         DBFilters dbf = new DBFilters();
         set_global_hierarchy_results = dbf.FilterHierResults(SessionUserInfo, set_global_hierarchy_results, Q, sis_session);
 
-        Vector<Return_Nodes_Row> retVals = new Vector<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
         if(Q.bulk_return_nodes(set_global_hierarchy_results, retVals)!=QClass.APIFail){
             for(Return_Nodes_Row row:retVals){
-                globalHierachyResults.addElement(row.get_v1_cls_logicalname());
+                globalHierachyResults.add(row.get_v1_cls_logicalname());
             }
         }
         /*StringObject c_name = new StringObject();
@@ -928,7 +960,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
     }
 
-    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, Vector<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
         DBGeneral dbGen = new DBGeneral();
         
@@ -942,7 +974,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             String temp = "";
 
             temp += xml_header /*+xslLink*/ +
-                    "<page language=\""+Parameters.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
+                    "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">" +
                     "<title>" + title + "</title>" +
                     "<query>" + sc.getQueryString(u) + "</query>";
             if(pathToSaveScriptingAndLocale!=null){
@@ -962,7 +994,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             for (int m = 0; m < output.length; m++) {
 
                 String category = output[m];
-                if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
+                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
                     continue;
                 } else {
                     out.write("<" + category + "/>");
@@ -985,7 +1017,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                         temp.append("<name>" + Utilities.escapeXML(currentHierarchy) + "</name>");
 
                     } else {
-                        Vector<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
+                        ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
                         Collections.sort(v, new StringLocaleComparator(targetLocale));
 
                         for (int k = 0; k < v.size(); k++) {

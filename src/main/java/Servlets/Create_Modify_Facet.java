@@ -48,7 +48,7 @@ import javax.servlet.http.*;
 
 import java.util.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 /**
  *
  * @author tzortzak
@@ -111,7 +111,7 @@ public class Create_Modify_Facet extends ApplicationBasicServlet {
                 Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ servlet " + this.getServletName());
                 return;
             }
-            boolean succeeded =  creation.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,   dbGen,  targetFacet, createORmodify,  deletionOperator, resultObj,true);
+            boolean succeeded =  creation.Create_Or_ModifyFacet(SessionUserInfo.selectedThesaurus, Q, TA,  sis_session, tms_session,   dbGen,  targetFacet, createORmodify,  deletionOperator, resultObj,true,SessionUserInfo.UILang);
 
             Q.free_all_sets();
             if(succeeded){

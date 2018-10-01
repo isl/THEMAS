@@ -35,10 +35,10 @@ package DB_Classes;
 
 
 import Utils.Utilities;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.servlet.http.*;
 import neo4j_sisapi.*;
-import neo4j_sisapi.tmsapi.TMSAPIClass;
+import neo4j_sisapi.TMSAPIClass;
 
 /**
  *
@@ -105,13 +105,13 @@ public class DBRemove_Hierarchy {
     INPUT: - StringObject targetHierarchy: the NEW Hierarchy to be deleted
     FUNCTION: deletes the given NEW Hierarchy (if it exists)
     ----------------------------------------------------------------------*/
-    public String DeleteHierarchy(QClass Q,TMSAPIClass TA,IntegerObject sis_session,IntegerObject tms_session, DBGeneral dbGen, StringObject targetHierarchy) {
+    public String DeleteHierarchy(QClass Q,TMSAPIClass TA,IntegerObject sis_session,IntegerObject tms_session, DBGeneral dbGen, StringObject targetHierarchy, final String uiLang) {
         String errorMsg = new String("");
  
         if (dbGen.check_exist(targetHierarchy.getValue(),Q,sis_session) == false) {
             
             Utilities u = new Utilities();            
-            errorMsg = u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy.getValue()});
+            errorMsg = u.translateFromMessagesXML("root/EditHierarchy/Deletion/HierarchyNotFound", new String[]{targetHierarchy.getValue()}, uiLang);
             //errorMsg = "Hierarchy " + targetHierarchy + " does not exist";
             
             return errorMsg;

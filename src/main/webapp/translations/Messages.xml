@@ -88,7 +88,7 @@
         <Kinds>
             <Facet>
                 <option lang="en">Facet</option>
-                <option lang="el">Μικροθησαυρός</option>
+                <option lang="el">Θέμα</option>
             </Facet>
             <Hierarchy>
                 <option lang="en">Hierarchy</option>
@@ -181,8 +181,12 @@
     <CardOfFacet>
         <NoFacetSelected>
             <option lang="en">No facet is selected in order to display its card.</option>
-            <option lang="el">Δεν έχει προσδιοριστεί μικροθησαυρός για προβολή της κάρτας του.</option>
+            <option lang="el">Δεν έχει προσδιοριστεί θέμα για προβολή της κάρτας του.</option>
         </NoFacetSelected>
+        <FacetNotFound>
+            <option lang="en">Facet '%s' was not found in order to display its card.</option>
+            <option lang="el">Δεν βρέθηκε το θέμα '%s' για προβολή της κάρτας του.</option>
+        </FacetNotFound>
     </CardOfFacet>
     <CardOfHierarchy>
         <NoHierarchySelected>
@@ -210,65 +214,65 @@
         <Deletion>
             <FacetNotFound>
                 <option lang="en">Facet %s was not found.</option>
-                <option lang="el">Δεν βρέθηκε ο μικροθησαυρός: %s.</option>
+                <option lang="el">Δεν βρέθηκε το θέμα: %s.</option>
             </FacetNotFound>
             <LastFacetForHierarchies>
                 <option lang="en">Facet %s is the only one under which heirarchies: %s are classifiesd. Facet deletion action was cancelled in order to maintain these hierarchies under at least one facet.</option>
-                <option lang="el">Ο μικροθησαυρός: %s είναι ο μοναδικός στον οποίο υπάγονται οι ιεραρχίες: %s. Η λειτουργία διαγραφής ακυρώθηκε προκειμένου να παραμείνουν αυτές οι ιεραρχίες κάτω από έναν τουλάχιστον μικροθησαυρό.</option>
+                <option lang="el">Το Θέμα: %s είναι ο μοναδικός στον οποίο υπάγονται οι ιεραρχίες: %s. Η λειτουργία διαγραφής ακυρώθηκε προκειμένου να παραμείνουν αυτές οι ιεραρχίες κάτω από ένα τουλάχιστον θέμα.</option>
             </LastFacetForHierarchies>
             <SuccessMsg>
                 <option lang="en">Facet '%s' was successfully deleted.</option>
-                <option lang="el">Ο Μικροθησαυρός: '%s' διαγράφηκε με επιτυχία.</option>
+                <option lang="el">Το Θέμα: '%s' διαγράφηκε με επιτυχία.</option>
             </SuccessMsg>
             <SuccessObsoleteMsg>
                 <option lang="en">Facet '%s' was successfully abandoned</option>
-                <option lang="el">Ο Μικροθησαυρός: '%s' καταργήθηκε με επιτυχία.</option>
+                <option lang="el">Το Θέμα: '%s' καταργήθηκε με επιτυχία.</option>
             </SuccessObsoleteMsg>
             <SuccessUndoObsoleteMsg>
                 <option lang="en">Undo abandonment action of facet '%s' was successfully performed.</option>
-                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής του μικροθησαυρού: '%s'.</option>
+                <option lang="el">Oλοκληρώθηκε επιτυχώς η αναίρεση της κατάργησής του θέματος: '%s'.</option>
             </SuccessUndoObsoleteMsg>
         </Deletion>
         <Creation>
             <ErrorPrefix>
                 <option lang="en">Facet creation error: </option>
-                <option lang="el">Λάθος κατά τη δημιουργία μικροθησαυρού: </option>
+                <option lang="el">Λάθος κατά τη δημιουργία θέματος: </option>
             </ErrorPrefix>
             <EmptyName>
                 <option lang="en">A name must be specified for the new facet</option>
-                <option lang="el">Δεν έχει δηλωθεί όνομα για τον μικροθησαυρό.</option>
+                <option lang="el">Δεν έχει δηλωθεί όνομα για το θέμα</option>
             </EmptyName>
             <FacetExists>
                 <option lang="en">Facet %s already exists in the database.</option>
-                <option lang="el">Ο Μικροθησαυρός %s υπάρχει ήδη στη βάση.</option>
+                <option lang="el">Το Θέμα %s υπάρχει ήδη στη βάση.</option>
             </FacetExists>
             <SuccessMsg>
                 <option lang="en">Facet '%s' was successfully created.</option>
-                <option lang="el">Ο Μικροθησαυρός: '%s' δημιουργήθηκε με επιτυχία.</option>
+                <option lang="el">Το Θέμα: '%s' δημιουργήθηκε με επιτυχία.</option>
             </SuccessMsg>
         </Creation>
         <Edit>
             <LongName>
                 <option lang="en"><!--Facet name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
-                <option lang="el"><!--Το όνομα του Μικροθησαυρού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+                <option lang="el"><!--Το όνομα του Θέματος δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
             </LongName>
             <ErrorPrefix>
                 <option lang="en">Facet editing error: </option>
-                <option lang="el">Λάθος κατά την τροποποίηση μικροθησαυρού: </option>
+                <option lang="el">Λάθος κατά την τροποποίηση θέματος: </option>
             </ErrorPrefix>
             <NoTargetSpecified>
                 <option lang="en">No target facet has been specified for etiting/creation.</option>
-                <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση μικροθησαυρού.</option>
+                <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση θέματος.</option>
             </NoTargetSpecified>
             <SuccessMsg>
                 <option lang="en">Facet '%s' was successfully modified.</option>
-                <option lang="el">Ο Μικροθησαυρός: '%s' τροποποιήθηκε με επιτυχία.</option>
+                <option lang="el">Το Θέμα: '%s' τροποποιήθηκε με επιτυχία.</option>
             </SuccessMsg>
         </Edit>
         <Rename>
             <LongName>
                 <option lang="en"><!--Facet name must not exceed the limit of %s UTF-8 characters. The value provided consists of %s UTF-8 characters.--></option>
-                <option lang="el"><!--Το όνομα του Μικροθησαυρού δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
+                <option lang="el"><!--Το όνομα του Θέματος δεν πρέπει να ξεπερνάει το όριο των %s UTF-8 χαρακτήρων. Η τιμή που δώθηκε αποτελείται από %s UTF-8 χαρακτήρες.--></option>
             </LongName>        
             <Success>
                 <option lang="en">Rename completed sucessfully.</option>
@@ -276,15 +280,15 @@
             </Success>
              <NoFacetSelected>
                 <option lang="en">No Facet selected for rename. Operation cancelled.</option>
-                <option lang="el">Δεν επιλέχθηκε μικροθησαυρός για μετονομασία. Ακύρωση μετονομασίας.</option>
+                <option lang="el">Δεν επιλέχθηκε θέμα για μετονομασία. Ακύρωση μετονομασίας.</option>
             </NoFacetSelected>
             <OldNameDoesNotExist>
                 <option lang="en">Facet selected for rename does not exist anymore. Please search again for this Facet and try again. Operation cancelled.</option>
-                <option lang="el">Ο Μικροθησαυρός προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
+                <option lang="el">Το Θέμα προς μετονομασία δεν υπάρχει πια. Ανανεώστε τα περιεχόμενα της σελίδας αποτελεσμάτων και προσπαθήστε ξανά. Ακύρωση μετονομασίας.</option>
             </OldNameDoesNotExist>
             <EmptyNewName>
                 <option lang="en">A new Facet name was not provided. Operation cancelled.</option>
-                <option lang="el">Δεν δόθηκε νέο όνομα για τον μικροθησαυρό προς μετονομασία. Ακύρωση μετονομασίας.</option>
+                <option lang="el">Δεν δόθηκε νέο όνομα για το Θέμα προς μετονομασία. Ακύρωση μετονομασίας.</option>
             </EmptyNewName>
             <NewNameExists>
                 <option lang="en">New Facet name already exists in the database. Operation cancelled.</option>
@@ -342,11 +346,11 @@
             </EmptyName>
             <NoFacet>
                 <option lang="en">At least one parent facet must be specified for the new hierarchy creation.</option>
-                <option lang="el">Η δήλωση ενός τουλάχιστον μικροθησαυρού είναι υποχρεωτική για την δημιουργία της ιεραρχίας.</option>
+                <option lang="el">Η δήλωση ενός τουλάχιστον θέματος είναι υποχρεωτική για την δημιουργία της ιεραρχίας.</option>
             </NoFacet>
             <AlreadyinDB>
                 <option lang="en">Name %s is already used in the database as a hierarchy name or facet name.</option>
-                <option lang="el">Το όνομα %s υπάρχει ήδη στην βάση είτε σαν ιεραρχία είτε σαν μικροθησαυρός.</option>
+                <option lang="el">Το όνομα %s υπάρχει ήδη στην βάση είτε σαν ιεραρχία είτε σαν θέμα.</option>
             </AlreadyinDB>
             <TermAlreadyinDB>
                 <option lang="en">Name %s is already used in the database as a term name and it can not be used in order to create the relavant TT.</option>
@@ -364,7 +368,7 @@
             </ErrorPrefix>
             <AvailableFacets>
                 <option lang="en">Available Facets: </option>
-                <option lang="el">Διαθέσιμοι μικροθησαυροί: </option>
+                <option lang="el">Διαθέσιμα Θέματα: </option>
             </AvailableFacets>
             <NothingSpecified>
                 <option lang="en">Editing error. Both the target editing hierarchy and the target edit field must be specified.</option>
@@ -379,8 +383,8 @@
                 <option lang="el">Δεν έχει προσδιοριστεί το όνομα του προς δημιουργία/τροποποίηση ιεραρχίας.</option>
             </NoTargetSpecified>
             <NoFacet>
-                <option lang="en">Every Hierarchy must be classified under at least one facet. Modification aborted.</option>
-                <option lang="el">Κάθε ιεραρχία πρέπει να υπάγεται σε έναν τουλάχιστον μικροθησαυρό. Ακύρωση τροποποίησης.</option>
+                <option lang="en">Every Hierarchy must be classified under at least one Facet. Modification aborted.</option>
+                <option lang="el">Κάθε ιεραρχία πρέπει να υπάγεται σε ένα τουλάχιστον Θέμα. Ακύρωση τροποποίησης.</option>
             </NoFacet>
             <SuccessfullyDeleted>
                 <option lang="en">Hierarchy %s was successfully deleted.</option>
@@ -546,6 +550,14 @@
                 <option lang="en">Bts declared should already exist in the database.</option>
                 <option lang="el">Πρέπει να εισάγεται στο πεδίο ΠΟ όρους που υπάρχουν στη βάση.</option>
             </BTMustExist>
+            <AlreadyAssignedSpecificTermReferenceId>
+                <option lang="en">Thesaurus Reference Id %s cannot be added to term %s because it is already used in thesaurus %s.</option>
+                <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να προστεθεί στον όρο %s γιατί έχει ήδη χρησιμοποιηθεί στον θησαυρό %s.</option>
+            </AlreadyAssignedSpecificTermReferenceId>
+            <ErrorDuringTermReferenceIdAssignement>
+                <option lang="en">Failure during creation of new Thesaurus Reference Id to term %s for thesaurus %s.</option>
+                <option lang="el">Αποτυχία κατά την δημιουργία νέου θησαυρικού αναγνωριστικού στον όρο %s για τον θησαυρό %s.</option>
+            </ErrorDuringTermReferenceIdAssignement>
         </Creation>
         <Rename>
             <Success>
@@ -1064,6 +1076,7 @@
         </USER_SET_WITH_DUBLICATE_VALUES>
     </resultOfShareThesaurus>            
     <DeleteThesaurus>
+        
         <DeleteThesaurusSucceded>
             <option lang="en">Deletion of Thesaurus '%s' succeeded.</option>
             <option lang="el">Η διαγραφή του θησαυρού '%s' ολοκληρώθηκε με επιτυχία.</option>
@@ -1090,6 +1103,14 @@
             <option lang="en">Two HNs were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
             <option lang="el">Βρέθηκαν 2 ΙΣ για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
         </MergeTermHNs>
+        <MergeTermCNs>
+            <option lang="en">Two Comment Notes were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 σχόλια για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermCNs>
+        <MergeTermNs>
+            <option lang="en">Two Notes were found for term: '%s'. In order to keep both they will be concatenated with ' ### ' as delimeter.</option>
+            <option lang="el">Βρέθηκαν 2 σημειώσεις για τον όρο: '%s'. Θα διατηρηθούν και οι δύο με το διαχωριστικό ' ### '.</option>
+        </MergeTermNs>
         <MergeSourceSNsSourcePrefix>
             <option lang="en">Source: </option>
             <option lang="el">Πηγή: </option>
@@ -1157,7 +1178,7 @@
         <SuccessfulInsertion>
             <option lang="en">Data insertion finished successfully. Current Thesaurus set: %s.</option>
             <option lang="el">Η λειτουργία εισαγωγής δεδομένων ολοκληρώθηκε με επιτυχία. Τρέχοντας θησαυρός τέθηκε ο: %s.</option>
-        </SuccessfulInsertion>
+        </SuccessfulInsertion>        
     </ImportData>
     <commitMergeActions>
         <MergeThesaurusSucceed>
@@ -1183,14 +1204,18 @@
             <option lang="el">Η ιεραρχία '%s' που επιλέχθηκε για εισαγωγή όρων δεν βρέθηκε στην βάση. Παρακαλώ επιλέξτε ένα νέο όνομα ιεραρχίας.</option>
         </FailureFindHierarchy>
         <targetUITermAlreadyExists>
-            <option lang="en">The Term '%s' already exists in database and it did not change (to be essentially NT of Term: </option>
-            <option lang="el">Ο όρος '%s' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: </option>
-        </targetUITermAlreadyExists>
+            <option lang="en">The Term '%s' already exists in database and was not modified (to become NT of Term: '%s')</option>
+            <option lang="el">Ο όρος '%s' βρέθηκε ήδη στην βάση και δεν τροποποιήθηκε (ώστε να αποτελέσει απαραίτητα ΕΟ του όρου: '%s')</option>
+        </targetUITermAlreadyExists>        
+        <NewThesaurusReferenceId>
+            <option lang="en">Thesaurus reference Id %s cannot be assigned to term %s because it is already assigned to Facet/Hierarchy/Term: %s. Term %s will be reassined to the next available Thesaurus Reference Id of thesaurus %s.</option>
+            <option lang="el">Το θησαυρικό αναγνωριστικό %s δεν μπορεί να ανατεθεί στον όρο %s επειδή έχει ήδη ανατεθεί στο Θέμα/Ιεραρχία/Όρο %s. Στον όρο: %s θα ανατεθεί το επόμενο διαθέσιμο θησαυρικό αναγνωριστικό του θησαυρού %s.</option>
+        </NewThesaurusReferenceId>
     </importTermsUnderHierarchy>
     <CreateHierarchies>
         <WrongHierarchyPosition>
             <option lang="en">Hierarchy '%s' found incorrectly without belonging in any Facet. Subordination of this Hierarchy to Facet '%s'.</option>
-            <option lang="el">Η ιεραρχία '%s' βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα μικροθησαυρό. Υπαγωγή της στον μικροθησαυρό '%s'.</option>
+            <option lang="el">Η ιεραρχία '%s' βρέθηκε εσφαλμένα χωρίς να υπάγεται σε κανένα θέμα. Υπαγωγή της στο θέμα '%s'.</option>
         </WrongHierarchyPosition>
         <TermFoundAsTopTerm>
             <option lang="en">Term '%s' found as a TT in Thesaurus '%s'. For the successful insertion renamed to '%s'.</option>
@@ -1295,6 +1320,10 @@
                 <option lang="en">Thesaurus '%s' does not exist in database.</option>
                 <option lang="el">Ο θησαυρός '%s' δεν βρέθηκε στην βάση.</option>
             </ThesaurusNotFound>
+            <GeneralMessageForDeleteThesaurusFailure>
+                <option lang="en">Deletion of Thesaurus '%s' failed. Please restore database to the automatically created backup.</option>
+                <option lang="el">Παρουσιάστηκε σφάλμα κατά την διαγραφή του θησαυρού '%s'. Παρακαλώ επαναφέρετε την βάση χρησιμοποιώντας το αντίγραφο ασφαλείας που δημιουργήθηκε αυτόματα.</option>
+            </GeneralMessageForDeleteThesaurusFailure>
         </DeleteThesaurus>
         <BackupRestore>
             <ZipFileNotFound>
