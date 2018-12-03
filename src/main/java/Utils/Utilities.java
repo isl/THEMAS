@@ -2725,7 +2725,14 @@ public class Utilities {
             
         }       
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        }
+
+        return str;
     }
     
     public String translateFromTranslationsXML(String messageXPath, String[] args, final String uiLang){
@@ -2740,7 +2747,14 @@ public class Utilities {
             
         }        
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        }
+        return str;
     }
     
     public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args, final String uiLang){
@@ -2754,7 +2768,13 @@ public class Utilities {
             }            
         }        
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        }
+        return str;
     }
     
     

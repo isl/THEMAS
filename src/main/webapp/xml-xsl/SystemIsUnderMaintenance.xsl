@@ -95,7 +95,7 @@
 		<xsl:param name="css"/>
 		<head>
 			<title>
-				<xsl:value-of select="$locale/header/title/option[@lang=$lang]"/>
+				<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/header/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
 			</title>
 			<link rel="stylesheet" type="text/css">
 				<xsl:attribute name="href"><xsl:value-of select="$css"/></xsl:attribute>
@@ -123,26 +123,26 @@
 			<fieldset class="index" >
                             
 				<legend>
-                                    <xsl:value-of select="$locale/generalmessages/undermaintenance/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </legend>
                                 <table style="margin-left:auto; margin-right:auto;">
                                     <tr>
                                         <td style="text-align:center;">
                                             <br/>
-					<xsl:value-of select="$locale/generalmessages/undermaintenance/operationsperformed/option[@lang=$lang]"/>
+					<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/operationsperformed/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
 					<br/>
-					<xsl:value-of select="$locale/generalmessages/undermaintenance/please/option[@lang=$lang]"/>
+					<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/please/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         <a href="Index">
-                                            <xsl:value-of select="$locale/generalmessages/undermaintenance/tryagain/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/tryagain/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </a>
-                                        <xsl:value-of select="$locale/generalmessages/undermaintenance/later/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/later/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
 					<br/><br/>
 					<img border="0">
                                             <xsl:attribute name="src">
-                                                <xsl:value-of select="$locale/generalmessages/undermaintenance/image/src/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:value-of select="$locale/generalmessages/undermaintenance/image/title/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/undermaintenance/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                         </img>
                                         <br/><br/>

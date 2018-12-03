@@ -74,11 +74,13 @@ public class Links extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
 
         try {
+            Utilities u = new Utilities();
+            UsersClass tmsUsers = new UsersClass();
             ServletContext context = getServletContext();
             String tab = request.getParameter("tab");
             String CheckLength = request.getParameter("CheckLength");
             String username = request.getParameter("username");
-            String password = request.getParameter("password");
+            String password = tmsUsers.getMD5Hex(request.getParameter("password"));
             String overrideUILangParameter = request.getParameter("lang");
             String selectedThesaurusNAME = request.getParameter("selectedThesaurusNAME");            
             String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
@@ -86,8 +88,8 @@ public class Links extends ApplicationBasicServlet {
             String language = context.getInitParameter("LocaleLanguage");
             String country = context.getInitParameter("LocaleCountry");
 
-            Utilities u = new Utilities();
-            UsersClass tmsUsers = new UsersClass();
+            
+            
             StringBuffer xml = new StringBuffer();
             String currentTABup = new String("SearchCriteria");
             

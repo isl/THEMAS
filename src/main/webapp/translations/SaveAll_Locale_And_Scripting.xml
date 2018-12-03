@@ -93,22 +93,27 @@
             <forinsertion>
                 <option lang="en">For insertion</option>
                 <option lang="el">Για εισαγωγή</option>
+                <option lang="ar">للإدراج</option>
             </forinsertion>
             <underconstruction>
                 <option lang="en">Under construction</option>
                 <option lang="el">Υπό επεξεργασία</option>
+                <option lang="ar">تحت التشيد</option>
             </underconstruction>
             <underapproval>
                 <option lang="en">For approval</option>
                 <option lang="el">Υπό έγκριση</option>
+                <option lang="ar">للموافقة</option>
             </underapproval>
             <forreinspection>
                 <option lang="en">For Reinspection</option>
                 <option lang="el">Για αναθεώρηση</option>
+                <option lang="ar">لإعادة التعيين</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
                 <option lang="el">Εκδοθείς</option>
+                <option lang="ar">وافق</option>
             </approved>
         </statuses>
     </common>

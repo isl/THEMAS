@@ -80,10 +80,10 @@
                         <td style="text-align:center;">
                       <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
                           <xsl:attribute name="src">
-                              <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
+                              <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                           </xsl:attribute>
                           <xsl:attribute name="title">
-                              <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
+                              <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                           </xsl:attribute>
                       </img>
                       </td>
@@ -202,10 +202,10 @@
                             <td style="text-align:center;">
                                 <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                 </img>
                             </td>

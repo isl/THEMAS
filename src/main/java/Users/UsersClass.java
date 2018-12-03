@@ -60,6 +60,8 @@ import neo4j_sisapi.TMSAPIClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 /*---------------------------------------------------------------------
@@ -161,6 +163,38 @@ public class UsersClass {
         XMLresults.append("</results>");
     }    
     
+    public String getMD5Hex(final String inputString) {
+
+        try{
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            if(inputString==null){
+                md.update("".getBytes());
+            }
+            else{
+                md.update(inputString.getBytes());
+            }
+
+            byte[] digest = md.digest();
+
+
+            return convertByteToHex(digest);
+        }
+        catch(NoSuchAlgorithmException ex){
+            Utils.StaticClass.handleException(ex);
+        }
+        return inputString;
+    }
+    
+    private static String convertByteToHex(byte[] byteData) {
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        return sb.toString();
+    }
+
     /*---------------------------------------------------------------------
                             AddNewThesaurusForCurrentTMSUser()
     -----------------------------------------------------------------------
@@ -553,7 +587,8 @@ public class UsersClass {
         // construct a new instance of UserInfoClass class for the new user
         UserInfoClass userInfo = new UserInfoClass();
         userInfo.name = username;
-        userInfo.password = password;
+        
+        userInfo.password = getMD5Hex(password);
         userInfo.thesaurusNames = thesaurusV;
         userInfo.thesaurusGroups = groupV;
         if (createUserAsAdministrator == true) {
@@ -1553,6 +1588,7 @@ public class UsersClass {
         
         // fill it with the given parameters
         SessionUserInfo.name = username;
+        
         SessionUserInfo.password = password;
         SessionUserInfo.selectedThesaurus = selectedThesaurus;
         SessionUserInfo.userGroup = userGroup;

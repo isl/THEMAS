@@ -45,6 +45,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     
 	<xsl:output method="html"/>
+        <xsl:include href="../Configs.xsl"/>
 	<xsl:variable name="targetEditField" select="//targetEditField"/>
 	<xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
 	<xsl:template match="/">
@@ -117,7 +118,7 @@ _____________________________________________________________________________ --
         <xsl:variable name="THEMASUsersGroupName" select="//pageInfo/THEMASUsersGroups/THEMASUsersGroupName"/>
         <fieldset id="edit_user_create" >
             <legend>
-                <xsl:value-of select="$specificlocale/create/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             
@@ -127,7 +128,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="15%" align="right">
                         <b>
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usernameprompt/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/usernameprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -136,7 +137,7 @@ _____________________________________________________________________________ --
                             <xsl:attribute name="value"><xsl:value-of select="//targetUser"/></xsl:attribute>
                         </input>
                         <i>
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usernamenote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/usernamenote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </i>
                     </td>
                 </tr>
@@ -144,24 +145,24 @@ _____________________________________________________________________________ --
                 <!--  Password: -->
                 <tr>
                     <td width="15%" align="right">
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/passwordprompt/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/passwordprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                     
                     <td style="color:#898a5e; font-size:9px;">
                         <input id="newUserPassword_Id" type="text" size="30" name="newPassword_User"/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/passwordnote/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/passwordnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 
                 <!--  User Description: -->
                 <tr>                    
                     <td width="15%" align="right">
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/descriptionprompt/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/descriptionprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                     
                     <td style="color:#898a5e; font-size:9px;">
                         <input id="newUserDescription_Id" type="text" style="width:90%;" name="newDescription_User"/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/descriptionnote/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/descriptionnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 
@@ -169,7 +170,7 @@ _____________________________________________________________________________ --
                     <tr>
                         <td width="15%" align="right">
                             <b>
-                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/adminprompt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/adminprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             </b>
                         </td>
                         
@@ -191,13 +192,13 @@ _____________________________________________________________________________ --
                         <td bgcolor="#FFFFFF"></td>
                         <td class="thesaurusFieldWidth">
                             <b>
-                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/thesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             </b>
                         </td>
                         
                         <td class="thesaurusFieldWidth">
                             <b>
-                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/usergroup/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             </b>
                         </td>
                         
@@ -218,7 +219,7 @@ _____________________________________________________________________________ --
                                         </xsl:attribute>
                                         <xsl:choose>
                                             <xsl:when test="./text()='*'">
-                                                <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:when>
                                             <xsl:otherwise>
                                                 <xsl:value-of select="."/>
@@ -245,10 +246,10 @@ _____________________________________________________________________________ --
                         <td>
                             <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                 <xsl:attribute name="src">
-                                    <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                                 <xsl:attribute name="title">
-                                    <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                             </img>
                         </td>                                            
@@ -262,7 +263,7 @@ _____________________________________________________________________________ --
                         <td>
                             <select id="selectThesaurus_ID" name="selectThesaurus" style="width: 100%;">
                                 <!--<option value="*">
-                                    <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </option>-->
                                 <xsl:for-each select="$existingThesaurusName">
                                     <xsl:sort select="."/>
@@ -272,7 +273,7 @@ _____________________________________________________________________________ --
                                         </xsl:attribute>
                                         <xsl:choose>
                                             <xsl:when test="./text()='*'">                                                
-                                                <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>                                                
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>                                                    
                                             </xsl:when>
                                             <xsl:otherwise>                                                
                                                 <xsl:value-of select="."/>
@@ -303,10 +304,10 @@ _____________________________________________________________________________ --
                         <td>
                             <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                 <xsl:attribute name="src">
-                                    <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                                 <xsl:attribute name="title">
-                                    <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                             </img>
                         </td>
@@ -324,16 +325,16 @@ _____________________________________________________________________________ --
             <table border="0" width="100%" id="TableWithPlusIconId">
                 <tr  >
                     <td width="50%" align="right" valign="middle">
-                        <xsl:value-of select="$specificlocale/create/addition/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addition/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </td>
          
                     <td width="50%" align="left" valign="middle">
                         <img width="20" height="20" border="0" onClick="AddThesaurusGroupInput('thesaurusGroupBody',  'thesaurusGroupCouple');">
                             <xsl:attribute name="src">
-                                <xsl:value-of select="$specificlocale/create/addimage/src/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                             <xsl:attribute name="title">
-                                <xsl:value-of select="$specificlocale/create/addimage/title/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </img>
                     </td>
@@ -356,13 +357,13 @@ _____________________________________________________________________________ --
                 <td valign="top" align="right" width="220">
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_user_create', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -381,14 +382,14 @@ _____________________________________________________________________________ --
         <xsl:variable name="LoggedUserGroup" select="//page/THEMASUserInfo/userGroup"/>
         <fieldset id="edit_user_create_and_merge">
            <legend>
-               <xsl:value-of select="$specificlocale/createmerge/title/option[@lang=$lang]"/>
+               <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
            </legend>          
                 <br/>
                 <table border="0" width="100%" align="center">
                     <tr>
                         <td width="35%" align="right">
                             <b>
-                                <xsl:value-of select="$specificlocale/createmerge/usernameinfo/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/usernameinfo/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         <td>
@@ -396,7 +397,7 @@ _____________________________________________________________________________ --
                                 <xsl:attribute name="value"><xsl:value-of select="//newUserInfo/name"/></xsl:attribute>
                             </input>
                             <b>
-                                <xsl:value-of select="$specificlocale/createmerge/additionalfields/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/additionalfields/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         </tr>
@@ -406,7 +407,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="35%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/createmerge/password/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/password/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -421,7 +422,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="35%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/createmerge/description/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/description/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -436,7 +437,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="35%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/createmerge/groups/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/groups/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -445,7 +446,7 @@ _____________________________________________________________________________ --
                                 <xsl:variable name="currentChoice" select="./@group"/>
                                 <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
                                 <xsl:if test=" . != '' ">
-                                <xsl:value-of select="$specificlocale/createmerge/inthesaurus/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/inthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 <xsl:value-of select="."/>
                                 <input name="selectThesaurus" size="2" type="text" class="hiddenInput">
                                     <xsl:attribute name="value"><xsl:value-of select="."/></xsl:attribute>
@@ -462,14 +463,14 @@ _____________________________________________________________________________ --
             <table>
                     <tr>
                         <td colspan="2">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/createmerge/infomsgpart1/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/infomsgpart1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             <xsl:value-of select="//newUserInfo/name"/>
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/createmerge/infomsgpart2/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/infomsgpart2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/createmerge/infomsgpart3/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/infomsgpart3/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                     </tr>
                     <tr>
@@ -478,7 +479,7 @@ _____________________________________________________________________________ --
                         </td>
                         <td>
                             
-                            <xsl:value-of select="$specificlocale/createmerge/choice1/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/choice1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <b>
                                 <xsl:value-of select="//newUserInfo/name"/>
                             </b>
@@ -491,13 +492,13 @@ _____________________________________________________________________________ --
                             <input name="olderUserCreateChoice" type="radio" value="RenameOlderAndThenCreateTargetUser" checked="checked" />
                         </td>
                         <td>
-                            <xsl:value-of select="$specificlocale/createmerge/choice2a/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/choice2a/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <b>
                                 <xsl:value-of select="//newUserInfo/name"/>
                             </b>
-                            <xsl:value-of select="$specificlocale/createmerge/choice2b/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/choice2b/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <input size="30" id="olderUserRenameName_Id" name="olderUserRenameName" type="text" />
-                            <xsl:value-of select="$specificlocale/createmerge/choice2c/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createmerge/choice2c/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <b>
                                 <xsl:value-of select="//newUserInfo/name"/>
                             </b>
@@ -526,13 +527,13 @@ _____________________________________________________________________________ --
                     <br/>
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_user_create_and_merge', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                          <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -552,7 +553,7 @@ _____________________________________________________________________________ --
         <xsl:variable name="LoggedUserGroup" select="//page/THEMASUserInfo/userGroup"/>
         <fieldset id="edit_user_create">
             <legend>
-                <xsl:value-of select="$specificlocale/edituser/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <table border="0" width="100%" align="center">
@@ -560,7 +561,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="18%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/edituser/username/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/username/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -581,7 +582,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="18%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/edituser/description/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/description/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -600,7 +601,7 @@ _____________________________________________________________________________ --
                     <tr>
                         <td width="15%" align="right">
                             <b>
-                                <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/adminprompt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/adminprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             </b>
                         </td>
                         
@@ -624,7 +625,7 @@ _____________________________________________________________________________ --
                     </xsl:if>
                     <td width="18%" align="right" style="vertical-align: text-top;">
                         <b>
-                            <xsl:value-of select="$specificlocale/edituser/groups/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/groups/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>                     
                     <td>
@@ -639,13 +640,13 @@ _____________________________________________________________________________ --
                                         <tr class="contentHeadText" align="center">
                                             <td class="thesaurusFieldWidth">
                                                 <b>
-                                                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/thesaurus/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/thesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                                 </b>
                                             </td>
                                             
                                             <td class="thesaurusFieldWidth">
                                                 <b>
-                                                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/usergroup/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/usergroup/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                                 </b>
                                             </td>
                                             
@@ -665,7 +666,7 @@ _____________________________________________________________________________ --
                                                             </xsl:attribute>
                                                             <xsl:choose>
                                                                 <xsl:when test="./text()='*'">
-                                                                    <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                                 </xsl:when>
                                                                 <xsl:otherwise>
                                                                     <xsl:value-of select="."/>
@@ -692,10 +693,10 @@ _____________________________________________________________________________ --
                                             <td>
                                                 <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                                     <xsl:attribute name="src">
-                                                        <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                     </xsl:attribute>
                                                     <xsl:attribute name="title">
-                                                        <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                     </xsl:attribute>
                                                 </img>
                                             </td>                                            
@@ -724,7 +725,7 @@ _____________________________________________________________________________ --
                                                                     </xsl:attribute>
                                                                     <xsl:choose>
                                                                         <xsl:when test="./text()='*'">
-                                                                            <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                                         </xsl:when>
                                                                         <xsl:otherwise>
                                                                             <xsl:value-of select="."/>
@@ -757,18 +758,18 @@ _____________________________________________________________________________ --
                                                     <td>
                                                         <img width="20" height="20" border="0" onClick="RemoveThesaurusGroupInput('thesaurusGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                                             <xsl:attribute name="src">
-                                                                <xsl:value-of select="$specificlocale/create/removeimage/src/option[@lang=$lang]"/>
+                                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                             </xsl:attribute>
                                                             <xsl:attribute name="title">
-                                                                <xsl:value-of select="$specificlocale/create/removeimage/title/option[@lang=$lang]"/>
+                                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                             </xsl:attribute>
                                                         </img>
                                                     </td>
 
-                                                <!--<xsl:value-of select="$specificlocale/edituser/inthesaurus/option[@lang=$lang]"/>
+                                                <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/inthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 <xsl:choose>
                                                     <xsl:when test="./text()='*'">
-                                                        <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                     </xsl:when>
                                                     <xsl:otherwise>
                                                         <xsl:value-of select="."/>
@@ -792,15 +793,15 @@ _____________________________________________________________________________ --
                                 <table style="width:100px; vertical-align:middle;">
                                     <tr>
                                         <td style="text-align:right;">
-                                            <xsl:value-of select="$specificlocale/create/addition/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addition/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </td>
                                         <td>
                                             <img width="20" height="20" border="0" onClick="AddThesaurusGroupInput('thesaurusGroupBody',  'thesaurusGroupCouple');">
                                                 <xsl:attribute name="src">
-                                                    <xsl:value-of select="$specificlocale/create/addimage/src/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:attribute name="title">
-                                                    <xsl:value-of select="$specificlocale/create/addimage/title/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/addimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                             </img>
                                         </td>
@@ -815,10 +816,10 @@ _____________________________________________________________________________ --
                                      <xsl:variable name="currentChoice" select="./@group"/>
                                      <xsl:value-of select="$specificlocale/usergroups/node()[name()=$currentChoice]/option[@lang=$lang]"/>
                                      <xsl:if test=" . != '' ">
-                                         <xsl:value-of select="$specificlocale/edituser/inthesaurus/option[@lang=$lang]"/>
+                                         <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/inthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                          <xsl:choose>
                                              <xsl:when test="./text()='*'">
-                                                 <xsl:value-of select="$specificlocale/create/allThesauriDisplayText/option[@lang=$lang]"/>
+                                                 <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                              </xsl:when>
                                              <xsl:otherwise>
                                                  <xsl:value-of select="."/>
@@ -839,7 +840,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="18%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/edituser/deletepassword/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/deletepassword/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -856,7 +857,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="18%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/edituser/deleteuser/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/edituser/deleteuser/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     
@@ -885,13 +886,13 @@ _____________________________________________________________________________ --
                 <td valign="bottom" align="right" width="220">
                     <input type="button" class="button" onclick="Edit_User_Save_Button_Pressed( 'EditDisplays_User','edit_user_create', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="window.location.reload(true);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -912,14 +913,14 @@ _____________________________________________________________________________ --
         <xsl:variable name="olderRename" select="//olderUser"/>
         <fieldset id="rename_target_and_older_user_edit">
             <legend>
-                <xsl:value-of select="$specificlocale/editusermerge/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>          
             <br/>
             <table>
                 <tr>
                     <td>
                         <b>
-                            <xsl:value-of select="$specificlocale/editusermerge/renameinfo/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/renameinfo/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -931,7 +932,7 @@ _____________________________________________________________________________ --
                     </td>
                     <td>
                         <b>
-                            <xsl:value-of select="$specificlocale/editusermerge/renameto/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/renameto/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -945,7 +946,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td>
                         <b>
-                            <xsl:value-of select="$specificlocale/editusermerge/withdescription/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/withdescription/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td colspan="3">
@@ -961,14 +962,14 @@ _____________________________________________________________________________ --
                 <tr>
                     <td colspan="2">
                         <br/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart1/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/infomsgpart1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         <xsl:value-of select="$olderRename"/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart2/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/infomsgpart2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editusermerge/infomsgpart3/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/infomsgpart3/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr>
@@ -976,15 +977,15 @@ _____________________________________________________________________________ --
                         <input name="olderUserRenameChoice" type="radio" value="CommitInitialRenameUser" />
                     </td>
                     <td>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice1a/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice1a/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="$targetRenameUser"/>
                         </b>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice1b/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice1b/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="$olderRename"/>
                         </b>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice1c/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice1c/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     
                 </tr>
@@ -993,17 +994,17 @@ _____________________________________________________________________________ --
                         <input name="olderUserRenameChoice" type="radio" value="RenameOlderAndThenTargetUser" checked="checked"/>
                     </td>
                     <td>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice2a/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice2a/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="$olderRename"/>
                         </b>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice2b/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice2b/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <input size="30" id="olderUserRenameName_Id" name="olderUserRenameName" type="text" /> 
-                        <xsl:value-of select="$specificlocale/editusermerge/choice2c/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice2c/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="$targetRenameUser"/>
                         </b>
-                        <xsl:value-of select="$specificlocale/editusermerge/choice2d/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editusermerge/choice2d/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="$olderRename"/>
                         </b>
@@ -1029,13 +1030,13 @@ _____________________________________________________________________________ --
                 <td valign="bottom" align="right" width="220">
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','rename_target_and_older_user_edit', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -1050,7 +1051,7 @@ _____________________________________________________________________________ --
         <xsl:param name="lang" />
         <fieldset id="edit_share_thesaurus">
             <legend>
-                <xsl:value-of select="$specificlocale/sharethesaurus/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>
             </legend>
             <br/>
@@ -1063,11 +1064,11 @@ _____________________________________________________________________________ --
                         <td bgcolor="#FFFFFF"></td>
                                     
                         <td style="width:150px;">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/user/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/user/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                                     
                         <td style="width:150px;">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/sharethesaurus/usergroup/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/usergroup/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                                     
                         <td bgcolor="#FFFFFF" style="width:150px;"></td>
@@ -1114,10 +1115,10 @@ _____________________________________________________________________________ --
                         <td>
                             <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                 <xsl:attribute name="src">
-                                    <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                                 <xsl:attribute name="title">
-                                    <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                             </img>
                                                                     
@@ -1173,10 +1174,10 @@ _____________________________________________________________________________ --
                                     <!--<td>
                                         <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                             <xsl:attribute name="src">
-                                                <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                         </img>
                                     </td>-->
@@ -1220,7 +1221,7 @@ _____________________________________________________________________________ --
                             </xsl:choose>
                             <td style="vertical-align: bottom;">
                                 <label style="font-style:italic;" diabled="disabled">
-                                    <xsl:value-of select="$specificlocale/sharethesaurus/allThesauriDisplayText/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/allThesauriDisplayText/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </label>
                             </td>    
                             <td></td>
@@ -1279,10 +1280,10 @@ _____________________________________________________________________________ --
                             <td>
                                 <img width="20" height="20" border="0" onClick="RemoveUserGroupInput('userGroupTable', this.parentNode.parentNode)" name="MinusIcon">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$specificlocale/sharethesaurus/removeimage/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                 </img>
                             </td>
@@ -1297,15 +1298,15 @@ _____________________________________________________________________________ --
                 <tr>
                     <td/>
                     <td width="50%" align="right" valign="middle">
-                        <xsl:value-of select="$specificlocale/sharethesaurus/addition/option[@lang=$lang]"/>                                                
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/addition/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>                                                    
                     </td>
                     <td width="50%" align="left" valign="middle">
                         <img width="20" height="20" border="0" onClick="AddUserGroupInput('userGroupBody',  'userGroupCouple');"  align="bottom">
                             <xsl:attribute name="src">
-                                <xsl:value-of select="$specificlocale/sharethesaurus/addimage/src/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/addimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                             <xsl:attribute name="title">
-                                <xsl:value-of select="$specificlocale/sharethesaurus/addimage/title/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/sharethesaurus/addimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </img>
                     </td>
@@ -1334,13 +1335,13 @@ _____________________________________________________________________________ --
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_share_thesaurus', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
 					&#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -1356,7 +1357,7 @@ _____________________________________________________________________________ --
         <xsl:param name="lang" />
         <fieldset id="edit_password">
             <legend>
-                <xsl:value-of select="$specificlocale/editpassword/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editpassword/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <table border="0" width="100%" align="center">
@@ -1364,7 +1365,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="15%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/editpassword/oldcode/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editpassword/oldcode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -1376,7 +1377,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="15%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/editpassword/newcode/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editpassword/newcode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -1388,7 +1389,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="15%" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/editpassword/confirmcode/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editpassword/confirmcode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -1419,13 +1420,13 @@ _____________________________________________________________________________ --
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_password', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
 					&#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -1443,7 +1444,7 @@ _____________________________________________________________________________ --
         </xsl:variable>
         <fieldset id="edit_thesaurus">
             <legend>
-                <xsl:value-of select="$specificlocale/editthesaurus/title/option[@lang=$lang]"/>				
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editthesaurus/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    				
             </legend>
             <br/>
             <table border="0" width="100%" align="center">
@@ -1451,7 +1452,7 @@ _____________________________________________________________________________ --
                 <tr>
                     <td width="150" align="right">
                         <b>
-                            <xsl:value-of select="$specificlocale/editthesaurus/selectthesaurus/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editthesaurus/selectthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -1496,13 +1497,13 @@ _____________________________________________________________________________ --
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getServletResult( 'EditDisplays_User','edit_thesaurus', '','selectedIndexOnly')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/editthesaurus/okbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editthesaurus/okbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
 					&#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>

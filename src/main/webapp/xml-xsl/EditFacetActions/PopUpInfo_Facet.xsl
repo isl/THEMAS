@@ -44,7 +44,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     
     <xsl:output method="html"/>
-
+    <xsl:import href="../Configs.xsl"/>
     <!-- TODO customize transformation rules 
          syntax recommendation http://www.w3.org/TR/xslt 
     -->
@@ -77,7 +77,7 @@
         <xsl:variable name="lang" select="//page/@language"/>
         <fieldset >
             <legend style="margin-bottom:5px;">
-                <xsl:value-of select="$facetcardlocale/legend/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b><xsl:value-of select="//facetName"/></b> </legend>
             <table width="100%">
                 <xsl:choose>
@@ -113,14 +113,14 @@
                                             <xsl:text>')</xsl:text>
                                         </xsl:attribute>
                                     <i>
-                                        <xsl:value-of select="$facetcardlocale/edittext/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/edittext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </i>
                                     <img width="16" height="16" border="0" >
                                         <xsl:attribute name="src">
-                                                <xsl:value-of select="$facetcardlocale/editimage/src/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/editimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:value-of select="$facetcardlocale/editimage/title/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/editimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                         
                                     </img>
@@ -130,7 +130,7 @@
                                 <!-- Kleisimo -->
                                 <a href="#" onclick="document.getElementById('DisplayCardArea').innerHTML='';DisplayPleaseWaitScreen(false);">
                                     <i>
-                                        <xsl:value-of select="$facetcardlocale/closetext/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/closetext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </i>&#160;[x]
                                 </a>
                             </td>
@@ -158,7 +158,7 @@
                             <td>
                                 <span class="headerThes_normal">
                                     <b>
-                                        <xsl:value-of select="$facetcardlocale/facetlabel/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/facetlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
@@ -171,7 +171,7 @@
                                 <br/>
                                 <span class="headerThes_normal">
                                     <b>
-                                        <xsl:value-of select="$facetcardlocale/hierarchieslabel/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/hierarchieslabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
@@ -217,7 +217,7 @@
                                 <br/>
                                 <span class="headerThes_normal">
                                     <b>
-                                        <xsl:value-of select="$facetcardlocale/showhierslabel/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/showhierslabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
@@ -247,14 +247,14 @@
                                     
                                     <img width="16" height="16" border="0" >
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$facetcardlocale/graphicalimage/src/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/graphicalimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$facetcardlocale/graphicalimage/title/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/graphicalimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                     </img>
                                     <span class="headerThes_normal" style="vertical-align:top;">
-                                        <xsl:value-of select="$facetcardlocale/graphicalimage/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/graphicalimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </span>
                                     
                                 </a>
@@ -265,15 +265,15 @@
                                     </xsl:attribute>
                                     <img width="16" height="16" border="0" >
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$facetcardlocale/hierarchical/src/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/hierarchical/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$facetcardlocale/hierarchical/title/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/hierarchical/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         
                                     </img>
                                     <span class="headerThes_normal" style="vertical-align:top;">
-                                        <xsl:value-of select="$facetcardlocale/hierarchical/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/hierarchical/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </span>
                                 </a>
                             </td>
@@ -295,7 +295,7 @@
                 <tr>
                     <td colspan="3">
                         <b>
-                            <xsl:value-of disable-output-escaping="yes" select="$facetcardlocale/editactions/generalprompt/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/editactions/generalprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             <!--<xsl:value-of select="$facetName"/>-->
                         </b>
                     </td>
@@ -309,7 +309,7 @@
                                         <xsl:attribute name="onClick">
                                             <xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$facetName"/><xsl:text>','facet_rename','EditDisplays_Facet');</xsl:text>
                                         </xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$facetcardlocale/editactions/rename/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/editactions/rename/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>
@@ -317,7 +317,7 @@
                                 <td>
                                     <a href="#">
                                         <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$facetName"/><xsl:text>','delete_facet','EditDisplays_Facet');</xsl:text></xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$facetcardlocale/editactions/delete/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/editactions/delete/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>

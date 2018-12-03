@@ -49,7 +49,7 @@
         <xsl:param name="paginglocale" />
         <!--<fieldset class="links">
         <legend>
-            <xsl:value-of select="$systematicresultslocale/legend/option[@lang=$lang]" />
+            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systematicresultslocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
         </legend>
         -->
         <table width="100%" style="padding-left:5px;">
@@ -65,7 +65,7 @@
                         <tr width="100%" height="10%">
                             <td align="left" valign="top" colspan="5">
                                 <strong>
-                                    <xsl:value-of select="$systematicresultslocale/noresultsmsg/option[@lang=$lang]" />
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systematicresultslocale/noresultsmsg/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                         </tr>
@@ -82,12 +82,12 @@
                             <!-- style="text-align:right;"-->
                             <td width="30%"> 
                                 <strong>
-                                    <xsl:value-of select="$systematicresultslocale/columns/tc/option[@lang=$lang]" />
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systematicresultslocale/columns/tc/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                             <td width="70%">
                                 <strong>
-                                    <xsl:value-of select="$systematicresultslocale/columns/term/option[@lang=$lang]" />
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systematicresultslocale/columns/term/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                         </tr>                            

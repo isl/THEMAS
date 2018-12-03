@@ -50,7 +50,7 @@
         <!--
         <fieldset class="links">
             <legend>
-                <xsl:value-of select="$hierarchieslocale/tableresults/legend/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             -->
             <table width="100%" style="padding-left:5px;">
@@ -71,14 +71,14 @@
                         <xsl:when test="count(//data/hierarchies/hierarchy)=0">
                             <td align="left" valign="top" colspan="5">
                                 <strong>
-                                    <xsl:value-of select="$hierarchieslocale/tableresults/noresultsmsg/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/noresultsmsg/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                         </xsl:when>
                         <xsl:otherwise>
                             <td height="5">
                                 <strong>
-                                    <xsl:value-of select="$hierarchieslocale/tableresults/columns/hierarchy/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/hierarchy/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                             <xsl:for-each select="$outputVar/node()">
@@ -86,7 +86,7 @@
                                     <strong>
                                         <xsl:choose>
                                             <xsl:when test="name() = 'facet' ">
-                                                <xsl:value-of select="$hierarchieslocale/tableresults/columns/facet/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/facet/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:when>
                                             <xsl:otherwise><xsl:value-of select="name()"/></xsl:otherwise>
                                         </xsl:choose>
@@ -95,7 +95,7 @@
                             </xsl:for-each>
                             <td align="center" style="width:135px;">
                                 <strong>
-                                    <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                         </xsl:otherwise>
@@ -172,10 +172,10 @@
                             <a href="#">
                                 <img width="16" height="16" border="0"  style="margin-left:4px;">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/alphabetical/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/alphabetical/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/alphabetical/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/alphabetical/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="onClick">
                                         <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','alphabetical','true');</xsl:text>
@@ -185,10 +185,10 @@
                             <a href="#">
                                 <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;" >
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/hierarchical/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/hierarchical/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/hierarchical/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="onClick">
                                         <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','hierarchical','true');</xsl:text>
@@ -198,10 +198,10 @@
                             <a href="#">
                                 <img width="16" height="16" border="0" >
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/systematic/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/systematic/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/systematic/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/systematic/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="onClick">
                                         <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','systematic','true');</xsl:text>
@@ -211,10 +211,10 @@
                             <a href="#">
                                 <img width="16" height="16" border="0"  style="margin-left:4px; margin-right:4px;">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/index/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/index/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/index/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/index/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="onClick">
                                         <xsl:text>prepareResults('hierarchysTermsShortcuts','</xsl:text><xsl:value-of select="$currentJS"/><xsl:text>','primary2translations','true');</xsl:text>
@@ -227,10 +227,10 @@
                                 </xsl:attribute>
                                 <img width="16" height="16" border="0">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/graphical/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/graphical/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/graphical/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/graphical/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                 </img>
                             </a>
@@ -239,10 +239,10 @@
                                     <xsl:attribute name="onClick">showEditCard_Hierarchy('<xsl:value-of select="$currentJS"/>')</xsl:attribute>
                                     <img width="16" height="16" border="0">
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/edit/src/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/edit/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$hierarchieslocale/tableresults/columns/actions/edit/title/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchieslocale/tableresults/columns/actions/edit/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                     </img>
                                 </a>

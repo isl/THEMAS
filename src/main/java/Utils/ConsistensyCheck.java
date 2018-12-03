@@ -3287,8 +3287,14 @@ public class ConsistensyCheck {
         
         String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='"+uiLang+"']";        
         //String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']";
+        String str = u.translate(expressionBasePath, args, pathToErrorsXML);
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='en']";        
+            str = u.translate(expressionBasePath, args, pathToErrorsXML);
+        }
 
-        return u.translate(expressionBasePath, args, pathToErrorsXML);
+        return str;
     }
     
     

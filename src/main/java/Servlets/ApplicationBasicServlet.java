@@ -109,7 +109,7 @@ public class ApplicationBasicServlet extends HttpServlet {
                     skipSessionUpdate = true;
                 }                
                 
-                tmsUsers.Authenticate(request, session, sessionInstance,external_user, "", external_thesaurus);
+                tmsUsers.Authenticate(request, session, sessionInstance,external_user, tmsUsers.getMD5Hex(""), external_thesaurus);
                 Parameters.initParams(getServletContext());
                 
                 String ServletParametersDescription = GetServletParametersDescription(request);

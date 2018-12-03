@@ -74,7 +74,7 @@
         <xsl:variable name="lang" select="//page/@language"/>
         <fieldset >
             <legend style="margin-bottom:5px;">
-                <xsl:value-of select="$sourcecardlocale/legend/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             <b><xsl:value-of select="//source/name"/></b></legend>
             <table width="100%">
                 <xsl:choose>
@@ -110,14 +110,14 @@
                                             <xsl:text>')</xsl:text>
                                         </xsl:attribute>
                                     <i> 
-                                        <xsl:value-of select="$sourcecardlocale/edittext/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/edittext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </i>
                                     <img width="16" height="16" border="0">
                                         <xsl:attribute name="src">
-                                                <xsl:value-of select="$sourcecardlocale/editimage/src/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/editimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:value-of select="$sourcecardlocale/editimage/title/option[@lang=$lang]"/>
+                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/editimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                             </xsl:attribute>
                                         
                                     </img>
@@ -126,7 +126,7 @@
 								<!-- Kleisimo -->
                                 <a href="#" onclick="document.getElementById('DisplayCardArea').innerHTML='';DisplayPleaseWaitScreen(false);">
                                     <i>
-                                        <xsl:value-of select="$sourcecardlocale/closetext/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/closetext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </i>&#160;[x]
                                 </a>
                             </td>
@@ -151,7 +151,7 @@
                             <td>
                                 <span class="headerThes_normal">
                                     <b>
-                                        <xsl:value-of select="$sourcecardlocale/source/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/source/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
@@ -165,7 +165,7 @@
                                     <br/>
                                     <span class="headerThes_normal">
                                         <b>
-                                            <xsl:value-of select="$sourcecardlocale/sourcenote/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/sourcenote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </b>
                                     </span>
 
@@ -184,7 +184,7 @@
                                     <br/>
                                     <span class="headerThes_normal">
                                         <b>
-                                            <xsl:value-of select="$sourcecardlocale/primarysource/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/primarysource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </b>
                                     </span>
                                 </td>
@@ -236,7 +236,7 @@
                                     <br/>
                                     <span class="headerThes_normal">
                                         <b>
-                                            <xsl:value-of select="$sourcecardlocale/trsource/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/trsource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </b>
                                     </span>
 
@@ -301,7 +301,7 @@
                 <tr>
                     <td >
                         <b>
-                            <xsl:value-of select="$sourcecardlocale/generalprompt/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/generalprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                 </tr>
@@ -312,7 +312,7 @@
                                 <td>
                                     <a href="#">
                                         <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$sourceName"/><xsl:text>','source_rename','EditDisplays_Source');</xsl:text></xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$sourcecardlocale/rename/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/rename/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>
@@ -320,7 +320,7 @@
                                 <td>
                                     <a href="#">
                                         <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$sourceName"/><xsl:text>','source_note','EditDisplays_Source');</xsl:text></xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$sourcecardlocale/editsn/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/editsn/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>
@@ -328,7 +328,7 @@
                                 <td>
                                     <a href="#">
                                         <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$sourceName"/><xsl:text>','move_source_references','EditDisplays_Source');</xsl:text></xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$sourcecardlocale/moverefs/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/moverefs/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>
@@ -336,7 +336,7 @@
                                 <td>
                                     <a href="#">
                                         <xsl:attribute name="onClick"><xsl:text>showEditFieldCard('</xsl:text><xsl:value-of select="$sourceName"/><xsl:text>','delete_source','EditDisplays_Source');</xsl:text></xsl:attribute>
-                                        <xsl:value-of disable-output-escaping="yes" select="$sourcecardlocale/delete/prompttitle/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourcecardlocale/delete/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </a>
                                 </td>
                             </tr>

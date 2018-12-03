@@ -72,8 +72,9 @@ public class HiddenActions extends HttpServlet {
         
         try{
         
+            UsersClass tmsUsers = new UsersClass();
             String username = request.getParameter("username");
-            String password = request.getParameter("password");
+            String password = tmsUsers.getMD5Hex(request.getParameter("password"));
             String selectedThesaurusNAME = "";    
 
             // in case of expired session
@@ -88,7 +89,7 @@ public class HiddenActions extends HttpServlet {
                 else {
                     boolean loginSucceded = false;
                     synchronized(session){
-                        UsersClass tmsUsers = new UsersClass();
+                        
                         loginSucceded = tmsUsers.Authenticate(request, session,sessionInstance,username, password, selectedThesaurusNAME);
                     }
                     if (loginSucceded == false) {
