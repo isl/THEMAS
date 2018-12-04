@@ -167,7 +167,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
 
             //Now XSL should be found and java xsl transformation should be performed
             String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
-            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
+            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"), sessionInstance.path +"/");
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus merge operation of thesauri: " + thesaurusName1 + ", " + thesaurusName2 + " in thesaurus " + mergedThesaurusName + " was successfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");
 

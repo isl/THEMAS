@@ -5618,7 +5618,8 @@ public class DBMergeThesauri {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
         UsersClass wtmsUsers = new UsersClass();
-
+ 
+ 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 

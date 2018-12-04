@@ -49,7 +49,7 @@
     <xsl:variable name="lang" select="//page/@language"/>
     <xsl:variable name="ReleaseThesaurus_BLANK_VALUE_for_empty_select_item">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
     </xsl:variable>    	
-    <xsl:output method="html"  
+    <xsl:output method="html"
                        encoding="UTF-8"  
                        indent="yes" 
                        doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -79,7 +79,7 @@
                 </title>
                 <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@" />
                  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
-                     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
                      
                 <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>           
                 <xsl:if test="$locale/header/favicon/text()!=''">

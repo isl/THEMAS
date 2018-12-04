@@ -30,47 +30,78 @@
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
-	<!-- TargetKind = ('DESCRIPTOR' or 'HIERARCHY' or 'FACET') -->
+    <!-- TargetKind = ('DESCRIPTOR' or 'HIERARCHY' or 'FACET') -->
+    <xsl:import href="../xml-xsl/Configs.xsl"/>
     <xsl:include href="../xml-xsl/utilities.xsl"/>
     <xsl:variable name="TargetKind" select="//page/TargetKind"/>
     <xsl:variable name="TargetHasBTTerms" select="count(//page/targetBTterms/name_for_display) != 0"/>
     <xsl:variable name="locale" select="document('../translations/translations.xml')/locale/svgproducer"/>
     <xsl:variable name="lang" select="//page/@language"/>
 
-	<!-- _____________________________________________________________________________
-			TEMPLATE: starting template for transforming the XML code produced by GraphicalView servlet
-	      _____________________________________________________________________________ -->
+    <!-- _____________________________________________________________________________
+              TEMPLATE: starting template for transforming the XML code produced by GraphicalView servlet
+    _____________________________________________________________________________ -->
     <xsl:template match="/">
         <xsl:variable name="Slash">\</xsl:variable>
         <xsl:variable name="SlashJS">\\</xsl:variable>
         <xsl:variable name="Apos">'</xsl:variable>
         <xsl:variable name="AposJS">\'</xsl:variable>
         <html>
+            <xsl:if test="$lang='ar'">
+                <!--<xsl:attribute name="dir">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>-->
+                <xsl:attribute name="class">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>
+            </xsl:if>
             <head>
                 <!-- page title -->
                 <title>
-                    <xsl:value-of select="$locale/title/titlepart1/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> 
+                        <xsl:with-param name="targetLangElements" select="$locale/title/titlepart1/option"/> 
+                        <xsl:with-param name="targetLang" select="$lang"/> 
+                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                    </xsl:call-template>
                     <xsl:if test="$TargetKind = 'DESCRIPTOR' ">
                         <xsl:if test="$TargetHasBTTerms">
-                            <xsl:value-of select="$locale/title/titlepart2a/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/title/titlepart2a/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </xsl:if>
                         <xsl:if test="not($TargetHasBTTerms)">
-                            <xsl:value-of select="$locale/title/titlepart2b/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/title/titlepart2b/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </xsl:if>
                     </xsl:if>
                     <xsl:if test="$TargetKind = 'HIERARCHY' ">
-                        <xsl:value-of select="$locale/title/titlepart2c/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$locale/title/titlepart2c/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
                     </xsl:if>
                     <xsl:if test="$TargetKind = 'FACET' ">
-                        <xsl:value-of select="$locale/title/titlepart2d/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$locale/title/titlepart2d/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
                     </xsl:if>
                     <xsl:value-of select="//page/TargetNameWithoutPrefix"/>
                 </title>
                 <!-- css -->
                 <link rel="stylesheet" type="text/css" href="SVGproducer/SVG.css?v=@DeploymentTimestamp@"/>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
                 <script language="JavaScript">
                     <xsl:attribute name="src">Javascript/graphicalView.js?v=@DeploymentTimestamp@</xsl:attribute>
                 </script>
@@ -94,7 +125,11 @@
                     <table>
                         <tr>
                             <td class="CategName">
-                                <xsl:value-of select="$locale/btsofterm/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/btsofterm/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                                 <b>
                                     <xsl:value-of select="//page/TargetNameWithoutPrefix"/>
                                 </b>
@@ -153,9 +188,9 @@
             </body>
         </html>
     </xsl:template>
-	<!-- _____________________________________________________________________________
-			TEMPLATE: DisplayLegend_WithColours
-	      _____________________________________________________________________________ -->
+    <!-- _____________________________________________________________________________
+              TEMPLATE: DisplayLegend_WithColours
+    _____________________________________________________________________________ -->
     <xsl:template name="DisplayLegend_WithColours">
         <xsl:param name="locale"/>
         <xsl:param name="lang"/>
@@ -170,28 +205,60 @@
                     <td class="CategName">
                         <xsl:choose>
                             <xsl:when test="./name = 'NT' ">
-                                <xsl:value-of select="$locale/nt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/nt/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'UF' ">
-                                <xsl:value-of select="$locale/uf/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/uf/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'ALT' ">
-                                <xsl:value-of select="$locale/alt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/alt/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'uf_translation' ">
-                                <xsl:value-of select="$locale/uf_translations/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/uf_translations/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'uk_alt' ">
-                                <xsl:value-of select="$locale/uk_alt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/uk_alt/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'dewey' ">
-                                <xsl:value-of select="$locale/tc/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/tc/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'translation' ">
-                                <xsl:value-of select="$locale/translations/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/translations/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:when test="./name = 'RT' ">
-                                <xsl:value-of select="$locale/rt/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/rt/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="./name"/>:
@@ -206,16 +273,20 @@
             </tr>
         </table>
     </xsl:template>				
-	<!-- _____________________________________________________________________________
-			TEMPLATE: DisplayTitleForHierarchy
-	      _____________________________________________________________________________ -->
+    <!-- _____________________________________________________________________________
+              TEMPLATE: DisplayTitleForHierarchy
+    _____________________________________________________________________________ -->
     <xsl:template name="DisplayTitleForHierarchy">
         <xsl:param name="locale"/>
         <xsl:param name="lang"/>
         <table>
             <tr>
                 <td class="CategName">
-                    <xsl:value-of select="$locale/title/displaytitleforhierarchy/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> 
+                        <xsl:with-param name="targetLangElements" select="$locale/title/displaytitleforhierarchy/option"/> 
+                        <xsl:with-param name="targetLang" select="$lang"/> 
+                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                    </xsl:call-template>    
                     <b>
                         <xsl:value-of select="//page/TargetNameWithoutPrefix"/>
                     </b>
@@ -223,16 +294,20 @@
             </tr>
         </table>
     </xsl:template>						
-	<!-- _____________________________________________________________________________
-			TEMPLATE: DisplayTitleForFacet
-	      _____________________________________________________________________________ -->
+    <!-- _____________________________________________________________________________
+              TEMPLATE: DisplayTitleForFacet
+    _____________________________________________________________________________ -->
     <xsl:template name="DisplayTitleForFacet">
         <xsl:param name="locale"/>
         <xsl:param name="lang"/>
         <table>
             <tr>
                 <td class="CategName">
-                    <xsl:value-of select="$locale/title/displaytitleforfacet/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> 
+                        <xsl:with-param name="targetLangElements" select="$locale/title/displaytitleforfacet/option"/> 
+                        <xsl:with-param name="targetLang" select="$lang"/> 
+                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                    </xsl:call-template>    
                     <b>
                         <xsl:value-of select="//page/TargetNameWithoutPrefix"/>
                     </b>

@@ -121,6 +121,7 @@
         <titleprefix>
             <option lang="en">Terms Search Results  </option>
             <option lang="el">Αποτελέσματα Aναζήτησης Όρων </option>
+            <option lang="ar"> شروط البحث عن النتائج</option>
         </titleprefix>
         <noterms>
             <option lang="en">No Terms were found.</option>

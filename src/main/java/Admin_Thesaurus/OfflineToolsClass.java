@@ -251,13 +251,11 @@ public class OfflineToolsClass {
             }
             else{
                 //set default mode for test
-                mode = fixDbMode;
-                //arguements.add("EMPTY");
-                //arguements.add("TEST");
-                //arguements.add("MERGED");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\MergeLog.xml");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\TESTIMPORT.xml");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\importFromXMLLog.xml");
+                //mode = importXMLMode;
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\_THEMAS_ProjectFolder\\Development\\THEMAS\\target\\THEMAS-2.0-SNAPSHOT");
+                //arguements.add("NEWTHES2");
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\Export_Thesaurus_NEWTHESAURUS_2018-12-04_19-18-59-872.xml");
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\importFromXMLLog.xml");
                 
                 //add default arguments if needed
                 //arguements.add()
@@ -421,7 +419,7 @@ public class OfflineToolsClass {
                     //Now XSL should be found and java xsl transformation should be performed
                     String XSL = Parameters.BaseRealPath + File.separator + Parameters.Save_Results_Folder + File.separator + "ImportCopyMergeThesaurus_Report.xsl";
 
-                    u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml",".html"));
+                    u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml",".html"),Parameters.BaseRealPath);
 
 
                 } catch (IOException ex) {
@@ -561,7 +559,7 @@ public class OfflineToolsClass {
                 
                 //Now XSL should be found and java xsl transformation should be performed
                 String XSL = baseApplicationFilePath+  "/Save_Results_Displays/ImportCopyMergeThesaurus_Report.xsl";
-                u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml", ".html"));
+                u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml", ".html"), Parameters.BaseRealPath+"/");
                 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Merge operation of thesauri: "+
                         thesaurusName1+", " + thesaurusName2 + " to thesarus "+ mergedThesaurusName

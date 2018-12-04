@@ -1884,7 +1884,14 @@ public class Utilities {
         */
     }
 
-    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath) {
+    /**
+     * Enabling relative import - include uris in xslts
+     * @param xmlInputPath
+     * @param xslPath
+     * @param outputFullPath
+     * @param rootUri 
+     */
+    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath, String rootUri) {
 
 
         OutputStreamWriter out = null;
@@ -1904,8 +1911,12 @@ public class Utilities {
 
             // Use the factory to create a template containing the xsl file
 
-            Templates template = factory.newTemplates(new StreamSource(new FileInputStream(xslPath)));
-
+            String xslPathUri = xslPath.replace(Parameters.BaseRealPath,rootUri).replaceAll("\\\\","/");
+            StreamSource sSource = new StreamSource(new FileInputStream(xslPath));
+            sSource.setSystemId(xslPathUri);
+            //StreamSource sSource = new StreamSource(xslPathUri);
+            Templates template = factory.newTemplates(sSource);
+            
             // Use the template to create a transformer
             Transformer xformer = template.newTransformer();
 
@@ -1914,8 +1925,9 @@ public class Utilities {
             File xmlFile = new File(xmlInputPath);
 
             Source source = new StreamSource(xmlFile);
+            //source.setSystemId(rootUri);
             Result result = new StreamResult(out);
-
+            //result.setSystemId(rootUri);
             // Apply the xsl file to the source file and write the result to the output file
             xformer.transform(source, result);
 
@@ -1952,6 +1964,78 @@ public class Utilities {
             Utils.StaticClass.handleException(exc);
         }
     }
+
+    /*
+    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath) {
+
+
+        OutputStreamWriter out = null;
+        try {
+            OutputStream fout = new FileOutputStream(outputFullPath);
+            OutputStream bout = new BufferedOutputStream(fout);
+            out = new OutputStreamWriter(bout, "UTF-8");
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+
+        try {
+            // Create transformer factory
+            TransformerFactory factory = TransformerFactory.newInstance();
+
+            // Use the factory to create a template containing the xsl file
+
+            StreamSource sSource = new StreamSource(new FileInputStream(xslPath));
+            
+            Templates template = factory.newTemplates(sSource);
+            
+            // Use the template to create a transformer
+            Transformer xformer = template.newTransformer();
+
+            // Prepare the input and output files
+
+            File xmlFile = new File(xmlInputPath);
+
+            Source source = new StreamSource(xmlFile);
+            Result result = new StreamResult(out);
+            
+            // Apply the xsl file to the source file and write the result to the output file
+            xformer.transform(source, result);
+
+
+        } catch (FileNotFoundException e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "1=" + e.getMessage());
+            Utils.StaticClass.handleException(e);
+        } catch (TransformerConfigurationException e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "2=" + e.getMessage());
+            Utils.StaticClass.handleException(e);
+            // An error occurred in the XSL file
+        } catch (TransformerException e) {
+            
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "3=" + e.getMessage());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getMessageAndLocation());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getLocationAsString());
+
+            // An error occurred while applying the XSL file
+            // Get location of error in input file
+            SourceLocator locator = e.getLocator();
+
+            int col = locator.getColumnNumber();
+            int line = locator.getLineNumber();
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LINE=" + line + " COL=" + col);
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getMessage());
+            Utils.StaticClass.handleException(e);
+
+        }
+
+        try {
+            out.close();
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+    }*/
 
     public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, ArrayList<SortItem> btsORnts, ArrayList<String> existingGuideTermsVec, Locale targetLocale) {
 

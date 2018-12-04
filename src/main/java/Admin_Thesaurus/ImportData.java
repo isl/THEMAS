@@ -344,7 +344,7 @@ public class ImportData extends ApplicationBasicServlet {
             //Now XSL should be found and java xsl transformation should be performed
             String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
 
-            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
+            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"), sessionInstance.path +"/");
 
         } catch (Exception e) {
 

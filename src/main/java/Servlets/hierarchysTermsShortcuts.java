@@ -410,7 +410,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 //make html transformation
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml",
                         XSL,
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path+"/");
 
                 //respond with html file name in order to be downloaded from DownloadFile.java Servlet
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
@@ -467,7 +467,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml",
                         XSL,
-                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                        webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path+"/");
 
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
 
@@ -678,11 +678,11 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
                         u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                                        XSL1,
-                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"));
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"),sessionInstance.path+"/");
 
                         u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                                            XSL2,
-                                           webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"));
+                                           webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"),sessionInstance.path+"/");
 
                         //response.sendRedirect("DownloadFile?targetFile="+ Save_Results_file_name1.concat(".html"));
                         out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name1.concat(".html"));
@@ -870,11 +870,11 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
 
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                             XSL1,
-                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"));
+                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1.concat(".html"),sessionInstance.path+"/");
 
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name1 + ".xml",
                             XSL2,
-                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"));
+                            webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name2.concat(".html"),sessionInstance.path+"/");
                     
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name1.concat(".html"));
                 }
@@ -1213,10 +1213,10 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
         //XSL STORED IN xslLink
         u.XmlFileTransform(temporaryfolderFullPath + File.separator + Save_Results_file_nameWithoutExtension.concat(".xml"),
                 primary2translationsXSLPath,
-                temporaryfolderFullPath + File.separator + Primary2TranslationsHtmlOutputPath);
+                temporaryfolderFullPath + File.separator + Primary2TranslationsHtmlOutputPath, Parameters.BaseRealPath +"/");
         u.XmlFileTransform(temporaryfolderFullPath + File.separator + Save_Results_file_nameWithoutExtension.concat(".xml"),
                 translations2primaryXSLPath,
-                temporaryfolderFullPath + File.separator + Translations2PrimaryHtmlOutputPath);
+                temporaryfolderFullPath + File.separator + Translations2PrimaryHtmlOutputPath, Parameters.BaseRealPath +"/");
 
         //default index
         return temporaryfolderFullPath + File.separator + Primary2TranslationsHtmlOutputPath;

@@ -68,8 +68,8 @@
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix><!-- 2 letter code preferrably -->
     <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName> <!-- Proposed Format UPPERCASE -->
 
-    <!--<UnclassifiedTermsHierarchyName>شروط غير مصنفة</UnclassifiedTermsHierarchyName> -->
-    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName> <!-- Proposed Format: Capitalize first letter --> 
+    <UnclassifiedTermsHierarchyName>شروط غير مصنفة</UnclassifiedTermsHierarchyName>
+    <!--<UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>  Proposed Format: Capitalize first letter --> 
     
 
     <SupportedUILangCodes>
@@ -80,7 +80,7 @@
         <langcode mapcode="en" display="yes" displayText="English - en">en</langcode>
         <langcode mapcode="el" display="no" displayText="Ελληνικά - gr">gr</langcode>
         <langcode mapcode="el" display="yes"  displayText="Ελληνικά - el">el</langcode>        
-        <!-- <langcode mapcode="ar" display="yes"  displayText="Arabic - ar">ar</langcode>   -->    
+        <langcode mapcode="ar" display="yes"  displayText="Arabic - ar">ar</langcode>       
     </SupportedUILangCodes>
     
     <BehaviorConfigs>

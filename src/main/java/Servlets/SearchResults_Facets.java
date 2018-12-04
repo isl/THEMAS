@@ -270,7 +270,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                     String arg1 = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
                     String arg2 = XSL;
                     String arg3 = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html");
-                    u.XmlFileTransform(arg1, arg2, arg3);
+                    u.XmlFileTransform(arg1, arg2, arg3, sessionInstance.path +"/");
 
                     //Send HTML relative url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));

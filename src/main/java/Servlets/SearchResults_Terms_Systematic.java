@@ -232,7 +232,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", 
                                    XSL, 
-                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
+                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"), sessionInstance.path +"/");
                     
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Systematic View --> time elapsed: " + elapsedTimeSec);
