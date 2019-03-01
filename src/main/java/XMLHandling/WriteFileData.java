@@ -1753,13 +1753,15 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                         continue;
                     }
-                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
+                    //avoid case of double writing (as topConcept and as simple concept)
+                    if(!allHierarchies.contains(termName)){
+                        WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
+                    }
                 }
 
             }
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-            DBGeneral dbGen = new DBGeneral();
             Utilities u = new Utilities();
 
             String[] output = {ConstantParameters.system_transliteration_kwd, 
@@ -1963,7 +1965,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                         //Linguist.SupportedTHEMASLangcodes(translationVal.substring(0, translationVal.indexOf(Parameters.TRANSLATION_SEPERATOR, 0)));
                                         val = translationVal.replaceFirst(langCode.toUpperCase() + Parameters.TRANSLATION_SEPERATOR, "");
                                     }
-                                    if (langCode != null && langCode.length() > 0 && val != null && val.length() > 0) {
+                                    if (langCode != null && langCode.isEmpty() && val != null && val.isEmpty()) {
 
                                         logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                         logFileWriter.append(Utilities.escapeXML(val));

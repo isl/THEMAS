@@ -72,6 +72,13 @@ function openStatisticsDIV(divID) {
   window.location = targetgetResultsServlet;
 }
 
+function openCustomStatisticsDIV(divID){
+    DisplayPleaseWaitScreen(true);
+    var targetgetResultsServlet = 'CustomStatistics?DIV=' + divID;
+  
+    window.location = targetgetResultsServlet;
+}
+
 /*-----------------------------------------------------
                     SaveStatisticResults()
 -------------------------------------------------------*/           

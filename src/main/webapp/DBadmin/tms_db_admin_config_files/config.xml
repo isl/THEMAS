@@ -63,13 +63,18 @@
     <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>    
 -->
-          
+    
     <PrimaryLanguage>English</PrimaryLanguage><!-- no spaces-->
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix><!-- 2 letter code preferrably -->
-    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName> <!-- Proposed Format UPPERCASE -->
-
+    <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
+    <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
+       
+          <!-- Arabic config   
+    <PrimaryLanguage>Arabic</PrimaryLanguage>
+    <PrimaryLanguagePrefix>AR</PrimaryLanguagePrefix>
+    <UnclassifiedTermsFacetName>غير مصنف</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>شروط غير مصنفة</UnclassifiedTermsHierarchyName>
-    <!--<UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>  Proposed Format: Capitalize first letter --> 
+    -->
     
 
     <SupportedUILangCodes>

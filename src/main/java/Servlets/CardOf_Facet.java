@@ -41,7 +41,9 @@ import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
 import Utils.SortItem;
+import Utils.SortItemComparator;
 import Utils.Utilities;
+import static Utils.Utilities.escapeXML;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletContext;
@@ -51,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import neo4j_sisapi.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -85,6 +88,10 @@ public class CardOf_Facet extends ApplicationBasicServlet {
         HttpSession session = request.getSession();
         ServletContext context = getServletContext();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
+        
+        sessionInstance.readSession(session,request);
+        UserInfoClass SessionUserInfoCpy = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
+        
         init(request, response,sessionInstance);
 
         PrintWriter out = response.getWriter(); 
@@ -121,16 +128,16 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             
             //Data storage
             StringBuffer xml = new StringBuffer();
-            
-            
-            ArrayList<String> outputVec = new ArrayList<String>();
+                        
+            ArrayList<String> outputVec = new ArrayList<>();
             outputVec.add("name");
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 outputVec.add(ConstantParameters.system_transliteration_kwd);                
             }
+            outputVec.add(ConstantParameters.system_referenceUri_kwd);
             outputVec.add("hierarchy");
             
-            
+            String reqUrlPrefix = u.getExternalReaderReferenceUriPrefix(request,SessionUserInfo.selectedThesaurus);
             String[] output = new String[outputVec.size()];
             outputVec.toArray(output);
             
@@ -197,7 +204,7 @@ public class CardOf_Facet extends ApplicationBasicServlet {
             
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
             
-            String xmlResults = u.getResultsInXml_FacetUsingHierarchySortItems(SessionUserInfo,output, tmp,Q,sis_session,targetLocale,dbGen,skipOutput);
+            String xmlResults = getResultsInXml_FacetUsingHierarchySortItems(SessionUserInfo,reqUrlPrefix, output, tmp,Q,sis_session,targetLocale,dbGen,skipOutput);
 
             Q.free_all_sets();
             Q.TEST_end_query();
@@ -244,7 +251,9 @@ public class CardOf_Facet extends ApplicationBasicServlet {
                 out.close();
             }
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
-                if(session!=null) {session.invalidate();}
+                if(SessionUserInfoCpy==null){
+                    if(session!=null) {session.invalidate();}                
+                }
             }
             else{
                 sessionInstance.writeBackToSession(session);
@@ -252,6 +261,86 @@ public class CardOf_Facet extends ApplicationBasicServlet {
         }
     } 
     
+     private String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo,String reqUrlPrefix, String[] output, ArrayList<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
+
+         Utilities u = new Utilities();
+        StringBuffer XMLresults = new StringBuffer();
+        
+        XMLresults.append("<data thesaurus=\""+SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
+        if(!skipOutput){
+            XMLresults.append("<output>");
+            for (int m = 0; m < output.length; m++) {
+
+                String category = output[m];
+                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
+                    continue;
+                } else {
+                    XMLresults.append("<" + category + "/>");
+                }
+            }
+            XMLresults.append("</output>");
+        }
+        XMLresults.append("<facets>");
+        for (SortItem currentFacetsortItem : displayFacets) {
+            
+            XMLresults.append("<facet>");
+            for (String outputField : output) {
+                
+                if (outputField.equals("name")) {
+                    String appendVal = "<name";
+                    if(currentFacetsortItem.getThesaurusReferenceId()>0){
+                        appendVal += " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+currentFacetsortItem.getThesaurusReferenceId()+"\"";
+                        if(Parameters.ShowReferenceURIalso){
+                            appendVal += " "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(u.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, Utilities.ReferenceUriKind.FACET, currentFacetsortItem.getThesaurusReferenceId())) +"\"";
+                        }
+                    }
+                    appendVal+=">";
+                    XMLresults.append(appendVal);
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogName()));
+                    XMLresults.append("</name>");
+
+                } else if(outputField.equals(ConstantParameters.system_referenceUri_kwd)){
+                    XMLresults.append("<"+outputField+">");
+                    XMLresults.append(escapeXML(reqUrlPrefix+u.getExternalReaderReferenceUriSuffix(true, currentFacetsortItem.getThesaurusReferenceId())));
+                    XMLresults.append("</"+outputField+">");
+                }
+                else if(outputField.equals(ConstantParameters.system_transliteration_kwd) && currentFacetsortItem.getLogNameTransliteration()!=null && currentFacetsortItem.getLogNameTransliteration().length()>0){
+                    XMLresults.append("<"+ConstantParameters.system_transliteration_kwd+">");
+                    XMLresults.append(escapeXML(currentFacetsortItem.getLogNameTransliteration()));
+                    XMLresults.append("</"+ConstantParameters.system_transliteration_kwd+">");
+                }
+                else {
+
+                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
+                    if (v != null && v.size() > 0) {
+                        Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
+                    }
+
+                    for (SortItem hierItem : v) {
+                        String appendVal = "<" + outputField;
+                        if(hierItem.getThesaurusReferenceId()>0){
+                            appendVal+=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+hierItem.getThesaurusReferenceId()+"\"";
+                            if(Parameters.ShowReferenceURIalso){
+                                appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(u.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, Utilities.ReferenceUriKind.TOPTERM, hierItem.getThesaurusReferenceId())) +"\"";
+                            }
+                            
+                        }
+                        appendVal+=">";
+                        XMLresults.append(appendVal);
+                        XMLresults.append(escapeXML(hierItem.getLogName()));
+                        XMLresults.append("</" + outputField + ">");
+                    }
+
+                }
+            }
+            XMLresults.append("</facet>");
+        }
+        XMLresults.append("</facets>");
+        XMLresults.append("</data>");
+
+        return XMLresults.toString();
+    }
+
     void prepareErrorMsg(String errorMsg,PrintWriter out,SessionWrapperClass sessionInstance,String outputMode, final String uiLang){
         StringBuffer xml = new StringBuffer();
         Utilities u = new Utilities();

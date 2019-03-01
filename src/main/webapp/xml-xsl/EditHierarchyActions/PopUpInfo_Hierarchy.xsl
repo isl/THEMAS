@@ -152,14 +152,70 @@
                             <td>
                                 <span class="headerThes_normal">
                                     <b>
-                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/hierarchylabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                        <xsl:call-template name="getTranslationMessage"> 
+                                            <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/hierarchylabel/option"/> 
+                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                        </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
                             <td>
-                                <span class="headerThes_normal"><xsl:value-of select="//current/hierarchy/name"/></span>
+                                <span class="headerThes_normal"><xsl:value-of select="//current/hierarchy/name"/></span>         
+                                
                             </td>
                         </tr>
+                        
+                        <xsl:if test="//current/hierarchy/name/@referenceId[.!='']">
+                        <tr valign="top">
+                            <td>
+                                <br/>                       
+                                <span class="headerThes_normal">
+                                    <b>
+                                        <xsl:call-template name="getTranslationMessage"> 
+                                            <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/refId/option"/> 
+                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                        </xsl:call-template>       
+                                    </b>
+                                </span>
+                            </td>
+                            <td>
+                                <br/>                       
+                               <span class="headerThes_normal">
+                                                        <xsl:value-of select="//current/hierarchy/name/@referenceId"/>
+                                                    </span> 
+                                                    &#160;&#160;&#160;
+                                                    
+                                                    <a id="refIdLink" style="cursor: pointer;">
+                                                        <!--
+                                                        <xsl:attribute name="href">
+                                                            <xsl:value-of select="$currentNode/ReferenceUri/text()"/>
+                                                        </xsl:attribute>-->
+                                                        <xsl:attribute name="onclick">
+                                                            <xsl:text>copyToClipborad('refIdTooltipLink','refIdTooltipTxt', '</xsl:text>
+                                                             <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/refIdToolTipPrefix/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                            </xsl:call-template>
+                                                            <xsl:text>','</xsl:text>
+                                                            <xsl:value-of select="//current/hierarchy/ReferenceUri/text()"/>
+                                                            <xsl:text>');</xsl:text>
+                                                        </xsl:attribute>
+                                                        <!--<i>Copy Link</i>-->
+                                                        <img src="images/link32.png" width="14" height="14" border="0" style="margin-left:5px;"/>
+                                                    </a> 
+                                                    <!-- display: none; --> 
+                                                    <div id="refIdTooltipLink" style="position: absolute; z-index: 1000; display: none;  top: 70px; background: white; text-align: left; right:10px;    border: 2px solid black;">                                                    
+                                                        <div style="margin:5px" id="refIdTooltipTxt">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    
+                            </td>
+                        </tr>
+                        </xsl:if>
                         <tr valign="top">
                             <td>
                                 <br/>

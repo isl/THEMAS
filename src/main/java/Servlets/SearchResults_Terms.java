@@ -116,9 +116,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
 
             //Data Storage
-            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<String, NodeInfoSortItemContainer>();
+            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<>();
             SortItemComparator transliterationComparator = new SortItemComparator(Utils.SortItemComparator.SortItemComparatorField.TRANSLITERATION);
-            ArrayList<Long> resultNodesIds = new ArrayList<Long>();
+            ArrayList<Long> resultNodesIds = new ArrayList<>();
 
 
             //open connection

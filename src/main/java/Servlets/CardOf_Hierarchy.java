@@ -34,11 +34,14 @@
 package Servlets;
 
 import DB_Classes.DBGeneral;
+import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 
 import Utils.Parameters;
+import Utils.SortItem;
+import Utils.StringLocaleComparator;
 import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -98,7 +101,7 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             //tools
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
-            
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
             
             
             //parameters
@@ -109,7 +112,7 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
             
             //Data storage
             StringBuffer xml = new StringBuffer();
-            String output[] = {"name", "facet"};
+            String output[] = {"name", "facet", ConstantParameters.system_referenceUri_kwd};
             
             if(targetHierarchy==null || targetHierarchy.length()==0){
                 
@@ -124,8 +127,11 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
                 Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ servlet " + this.getServletName());
                 return;
             }
-            
-            String xmlResults = u.getHierarchyResultsInXml(SessionUserInfo, targetHierarchy, output, null, Q,  sis_session, dbGen, targetLocale);
+            String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+            StringObject hierObj = new StringObject(prefix_class.concat(targetHierarchy));
+        
+            String reqUrlPrefix = u.getExternalReaderReferenceUriPrefix(request,SessionUserInfo.selectedThesaurus);
+            String xmlResults = getHierarchyResultsInXml(SessionUserInfo, reqUrlPrefix, targetHierarchy,hierObj, output, null, Q,  sis_session, dbGen, targetLocale);
 
             Q.free_all_sets();
             Q.TEST_end_query();
@@ -166,6 +172,115 @@ public class CardOf_Hierarchy extends ApplicationBasicServlet {
         }
               
     }
+    
+    private String getHierarchyResultsInXml(UserInfoClass SessionUserInfo, String reqUrlPrefix, String hierarchyWithoutPrefix, StringObject hierObj, String[] output, String for_deletion, QClass Q, IntegerObject sis_session, DBGeneral dbGen, Locale targetLocale) {
+
+        //StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
+        Utilities u = new Utilities();
+        ArrayList<SortItem> v = new ArrayList<>();
+        StringBuffer sb = new StringBuffer();
+        sb.append("<current>");
+        sb.append("<hierarchy>");
+
+        // (delete icon was pressed from Search results TAB)
+        sb.append("<for_deletion>");
+        if (for_deletion != null) {
+            sb.append("true");
+        }
+        sb.append("</for_deletion>");
+
+        StringObject belongsToHierClass = new StringObject();
+        StringObject belongsToHierarchyLink = new StringObject();
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+
+        Q.reset_name_scope();
+        CMValue hierCmv = new CMValue();
+        Q.set_current_node_and_retrieve_Cmv(hierObj,hierCmv);
+        
+        
+        long refId  = hierCmv.getRefid();
+        if (Parameters.OnlyTopTermsHoldReferenceId) {
+            //int card1 = Q.set_get_card(set_sub_classes);
+
+            
+            int set_topterms = Q.get_from_node_by_category(0, belongsToHierClass, belongsToHierarchyLink);
+
+            //int card = Q.set_get_card(set_topterms);
+            //String s1 = ""+card1+" " + card2 + " " + card3;
+            ArrayList<SortItem> currCheck  = dbGen.get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session);
+            if(currCheck!=null && !currCheck.isEmpty()){
+                refId = currCheck.get(0).getThesaurusReferenceId();
+            }
+        } 
+        Q.reset_name_scope();
+        
+        //String referenceUri = 
+        // for each value of output = {"name", "facets", "letter_code", "created", "created_by", "modified", "modified_by"}
+        for (int j = 0; j < output.length; j++) {
+            if (output[j].equals("name")) {
+                sb.append("<name");
+                if (refId > 0) {
+                    sb.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(refId).append("\"");
+                }
+                sb.append(">").append(Utilities.escapeXML(hierarchyWithoutPrefix)).append("</name>");
+            } else {
+
+                if (output[j].equals("letter_code")) {
+                    v.addAll(dbGen.returnResults_HierarchyInSortItems(SessionUserInfo, hierarchyWithoutPrefix, output[j], Q, sis_session, targetLocale));
+                    
+                    if (!v.isEmpty()) {
+                        //Collections.sort(v, strCompar);
+                        for (int k = 0; k < v.size(); k++) {
+                            ArrayList<String> temp = new ArrayList<>();
+                            //temp.addAll((Vector) v.get(k)); //BUG??
+                            temp.add(v.get(k).getLogName());
+
+                            sb.append("<" + output[j] + ">");
+
+                            sb.append("<name>");
+                            sb.append(Utilities.escapeXML(temp.get(0).toString()));
+                            sb.append("</name>");
+                            
+                            sb.append("<editable>");
+                            if(temp.size()>1){ //BUG?? this check did not exist
+                                sb.append(Utilities.escapeXML(temp.get(1).toString()));
+                            }
+                            sb.append("</editable>");
+                            
+
+                            sb.append("</" + output[j] + ">");
+                        }
+
+                    }
+
+                } else if(output[j].equals(ConstantParameters.system_referenceUri_kwd) && refId>0){
+                    sb.append("<" + ConstantParameters.system_referenceUri_kwd + ">");
+                    sb.append(Utilities.escapeXML(reqUrlPrefix+u.getExternalReaderReferenceUriSuffix(false, refId)));                    
+                    sb.append("</" + ConstantParameters.system_referenceUri_kwd + ">");
+                }
+                else{
+                    v.addAll(dbGen.returnResults_HierarchyInSortItems(SessionUserInfo, hierarchyWithoutPrefix, output[j], Q, sis_session, targetLocale));
+                    if (!v.isEmpty()) {
+                        sb.append("<" + output[j] + ">");
+                        for (int k = 0; k < v.size(); k++) {
+                            sb.append("<name");
+                            if (v.get(k).getThesaurusReferenceId() > 0) {
+                                sb.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(v.get(k).getThesaurusReferenceId()).append("\"");
+                            }
+                            sb.append(">").append(Utilities.escapeXML(v.get(k).getLogName())).append("</name>");
+                        }
+                        sb.append("</" + output[j] + ">");
+                    }
+                }
+            }
+            v.clear();
+        }
+        sb.append("</hierarchy>");
+        sb.append("</current>");
+
+        return sb.toString();
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 

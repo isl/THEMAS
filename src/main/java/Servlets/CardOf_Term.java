@@ -45,6 +45,7 @@ import Utils.SessionWrapperClass;
 
 import Utils.NodeInfoSortItemContainer;
 import Utils.Parameters;
+import Utils.SortItem;
 import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -75,6 +76,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
         request.setCharacterEncoding("UTF-8");
         // popup display card / edit mode / XML Stream Mode
         String outputMode = request.getParameter("mode");
+        
         boolean skipClose = false;
         if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
             response.setContentType("text/xml;charset=UTF-8");       
@@ -89,6 +91,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
         HttpSession session = request.getSession();
         ServletContext context = getServletContext();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
+        sessionInstance.readSession(session,request);
+        UserInfoClass SessionUserInfoCpy = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
         init(request, response,sessionInstance);  
         
         PrintWriter out = response.getWriter(); 
@@ -180,6 +184,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.facet_kwd);
+                
                 //output.add(ConstantParameters.rbt_kwd);
                 //output.add(ConstantParameters.rnt_kwd);
             }
@@ -240,12 +245,22 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_set(set_Target);
             
             //temp structure - Vector
-            ArrayList<String> allTerms = new ArrayList<String>();
-            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
+            ArrayList<String> allTerms = new ArrayList<>();
             
+            //"://"+request.getLocalAddr()+":" + request.getLocalPort() + "/" + Parameters.ApplicationName +"/";
+            String reqUrlPrefix = u.getExternalReaderReferenceUriPrefix(request,SessionUserInfo.selectedThesaurus);
+            //System.out.println("reqUrlPrefix = "+reqUrlPrefix) ;
+            
+            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
+            if(output.contains((ConstantParameters.system_referenceUri_kwd))){
+                 
+                 dbGen.constructReferenceURIs(reqUrlPrefix, termsInfo);
+            }
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
             u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo,skipOutput,skipOutput);
             
+            
+           
             
             // in case of LIBRARY user group, mark term as (un)editable
             //boolean UserOfGroupLIBRARY = (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) == true);            
@@ -322,7 +337,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             }
             
             if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
-                if(session!=null) {session.invalidate();}
+                if(SessionUserInfoCpy==null){
+                    if(session!=null) {session.invalidate();}                
+                }
             }
             else {                
                 sessionInstance.writeBackToSession(session);

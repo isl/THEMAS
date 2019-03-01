@@ -31,6 +31,31 @@
  * 
  * This file is part of the THEMAS system.
  */
+
+function copyToClipborad(refLink,refLinkTxtDiv, msgtemplate, txtToCopy){
+    el = document.createElement('textarea');
+    el.value = txtToCopy;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    
+    $("#"+refLinkTxtDiv).html(msgtemplate.replace('%s',txtToCopy));
+    $("#"+refLink).show().delay(2000).fadeOut();
+    
+    
+    
+    
+    /*
+    var tt = $("#"+refLink);
+        tt.show().delay(2000).hide();
+      
+      */
+   
+   //alert ('Copied: ' + txtToCopy +" to clipboard");
+    
+}
+
 function getAjaxActiveXObject() {
     var xmlHttp;
     try {  // Firefox, Opera 8.0+, Safari  

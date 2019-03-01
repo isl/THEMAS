@@ -451,27 +451,106 @@
                 
                 <td style="padding-left:7px;">
                     <b>
-                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/label/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                        <xsl:call-template name="getTranslationMessage">
+                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/label/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
                     </b>
                 </td>
+                
                 <td align="right">
                     <table>
                         <tr>
+                            <xsl:choose>
+                                    <!-- only admin and thesaurus commitee have access to these operations-->
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' or $THEMASUserInfo_userGroup = 'EXTERNAL_READER' or $THEMASUserInfo_userGroup = 'THESAURUS_TEAM'">
+                                        <td>
+                                            <a href="#" >
+                                                <xsl:attribute name="onclick">
+                                                        <xsl:text>alert('</xsl:text>
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/generalmessages/disabledfunction/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
+                                                         <xsl:text>');</xsl:text>
+                                                    </xsl:attribute>
+                                                <img width="16" height="16" border="0"  class="disabledImage">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/customstatistics/image/src/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/customstatistics/image/title/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </td>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <td>
+                                            <a>
+                                                <xsl:attribute name="href">
+                                                    <xsl:text>#</xsl:text>
+                                                </xsl:attribute>
+                                                <xsl:attribute name="onclick">
+                                                    <xsl:text>openCustomStatisticsDIV();</xsl:text>
+                                                </xsl:attribute>
+                                                <img width="16" height="16" border="0">
+                                                    <xsl:attribute name="src">
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/customstatistics/image/src/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
+                                                    </xsl:attribute>
+                                                    <xsl:attribute name="title">
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/customstatistics/image/title/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
+                                                    </xsl:attribute>
+                                                </img>
+                                            </a>
+                                        </td>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             <td>
                                 <xsl:choose>
                                     <xsl:when test="$THEMASUserInfo_userGroup = 'READER' ">
                                         <a href="#" >
                                             <xsl:attribute name="onclick">
                                                     <xsl:text>alert('</xsl:text>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/disabledfunction/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$locale/generalmessages/disabledfunction/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                    </xsl:call-template>    
                                                      <xsl:text>');</xsl:text>
                                                 </xsl:attribute>
                                             <img width="16" height="16" border="0"  class="disabledImage">
                                                 <xsl:attribute name="src">
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/src/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                    </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:attribute name="title">
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/title/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                    </xsl:call-template>    
                                                 </xsl:attribute>
                                             </img>
                                         </a>
@@ -486,10 +565,18 @@
                                             </xsl:attribute>
                                             <img width="16" height="16" border="0">
                                                 <xsl:attribute name="src">
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/src/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                    </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:attribute name="title">
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$locale/leftmenu/statistics/actions/showstatistics/image/title/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                    </xsl:call-template>    
                                                 </xsl:attribute>
                                             </img>
                                         </a>
@@ -533,10 +620,18 @@
                                         </xsl:attribute>
                                         <img width="16" height="16" border="0">
                                             <xsl:attribute name="src">
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/changethesaurus/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/changethesaurus/image/src/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/changethesaurus/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/changethesaurus/image/title/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                             </xsl:attribute>
                                         </img>
                                     </a>
@@ -549,15 +644,27 @@
                                             <a href="#" >
                                                 <xsl:attribute name="onclick">
                                                         <xsl:text>alert('</xsl:text>
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/disabledfunction/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/generalmessages/disabledfunction/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
                                                          <xsl:text>');</xsl:text>
                                                     </xsl:attribute>
                                                 <img width="16" height="16" border="0"  class="disabledImage">
                                                     <xsl:attribute name="src">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
                                                     </xsl:attribute>
                                                     <xsl:attribute name="title">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
                                                     </xsl:attribute>
                                                 </img>
                                             </a>
@@ -568,10 +675,18 @@
                                             <a href="Admin_Thesaurus?DIV=ImportExport_Data_DIV">
                                                 <img width="16" height="16" border="0">
                                                     <xsl:attribute name="src">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/src/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
                                                     </xsl:attribute>
                                                     <xsl:attribute name="title">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$locale/leftmenu/thesauri/actions/thesaurimanagement/image/title/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                        </xsl:call-template>    
                                                     </xsl:attribute>
                                                 </img>
                                             </a>
@@ -958,7 +1073,11 @@
                 <a>
                     <xsl:if test="$locale/leftmenu/imageatbottom/href/option[@lang=$lang]!=''">
                         <xsl:attribute name="href">
-                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/href/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/href/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="target">
                             <xsl:text>_blank</xsl:text>
@@ -966,10 +1085,18 @@
                     </xsl:if>
                     <img border="0">
                         <xsl:attribute name="src">
-                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/src/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="title">
-                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/leftmenu/imageatbottom/title/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </xsl:attribute>
                     </img>
                 </a>

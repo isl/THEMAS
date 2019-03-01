@@ -46,6 +46,7 @@ import Utils.SortItem;
 import Utils.SortItemComparator;
 import Utils.Utilities;
 import Utils.StringLocaleComparator;
+import static Utils.Utilities.escapeXML;
 
 import XMLHandling.WriteFileData;
 import java.io.*;
@@ -105,11 +106,9 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             QClass Q = new QClass();
             TMSAPIClass TA = new TMSAPIClass();
             IntegerObject sis_session = new IntegerObject();
-
-            DBThesaurusReferences dbtr = new DBThesaurusReferences();
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
-
+            
             SearchCriteria searchCriteria;
 
             String updateTermsCirteria = (String) request.getParameter("updateTermCriteria");
@@ -133,43 +132,6 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
 
             if (updateTermsCirteria != null) { // detect if search was pressed or left menu option was triggered
                 searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Facets", updateTermsCirteria, request, u);
-
-                if (searchCriteria.input.size() == searchCriteria.value.size()) {
-                    /*
-                     for(int k=0; k<searchCriteria.input.size(); k++){
-                     String inputKwd = searchCriteria.input.get(k);
-                     String value = searchCriteria.value.get(k);
-                     byte[] valbytes = value.getBytes("UTF-8");
-                     if(inputKwd.equals("name")){
-                     //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                     if(valbytes.length > dbtr.getMaxBytesForFacet(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                     //end query and close connection
-                     Q.free_all_sets();
-                     Q.CHECK_end_query();
-                     dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-                     response.sendRedirect("Links?tab=FacetsSearchCriteria&CheckLength=true");
-                     return;
-                     }
-                     }
-                     else if(inputKwd.equals("term")){
-                            
-                     //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                     if(valbytes.length > dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-
-                     //end query and close connection
-                     Q.free_all_sets();
-                     Q.CHECK_end_query();
-                     dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-                     response.sendRedirect("Links?tab=FacetsSearchCriteria&CheckLength=true");
-                     return;
-                     }
-                     }
-                     }
-                     */
-                } else {
-                    Utils.StaticClass.webAppSystemOutPrintln("Search Input Error");
-                }
                 sessionInstance.setAttribute("SearchCriteria_Facets", searchCriteria);
 
             } else {  //else try to read criteria for this user
@@ -289,16 +251,16 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
             if (facetsPagingFirst > facetsPagingQueryResultsCount) {
                 facetsPagingFirst = 1;
             }
-            ArrayList<String> resultsFacets = new ArrayList<String>();
+            ArrayList<SortItem> resultsFacets = new ArrayList<>();
             for (int i = 0; i < facetsPagingListStep; i++) {
                 if (i + facetsPagingFirst > facetsPagingQueryResultsCount) {
                     break;
                 }
-                String tmp = allResultsFacets.get(i + facetsPagingFirst - 1).getLogName();
+                SortItem tmp = allResultsFacets.get(i + facetsPagingFirst - 1);
                 resultsFacets.add(tmp);
             }
 
-            String xmlResults = u.getResultsInXml_Facet(SessionUserInfo, resultsFacets, output, Q, sis_session, targetLocale, dbGen);
+            String xmlResults = getResultsInXml_Facet(SessionUserInfo, resultsFacets, output, Q, sis_session, targetLocale, dbGen);
 
             // timer end
             float elapsedTimeSec = Utilities.stopTimer(startTime);
@@ -334,10 +296,74 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
         }
     }
 
+    /*---------------------------------------------------------------------
+    getResultsInXml_Facet()
+    -----------------------------------------------------------------------
+    INPUT: - Vector allTerms: the Vector with the terms to be parsed
+    - String[] output: the properties of each term to be collected
+    OUTPUT: a String with the XML representation of the results
+    CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
+    ----------------------------------------------------------------------*/
+    private String getResultsInXml_Facet(UserInfoClass SessionUserInfo, ArrayList<SortItem> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
+
+        StringBuilder XMLresults = new StringBuilder();
+        
+        XMLresults.append("<data>");
+        XMLresults.append("<output>");
+        for (String category : output) {
+
+            if (!category.equals(ConstantParameters.id_kwd)&& !category.equals("name")) {
+                XMLresults.append("<").append(category).append("/>");
+            }
+        }
+        SortItemComparator transliterationComparator = new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION);
+        XMLresults.append("</output>");
+
+        XMLresults.append("<facets>");
+        
+        for (SortItem currentFacet : displayFacets) {
+            XMLresults.append("<facet>");
+            for (int j = 0; j < output.length; j++) {
+                if (output[j].equals("name")) {
+                    XMLresults.append("<name");
+                    long refId = currentFacet.getThesaurusReferenceId();
+                    if (refId > 0) {
+                        XMLresults.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(refId).append("\"");
+                    }
+                    XMLresults.append(">").append(escapeXML(currentFacet.getLogName()));
+                    XMLresults.append("</name>");
+
+                } else {
+            
+                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacet.getLogName(), output[j], Q, sis_session, targetLocale);
+                    if (v != null && v.size() > 0) {
+                        Collections.sort(v, transliterationComparator);
+
+                    
+                        for (int k = 0; k < v.size(); k++) {
+                            XMLresults.append("<").append(output[j]);
+                            if(v.get(k).getThesaurusReferenceId()>0){
+                               XMLresults.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(v.get(k).getThesaurusReferenceId()).append("\"");
+                            }
+                            XMLresults.append(">").append(escapeXML(v.get(k).getLogName()));
+                            XMLresults.append("</").append(output[j]).append(">");
+                        }
+                    }
+                    
+                }
+            }
+            XMLresults.append("</facet>");
+        }
+        XMLresults.append("</facets>");
+        XMLresults.append("</data>");
+
+        return XMLresults.toString();
+    }
+    
     /**
      * Returns a Vector with the facets which match with criteria
      */
-    public ArrayList<SortItem> getAllSearchFacets(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator,
+    private ArrayList<SortItem> getAllSearchFacets(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session) {
         ArrayList<SortItem> globalFacetResults = new ArrayList<SortItem>();
         DBGeneral dbG = new DBGeneral();
@@ -462,7 +488,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.reset_set(set_partial_facet_results);
                         //</editor-fold>
                     } else if (currentOperator.equals("!")) {
-
+                        // <editor-fold defaultstate="collapsed" desc="Code for ! Not Equal">
                         int set_exclude_facets = Q.set_get_new();
 
                         if (Q.set_current_node(new StringObject(prefix.concat(searchVal))) != QClass.APIFail) {
@@ -489,9 +515,9 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.reset_set(set_exclude_facets);
                         Q.set_difference(set_partial_facet_results, set_exclude_facets);
                         Q.reset_set(set_partial_facet_results);
-
+                        // </editor-fold>
                     } else if (currentOperator.equals(ConstantParameters.searchOperatorNotContains)) {
-
+                        // <editor-fold defaultstate="collapsed" desc="Code for not Contains">
                         //int set_exclude_facets = Q.set_get_new();
                         //CMValue prm_val = new CMValue();
                         //prm_val.assign_string(searchVal);
@@ -518,7 +544,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
                         Q.reset_set(set_exclude_facets);
                         Q.set_difference(set_partial_facet_results, set_exclude_facets);
                         Q.reset_set(set_partial_facet_results);
-
+                        //</editor-fold>
                     }
                     else if (currentOperator.equals(ConstantParameters.searchOperatorNotTransliterationContains)) {
 
@@ -808,7 +834,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
 
     }
 
-    public void writeResultsInXMLFile(PrintWriter outStream, UserInfoClass SessionUserInfo, ArrayList<SortItem> allFacets, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session, String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    private void writeResultsInXMLFile(PrintWriter outStream, UserInfoClass SessionUserInfo, ArrayList<SortItem> allFacets, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session, String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
         boolean streamOutput = false;
         if (outStream != null) {

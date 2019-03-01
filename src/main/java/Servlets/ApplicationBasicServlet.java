@@ -119,9 +119,10 @@ public class ApplicationBasicServlet extends HttpServlet {
                     sessionInstance.writeBackToSession(session);
                 }
                 
-            }
-            else{
                 
+                
+            }
+            else{                
                 if(SessionUserInfo!=null){
                     String ServletParametersDescription = GetServletParametersDescription(request);
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+cal.getTime() + " Servlet: " + request.getServletPath() + " called from user " + SessionUserInfo.name + " with..." + ServletParametersDescription);
@@ -129,11 +130,9 @@ public class ApplicationBasicServlet extends HttpServlet {
                 else{
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+ cal.getTime() + " Invalidating session " + session.getId() + " because SessionUser is null" );
                     session.invalidate();
-                }
-                
-            }
-        
-         }
+                }                
+            }        
+        }
         catch(Exception e){
             Utils.StaticClass.webAppSystemOutPrintln("Exception catched in ApplicationBasicServlet init function for servlet " +getServletName()+". Message:" +e.getMessage());
             Utils.StaticClass.handleException(e);

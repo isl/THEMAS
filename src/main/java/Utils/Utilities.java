@@ -82,6 +82,54 @@ public class Utilities {
     public Utilities() {
     }
 
+    
+
+    /**
+     * Constructs the uri that will be used in order to directly access a concept or Facet
+     * @param req
+     * @param targetThesaurus
+     * @param isFacet
+     * @param refId
+     * @return 
+     */    
+    public String getExternalReaderReferenceUri(HttpServletRequest req, String targetThesaurus, boolean isFacet,long refId){
+        //tried getServername etc but behind a proxy server could not determine the port 
+        // server port return 443 while local port returned 8443 
+        // so did not use getScheme, getServerName, getContextPath etc but applied 
+        // string handling instead.
+        
+        String lastPart = "/"+targetThesaurus+(isFacet ? "/Facet/":"/Concept/")+refId;
+        String firstPart = getExternalReaderReferenceUriPrefix(req, targetThesaurus);
+        return firstPart + lastPart;
+    }
+    
+    public String getExternalReaderReferenceUriSuffix(boolean isFacet,long refId){
+        
+        String lastPart = (isFacet ? "/Facet/":"/Concept/")+refId;
+        return lastPart;
+    }
+    
+    /**
+     * 
+     * @param req
+     * @param targetThesaurus
+     * @return 
+     */
+    public String getExternalReaderReferenceUriPrefix(HttpServletRequest req, String targetThesaurus){
+         //String lastPart = "/"+targetThesaurus+(isFacet ? "/Facet/":"/Concept/")+refId;
+        String firstPart = req.getRequestURL().toString();
+        String servletPath = req.getServletPath();        
+        
+        if(!firstPart.isEmpty() && !servletPath.isEmpty() && firstPart.endsWith(servletPath)){
+            firstPart = firstPart.substring(0, firstPart.length() - servletPath.length());
+        }
+        if(!firstPart.endsWith("/")){
+            firstPart+="/";
+        }
+        firstPart+=targetThesaurus;
+        return firstPart;
+    }
+    
     public String mergeStrings(String value1possiblyContainingValue2, String value2){
         String returnVal = value2;
         if(value1possiblyContainingValue2==null || value1possiblyContainingValue2.trim().length()==0){
@@ -783,137 +831,9 @@ public class Utilities {
 
     }
 
-    /*---------------------------------------------------------------------
-    getResultsInXml_Facet()
-    -----------------------------------------------------------------------
-    INPUT: - Vector allTerms: the Vector with the terms to be parsed
-    - String[] output: the properties of each term to be collected
-    OUTPUT: a String with the XML representation of the results
-    CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
-    ----------------------------------------------------------------------*/
-    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, ArrayList<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
-
-        StringBuffer XMLresults = new StringBuffer();
-        ;
-        XMLresults.append("<data>");
-        XMLresults.append("<output>");
-        for (String category : output) {
-
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
-                continue;
-            } else {
-                XMLresults.append("<" + category + "/>");
-            }
-        }
-        XMLresults.append("</output>");
-
-        XMLresults.append("<facets>");
+    
         
-        for (String currentFacet : displayFacets) {
-            XMLresults.append("<facet>");
-            for (int j = 0; j < output.length; j++) {
-                if (output[j].equals("name")) {
-                    XMLresults.append("<name>");
-                    XMLresults.append(escapeXML(currentFacet));
-                    XMLresults.append("</name>");
-
-                } else {
-            
-                    ArrayList<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
-                    if (v != null && v.size() > 0) {
-                        Collections.sort(v, new StringLocaleComparator(targetLocale));
-                    }
-
-                    for (int k = 0; k < v.size(); k++) {
-                        XMLresults.append("<" + output[j] + ">");
-                        XMLresults.append(escapeXML(v.get(k)));
-                        XMLresults.append("</" + output[j] + ">");
-                            }
-                            
-                        }
-                    }
-            XMLresults.append("</facet>");
-        }
-        XMLresults.append("</facets>");
-        XMLresults.append("</data>");
-
-        return XMLresults.toString();
-    }
-        
-    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, ArrayList<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
-
-        StringBuffer XMLresults = new StringBuffer();
-        
-        XMLresults.append("<data thesaurus=\""+SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
-        if(!skipOutput){
-            XMLresults.append("<output>");
-            for (int m = 0; m < output.length; m++) {
-
-                String category = output[m];
-                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
-                    continue;
-                } else {
-                    XMLresults.append("<" + category + "/>");
-                }
-            }
-            XMLresults.append("</output>");
-        }
-        XMLresults.append("<facets>");
-        for (SortItem currentFacetsortItem : displayFacets) {
-            
-            XMLresults.append("<facet>");
-            for (String outputField : output) {
-                
-                if (outputField.equals("name")) {
-                    String appendVal = "<name";
-                    if(currentFacetsortItem.getThesaurusReferenceId()>0){
-                        appendVal += " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+currentFacetsortItem.getThesaurusReferenceId()+"\"";
-                        if(Parameters.ShowReferenceURIalso){
-                            appendVal += " "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.FACET, currentFacetsortItem.getThesaurusReferenceId())) +"\"";
-                        }
-                    }
-                    appendVal+=">";
-                    XMLresults.append(appendVal);
-                    XMLresults.append(escapeXML(currentFacetsortItem.getLogName()));
-                    XMLresults.append("</name>");
-
-                } else if(outputField.equals(ConstantParameters.system_transliteration_kwd) && currentFacetsortItem.getLogNameTransliteration()!=null && currentFacetsortItem.getLogNameTransliteration().length()>0){
-                    XMLresults.append("<"+ConstantParameters.system_transliteration_kwd+">");
-                    XMLresults.append(escapeXML(currentFacetsortItem.getLogNameTransliteration()));
-                    XMLresults.append("</"+ConstantParameters.system_transliteration_kwd+">");
-                }
-                else {
-
-                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
-                    if (v != null && v.size() > 0) {
-                        Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
-                    }
-
-                    for (SortItem hierItem : v) {
-                        String appendVal = "<" + outputField;
-                        if(hierItem.getThesaurusReferenceId()>0){
-                            appendVal+=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+hierItem.getThesaurusReferenceId()+"\"";
-                            if(Parameters.ShowReferenceURIalso){
-                                appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.TOPTERM, hierItem.getThesaurusReferenceId())) +"\"";
-                            }
-                            
-                        }
-                        appendVal+=">";
-                        XMLresults.append(appendVal);
-                        XMLresults.append(escapeXML(hierItem.getLogName()));
-                        XMLresults.append("</" + outputField + ">");
-                    }
-
-                }
-            }
-            XMLresults.append("</facet>");
-        }
-        XMLresults.append("</facets>");
-        XMLresults.append("</data>");
-
-        return XMLresults.toString();
-    }
-
+   
     /*----------------------------------------------------------------------
     getVectorInXml()
     ------------------------------------------------------------------------
@@ -2243,77 +2163,7 @@ public class Utilities {
         return returnVals;
     }
 
-    public String getHierarchyResultsInXml(UserInfoClass SessionUserInfo, String hierarchy, String[] output, String for_deletion, QClass Q, IntegerObject sis_session, DBGeneral dbGen, Locale targetLocale) {
-
-        StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
-
-        ArrayList<String> v = new ArrayList<String>();
-        StringBuffer sb = new StringBuffer();
-        sb.append("<current>");
-        sb.append("<hierarchy>");
-
-        // (delete icon was pressed from Search results TAB)
-        sb.append("<for_deletion>");
-        if (for_deletion != null) {
-            sb.append("true");
-        }
-        sb.append("</for_deletion>");
-
-        // for each value of output = {"name", "facets", "letter_code", "created", "created_by", "modified", "modified_by"}
-        for (int j = 0; j < output.length; j++) {
-            if (output[j].equals("name")) {
-                sb.append("<name>" + Utilities.escapeXML(hierarchy) + "</name>");
-            } else {
-
-                if (output[j].equals("letter_code")) {
-                    v.addAll(dbGen.returnResults_Hierarchy(SessionUserInfo, hierarchy, output[j], Q, sis_session, targetLocale));
-                    if (!v.isEmpty()) {
-                        Collections.sort(v, strCompar);
-                        for (int k = 0; k < v.size(); k++) {
-                            ArrayList<String> temp = new ArrayList<String>();
-                            //temp.addAll((Vector) v.get(k)); //BUG??
-                            temp.add(v.get(k));
-
-                            sb.append("<" + output[j] + ">");
-
-                            sb.append("<name>");
-                            sb.append(Utilities.escapeXML(temp.get(0).toString()));
-                            sb.append("</name>");
-                            
-                            sb.append("<editable>");
-                            if(temp.size()>1){ //BUG?? this check did not exist
-                                sb.append(Utilities.escapeXML(temp.get(1).toString()));
-                            }
-                            sb.append("</editable>");
-                            
-
-                            sb.append("</" + output[j] + ">");
-                        }
-
-                    }
-
-                } else {
-                    v.addAll(dbGen.returnResults_Hierarchy(SessionUserInfo, hierarchy, output[j], Q, sis_session, targetLocale));
-                    if (!v.isEmpty()) {
-                        Collections.sort(v, strCompar);
-                        sb.append("<" + output[j] + ">");
-                        for (int k = 0; k < v.size(); k++) {
-                            sb.append("<name>");
-                            sb.append(Utilities.escapeXML(v.get(k).toString()));
-                            sb.append("</name>");
-                        }
-                        sb.append("</" + output[j] + ">");
-                    }
-                }
-            }
-            v.clear();
-        }
-        sb.append("</hierarchy>");
-        sb.append("</current>");
-
-        return sb.toString();
-    }
-
+    
     
     public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
 

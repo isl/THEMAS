@@ -30,8 +30,8 @@
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 <!--
     Document   : PopUpInfo_Term.xsl
     Created on : 10 Φεβρουάριος 2009, 1:00 μμ
@@ -72,17 +72,31 @@
         <xsl:variable name="lang" select="//page/@language"/>
         <fieldset style="width:790px;" >
             <legend  style="margin-bottom:5px;">
-                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                <xsl:call-template name="getTranslationMessage"> 
+                    <xsl:with-param name="targetLangElements" select="$termcardlocale/legend/option"/> 
+                    <xsl:with-param name="targetLang" select="$lang"/> 
+                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                </xsl:call-template>    
                 <b>
                     <xsl:value-of select="$termName"/>                    
                 </b>
             </legend>
             <table width="100%">
                 <xsl:choose>
-                    <xsl:when test="$showClose = 'true'">
-                        
+                    <xsl:when test="$showClose = 'true'">                        
                         <tr width="100%">
+                            <xsl:variable name="currentLinkNode" select="//data/terms/term[1]"/>
                             <td colspan="2" align="right" width="100%" >
+                                <!--<a target="_blank">
+                                    <xsl:attribute name="href">
+                                                                <xsl:value-of select="$currentLinkNode/ReferenceUri/text()"/>
+                                                            </xsl:attribute>
+                                    <i>link</i>
+                                    
+                                    <img src="images/link32.png" width="16" height="16" border="0" style="margin-left:5px;"/>
+                                    
+                                </a>
+                            &#160;&#160;&#160;&#160;&#160;&#160;-->
                                 <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
                                 <!-- Tropopoihsh -->
                                 <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER' ">
@@ -120,23 +134,39 @@
                                             <xsl:text>')</xsl:text>
                                         </xsl:attribute>
                                         <i>                                         
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/edittext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/edittext/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                            </xsl:call-template>    
                                         </i>
                                         <img width="16" height="16" border="0">
                                             <xsl:attribute name="src">
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/editimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$termcardlocale/editimage/src/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                             </xsl:attribute>
                                             <xsl:attribute name="title">
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/editimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$termcardlocale/editimage/title/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                             </xsl:attribute>
                                         </img>
                                     </a>
-                                                                         &#160;&#160;&#160;&#160;&#160;&#160;
+                                    &#160;&#160;&#160;&#160;&#160;&#160;
                                 </xsl:if>
                                 
                                 <a href="#" onclick="document.getElementById('prompt').innerHTML='';DisplayPleaseWaitScreen(false);">
                                     <i>
-                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/closetext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                        <xsl:call-template name="getTranslationMessage"> 
+                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/closetext/option"/> 
+                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                        </xsl:call-template>    
                                     </i>[x]
                                 </a>
                             </td>
@@ -162,8 +192,63 @@
                             <xsl:if test="//THEMASUserInfo/userGroup != 'READER'">
                                 <td width="362" valign="top" style="padding-right:20px; padding-left:20px; border-style:solid; border-left-width:thin; border-left-color:#CCCCCC; border-bottom:0; border-top:0; border-right:0;">
                                 
-                                    <table >
+                                    <table>
                                         <xsl:variable name="currentNode" select="//data/terms/term[1]"/>
+                                        <xsl:if test="$currentNode/descriptor/@referenceId[.!='']">
+                                            <tr width="350" valign="top">
+                                                <td valign="top" width="100" >
+                                                    <span class="headerThes_normal">
+                                                        <b>
+                                                            <xsl:choose>
+                                                                <xsl:when test="position()!=1"></xsl:when>
+                                                                <xsl:otherwise>
+                                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/refId/option"/> 
+                                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                    </xsl:call-template>    
+                                                                </xsl:otherwise>
+                                                            </xsl:choose>
+                                                        </b>
+                                                    </span>
+                                                </td>                                                
+                                                <td valign="middle" width="240" style="text-align:justify;">
+                                                    <span class="headerThes_normal">
+                                                        <xsl:value-of select="$currentNode/descriptor/@referenceId"/>
+                                                    </span> 
+                                                    &#160;&#160;&#160;
+                                                    
+                                                    <a id="refIdLink" style="cursor: pointer;">
+                                                        <!--
+                                                        <xsl:attribute name="href">
+                                                            <xsl:value-of select="$currentNode/ReferenceUri/text()"/>
+                                                        </xsl:attribute>-->
+                                                        <xsl:attribute name="onclick">
+                                                            <xsl:text>copyToClipborad('refIdTooltipLink','refIdTooltipTxt', '</xsl:text>
+                                                             <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/refIdToolTipPrefix/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                            </xsl:call-template>
+                                                            <xsl:text>','</xsl:text>
+                                                            <xsl:value-of select="$currentNode/ReferenceUri/text()"/>
+                                                            <xsl:text>');</xsl:text>
+                                                        </xsl:attribute>
+                                                        <!--<i>Copy Link</i>-->
+                                                        <img src="images/link32.png" width="14" height="14" border="0" style="margin-left:5px;"/>
+                                                    </a> 
+                                                    <!-- display: none; --> 
+                                                    <div id="refIdTooltipLink" style="position: absolute; z-index: 1000; display: none;  top: 70px; background: white; text-align: left; right:10px;    border: 2px solid black;">                                                    
+                                                        <div style="margin:5px" id="refIdTooltipTxt">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <br/>
+                                                </td>
+                                            </tr>
+                                        </xsl:if>
+                                        
                                         <xsl:if test="$currentNode/created_by[.!='']">
                                             <xsl:for-each select="$currentNode/created_by[.!='']">
                                                 <tr width="350" valign="top">
@@ -173,7 +258,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/creator/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/creator/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -198,7 +287,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/modificator/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/modificator/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -223,7 +316,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/creationdate/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/creationdate/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -248,7 +345,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/modificationdate/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/modificationdate/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -273,7 +374,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/status/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/status/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -299,7 +404,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>                                                                         
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -324,7 +433,11 @@
                                                                 <xsl:choose>
                                                                     <xsl:when test="position()!=1"></xsl:when>
                                                                     <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/acceptterm/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/acceptterm/option"/> 
+                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                        </xsl:call-template>    
                                                                     </xsl:otherwise>
                                                                 </xsl:choose>
                                                             </b>
@@ -345,7 +458,11 @@
                                                 <td valign="top" width="100" >
                                                     <span class="headerThes_normal">
                                                         <b>
-                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/showhierarchy/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/showhierarchy/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                            </xsl:call-template>    
                                                         </b>
                                                     </span>
                                                 </td>
@@ -401,12 +518,18 @@
         <xsl:variable name="lang" select="//page/@language"/>
         <xsl:variable name="primarylang" select="//page/@primarylanguage"/>
         <div id="EditCardArea"/>
+        
+        
         <xsl:if test="$TermIsEditable = 'false' ">
             <table cellspacing="20" width="100%">
                 <tr>
                     <td colspan="3">
                         <b>
-                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/noeditaction/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$termcardlocale/noeditaction/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
                         </b>
                     </td>
                 </tr>
@@ -424,12 +547,20 @@
                             <xsl:choose>
                                 <xsl:when test="$disableTopTermEdit = 'true'">
                                     <b>
-                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/toptermprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                        <xsl:call-template name="getTranslationMessage"> 
+                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/toptermprompt/option"/> 
+                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                        </xsl:call-template>    
                                     </b>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <b>
-                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/generalprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                        <xsl:call-template name="getTranslationMessage"> 
+                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/generalprompt/option"/> 
+                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                                        </xsl:call-template>    
                                     </b>
                                 </xsl:otherwise>
                             </xsl:choose>
@@ -444,7 +575,11 @@
                                             <xsl:when test="$disableTopTermEdit = 'true'">
                                                 <xsl:text>
                                                     <a class="disabled">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/rename/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/rename/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
                                                     </a>
                                                 </xsl:text>
                                             </xsl:when>
@@ -455,7 +590,11 @@
                                                         <xsl:value-of select="$termName"/>
                                                         <xsl:text>','name','RenameInfo_Term');</xsl:text>
                                                     </xsl:attribute>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/rename/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/rename/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
                                                 </a>
                                             </xsl:otherwise>
                                         </xsl:choose>
@@ -467,7 +606,11 @@
                                             <xsl:when test="$disableTopTermEdit = 'true'">
                                                 <xsl:text>
                                                     <a class="disabled">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/bt/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/bt/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
                                                     </a>
                                                 </xsl:text>
                                             </xsl:when>
@@ -478,7 +621,11 @@
                                                         <xsl:value-of select="$termName"/>
                                                         <xsl:text>','bt','EditDisplays_Term');</xsl:text>
                                                     </xsl:attribute>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/bt/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/bt/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
                                                 </a>
                                             </xsl:otherwise>
                                         </xsl:choose>
@@ -492,7 +639,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','rt','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/rt/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/rt/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -504,7 +655,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','translations','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/translations/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/translations/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -516,7 +671,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','status','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/status/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/status/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -526,7 +685,11 @@
                                             <xsl:when test="count(//term/nt) = 0">
                                                 <xsl:text>
                                                     <a class="disabled">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
                                                     </a>
                                                 </xsl:text>
                                             </xsl:when>
@@ -537,7 +700,11 @@
                                                         <xsl:value-of select="$termName"/>
                                                         <xsl:text>','guide_terms','EditDisplays_Term');</xsl:text>
                                                     </xsl:attribute>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
                                                 </a>
                                             </xsl:otherwise>
                                         </xsl:choose>
@@ -555,7 +722,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','uf','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/uf/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/uf/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -567,7 +738,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','uf_translations','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/uf_translations/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/uf_translations/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -579,7 +754,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','primary_found_in','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/primarysource/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/primarysource/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -591,7 +770,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','translations_found_in','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/trsource/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/trsource/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -603,7 +786,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','tc','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/tc/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/tc/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -619,7 +806,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','scope_note','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/sn/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/sn/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -631,7 +822,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','translations_scope_note','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/sn_tr/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/sn_tr/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -643,7 +838,11 @@
                                                 <xsl:value-of select="$termName"/>
                                                 <xsl:text>','historical_note','EditDisplays_Term');</xsl:text>
                                             </xsl:attribute>
-                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                            <xsl:call-template name="getTranslationMessage"> 
+                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/prompttitle/option"/> 
+                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                            </xsl:call-template>    
                                         </a>
                                     </td>
                                 </tr>
@@ -653,7 +852,11 @@
                                             <xsl:when test="$disableTopTermEdit = 'true'">
                                                 <xsl:text>
                                                     <a class="disabled">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/moveterm/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/moveterm/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
                                                     </a>
                                                 </xsl:text>
                                             </xsl:when>
@@ -664,7 +867,11 @@
                                                         <xsl:value-of select="$termName"/>
                                                         <xsl:text>','move2Hier','MoveToHierarchy');</xsl:text>
                                                     </xsl:attribute>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/moveterm/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/moveterm/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
                                                 </a>
                                             </xsl:otherwise>
                                         </xsl:choose>
@@ -676,7 +883,11 @@
                                             <xsl:when test="$disableTopTermEdit = 'true'">
                                                 <xsl:text>
                                                     <a class="disabled">
-                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/delete/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/delete/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
                                                     </a>
                                                 </xsl:text>
                                             </xsl:when>
@@ -687,7 +898,11 @@
                                                         <xsl:value-of select="$termName"/>
                                                         <xsl:text>','delete_term','EditDisplays_Term');</xsl:text>
                                                     </xsl:attribute>
-                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/delete/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/delete/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
                                                 </a>
                                             </xsl:otherwise>
                                         </xsl:choose>
@@ -695,8 +910,7 @@
                                 </tr>
                             </table>
                         </td>
-                    </tr>
-                    
+                    </tr>                    
                 </table>
             </xsl:if>
             <!-- Απόκρυψη των λειτουργιών επεξεργασίας και εμφάνιση ΜΟΝΟ της δυνατότητας αλλαγής του status στην περίπτωση -->
@@ -706,7 +920,11 @@
                     <tr>
                         <td colspan="3">
                             <b>
-                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/generalprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$termcardlocale/generalprompt/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                </xsl:call-template>    
                             </b>
                         </td>
                     </tr>
@@ -718,7 +936,11 @@
                                     <xsl:value-of select="$termName"/>
                                     <xsl:text>','status','EditDisplays_Term');</xsl:text>
                                 </xsl:attribute>
-                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$termcardlocale/status/prompttitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$termcardlocale/status/prompttitle/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                </xsl:call-template>    
                             </a>
                         </td>
                     </tr>

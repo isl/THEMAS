@@ -2097,6 +2097,16 @@ public class DBGeneral {
         return abortVctr;
         //}
     }
+    
+    public ArrayList<SortItem> returnResults_HierarchyInSortItems(UserInfoClass SessionUserInfo, String hierarchy, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        ArrayList<SortItem> returnVec = new ArrayList<>();
+        
+        if (output.equals(ConstantParameters.facet_kwd)) {
+            return getHierarchyFacetsInSortItems(SessionUserInfo, hierarchy, Q, sis_session, targetLocale);
+        }
+        return returnVec;
+    }
+
 
     /*---------------------------------------------------------------------
      getLinkValue_Hierarchy()
@@ -5233,7 +5243,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(language, country);
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> results = new ArrayList<>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
@@ -5258,6 +5268,62 @@ public class DBGeneral {
         Q.reset_name_scope();
 
         Collections.sort(results, strCompar);
+        return results;
+
+    }
+    
+    ArrayList<SortItem> getHierarchyFacetsInSortItems(UserInfoClass SessionUserInfo, String hierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+
+        ArrayList<SortItem> results = new ArrayList<SortItem>();
+
+        int index = Parameters.CLASS_SET.indexOf("FACET");
+        String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+        SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
+
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
+
+        StringObject belongsToHierClass = new StringObject();
+        StringObject belongsToHierarchyLink = new StringObject();
+        getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+
+        Q.reset_name_scope();
+        Q.set_current_node(hierObj);
+        int set_super_classes = Q.get_superclasses(0);
+        Q.reset_set(set_super_classes);
+
+
+        Q.reset_name_scope();
+        int set_facets = get_Instances_Set(FacetClasses, Q, sis_session);
+        Q.reset_set(set_facets);
+        //int card = Q.set_get_card(set_facets);
+
+        Q.set_intersect(set_super_classes, set_facets);
+        Q.reset_set(set_super_classes);
+
+        // FILTER hierarchies depending on user group
+        //DBFilters dbf = new DBFilters();
+        //set_sub_classes = dbf.FilterHierResults(SessionUserInfo, set_sub_classes, Q, sis_session);
+
+        /*
+        if (Parameters.OnlyTopTermsHoldReferenceId) {
+            //int card1 = Q.set_get_card(set_sub_classes);
+
+            int set_topterms = Q.get_from_node_by_category(set_super_classes, belongsToHierClass, belongsToHierarchyLink);
+
+            //int card = Q.set_get_card(set_topterms);
+            //String s1 = ""+card1+" " + card2 + " " + card3;
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
+        } else {
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_super_classes, true, Q, sis_session));
+        }*/
+        results.addAll(get_Node_Names_Of_Set_In_SortItems(set_super_classes, true, Q, sis_session));
+        Q.free_set(set_super_classes);
+        Q.free_set(set_facets);
+        Q.reset_name_scope();
+
+        Collections.sort(results, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
         return results;
 
     }
@@ -6105,6 +6171,27 @@ public class DBGeneral {
 
     }
 
+    public void constructReferenceURIs(String prefix, HashMap<String, NodeInfoSortItemContainer> termsInfo){
+        
+        if(termsInfo!=null){
+            
+            Utilities u = new Utilities();
+            HashMap<String, Long> collectIdsInfo = new HashMap<String,Long>();
+            
+            for (Map.Entry<String, NodeInfoSortItemContainer> entry : termsInfo.entrySet()) {
+                String termName = entry.getKey();
+                long referenceId = entry.getValue().descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+                collectIdsInfo.put(termName, referenceId);
+            }
+            for (Map.Entry<String, Long> entry : collectIdsInfo.entrySet()) {
+                String termName = entry.getKey();
+                long referenceId = entry.getValue();
+                //termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(new SortItem(XMLHandling.WriteFileData.getSkosUri(false, prefix, referenceId)));
+                termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(new SortItem(prefix+u.getExternalReaderReferenceUriSuffix(false, referenceId)));
+            }
+        }
+    }
+    
     public void collectTermSetInfo(UserInfoClass SessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,
             int set_results,
@@ -6114,6 +6201,7 @@ public class DBGeneral {
             ArrayList<Long> resultNodesIds) throws IOException {
         DBexportData dbExport = new DBexportData();
 
+        
         boolean ntOutputSelected = output.contains(ConstantParameters.nt_kwd);
         boolean btOutputSelected = output.contains(ConstantParameters.bt_kwd);
         if (ntOutputSelected && !btOutputSelected) {
@@ -6151,7 +6239,8 @@ public class DBGeneral {
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
-
+        Utilities u = new Utilities();
+        
         ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<>();
         Q.reset_set(set_results);
         ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
@@ -6169,7 +6258,8 @@ public class DBGeneral {
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
                     newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL, transliteration, referenceId));
-                    //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
+                    //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                         
+                    
                     termsInfo.put(targetTerm, newContainer);
                     allTerms.add(targetTerm);
                 }
@@ -6266,6 +6356,7 @@ public class DBGeneral {
         dbExport.ReadTermCommentCategories(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermFacetAndHierarchiesInSortItems(SessionUserInfo, Q, sis_session, set_results, output, allTerms, termsInfo, resultNodesIds);
 
+        
         Q.free_set(set_to_links);
         Q.free_set(set_from_links);
 
