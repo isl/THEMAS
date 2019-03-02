@@ -64,6 +64,7 @@ public class Parameters {
     public static boolean ShowTransliterationInAllXMLStream = false;
 
     public static boolean ShowReferenceURIalso = false;
+    public static boolean SkosExportUsingXmlBase = false;
     public static String UnclassifiedTermsLogicalname = "";
     public static String UnclassifiedTermsFacetLogicalname = "";
 
@@ -240,12 +241,10 @@ public class Parameters {
                 
                 String boolValStr3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
                 
-                if(boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes")){
-                    Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = true;
-                }
-                else{
-                    Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
-                }
+                Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes");
+                
+                String boolValStr4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosExportUsingXmlBase[1]", document);
+                Parameters.SkosExportUsingXmlBase = boolValStr4.toLowerCase().equals("true")|| boolValStr4.toLowerCase().equals("yes");
                 
                 
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;

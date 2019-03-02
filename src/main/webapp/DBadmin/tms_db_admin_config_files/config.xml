@@ -85,12 +85,13 @@
         <langcode mapcode="en" display="yes" displayText="English - en">en</langcode>
         <langcode mapcode="el" display="no" displayText="Ελληνικά - gr">gr</langcode>
         <langcode mapcode="el" display="yes"  displayText="Ελληνικά - el">el</langcode>        
-        <langcode mapcode="ar" display="yes"  displayText="Arabic - ar">ar</langcode>       
+        <langcode mapcode="ar" display="no"  displayText="Arabic - ar">ar</langcode>       
     </SupportedUILangCodes>
     
     <BehaviorConfigs>
         <XMLImport_Resolve_NodeLabels_DeclaredAsTerms>false</XMLImport_Resolve_NodeLabels_DeclaredAsTerms>
         <AtRenameStoreOldNameAsUf>true</AtRenameStoreOldNameAsUf>  
+        <SkosExportUsingXmlBase>false</SkosExportUsingXmlBase>
         <Transliterations toLowerCase="true">
             <!-- source https://el.wikipedia.org/wiki/%CE%A0%CE%BF%CE%BB%CF%85%CF%84%CE%BF%CE%BD%CE%B9%CE%BA%CE%AE_%CE%B3%CF%81%CE%B1%CF%86%CE%AE_%CF%84%CE%B7%CF%82_%CE%B5%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CE%AE%CF%82_%CE%B3%CE%BB%CF%8E%CF%83%CF%83%CE%B1%CF%82 -->
             <!-- Tested with the folowing string
@@ -198,6 +199,7 @@
             </ReplacementGroup>--> 
                     
         </Transliterations>
+        
     </BehaviorConfigs>
     
     <CreatorInAlphabeticalTerm>

@@ -238,7 +238,7 @@ This file is part of the THEMAS system.
                                                         <img src="images/link32.png" width="14" height="14" border="0" style="margin-left:5px;"/>
                                                     </a> 
                                                     <!-- display: none; --> 
-                                                    <div id="refIdTooltipLink" style="position: absolute; z-index: 1000; display: none;  top: 70px; background: white; text-align: left; right:10px;    border: 2px solid black;">                                                    
+                                                    <div id="refIdTooltipLink" class="referenceUriTooltip">                                                    
                                                         <div style="margin:5px" id="refIdTooltipTxt">
                                                             
                                                         </div>

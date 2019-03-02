@@ -394,7 +394,7 @@ public class ConstantParameters {
 
 
     public static String referenceThesaurusSchemeName = "http://www.3d-coform.eu/PhysicalObjectTypes";
-    public static boolean includeThesaurusNameInScheme = false;
+    //public static boolean includeThesaurusNameInScheme = false;
     public static String SchemePrefix ="http://www.getty.edu/research/tools/vocabularies/aat";
     public static boolean filterBts_Nts_Rts  = false;
     //public static String THEMASStatusLang = "el";

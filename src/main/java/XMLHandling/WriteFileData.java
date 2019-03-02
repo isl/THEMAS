@@ -80,7 +80,7 @@ import org.xml.sax.SAXException;
  * @author tzortzak
  */
 public class WriteFileData {
-
+/*
     private String getSkosSchemePrefix(String importThesaurusName) {
 
         if (ConstantParameters.includeThesaurusNameInScheme) {
@@ -88,7 +88,7 @@ public class WriteFileData {
         }
         return ConstantParameters.SchemePrefix;
     }
-
+*/
     public void WriteFileStart(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName, final String uiLang) throws IOException {
 
         Utilities u = new Utilities();
@@ -108,18 +108,22 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
 <rdfs:Class rdf:about="E21_Person">
 
-*/           
+*/          
+            String xmlBase = ConstantParameters.SchemePrefix +"/";
+            String schemePrefix = (Parameters.SkosExportUsingXmlBase? "": xmlBase) ;
+
+            
             logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
                     + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n"
                     + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\r\n"
                     + "\txmlns:owl=\"http://www.w3.org/2002/07/owl#\"\r\n"                    
                     + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n"
                     + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\"\r\n"
-                    + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""
+                    + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""+(Parameters.SkosExportUsingXmlBase ? "\r\n\txml:base=\""+xmlBase+"\"":"")
                     //+ "\r\n\txml:base=\""+ConstantParameters.SchemePrefix+"/\""
                     +">\r\n\r\n");
             
-            logFileWriter.append("\t<rdf:Description rdf:about=\""+ ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\">\r\n"+
+            logFileWriter.append("\t<rdf:Description rdf:about=\""+ schemePrefix + Skos_Facet+"\">\r\n"+
 		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\r\n"+
                 "\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\r\n"+
 		"\t</rdf:Description>\r\n\r\n");
@@ -304,7 +308,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
-            String schemePrefix = this.getSkosSchemePrefix(importThesaurusName) +"/";
+            String schemePrefix = (Parameters.SkosExportUsingXmlBase? "": ConstantParameters.SchemePrefix +"/") ;
 
             //now find the ids of each hierarchy and fill the value vector of the main structure
             HashMap<SortItem, ArrayList<SortItem>> facetHierarchyIds = new HashMap<SortItem, ArrayList<SortItem>>();
@@ -321,59 +325,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     }
                 }
             });
-            /*
-            //now find the ids of each hierarchy and fill the value vector of the main structure
-            Enumeration<String> hierEnum = hierarchyFacets.keys();
-            while (hierEnum.hasMoreElements()) {
-                String hierarchyName = hierEnum.nextElement();
-                if (hierarchiesFilter.size() > 0 && hierarchiesFilter.contains(hierarchyName) == false) {
-                    continue;
-                }
-                String hierarchyId = "";
-                NodeInfoStringContainer hierarchyInfo = termsInfo.get(hierarchyName);
-
-                ArrayList<String> tcs = hierarchyInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
-                if (tcs != null && tcs.size() > 0) {
-                    hierarchyId = ParseFileData.readSkosTC(tcs.get(0));
-                }
-
-                if (hierarchyId.length() > 0) {
-                    hierarchyId = schemePrefix + "/" + hierarchyId;
-                }
-
-                ArrayList<String> facets = hierarchyFacets.get(hierarchyName);
-                if (facets != null) {
-                    for (int k = 0; k < facets.size(); k++) {
-                        String facetName = facets.get(k);
-                        if (facetName != null && facetName.length() > 0 && facetHierarchyIds.containsKey(facetName)) {
-
-                            ArrayList<String> hierIds = facetHierarchyIds.get(facetName);
-                            if (hierIds.contains(hierarchyId) == false) {
-                                hierIds.add(hierarchyId);
-                                facetHierarchyIds.put(facetName, hierIds);
-                            }
-                        }
-                    }
-                }
-
-            }
-            HashMap<String, String> idToName = new HashMap<String, String>();
-            Enumeration<String> termEnum = termsInfo.keys();
-            while (termEnum.hasMoreElements()) {
-                String termName = termEnum.nextElement();
-                String termId = "";
-                NodeInfoStringContainer targetInfo = termsInfo.get(termName);
-                if (targetInfo != null && targetInfo.descriptorInfo.containsKey(ConstantParameters.tc_kwd)) {
-                    ArrayList<String> tcs = targetInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
-                    if (tcs != null && tcs.size() == 1) {
-                        termId = ConstantParameters.SchemePrefix + "/" + tcs.get(0);
-                    }
-                }
-                if (termId.length() > 0 && idToName.containsKey(termId) == false) {
-                    idToName.put(termId, termName);
-                }
-            }*/
-
+            
             //now write to file
             for (SortItem facetNameSortItem :  facetsToExportInSortItemFormat) {
                 //Enumeration<String> facetHierIds = facetHierarchyIds.keys();
@@ -392,7 +344,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 }
                 appendVal+=">\r\n";
                 logFileWriter.append(appendVal);
-                logFileWriter.append("\t\t<rdf:type rdf:resource=\""+ConstantParameters.SchemePrefix+"/"+Skos_Facet+"\"/>\r\n");
+                logFileWriter.append("\t\t<rdf:type rdf:resource=\""+schemePrefix+Skos_Facet+"\"/>\r\n");
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogName()));
                 logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
@@ -449,10 +401,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         logFileWriter.flush();
     }
 
-    public void WriteTHEMASTermToSkosConcept(OutputStreamWriter logFileWriter, String importThesaurusName, String targetTermName, boolean isTopConcept,
+    public void ConversionActionWriteTHEMASTermToSkosConcept(OutputStreamWriter logFileWriter, String importThesaurusName, String targetTermName, boolean isTopConcept,
             HashMap<String, NodeInfoStringContainer> termsInfo, HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             ArrayList<String> TermsFilter) throws IOException {
 
+        //PROPABLY NOT WORKING (it search for tcs not refids)
         //should add sources
         /*
          * for (int i = 0; i < pack.getSourceEn().size(); i++) {
@@ -468,11 +421,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             termsFilter.addAll(TermsFilter);
         }
 
-        String schemePrefix = this.getSkosSchemePrefix(importThesaurusName);
-        DBGeneral dbGen = new DBGeneral();
-
+        String schemePrefix = (Parameters.SkosExportUsingXmlBase? "": ConstantParameters.SchemePrefix +"/") ;
+        
         NodeInfoStringContainer targetTermInfo = termsInfo.get(targetTermName);
 
+        /*
         String targetTermId = "";
         ArrayList<String> tcs = targetTermInfo.descriptorInfo.get(ConstantParameters.tc_kwd);
 
@@ -483,7 +436,12 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         if (targetTermId.length() > 0) {
             targetTermId = schemePrefix + "/" + targetTermId;
         }
-
+*/
+        String targetTermId = "";
+        if(targetTermInfo.descriptorInfo.containsKey(ConstantParameters.system_referenceUri_kwd)){
+            //targetTermId = getSkosUri(false, "", Long.parseLong(targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).get(0)));
+            targetTermId = targetTermInfo.descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).get(0);
+        }
         ArrayList<String> nts = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
         ArrayList<SortItem> guidTermNts = new ArrayList<SortItem>();
         if (XMLguideTermsRelations.containsKey(targetTermName)) {
@@ -617,7 +575,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     termId = ParseFileData.readSkosTC(termtcs.get(0));
                 }
                 if (termId.length() > 0) {
-                    termId = schemePrefix + "/" + termId;
+                    termId = "/" + termId;
                 }
 
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + termId + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
@@ -703,7 +661,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             ntId = ParseFileData.readSkosTC(nttcs.get(0));
                         }
                         if (ntId.length() > 0) {
-                            ntId = schemePrefix + "/" + ntId;
+                           // ntId = schemePrefix + "/" + ntId;
                         }
 
                         logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+" rdf:resource=\"" + ntId + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
@@ -738,7 +696,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                 ntId = ParseFileData.readSkosTC(nttcs.get(0));
                             }
                             if (ntId.length() > 0) {
-                                ntId = schemePrefix + "/" + ntId;
+                             //   ntId = schemePrefix + "/" + ntId;
                             }
 
                             logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + ntId + "\"/> <!-- " +Utilities.escapeXMLComment(ntStr) + " -->\n");
@@ -775,7 +733,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     termId = ParseFileData.readSkosTC(termtcs.get(0));
                 }
                 if (termId.length() > 0) {
-                    termId = schemePrefix + "/" + termId;
+                    //termId = schemePrefix + "/" + termId;
                 }
                 logFileWriter.append("\t\t<skos:related rdf:resource=\"" + termId + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
 
@@ -953,7 +911,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             termsFilter.addAll(TermsFilter);
         }
 
-        String schemePrefix = this.getSkosSchemePrefix(importThesaurusName)+"/";
+        String schemePrefix = (Parameters.SkosExportUsingXmlBase? "": ConstantParameters.SchemePrefix +"/") ;
 
         NodeInfoStringContainer targetTermInfo = termsInfo.get(targetSortItem.getLogName());
 
@@ -971,7 +929,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         */
 
         ArrayList<String> nts = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
-        ArrayList<SortItem> guidTermNts = new ArrayList<SortItem>();
+        ArrayList<SortItem> guidTermNts = new ArrayList<>();
         if (XMLguideTermsRelations.containsKey(targetSortItem.getLogName())) {
 
             ArrayList<SortItem> tempNts = XMLguideTermsRelations.get(targetSortItem.getLogName());
@@ -994,14 +952,20 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             targetTermStatus= targetTermInfo.descriptorInfo.get(ConstantParameters.status_kwd).get(0);
             
         }
+        /*
         else{
+            //if case status has not been retrieved 
             if (Parameters.PrimaryLang.toLowerCase().equals("en")) {
                 targetTermStatus = "Under construction";
             } else {
                 //greek translation of Under construction in hex form
                 targetTermStatus = "\u03A5\u03C0\u03CC \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03af\u03B1";
             }
-        }  
+        } */ 
+        
+        
+        
+        
         
         ArrayList<String> bts = targetTermInfo.descriptorInfo.get(ConstantParameters.bt_kwd);
         ArrayList<String> rts = targetTermInfo.descriptorInfo.get(ConstantParameters.rt_kwd);
@@ -1031,6 +995,46 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         ArrayList<String> ufTranslations = targetTermInfo.descriptorInfo.get(ConstantParameters.uf_translations_kwd);
         ArrayList<String> translations = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
 
+        
+        
+        if(translations.size()>1){
+            //keep at most one tranlsation per language
+            //this is a skos recommendation and this is this patch has been addded
+            ArrayList<String> simpleLangCode = new ArrayList<>();
+            ArrayList<String> moveToUfTranslations = new ArrayList<>();
+            for(String str : translations){
+                if(str.contains(Parameters.TRANSLATION_SEPERATOR)){
+                    String langCode = str.substring(0, str.indexOf(Parameters.TRANSLATION_SEPERATOR)).toUpperCase().trim()+Parameters.TRANSLATION_SEPERATOR;
+                    if(!simpleLangCode.contains(langCode)){
+                        simpleLangCode.add(langCode);
+                    }
+                }
+            }
+            for(String lang : simpleLangCode){
+                int found =0;
+                for(String str : translations){
+                    if(str.startsWith(lang)){
+                        found++;
+                        if(found>1){
+                            
+                            moveToUfTranslations.add(str);
+                        }
+                    }
+                }
+            }
+            
+            if(!moveToUfTranslations.isEmpty()){
+                for(String movement : moveToUfTranslations){
+                    if(!ufTranslations.contains(movement)){
+                        ufTranslations.add(movement);
+                    }
+                }
+                
+                translations.removeAll(moveToUfTranslations);
+            }
+            
+        }
+        
         ArrayList<String> creators = targetTermInfo.descriptorInfo.get(ConstantParameters.created_by_kwd);
         ArrayList<String> creationDates = targetTermInfo.descriptorInfo.get(ConstantParameters.created_on_kwd);
         if (creationDates != null) {
@@ -1071,10 +1075,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
             }
 
-            //status
-            logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
-            //targetSortItem.getLogName()
-            
+            if(targetTermStatus.length()>0){
+                //status
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
+                //targetSortItem.getLogName()
+            }
             Collections.sort(translations);
             for (int j = 0; j < translations.size(); j++) {
                 String translationValue = translations.get(j);
@@ -1140,7 +1145,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             }
 
             //Narrower
-            ArrayList<SortItem> finalGuideTerms = new ArrayList<SortItem>();
+            ArrayList<SortItem> finalGuideTerms = new ArrayList<>();
 
             if (nts != null && nts.size() > 0) {
                 for (int j = 0; j < nts.size(); j++) {
@@ -1170,7 +1175,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             }
 
-            ArrayList<String> distinctGuideTerms = new ArrayList<String>();
+            ArrayList<String> distinctGuideTerms = new ArrayList<>();
             for (int j = 0; j < finalGuideTerms.size(); j++) {
                 SortItem sitem = finalGuideTerms.get(j);
                 String guildeTerm = sitem.linkClass;
@@ -1182,7 +1187,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             Collections.sort(distinctGuideTerms);
             for (int j = 0; j < distinctGuideTerms.size(); j++) {
                 String targetGuideTerm = distinctGuideTerms.get(j);
-                ArrayList<String> ntsWithThisGuideTerm = new ArrayList<String>();
+                ArrayList<String> ntsWithThisGuideTerm = new ArrayList<>();
 
                 for (int k = 0; k < finalGuideTerms.size(); k++) {
                     SortItem sitem = finalGuideTerms.get(k);
@@ -1196,7 +1201,9 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                 Collections.sort(ntsWithThisGuideTerm);
 
-                if (targetGuideTerm.length() == 0) {
+                //disabling guide term output (link narrower to collection instead of concept) as it is not skos valid 
+                //if (targetGuideTerm.length() == 0) {
+                String targetGuideTermComment = targetGuideTerm.isEmpty() ?"": ("("+Utilities.escapeXMLComment(targetGuideTerm) +")  ");
                     for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                         String ntStr = ntsWithThisGuideTerm.get(k);
                         if (ConstantParameters.filterBts_Nts_Rts) {
@@ -1226,10 +1233,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             ntUriVal = getSkosUri(false,schemePrefix,ntId) ;
                         }
 
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+" rdf:resource=\"" + ntUriVal + "\"/> <!-- " + Utilities.escapeXMLComment(ntStr) + " -->\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+" rdf:resource=\"" + ntUriVal + "\"/> <!-- "+ targetGuideTermComment + Utilities.escapeXMLComment(ntStr) + " -->\n");
                     }
 
-                } else {
+                /* disabling guide term output (link narrower to collection instead of concept) as it is not skos valid 
+                    } else {
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
@@ -1274,7 +1282,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                         logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\r\n");
                     }
 
-                }
+                }*/
             }
             Collections.sort(rts);
             for (int j = 0; j < rts.size(); j++) {
@@ -1494,7 +1502,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         }
     }
 
-    public void WriteHierarchies(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
+    public void ConversionActionWriteHierarchies(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
             HashMap<String, ArrayList<String>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             ArrayList<String> FacetsFilter,
@@ -1502,8 +1510,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Hierarchies");
 
-        ArrayList<String> facetFilter = new ArrayList<String>();
-        ArrayList<String> termsFilter = new ArrayList<String>();
+        ArrayList<String> facetFilter = new ArrayList<>();
+        ArrayList<String> termsFilter = new ArrayList<>();
 
         if (FacetsFilter != null && FacetsFilter.size() > 0) {
             facetFilter.addAll(FacetsFilter);
@@ -1532,7 +1540,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             if (allHierarchies.size() > 0) {
                 for (int i = 0; i < allHierarchies.size(); i++) {
                     String hierarchyName = allHierarchies.get(i);
-                    WriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, hierarchyName, true, termsInfo, XMLguideTermsRelations, termsFilter);
+                    ////PROPABLY NOT WORKING (it searched for tcs not refids)
+                    ConversionActionWriteTHEMASTermToSkosConcept(logFileWriter, importThesaurusName, hierarchyName, true, termsInfo, XMLguideTermsRelations, termsFilter);
                 }
             }
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
@@ -1603,8 +1612,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Hierarchies");
 
-        ArrayList<String> facetFilter = new ArrayList<String>();
-        ArrayList<String> termsFilter = new ArrayList<String>();
+        ArrayList<String> facetFilter = new ArrayList<>();
+        ArrayList<String> termsFilter = new ArrayList<>();
 
         if (FacetsFilter != null && FacetsFilter.size() > 0) {
             facetFilter.addAll(FacetsFilter);
@@ -1719,6 +1728,18 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
     }
 
+    /**
+     * This function is used by both Themas Export Functionality and Conversion Action tools
+     * @param logFileWriter
+     * @param exportScheme
+     * @param importThesaurusName
+     * @param hierarchyFacets
+     * @param termsInfo
+     * @param XMLguideTermsRelations
+     * @param termExtLinks
+     * @param TermsFilter
+     * @throws IOException 
+     */
     public void WriteTerms(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
             HashMap<String, ArrayList<String>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
@@ -1791,7 +1812,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
 
-            if (termsFilter.size() == 0) {
+            if (termsFilter.isEmpty()) {
                 allTerms.addAll(Utilities.getSortItemVectorFromTermsInfo(termsInfo, false));
             } else {
                 Iterator<String> termsEnum = termsInfo.keySet().iterator();
@@ -1965,7 +1986,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                         //Linguist.SupportedTHEMASLangcodes(translationVal.substring(0, translationVal.indexOf(Parameters.TRANSLATION_SEPERATOR, 0)));
                                         val = translationVal.replaceFirst(langCode.toUpperCase() + Parameters.TRANSLATION_SEPERATOR, "");
                                     }
-                                    if (langCode != null && langCode.isEmpty() && val != null && val.isEmpty()) {
+                                    if (langCode != null && !langCode.isEmpty() && val != null && !val.isEmpty()) {
 
                                         logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                         logFileWriter.append(Utilities.escapeXML(val));

@@ -79,6 +79,7 @@
         <param-name>SVG_navbar_enabled</param-name>
         <param-value>true</param-value>
     </context-param>
+    <!-- SVG configuration in order to include e.g. the creator or the term -->
     <!--<context-param>
         <param-name>SVG_CategoriesFrom_for_traverse</param-name>
         <param-value>%THES%Descriptor:::%THES%HierarchyTerm:::%THES%HierarchyTerm:::%THES%HierarchyTerm:::%THES%Term:::%THES%HierarchyTerm:::%THES%HierarchyTerm</param-value>
@@ -204,12 +205,20 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <param-value>%THES%_ALT:::%THES%_UF:::FACET:::%thes%_scope_note:::%thes%_translations_scope_note</param-value>
     </context-param>
     <context-param>
+        <!-- Abandoned not used any more -->
+        <!-- this was used in order to decare which nodes should be included in -->
+        <!-- term counting and thus define the paging numbers -->
         <param-name>alphabetical_mode_PAGING_COUNT_NODES</param-name>
         <param-value>1:::1:::0:::0:::0</param-value>
     </context-param>
     <context-param>
         <param-name>TermModificationChecks</param-name>
         <param-value>1:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
+        <description> Configurable list of term modification consistency checks</description>
+        <description>List of available values. (if a value is not checked</description>
+        <description>1: Check if name declared is null or empty</description>
+        <description>3: Check if more than one translations are inserted per language (useful for SKOS compatibility)</description>
+        <description>7: Check if a loop relation has been declared of a descriptor with itself </description>
     </context-param>
     <!--<context-param>
         replaced by transliterations search which is performed by default

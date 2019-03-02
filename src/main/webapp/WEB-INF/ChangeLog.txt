@@ -1,0 +1,48 @@
+2019-03-02
+=======================================
+- Addition of Permanent link copy functionality in Card of term, hierarchy Facet
+- Bug resolution of session invalidate when an External Reader link was visited while already logged in
+- The inactive term modification Consistency check number 3 was modified in order 
+  to check if at most 1 translation per language has been selected. This is useful
+  in order to build thesauri that follow the relevant skos recommendation 
+- Skos export customization in order to 
+    - use xml:base or not according to a parameter in config.xml file
+    - node labels - guide-terms  are only included in comments. The previous decision of linking narrower to a collection was not skos valid
+	- adjust pref-labels so that only the first is left per language all others are set to be alt labels (uf translations) in order to be skos compatible
+    - included status in export file using property http://purl.org/iso25964/skos-thes#status 
+
+2018-12-04
+========================================
+- Passwords stored using md5
+- implemented xslt function that asks for label in specific language and if not found returns the english label 
+
+2018-07-27
+========================================
+- External links supported in import export functionalities (not in UI though)
+
+2018-06-28
+========================================
+- GDPR texts added 
+
+2018-06-13
+========================================
+- Configuration parameter added in order to be able to skip
+  GuideTerms declared as Terms during XML import (closing the gap)
+
+2018-06-08
+========================================
+- XMLStream ability Permanent links creation and response in XML format to Requests such as 
+  - http://localhost:8084/THEMAS/PARTHENOS/Concept/5836
+  - http://localhost:8084/THEMAS/PARTHENOS/Facet/4
+
+2018-03-05
+========================================
+- UI language selection in Login Screen
+
+2018-02-21
+========================================
+-Searching Type ahead bug resolution and improvement
+
+2017-12-21
+========================================
+- Transliteration search

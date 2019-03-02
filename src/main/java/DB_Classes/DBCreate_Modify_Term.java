@@ -782,8 +782,10 @@ public class DBCreate_Modify_Term {
                 decodedValues.removeAll(valsToRemove);
             }
 
+            HashMap<String, String> translationHash = dbGen.getThesaurusTranslationCategories(Q,TA, sis_session, SessionUserInfo.selectedThesaurus, null, false, false);
+        
             //Check if more than one english names are inserted      
-            if (consistencyChecks.create_modify_check_03(decodedValues, errorMsg, pathToErrorsXML, SessionUserInfo.UILang) == false) {
+            if (consistencyChecks.create_modify_check_03(decodedValues,targetTermWithoutPrefix, translationHash, errorMsg, pathToErrorsXML, resolveError, logFileWriter, ConsistencyChecksPolicy, SessionUserInfo.UILang) == false) {
                 return;
             }
 

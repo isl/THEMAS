@@ -50,6 +50,16 @@ body{
     
     
 }
+.referenceUriTooltip{
+    position: absolute;
+    z-index: 1000; 
+    display: none; 
+    top: 70px; 
+    background: white; 
+    text-align: left; 
+    right:10px;    
+    border: 2px solid black;
+}
 
 .thesaurusFieldWidth{
     width:200px;
