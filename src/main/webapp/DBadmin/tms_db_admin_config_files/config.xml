@@ -57,18 +57,18 @@
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
      
-<!--   
+ 
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>    
--->
-    
-    <PrimaryLanguage>English</PrimaryLanguage><!-- no spaces-->
-    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix><!-- 2 letter code preferrably -->
+
+  <!--    
+    <PrimaryLanguage>English</PrimaryLanguage>
+    <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
     <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-       
+ -->      
           <!-- Arabic config   
     <PrimaryLanguage>Arabic</PrimaryLanguage>
     <PrimaryLanguagePrefix>AR</PrimaryLanguagePrefix>

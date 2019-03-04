@@ -45,7 +45,7 @@
             doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
             doctype-system="http://www.w3.org/TR/html4/loose.dtd"
             version="4.0" />
-	________________
+	<xsl:import href="./Configs.xsl"/>
 	<xsl:include href="page_header.xsl"/>
 	<xsl:include href="page_footer.xsl"/>
 	<xsl:variable name="locale" select="document('../translations/translations.xml')/locale"/>
