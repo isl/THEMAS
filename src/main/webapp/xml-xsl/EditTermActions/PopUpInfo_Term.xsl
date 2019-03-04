@@ -189,7 +189,7 @@ This file is part of the THEMAS system.
                                     <xsl:with-param name="showCreator" select="$showCreatorInAlphabeticalDisplay"/>
                                 </xsl:call-template>
                             </td>
-                            <xsl:if test="//THEMASUserInfo/userGroup != 'READER'">
+                            
                                 <td width="362" valign="top" style="padding-right:20px; padding-left:20px; border-style:solid; border-left-width:thin; border-left-color:#CCCCCC; border-bottom:0; border-top:0; border-right:0;">
                                 
                                     <table>
@@ -249,259 +249,261 @@ This file is part of the THEMAS system.
                                             </tr>
                                         </xsl:if>
                                         
-                                        <xsl:if test="$currentNode/created_by[.!='']">
-                                            <xsl:for-each select="$currentNode/created_by[.!='']">
-                                                <tr width="350" valign="top">
+                                        <xsl:if test="//THEMASUserInfo/userGroup != 'READER'">
+                                            <xsl:if test="$currentNode/created_by[.!='']">
+                                                <xsl:for-each select="$currentNode/created_by[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/creator/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="$currentNode/modified_by[.!='']">
+                                                <xsl:for-each select="$currentNode/modified_by[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/modificator/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="$currentNode/created_on[.!='']">
+                                                <xsl:for-each select="$currentNode/created_on[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/creationdate/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="$currentNode/modified_on[.!='']">
+                                                <xsl:for-each select="$currentNode/modified_on[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/modificationdate/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="$currentNode/status[.!='']">
+                                                <xsl:for-each select="$currentNode/status[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/status/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">                                                            
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+
+                                            <xsl:if test="$currentNode/historical_note[.!='']">
+                                                <xsl:for-each select="$currentNode/historical_note[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>                                                                
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>                                                                         
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal showDecorations">
+                                                                <xsl:value-of disable-output-escaping="yes" select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="$currentNode/accepted[.!='']">
+                                                <xsl:for-each select="$currentNode/accepted[.!='']">
+                                                    <tr width="350" valign="top">
+                                                        <td valign="top" width="100" >
+                                                            <span class="headerThes_normal">
+                                                                <b>
+                                                                    <xsl:choose>
+                                                                        <xsl:when test="position()!=1"></xsl:when>
+                                                                        <xsl:otherwise>
+                                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/acceptterm/option"/> 
+                                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                            </xsl:call-template>    
+                                                                        </xsl:otherwise>
+                                                                    </xsl:choose>
+                                                                </b>
+                                                            </span>
+                                                        </td>
+                                                        <td valign="top" width="240" style="text-align:justify;">
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="."/>
+                                                            </span>
+                                                            <br/>
+                                                        </td>
+                                                    </tr>
+                                                </xsl:for-each>
+                                            </xsl:if>
+
+                                            <xsl:if test="//isTopTerm ='true'">
+                                                <tr width="350">
                                                     <td valign="top" width="100" >
                                                         <span class="headerThes_normal">
                                                             <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/creator/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
+                                                                <xsl:call-template name="getTranslationMessage"> 
+                                                                    <xsl:with-param name="targetLangElements" select="$termcardlocale/showhierarchy/option"/> 
+                                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                </xsl:call-template>    
                                                             </b>
                                                         </span>
                                                     </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
+                                                    <td>
+                                                        <xsl:variable name="Slash">\</xsl:variable>
+                                                        <xsl:variable name="SlashJS">\\</xsl:variable>
+                                                        <xsl:variable name="Apos">'</xsl:variable>
+                                                        <xsl:variable name="AposJS">\'</xsl:variable>
+                                                        <xsl:variable name="currentHierJS0">
+                                                            <xsl:call-template name="replace-string-for-PopUpInfo_Term">
+                                                                <xsl:with-param name="text" select="//data/terms/term[1]/topterm"/>
+                                                                <xsl:with-param name="replace" select="$Slash"/>
+                                                                <xsl:with-param name="with" select="$SlashJS"/>
+                                                            </xsl:call-template>
+                                                        </xsl:variable>
+                                                        <xsl:variable name="currentHierJS">
+                                                            <xsl:call-template name="replace-string-for-PopUpInfo_Term">
+                                                                <xsl:with-param name="text" select="$currentHierJS0"/>
+                                                                <xsl:with-param name="replace" select="$Apos"/>
+                                                                <xsl:with-param name="with" select="$AposJS"/>
+                                                            </xsl:call-template>
+                                                        </xsl:variable>
+                                                        <a href="#">
+                                                            <xsl:attribute name="onClick">
+                                                                <xsl:text>popUpCard('</xsl:text>
+                                                                <xsl:value-of select="$currentHierJS"/>
+                                                                <xsl:text>','CardOf_Hierarchy')</xsl:text>
+                                                            </xsl:attribute>
+                                                            <span class="headerThes_normal">
+                                                                <xsl:value-of select="//page/termName/node()"/>
+                                                            </span>
+                                                        </a>
                                                     </td>
                                                 </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                        
-                                        <xsl:if test="$currentNode/modified_by[.!='']">
-                                            <xsl:for-each select="$currentNode/modified_by[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/modificator/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                        
-                                        <xsl:if test="$currentNode/created_on[.!='']">
-                                            <xsl:for-each select="$currentNode/created_on[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/creationdate/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                        
-                                        <xsl:if test="$currentNode/modified_on[.!='']">
-                                            <xsl:for-each select="$currentNode/modified_on[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/modificationdate/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                        
-                                        <xsl:if test="$currentNode/status[.!='']">
-                                            <xsl:for-each select="$currentNode/status[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/status/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">                                                            
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                                
-                                                
-                                        <xsl:if test="$currentNode/historical_note[.!='']">
-                                            <xsl:for-each select="$currentNode/historical_note[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>                                                                
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>                                                                         
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/hn/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal showDecorations">
-                                                            <xsl:value-of disable-output-escaping="yes" select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                            
-                                        <xsl:if test="$currentNode/accepted[.!='']">
-                                            <xsl:for-each select="$currentNode/accepted[.!='']">
-                                                <tr width="350" valign="top">
-                                                    <td valign="top" width="100" >
-                                                        <span class="headerThes_normal">
-                                                            <b>
-                                                                <xsl:choose>
-                                                                    <xsl:when test="position()!=1"></xsl:when>
-                                                                    <xsl:otherwise>
-                                                                        <xsl:call-template name="getTranslationMessage"> 
-                                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/acceptterm/option"/> 
-                                                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                                        </xsl:call-template>    
-                                                                    </xsl:otherwise>
-                                                                </xsl:choose>
-                                                            </b>
-                                                        </span>
-                                                    </td>
-                                                    <td valign="top" width="240" style="text-align:justify;">
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="."/>
-                                                        </span>
-                                                        <br/>
-                                                    </td>
-                                                </tr>
-                                            </xsl:for-each>
-                                        </xsl:if>
-                                                
-                                        <xsl:if test="//isTopTerm ='true'">
-                                            <tr width="350">
-                                                <td valign="top" width="100" >
-                                                    <span class="headerThes_normal">
-                                                        <b>
-                                                            <xsl:call-template name="getTranslationMessage"> 
-                                                                <xsl:with-param name="targetLangElements" select="$termcardlocale/showhierarchy/option"/> 
-                                                                <xsl:with-param name="targetLang" select="$lang"/> 
-                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                            </xsl:call-template>    
-                                                        </b>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <xsl:variable name="Slash">\</xsl:variable>
-                                                    <xsl:variable name="SlashJS">\\</xsl:variable>
-                                                    <xsl:variable name="Apos">'</xsl:variable>
-                                                    <xsl:variable name="AposJS">\'</xsl:variable>
-                                                    <xsl:variable name="currentHierJS0">
-                                                        <xsl:call-template name="replace-string-for-PopUpInfo_Term">
-                                                            <xsl:with-param name="text" select="//data/terms/term[1]/topterm"/>
-                                                            <xsl:with-param name="replace" select="$Slash"/>
-                                                            <xsl:with-param name="with" select="$SlashJS"/>
-                                                        </xsl:call-template>
-                                                    </xsl:variable>
-                                                    <xsl:variable name="currentHierJS">
-                                                        <xsl:call-template name="replace-string-for-PopUpInfo_Term">
-                                                            <xsl:with-param name="text" select="$currentHierJS0"/>
-                                                            <xsl:with-param name="replace" select="$Apos"/>
-                                                            <xsl:with-param name="with" select="$AposJS"/>
-                                                        </xsl:call-template>
-                                                    </xsl:variable>
-                                                    <a href="#">
-                                                        <xsl:attribute name="onClick">
-                                                            <xsl:text>popUpCard('</xsl:text>
-                                                            <xsl:value-of select="$currentHierJS"/>
-                                                            <xsl:text>','CardOf_Hierarchy')</xsl:text>
-                                                        </xsl:attribute>
-                                                        <span class="headerThes_normal">
-                                                            <xsl:value-of select="//page/termName/node()"/>
-                                                        </span>
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                            </xsl:if>
                                         </xsl:if>
                                     </table>
                                 
                                 </td>
-                            </xsl:if>
+                            
                         </tr>
                     </xsl:otherwise>
                 </xsl:choose>

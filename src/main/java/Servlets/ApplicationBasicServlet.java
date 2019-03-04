@@ -70,15 +70,13 @@ public class ApplicationBasicServlet extends HttpServlet {
         if(Parameters.BaseRealPath.length()==0){
             Parameters.BaseRealPath = basePath;
         }
-        
-        
+                
         
         new CommonUtilsDBadmin(new ConfigDBadmin(basePath)).RestartDatabaseIfNeeded();
         
         String overrideUILangParameter = request.getParameter("lang");
         
-        
-        
+                
         Calendar cal = Calendar.getInstance();
         UsersClass tmsUsers = new UsersClass();
         UserInfoClass SessionUserInfo = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
@@ -100,16 +98,42 @@ public class ApplicationBasicServlet extends HttpServlet {
             String external_thesaurus = request.getParameter("external_thesaurus");
             String checkIfXMLStream = request.getParameter("answerType");
             boolean skipSessionUpdate = false;
-            if (external_user != null && external_thesaurus != null) { // in case of servlet external call
+            if (external_user != null && external_thesaurus != null) {
+                //Extrenal user has both direct - servlet access and 
+                //normal access though login screen where in this case a 
+                //session should be created containing the necessary structures
+                
+                //There is also the case though where a External user access 
+                //may not be granted but authorized users (already logged in)
+                //should be able to use this permanent link. In that case though 
+                //thei session should not be updated
+                
+                // in case of servlet external call
                 // authenticate the given parameters
                 if(checkIfXMLStream==null || checkIfXMLStream.length()==0){
                     checkIfXMLStream = request.getParameter("mode");
                 }
                 if(checkIfXMLStream!=null || (checkIfXMLStream!=null && checkIfXMLStream.compareTo(Utils.ConstantParameters.XMLSTREAM)==0)){
                     skipSessionUpdate = true;
-                }                
+                }
                 
-                tmsUsers.Authenticate(request, session, sessionInstance,external_user, tmsUsers.getMD5Hex(""), external_thesaurus);
+                //check if user already has access    
+                //if yes then no need to switch to thesaurus requested by 
+                //external user access with current credentials but do not 
+                //update the session value
+                UserInfoClass refSessionUserInfo = null;
+                if(SessionUserInfo!=null){
+                    refSessionUserInfo = tmsUsers.getAuthenticatedUserInfo(request,session,sessionInstance,SessionUserInfo.name,SessionUserInfo.password,external_thesaurus);
+                }
+                            
+                if(refSessionUserInfo!=null){
+                    //in case of null user did not have access to the 
+                    skipSessionUpdate = true;
+                    tmsUsers.SetSessionAttributeSessionUser(sessionInstance,getServletContext(),refSessionUserInfo.name,refSessionUserInfo.password, refSessionUserInfo.selectedThesaurus,refSessionUserInfo.userGroup,refSessionUserInfo.UILang);
+                }
+                else{
+                    tmsUsers.Authenticate(request, session, sessionInstance,external_user, tmsUsers.getMD5Hex(""), external_thesaurus);
+                }
                 Parameters.initParams(getServletContext());
                 
                 String ServletParametersDescription = GetServletParametersDescription(request);
