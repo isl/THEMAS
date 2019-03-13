@@ -711,10 +711,10 @@ public class UsersClass {
         }
         
         if (deletePassword == true) { // case of user password deletion
-            TargetUserInfo.password = "";
+            TargetUserInfo.password = getMD5Hex("");
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             if(SessionUserInfo.name.compareTo(oldUserName)!=0){
-                SessionUserInfo.password = "";
+                SessionUserInfo.password = getMD5Hex("");
                 SessionUserInfo.description = description;
                 sessionInstance.setAttribute("SessionUser", SessionUserInfo);
             } 

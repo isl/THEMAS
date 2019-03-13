@@ -132,7 +132,7 @@ This file is part of the THEMAS system.
                     
                     <xsl:text>© 2015</xsl:text>
                     <span id="untilYear"> - 2018 </span>
-                    <script language="javascript" type="text/javascript"> var d = new Date(); document.getElementById("demo").innerHTML = ('- ' + d.getFullYear()+' ');</script>
+                    <script language="javascript" type="text/javascript"> var d = new Date(); document.getElementById("untilYear").innerHTML = ('- ' + d.getFullYear()+' ');</script>
                     <u>
                         <a style="color:#898B5E; text-decoration:underline;" target="_blank" >
                             <xsl:attribute name="href">
