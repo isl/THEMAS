@@ -71,6 +71,22 @@ public class UsersClassTest {
     }
 
     /**
+     * Test of getMD5Hex method, of class UsersClass.
+    
+    @Test
+    public void testGetMD5Hex() {
+        System.out.println("getMD5Hex");
+        String inputString =""; //(Empty string)
+        String expResult = "d41d8cd98f00b204e9800998ecf8427e";        
+        UsersClass instance = new UsersClass();
+        String result = instance.getMD5Hex(inputString);
+        System.out.println("result of "+inputString+": " + result);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        //fail("The test case is a prototype.");
+    } */
+    
+    /**
      * Test of TEST_AddTMSUser method, of class UsersClass.
      
     @Test
@@ -113,21 +129,7 @@ public class UsersClassTest {
         fail("The test case is a prototype.");
     }
 */
-    /**
-     * Test of getMD5Hex method, of class UsersClass.
-     */
-    @Test
-    public void testGetMD5Hex() {
-        System.out.println("getMD5Hex");
-        String inputString =""; //(Empty string)
-        String expResult = "d41d8cd98f00b204e9800998ecf8427e";        
-        UsersClass instance = new UsersClass();
-        String result = instance.getMD5Hex(inputString);
-        System.out.println("result of "+inputString+": " + result);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-    }
+    
 
     /**
      * Test of AddNewThesaurusForCurrentTMSUser method, of class UsersClass.

@@ -46,6 +46,7 @@
 	
     <xsl:variable name="targetEditField" select="//targetEditField"/>
     <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
+    <xsl:variable name="THEMASUserGroupTeamCanEdit" select="//THEMASUserInfo/userGroup/@thesteamcaneditforinsertions"/>
     
     <xsl:template match="/">
         <xsl:variable name="termcardlocale" select="document('../../translations/translations.xml')/locale/popupcards/term"/>
@@ -485,15 +486,31 @@
                                 <!-- _____________________ΟΜΑΔΑ ΘΗΣΑΥΡΟΥ_____________________-->
                                 <!-- ομάδα θησαυρού: από «Για εισαγωγή» σε «Υπό επεξεργασία» -->
                                 <xsl:when test="$THEMASUserInfo_userGroup = 'THESAURUS_TEAM' and $termStatus= $statuseslocale/forinsertion/option[@lang=$primarylang] ">
-                                    <xsl:call-template name="StatusOptions">
-                                        <xsl:with-param name="GiaEisagwgh">true</xsl:with-param>
-                                        <xsl:with-param name="YpoEpeksergasia">true</xsl:with-param>
-                                        <xsl:with-param name="YpoEgkrish">false</xsl:with-param>
-                                        <xsl:with-param name="Ekdothis">false</xsl:with-param>
-                                        <xsl:with-param name="specificlocale" select="$statuseslocale"/>
-                                        <xsl:with-param name="lang" select="$primarylang"/>
-                                    </xsl:call-template>
-                                </xsl:when>
+                                    
+                                    <xsl:choose>
+                                        <xsl:when test="$THEMASUserGroupTeamCanEdit ='true'">
+                                            <xsl:call-template name="StatusOptions">
+                                                <xsl:with-param name="GiaEisagwgh">true</xsl:with-param>
+                                                <xsl:with-param name="YpoEpeksergasia">false</xsl:with-param>
+                                                <xsl:with-param name="YpoEgkrish">true</xsl:with-param>
+                                                <xsl:with-param name="Ekdothis">false</xsl:with-param>
+                                                <xsl:with-param name="specificlocale" select="$statuseslocale"/>
+                                                <xsl:with-param name="lang" select="$primarylang"/>
+                                            </xsl:call-template>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:call-template name="StatusOptions">
+                                                <xsl:with-param name="GiaEisagwgh">true</xsl:with-param>
+                                                <xsl:with-param name="YpoEpeksergasia">true</xsl:with-param>
+                                                <xsl:with-param name="YpoEgkrish">false</xsl:with-param>
+                                                <xsl:with-param name="Ekdothis">false</xsl:with-param>
+                                                <xsl:with-param name="specificlocale" select="$statuseslocale"/>
+                                                <xsl:with-param name="lang" select="$primarylang"/>
+                                            </xsl:call-template>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    
+                                </xsl:when>                                
                                 <!-- ομάδα θησαυρού: από «Υπό επεξεργασία» σε «Υπό έγκριση» -->
                                 <xsl:when test="$THEMASUserInfo_userGroup = 'THESAURUS_TEAM' and $termStatus=$statuseslocale/underconstruction/option[@lang=$primarylang] ">
                                     <xsl:call-template name="StatusOptions">
@@ -507,15 +524,30 @@
                                 </xsl:when>
                                 <!-- ομάδα θησαυρού: από «Υπό έγκριση» σε «Υπό επεξεργασία» -->
                                 <xsl:when test="$THEMASUserInfo_userGroup = 'THESAURUS_TEAM' and $termStatus=$statuseslocale/underapproval/option[@lang=$primarylang] ">
-                                    <xsl:call-template name="StatusOptions">
-                                        <xsl:with-param name="GiaEisagwgh">false</xsl:with-param>
-                                        <xsl:with-param name="YpoEpeksergasia">true</xsl:with-param>
-                                        <xsl:with-param name="YpoEgkrish">true</xsl:with-param>
-                                        <xsl:with-param name="Ekdothis">false</xsl:with-param>
-                                        <xsl:with-param name="specificlocale" select="$statuseslocale"/>
-                                        <xsl:with-param name="lang" select="$primarylang"/>
-                                    </xsl:call-template>
+                                    <xsl:choose>
+                                        <xsl:when test="$THEMASUserGroupTeamCanEdit ='true'">                                        
+                                            <xsl:call-template name="StatusOptions">
+                                                    <xsl:with-param name="GiaEisagwgh">true</xsl:with-param>
+                                                    <xsl:with-param name="YpoEpeksergasia">false</xsl:with-param>
+                                                    <xsl:with-param name="YpoEgkrish">true</xsl:with-param>
+                                                    <xsl:with-param name="Ekdothis">false</xsl:with-param>
+                                                    <xsl:with-param name="specificlocale" select="$statuseslocale"/>
+                                                    <xsl:with-param name="lang" select="$primarylang"/>
+                                                </xsl:call-template>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:call-template name="StatusOptions">
+                                                    <xsl:with-param name="GiaEisagwgh">false</xsl:with-param>
+                                                    <xsl:with-param name="YpoEpeksergasia">true</xsl:with-param>
+                                                    <xsl:with-param name="YpoEgkrish">true</xsl:with-param>
+                                                    <xsl:with-param name="Ekdothis">false</xsl:with-param>
+                                                    <xsl:with-param name="specificlocale" select="$statuseslocale"/>
+                                                    <xsl:with-param name="lang" select="$primarylang"/>
+                                                </xsl:call-template>
+                                            </xsl:otherwise>
+                                    </xsl:choose>
                                 </xsl:when>
+                                    
                                 <!-- ομάδα θησαυρού: από «Εκδοθείς» σε τίποτα -->
                                 <xsl:when test="$THEMASUserInfo_userGroup = 'THESAURUS_TEAM' and $termStatus=$statuseslocale/approved/option[@lang=$primarylang] ">
                                     <xsl:attribute name="disabled">disabled</xsl:attribute>

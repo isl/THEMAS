@@ -320,7 +320,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
                     u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
                 }
             } else if(outputMode==null){
-                xml.append(ConstantParameters.xmlHeader + "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                //xml.append(ConstantParameters.xmlHeader + "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append(u.getXMLStart("",true, SessionUserInfo.UILang));
                 xml.append(xmlResults);
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append("</page>");
@@ -355,10 +356,10 @@ public class CardOf_Term extends ApplicationBasicServlet {
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());
             
-        if (outputMode.compareTo("edit") == 0) {
+        if (outputMode!=null && outputMode.compareTo("edit") == 0) {
             u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
         }
-        else if (outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+        else if (outputMode!=null &&outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
             
             out.append(xml.toString());
         }

@@ -65,6 +65,10 @@ public class Parameters {
 
     public static boolean ShowReferenceURIalso = false;
     public static boolean SkosExportUsingXmlBase = false;
+    
+    public static boolean DisplayExternalLinkUrls = false;
+    public static boolean ModificationDateAffectingOnlyDirectlyModifiedTerm = false;
+    
     public static String UnclassifiedTermsLogicalname = "";
     public static String UnclassifiedTermsFacetLogicalname = "";
 
@@ -246,6 +250,11 @@ public class Parameters {
                 String boolValStr4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosExportUsingXmlBase[1]", document);
                 Parameters.SkosExportUsingXmlBase = boolValStr4.toLowerCase().equals("true")|| boolValStr4.toLowerCase().equals("yes");
                 
+                String boolValStr5 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayExternalLinkUrls[1]", document);
+                Parameters.DisplayExternalLinkUrls = boolValStr5.toLowerCase().equals("true")|| boolValStr5.toLowerCase().equals("yes");
+                
+                String boolValStr6 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/ModificationDateAffectingOnlyDirectlyModifiedTerm[1]", document);
+                Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm = boolValStr6.toLowerCase().equals("true")|| boolValStr6.toLowerCase().equals("yes");
                 
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;
                 String boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms[1]", document);

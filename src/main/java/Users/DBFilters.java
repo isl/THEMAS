@@ -163,12 +163,9 @@ public class DBFilters {
             termIsEditable = dblf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
         }
         
-        if(Parameters.ThesTeamEditOnlyCreatedByTerms){
-            //ThesTeamEditOnlyCreatedByTerms
-            if(SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam)==true){
-                DBThesaurusTeamFilters dbteamf = new DBThesaurusTeamFilters();
-                termIsEditable = dbteamf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
-            }
+        if(Parameters.ThesTeamEditOnlyCreatedByTerms && SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam)==true){
+            DBThesaurusTeamFilters dbteamf = new DBThesaurusTeamFilters();
+            termIsEditable = dbteamf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);            
         }
         
         return termIsEditable;

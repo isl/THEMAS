@@ -70,6 +70,7 @@ This file is part of the THEMAS system.
         <xsl:variable name="termName" select="//data/terms/term[1]/descriptor"/>
         <xsl:variable name="termcardlocale" select="document('../../translations/translations.xml')/locale/popupcards/term"/>
         <xsl:variable name="lang" select="//page/@language"/>
+        <xsl:variable name="showReferenceUri" select="//page/@showReferenceURI"/>
         <fieldset style="width:790px;" >
             <legend  style="margin-bottom:5px;">
                 <xsl:call-template name="getTranslationMessage"> 
@@ -194,7 +195,7 @@ This file is part of the THEMAS system.
                                 
                                     <table>
                                         <xsl:variable name="currentNode" select="//data/terms/term[1]"/>
-                                        <xsl:if test="$currentNode/descriptor/@referenceId[.!='']">
+                                        <xsl:if test="$showReferenceUri='yes' and $currentNode/descriptor/@referenceId[.!='']">
                                             <tr width="350" valign="top">
                                                 <td valign="top" width="100" >
                                                     <span class="headerThes_normal">
@@ -540,9 +541,15 @@ This file is part of the THEMAS system.
         <xsl:if test="$TermIsEditable = 'true' ">
             <!-- Εμφάνιση των λειτουργιών επεξεργασίας μόνο στην περίπτωση που το status του όρου είναι "Υπό επεξεργασία" ή πρόκειται για editable term από κάποιον user of group LIBRARY -->
             <xsl:variable name="TermStatus" select="//data/terms/term[1]/status "/>
-            <xsl:variable name="THEMASUserGroup" select="//page/THEMASUserInfo/userGroup "/>
+            <xsl:variable name="THEMASUserGroup" select="//page/THEMASUserInfo/userGroup"/>
+            <xsl:variable name="THEMASUserGroupTeamCanEdit" select="//page/THEMASUserInfo/userGroup/@thesteamcaneditforinsertions"/>
             
-            <xsl:if test="$TermStatus = $statuseslocale/underconstruction/option[@lang=$lang] or $THEMASUserGroup = 'LIBRARY' ">
+            <xsl:choose>
+                <xsl:when test="$TermStatus = $statuseslocale/underconstruction/option[@lang=$lang] or $THEMASUserGroup = 'LIBRARY' or  ($THEMASUserGroup = 'THESAURUS_TEAM' and $THEMASUserGroupTeamCanEdit ='true') ">
+                    <!-- this if includes with or all the cases where the editing actions should be made available -->
+                    <!--<xsl:if test="$TermStatus = $statuseslocale/underconstruction/option[@lang=$lang] or $THEMASUserGroup = 'LIBRARY' or  ($THEMASUserGroup = 'THESAURUS_TEAM' and $THEMASUserGroupTeamCanEdit ='true') ">
+                
+            </xsl:if>-->
                 <table cellspacing="15" width="100%" style="text-align:left; position:absolute; top:415px; left:0px;">
                     <tr>
                         <td colspan="3">
@@ -914,10 +921,13 @@ This file is part of the THEMAS system.
                         </td>
                     </tr>                    
                 </table>
-            </xsl:if>
-            <!-- Απόκρυψη των λειτουργιών επεξεργασίας και εμφάνιση ΜΟΝΟ της δυνατότητας αλλαγής του status στην περίπτωση -->
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- this if includes the cases where the editing actions should NOT be made available -->
+                    <!-- Απόκρυψη των λειτουργιών επεξεργασίας και εμφάνιση ΜΟΝΟ της δυνατότητας αλλαγής του status στην περίπτωση -->
             <!--  που (το status του όρου είναι "Υπό επεξεργασία" ή δεν έχει status) και ο user δεν είναι LIBRARY -->
-            <xsl:if test="($TermStatus != $statuseslocale/underconstruction/option[@lang=$lang] or count($TermStatus) = 0) and $THEMASUserGroup != 'LIBRARY' ">
+            <!-- <xsl:if test="($TermStatus != $statuseslocale/underconstruction/option[@lang=$lang] or count($TermStatus) = 0) and $THEMASUserGroup != 'LIBRARY' ">
+                </xsl:if>-->
                 <table cellspacing="20" width="100%">
                     <tr>
                         <td colspan="3">
@@ -947,7 +957,12 @@ This file is part of the THEMAS system.
                         </td>
                     </tr>
                 </table>
-            </xsl:if>
+                </xsl:otherwise>
+            </xsl:choose>
+            
+            
+            
+            
         </xsl:if>
     </xsl:template>
     

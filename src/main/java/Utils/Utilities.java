@@ -182,7 +182,7 @@ public class Utilities {
                  // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() +"\" showReferenceURI=\""+(Parameters.DisplayExternalLinkUrls?"yes":"no")  +"\"" +  ">";
                 if(!skipLeftMenu){
                     XMLStart+= "\r\n<leftmenu>"
                     + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
@@ -268,7 +268,7 @@ public class Utilities {
         String XMLTHEMASUserInfo = "<THEMASUserInfo>";
         XMLTHEMASUserInfo += "<name>" + SessionUserInfo.name + "</name>";
         // tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\"
-        XMLTHEMASUserInfo += "<userGroup>" + SessionUserInfo.userGroup + "</userGroup>";
+        XMLTHEMASUserInfo += "<userGroup"+(Parameters.ThesTeamEditOnlyCreatedByTerms? " thesteamcaneditforinsertions='true'>":">") + SessionUserInfo.userGroup + "</userGroup>";
         XMLTHEMASUserInfo += "<selectedThesaurus>" + SessionUserInfo.selectedThesaurus + "</selectedThesaurus>";
         XMLTHEMASUserInfo += "<selectedThesaurusLowerCase>" + SessionUserInfo.selectedThesaurus.toLowerCase() + "</selectedThesaurusLowerCase>";
         XMLTHEMASUserInfo += "</THEMASUserInfo>";

@@ -75,6 +75,7 @@
         <xsl:param name="showClose"/>
         <xsl:variable name="facetcardlocale" select="document('../../translations/translations.xml')/locale/popupcards/facet"/>
         <xsl:variable name="lang" select="//page/@language"/>
+        <xsl:variable name="showReferenceUri" select="/page/@showReferenceURI"/>
         <fieldset >
             <legend style="margin-bottom:5px;">
                 <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
@@ -166,7 +167,7 @@
                                 <span class="headerThes_normal"><xsl:value-of select="//facetName"/></span>
                             </td>
                         </tr>
-                        <xsl:if test="//facets/facet/name/@referenceId[.!='']">
+                        <xsl:if test="$showReferenceUri='yes' and //facets/facet/name/@referenceId[.!='']">
                         <tr valign="top">
                             <td>
                                 <br/>                       
