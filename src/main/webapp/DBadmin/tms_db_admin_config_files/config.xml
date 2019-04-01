@@ -92,7 +92,7 @@
         <XMLImport_Resolve_NodeLabels_DeclaredAsTerms>false</XMLImport_Resolve_NodeLabels_DeclaredAsTerms>
         <AtRenameStoreOldNameAsUf>true</AtRenameStoreOldNameAsUf>  
         <SkosExportUsingXmlBase>false</SkosExportUsingXmlBase>
-        <DisplayExternalLinkUrls>false</DisplayExternalLinkUrls>
+        <DisplayExternalLinkUrls>true</DisplayExternalLinkUrls>
         <ModificationDateAffectingOnlyDirectlyModifiedTerm>true</ModificationDateAffectingOnlyDirectlyModifiedTerm>
         
         <Transliterations toLowerCase="true">
