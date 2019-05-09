@@ -203,6 +203,13 @@ function deselectAllOutputs(tableId){
     }
 
 }
+function uncheckSelectAllOrNone(checkedVal, suffix){
+    if(checkedVal){
+        document.getElementById('nooutputs'+suffix).checked=false;
+    } else {
+        document.getElementById('alloutputs'+suffix).checked=false;
+    }
+}
 
 function showallpressed(moderator){
     if(moderator=='terms'){

@@ -88,6 +88,7 @@
 					    
 		<!-- _________________ UP part TABs _________________  260 -->
         <xsl:variable name="up" select="//part1/tabset1/tab[@active='yes']/text()"/>
+        <xsl:variable name="expand_search_results_with_rnts" select="//part1/tabset1/tab[@active='yes']/@expand_search_results_with_rnts"/>
         <xsl:choose>
             <xsl:when test="$up='Alphabetical' ">
                 <div id="DisplayCardArea"/>
@@ -167,7 +168,9 @@
                 </xsl:call-template>
                 <div id="content" >
                     <div id="centralDiv" class="tab-body">
-                        <xsl:call-template name="criteria"/>
+                        <xsl:call-template name="criteria">
+                            <xsl:with-param name="expandWithRntsOption" select="$expand_search_results_with_rnts" />
+                        </xsl:call-template>                            
                     </div>
                 </div>
             </xsl:when>

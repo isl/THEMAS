@@ -302,6 +302,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             String[] inputValue = new String[searchCriteria.value.size()];
             String operator = searchCriteria.CombineOperator;
 
+            boolean extendSearcResultsWithRnts = searchCriteria.expandWithRecusiveNts;
             searchCriteria.input.toArray(input);
             searchCriteria.operator.toArray(ops);
             searchCriteria.value.toArray(inputValue);
@@ -333,6 +334,21 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
 
 
+            ArrayList<String> completeSetIds = new ArrayList<String> ();
+
+            if(extendSearcResultsWithRnts){
+                Q.reset_set(set_global_descriptor_results);
+                
+                //System.out.println("before extendSearcResultsWithRnts card: " + Q.set_get_card(set_global_descriptor_results));
+                //if(MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0){ // this is the case here --> just do it!
+                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_global_descriptor_results, set_global_descriptor_results, true, Q, sis_session);
+                Q.reset_set(set_global_descriptor_results);
+                //System.out.println("after extendSearcResultsWithRnts card: " + Q.set_get_card(set_global_descriptor_results));
+                completeSetIds.addAll(dbGen.get_Node_Names_Of_Set(set_global_descriptor_results, true, Q, sis_session));
+            }
+            
+            
+            
             if (startRecord != null && startRecord.matches("SaveAll")) {
 
                 //Extra parameters
@@ -353,7 +369,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 ArrayList<String> allTerms = new ArrayList<String>();
                 
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
-                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIds);
+                //the true parameter at the end should be defined through the UI. For now hard coded
+                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIds, true, completeSetIds);
                 
 
                 ArrayList<SortItem> allTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
@@ -420,10 +437,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
             }
 
-            ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
+            ArrayList<SortItem> allTerms = new ArrayList<>();
             Q.reset_set(set_global_descriptor_results);
             
-            ArrayList<Return_Full_Nodes_Row> retVals = new ArrayList<Return_Full_Nodes_Row>();
+            ArrayList<Return_Full_Nodes_Row> retVals = new ArrayList<>();
             if(Q.bulk_return_full_nodes(set_global_descriptor_results, retVals)!=QClass.APIFail){
                 for(Return_Full_Nodes_Row row: retVals){
                     
@@ -460,8 +477,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             Q.reset_set(set_paging_results);
 
             
-            ArrayList<String> resultsTerms = new ArrayList<String>();
-            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIds);
+            ArrayList<String> resultsTerms = new ArrayList<>();
+            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIds,extendSearcResultsWithRnts ,completeSetIds);
             //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));
             ArrayList<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
             Collections.sort(resultsTermsInSortItems,transliterationComparator);

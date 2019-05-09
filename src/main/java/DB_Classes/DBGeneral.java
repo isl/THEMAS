@@ -6194,11 +6194,14 @@ public class DBGeneral {
     
     public void collectTermSetInfo(UserInfoClass SessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            int set_results,
+            int set_results,            
             ArrayList<String> output,
             HashMap<String, NodeInfoSortItemContainer> termsInfo,
             ArrayList<String> allTerms,
-            ArrayList<Long> resultNodesIds) throws IOException {
+            ArrayList<Long> resultNodesIds,
+            boolean restrictOutputInSearchResultsOnly, 
+            ArrayList<String> completeSetNames
+    ) throws IOException {
         DBexportData dbExport = new DBexportData();
 
         
@@ -6239,7 +6242,6 @@ public class DBGeneral {
 
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
-        Utilities u = new Utilities();
         
         ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<>();
         Q.reset_set(set_results);
@@ -6248,7 +6250,10 @@ public class DBGeneral {
             for (Return_Nodes_Row row : retVals) {
 
                 long targetTermIdL = row.get_Neo4j_NodeId();
-                resultNodesIds.add(targetTermIdL);
+                if(!resultNodesIds.contains(targetTermIdL)){
+                    resultNodesIds.add(targetTermIdL);
+                }
+                
 
                 String targetTerm = removePrefix(row.get_v1_cls_logicalname());
                 resultTermNamesWithPrefixes.add(row.get_v1_cls_logicalname());
@@ -6285,14 +6290,16 @@ public class DBGeneral {
         int set_to_links = Q.get_link_to(set_results);
         Q.reset_set(set_to_links);
 
-        Q.set_difference(set_to_links, set_from_links);
-        Q.reset_set(set_to_links);
+        if(!restrictOutputInSearchResultsOnly){
+            Q.set_difference(set_to_links, set_from_links);
+            Q.reset_set(set_to_links);
+        }
 
         DBFilters dbF = new DBFilters();
         dbF.FilterTermsResultsLinks(SessionUserInfo, set_from_links, set_to_links, Q, sis_session);
 
-        collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds);
-        collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds);
+        collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds,restrictOutputInSearchResultsOnly, completeSetNames);
+        collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds,restrictOutputInSearchResultsOnly, completeSetNames);
 
         if (output.contains(ConstantParameters.rnt_kwd)) {
 
@@ -6307,7 +6314,7 @@ public class DBGeneral {
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
-                    ArrayList<SortItem> recNts = new ArrayList<SortItem>();
+                    ArrayList<SortItem> recNts = new ArrayList<>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6335,7 +6342,7 @@ public class DBGeneral {
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
-                    ArrayList<SortItem> recBts = new ArrayList<SortItem>();
+                    ArrayList<SortItem> recBts = new ArrayList<>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6356,6 +6363,7 @@ public class DBGeneral {
         dbExport.ReadTermCommentCategories(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermFacetAndHierarchiesInSortItems(SessionUserInfo, Q, sis_session, set_results, output, allTerms, termsInfo, resultNodesIds);
 
+        //one safe option is to add extendSearcResultsWithRnts cotnrol here 
         
         Q.free_set(set_to_links);
         Q.free_set(set_from_links);
@@ -6368,8 +6376,9 @@ public class DBGeneral {
         }
     }
 
-    public void collectTermSetInfoFrom(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_from_links,
-            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
+    private void collectTermSetInfoFrom(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_from_links,
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL,
+            boolean restrictOutputInSearchResultsOnly, ArrayList<String> completeSetNames) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6400,9 +6409,17 @@ public class DBGeneral {
          IntegerObject linkID = new IntegerObject();
          IntegerObject categID = new IntegerObject();
          */
+        
+        ArrayList<String> filteringLinks = new ArrayList<>();
+        if(restrictOutputInSearchResultsOnly){
+            filteringLinks.add(ConstantParameters.nt_kwd);
+            filteringLinks.add(ConstantParameters.rt_kwd);
+            filteringLinks.add(ConstantParameters.bt_kwd);
+        }
+        
         int translationCategorySubStringLength = ConstantParameters.thesaursTranslationCategorysubString.length();
         int translationUFCategorySubStringLength = ConstantParameters.thesaursUFTranslationCategorysubString.length();
-        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<>();
         if (Q.bulk_return_full_link_id(set_from_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -6415,6 +6432,14 @@ public class DBGeneral {
                 String categoryKwd = keyWordsMappings.get(category);
 
                 String value = row.get_v8_cmv().getString();
+                
+                if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
+                    if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
+                        System.out.println("Skipping from collectTermSetInfoFrom values: " + value + "   "+targetTerm);
+                        continue;
+                    }                    
+                }
+                
                 long valueIdL = row.get_v8_cmv().getSysid();
                 long valueRefIdL = row.get_v8_cmv().getRefid();
                 String valueTransliterationStr = row.get_v8_cmv().getTransliterationString();
@@ -6610,8 +6635,9 @@ public class DBGeneral {
          */
     }
 
-    public void collectTermSetInfoTo(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_to_links,
-            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
+    private void collectTermSetInfoTo(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_to_links,
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, 
+            ArrayList<Long> resultNodesIdsL, boolean restrictOutputInSearchResultsOnly, ArrayList<String> completeSetNames) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6626,6 +6652,7 @@ public class DBGeneral {
         dbtr.getThesaurusCategory_BT(selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
         dbtr.getThesaurusCategory_RT(selectedThesaurus, Q, sis_session.getValue(), RTLinkObj);
 
+        
         /*
          StringObject fromcls = new StringObject();
          StringObject label = new StringObject();
@@ -6637,11 +6664,18 @@ public class DBGeneral {
          IntegerObject linkID = new IntegerObject();
          IntegerObject categID = new IntegerObject();
          */
+        ArrayList<String> filteringLinks = new ArrayList<>();
+        if(restrictOutputInSearchResultsOnly){
+            filteringLinks.add(ConstantParameters.nt_kwd);
+            filteringLinks.add(ConstantParameters.rt_kwd);
+            filteringLinks.add(ConstantParameters.bt_kwd);
+        }
         ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
         if (Q.bulk_return_full_link_id(set_to_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
                 String targetTerm = removePrefix(row.get_v8_cmv().getString());
+                
                 long targetTermIdL = row.get_v8_cmv().getSysid();
                 long targetTermRefIdL = row.get_v8_cmv().getRefid();
                 String targetTermTransiteration = row.get_v8_cmv().getTransliterationString();
@@ -6651,7 +6685,15 @@ public class DBGeneral {
                 if (categoryKwd != null && categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                     categoryKwd = ConstantParameters.nt_kwd;
                 }
+                
                 String value = removePrefix(row.get_v1_cls());
+                if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
+                    if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
+                        System.out.println("Skipping from collectTermSetInfoFrom values: " + value + "   "+targetTerm);
+                        continue;
+                    }                    
+                }
+                
                 long valueIdL = row.get_v2_clsid();
                 long valueRefIdL = row.get_v11_clsRefid();
                 String valueTransliterationStr = row.get_v10_clsTransliteration();

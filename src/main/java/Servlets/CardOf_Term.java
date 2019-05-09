@@ -251,7 +251,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             String reqUrlPrefix = u.getExternalReaderReferenceUriPrefix(request,SessionUserInfo.selectedThesaurus);
             //System.out.println("reqUrlPrefix = "+reqUrlPrefix) ;
             
-            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
+            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL,false, null);
             if(output.contains((ConstantParameters.system_referenceUri_kwd))){
                  
                  dbGen.constructReferenceURIs(reqUrlPrefix, termsInfo);

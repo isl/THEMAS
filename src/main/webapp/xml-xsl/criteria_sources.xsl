@@ -141,15 +141,38 @@
                                 </td>
                                 <td valign="top" >
                                     <table border="0">
+                                        
                                         <tr>
                                             <td>
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/criteriaarea/selectall/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                                
+                                                <ul class="checkboxes checkboxes-horizontal"> 
+                                                    <li>
+                                                        <label for="showAllSourcescbx">
+                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/criteriaarea/selectall/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                            </xsl:call-template>    
+                                                        </label>
+                                                        <input type="checkbox" id="showAllSourcescbx" name="showAll" value="all">                                            
+                                                            <xsl:attribute name="onclick">
+                                                                <xsl:text>if(checked) {showallpressed('sources');} else{showallreleased('sources');}</xsl:text>
+                                                            </xsl:attribute>
+                                                        </input>
+                                                    </li> 
+                                                </ul>
+                                            
+                                                <!--<xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/criteriaarea/selectall/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                                 <input name="showAll" type="checkbox" value="all" >
                                                     <xsl:attribute name="onclick">
                                                         <xsl:text>if(checked) {showallpressed('sources');} else{showallreleased('sources');}</xsl:text>
                                                     </xsl:attribute>
                                                 </input>
-
+-->
                                             </td>
                                         </tr>
                                         <tr>
@@ -168,7 +191,41 @@
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <input type="checkbox" name="output_source" value="name" checked="checked" class="hiddenInput" disabled="disabled"/>
                                 </td>
+                                
+                                
                                 <td align="right" valign="bottom">
+                                    
+                                    <ul class="checkboxes checkboxes-horizontal"> 
+                                        <li>
+                                            <label for="alloutputs_source">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/selectall/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>      
+                                            </label>
+                                            <input type="checkbox" id="alloutputs_source" value="selectAllOutputs_source">
+                                                <xsl:attribute name="onclick">
+                                                    <xsl:text>if(this.checked)selectAllOutputs('customOutputs_source');document.getElementById('nooutputs_source').checked=false;</xsl:text>
+                                                </xsl:attribute>
+                                            </input>                                            
+                                        </li> 
+                                        <li>
+                                            <label for="nooutputs_source">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/selectnone/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>  
+                                            </label>
+                                            <input type="checkbox" id="nooutputs_source" value="deSelectAllOutputs_source">
+                                                <xsl:attribute name="onclick">
+                                                    <xsl:text>if(this.checked)deselectAllOutputs('customOutputs_source');document.getElementById('alloutputs_source').checked=false;</xsl:text>
+                                                </xsl:attribute>
+                                            </input>
+                                        </li> 
+                                    </ul>
+                                    <!--
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/selectall/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <input type="checkbox" id="alloutputs_source" value="selectAllOutputs_source">
                                         <xsl:attribute name="onclick">
@@ -183,6 +240,7 @@
                                             <xsl:text>if(this.checked)deselectAllOutputs('customOutputs_source');document.getElementById('alloutputs_source').checked=false;</xsl:text>
                                        </xsl:attribute>
                                         </input>&#160;
+                                    -->
                                 </td>
                             </tr>
                         </table>
@@ -190,19 +248,78 @@
                         <hr/>
                         
                         <table border="0" id="customOutputs_source">
-                            <tr><!--ROW 1-->
+                            <tr>
+                            
+                            <td style="vertical-align: top;">                                                               
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out1" name="output_source" value="source_note" checked="checked" onclick="uncheckSelectAllOrNone(this.checked,'_source');"/>
+                                            <label for="out1">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/sourcenote/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                            </td>
+                            
+                            <td style="vertical-align: top;">                                                               
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out2" name="output_source" value="primary_found_in" onclick="uncheckSelectAllOrNone(this.checked,'_source');"/>
+                                            <label for="out2">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/primarysource/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                            </td>
+                            <td style="vertical-align: top;">                                                               
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out3" name="output_source" value="translations_found_in" onclick="uncheckSelectAllOrNone(this.checked,'_source');"/>
+                                            <label for="out3" style="width: auto;">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/trsource/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                            </td>
+<!--
                                 <td style="width:180px;">
-                                    <input type="checkbox" name="output_source" value="source_note" checked="checked" onclick="if(this.checked)document.getElementById('nooutputs_source').checked=false; else document.getElementById('alloutputs_source').checked=false;"/>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/sourcenote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <input type="checkbox" name="output_source" value="source_note" checked="checked" 
+                                           onclick="if(this.checked)document.getElementById('nooutputs_source').checked=false; else document.getElementById('alloutputs_source').checked=false;"/>
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/sourcenote/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                 </td>
                                 <td style="width:180px;">
                                     <input type="checkbox" name="output_source" value="primary_found_in" onclick="if(this.checked)document.getElementById('nooutputs_source').checked=false; else document.getElementById('alloutputs_source').checked=false;"/>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/primarysource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage">
+                                        <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/primarysource/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                 </td>
                                 <td style="width:180px;">
                                     <input type="checkbox" name="output_source" value="translations_found_in" onclick="if(this.checked)document.getElementById('nooutputs_source').checked=false; else document.getElementById('alloutputs_source').checked=false;" />
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/trsource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriasourceslocale/outputarea/trsource/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                 </td>
+                                                            -->
                             </tr>
                         </table>
                     </td>

@@ -395,7 +395,7 @@ public class hierarchysTermsShortcuts extends ApplicationBasicServlet {
                 set_hiers_terms = dbf.FilterTermsResults(SessionUserInfo, set_hiers_terms, Q, sis_session);
 
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
-                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_hiers_terms, output, termsInfo, allTerms, resultNodesIdsL);
+                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_hiers_terms, output, termsInfo, allTerms, resultNodesIdsL, false, null);
                 dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_hiers_terms, termsInfo, allTerms, resultNodesIdsL);
                 Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
 

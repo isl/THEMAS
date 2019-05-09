@@ -213,7 +213,8 @@ public class Utilities {
             upTabsetXML += "<tab active=\"no\">" + tabsetArray1[i] + "</tab>";
         }
         upActiveTab = upActiveTab.replaceAll("&", "&amp;");
-        upTabsetXML = upTabsetXML.replaceAll("<tab active=\"no\">" + upActiveTab + "</tab>", "<tab active=\"yes\">" + upActiveTab + "</tab>");
+        upTabsetXML = upTabsetXML.replaceAll("<tab active=\"no\">" + upActiveTab + "</tab>",
+                "<tab active=\"yes\" expand_search_results_with_rnts=\""+(Parameters.AbilityToExpandSearchResultsWithRNTs ? "yes" : "no") + "\">" + upActiveTab + "</tab>");
 
         String XMLMiddleStr =
                 "<content>"

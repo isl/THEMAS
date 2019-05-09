@@ -57,7 +57,14 @@ class responsible for the collection of the application's context
 Parameters defined in web.xml
 ----------------------------------------------------------------------*/
 public class Parameters {
-    public static boolean adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
+    
+    //behavior configuration   config xml boolean contents of BehaviorConfigs element       
+    public static boolean AtRenameSaveOldNameAsUf = false;
+    public static boolean adminXMLImport_Remove_NodeLabels_Declared_As_BTs = false;
+    public static boolean ThesTeamEditOnlyCreatedByTerms = false;
+    public static boolean CreatorInAlphabeticalTermDisplay = false;
+    public static boolean AbilityToExpandSearchResultsWithRNTs = false;
+
     
     public static final boolean OnlyTopTermsHoldReferenceId = true;
     public static boolean TransliterationAsAttribute = false;
@@ -96,10 +103,8 @@ public class Parameters {
     public static String Save_Results_Temp_Folder;
     public static String Save_Results_Folder;
 
-    public static boolean AtRenameSaveOldNameAsUf = false;
     
-    public static boolean ThesTeamEditOnlyCreatedByTerms = false;
-    public static boolean CreatorInAlphabeticalTermDisplay = false;
+    
 
     public static String TRANSLATION_SEPERATOR;
     public static ArrayList<String> CLASS_SET;
@@ -241,11 +246,11 @@ public class Parameters {
                 XPath xpath = XPathFactory.newInstance().newXPath();
                 Parameters.PrimaryLang = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/PrimaryLanguagePrefix[1]", document);
 
-                Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = false;
+                Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs = false;
                 
-                String boolValStr3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
+                String boolValStr3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/XMLImport_Resolve_NodeLabels_DeclaredAsTerms[1]", document);
                 
-                Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms = boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes");
+                Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs = boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes");
                 
                 String boolValStr4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosExportUsingXmlBase[1]", document);
                 Parameters.SkosExportUsingXmlBase = boolValStr4.toLowerCase().equals("true")|| boolValStr4.toLowerCase().equals("yes");
@@ -255,6 +260,11 @@ public class Parameters {
                 
                 String boolValStr6 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/ModificationDateAffectingOnlyDirectlyModifiedTerm[1]", document);
                 Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm = boolValStr6.toLowerCase().equals("true")|| boolValStr6.toLowerCase().equals("yes");
+                
+                
+                String boolValStr7 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AbilityToExpandSearchResultsWithRNTs[1]", document);
+                
+                Parameters.AbilityToExpandSearchResultsWithRNTs = boolValStr7.toLowerCase().equals("true")||boolValStr7.toLowerCase().equals("yes");
                 
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;
                 String boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms[1]", document);
@@ -268,7 +278,7 @@ public class Parameters {
                 
                 
                 Parameters.CreatorInAlphabeticalTermDisplay = false;
-                String boolValStr_2 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/CreatorInAlphabeticalTerm/DisplayCreator[1]", document);
+                String boolValStr_2 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayCreatorInAlphabeticalTerm[1]", document);
 
                 if (boolValStr_2.toLowerCase().equals("true") || boolValStr_2.toLowerCase().equals("yes")) {
                     Parameters.CreatorInAlphabeticalTermDisplay = true;

@@ -94,6 +94,8 @@
         <SkosExportUsingXmlBase>false</SkosExportUsingXmlBase>
         <DisplayExternalLinkUrls>true</DisplayExternalLinkUrls>
         <ModificationDateAffectingOnlyDirectlyModifiedTerm>true</ModificationDateAffectingOnlyDirectlyModifiedTerm>
+        <AbilityToExpandSearchResultsWithRNTs>true</AbilityToExpandSearchResultsWithRNTs>
+        <DisplayCreatorInAlphabeticalTerm>true</DisplayCreatorInAlphabeticalTerm>  
         
         <Transliterations toLowerCase="true">
             <!-- source https://el.wikipedia.org/wiki/%CE%A0%CE%BF%CE%BB%CF%85%CF%84%CE%BF%CE%BD%CE%B9%CE%BA%CE%AE_%CE%B3%CF%81%CE%B1%CF%86%CE%AE_%CF%84%CE%B7%CF%82_%CE%B5%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CE%AE%CF%82_%CE%B3%CE%BB%CF%8E%CF%83%CF%83%CE%B1%CF%82 -->
@@ -204,10 +206,6 @@
         </Transliterations>
         
     </BehaviorConfigs>
-    
-    <CreatorInAlphabeticalTerm>
-        <DisplayCreator>false</DisplayCreator>  
-    </CreatorInAlphabeticalTerm>
     
     <UserRolesConfigs>
         <ThesaurusTeam>

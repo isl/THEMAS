@@ -4077,16 +4077,24 @@ public class DBImportData {
         return;
     }
     
+    /**
+     * Function created for the needs of POLYDEYKIS db loading that removes the 
+     * guide terms that have also been declared as terms in the database.
+     * It updates the structures so that it removes "b" from a hierarchy like 
+     * a-b-c if "b" is a guide term by closing the gap if needed i.e. a-c
+     * @param termsInfo  the terms info that has been parsed and should be updated
+     * @param guideTerms the list of guide terms where searching will occur
+     */
     private void processGuideTermsDeclaredAsTerms(HashMap<String, NodeInfoStringContainer> termsInfo, ArrayList<String> guideTerms) {
         
         
-        if(!Parameters.adminXMLImportCheckForNodeLabelsDeclaredAsTerms){
+        if(Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs == false){
             return;
         }
         
-        //for each guide term that has been declared already been declared as normal term
-        // find out a list of bts or nts that are not guide terms that will be used in order to
-        //replace its presense in bts/nts relationships of other terms
+        //for each guide term that has been declared already as normal term
+        //find out a list of bts or nts that are not guide terms that will be 
+        //used in order to replace its presense in bts/nts relationships of other terms
         HashMap<String, ArrayList<String>> guideTermsReplacementBts = new HashMap<>();        
         HashMap<String, ArrayList<String>> guideTermsReplacementNts = new HashMap<>();
         HashMap<String, ArrayList<String>> guideTermsReplacementRts = new HashMap<>();

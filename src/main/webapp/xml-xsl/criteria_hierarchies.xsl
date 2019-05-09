@@ -133,13 +133,34 @@
                                 <td align="left" valign="top">
                                     <table border="0">
                                         <tr>
-                                            <td >
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/selectall/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                            <td>
+                                                <ul class="checkboxes checkboxes-horizontal"> 
+                                                    <li>
+                                                        <label for="showAllHierscbx">
+                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/selectall/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                            </xsl:call-template>    
+                                                        </label>
+                                                        <input type="checkbox" id="showAllHierscbx" name="showAll" value="all">                                            
+                                                            <xsl:attribute name="onclick">
+                                                                <xsl:text>if(checked) {showallpressed('hierarchies');} else{showallreleased('hierarchies');}</xsl:text>
+                                                            </xsl:attribute>
+                                                        </input>
+                                                    </li> 
+                                                </ul>
+                                                <!--
+                                                <xsl:call-template name="getTranslationMessage">
+                                                    <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/selectall/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                                 <input name="showAll" type="checkbox" value="all" >
                                                     <xsl:attribute name="onclick">
                                                         <xsl:text>if(checked) {showallpressed('hierarchies');} else{showallreleased('hierarchies');}</xsl:text>
                                                     </xsl:attribute>
-                                                </input>
+                                                </input>-->
                                             </td>
                                         </tr>
                                         <tr>
@@ -154,6 +175,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
+                                    
                                     <br/><br/>
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <input type="checkbox" name="output_hierarchy" value="name" checked="checked" class="hiddenInput" disabled="disabled"/>
@@ -169,10 +191,28 @@
                         <hr/>
                         
                         <table border="0" id="customOutputs_hierarchy">
-                            <tr><!--ROW 1-->
-                                <td width="140">
+                            <tr><!--ROW 1 width="140"-->
+                                <td>
+                                    
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out1" name="output_hierarchy" value="facet" checked="checked"/>
+                                            <label for="out1">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/outputarea/facets/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                                    <!--
                                     <input type="checkbox" checked="checked" name="output_hierarchy" value="facet"/>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/outputarea/facets/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage">
+                                        <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/outputarea/facets/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>  -->  
                                 </td>
                             </tr>
                         </table>

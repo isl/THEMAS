@@ -48,6 +48,7 @@ import javax.servlet.http.*;
 public class SearchCriteria {
     
     public String CombineOperator;
+    public boolean expandWithRecusiveNts = false;
     
     public ArrayList<String> input;
     public ArrayList<String> operator;
@@ -99,6 +100,21 @@ public class SearchCriteria {
 
     }
     
+    private void checkRequestForRntExpansionParameter(HttpServletRequest request,Utilities u){
+        this.expandWithRecusiveNts = false;
+        try{
+            String expandToRNTs = u.getDecodedParameterValue(request.getParameter("extendWithRntsName"));
+            if(expandToRNTs!=null && expandToRNTs.toLowerCase().equals("extendWithRnts".toLowerCase())){
+                this.expandWithRecusiveNts = true;
+            }
+        }
+        catch(java.io.UnsupportedEncodingException ex){
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Update Search Criteria Error : " + ex.getMessage());
+            Utils.StaticClass.handleException(ex);
+        }
+        
+    }
+    
     private String getAndOperatroDisplayString(String targetLang){
         String retVal = "";
         if(Lang_DefinitionsFor_SearchCriteria_And.containsKey(targetLang)){
@@ -144,7 +160,8 @@ public class SearchCriteria {
             //String showAll = null;
             if (targetSearchCriteriaMode.equals("SearchCriteria_Terms")) {
 
-               
+                // id="extendWithRntscbxId" name="extendWithRntsName" value="extendWithRnts"
+                
                 if (targetSearchCriteriaValue.equals("*")) {
 
                     //In this case View All icon was pressed from the left menu
@@ -236,6 +253,11 @@ public class SearchCriteria {
                 else
                 if (targetSearchCriteriaValue.equals("parseCriteria")) { 
 
+                    //only when specific criteria are used does this make sense
+                    //selection of all already contains everything while
+                    //quicksearch is available in a sepearate menu
+                    sc.checkRequestForRntExpansionParameter(request, u);
+                    
                     sc.CombineOperator = request.getParameter("operator_term");
 
                     String[] temp1 = request.getParameterValues("input_term");

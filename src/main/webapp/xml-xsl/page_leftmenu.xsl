@@ -465,7 +465,7 @@
                             <xsl:choose>
                                     <!-- only admin and thesaurus commitee have access to these operations-->
                                     <xsl:when test="$THEMASUserInfo_userGroup = 'READER' or $THEMASUserInfo_userGroup = 'LIBRARY' or $THEMASUserInfo_userGroup = 'EXTERNAL_READER' or $THEMASUserInfo_userGroup = 'THESAURUS_TEAM'">
-                                        <td>
+                                        <td style="display:none;">
                                             <a href="#" >
                                                 <xsl:attribute name="onclick">
                                                         <xsl:text>alert('</xsl:text>
@@ -496,7 +496,7 @@
                                         </td>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <td>
+                                        <td style="display:none;">
                                             <a>
                                                 <xsl:attribute name="href">
                                                     <xsl:text>#</xsl:text>

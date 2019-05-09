@@ -135,13 +135,35 @@
                                 <td align="left" valign="top">
                                     <table border="0">
                                         <tr>
-                                            <td >
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/criteriaarea/selectall/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                            <td>
+                                                <ul class="checkboxes checkboxes-horizontal"> 
+                                                    <li>
+                                                        <label for="showAllFacetscbx">
+                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/criteriaarea/selectall/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                            </xsl:call-template>    
+                                                        </label>
+                                                        <input type="checkbox" id="showAllFacetscbx" name="showAll" value="all">                                            
+                                                            <xsl:attribute name="onclick">
+                                                                <xsl:text>if(checked) {showallpressed('facets');} else{showallreleased('facets');}</xsl:text>
+                                                            </xsl:attribute>
+                                                        </input>
+                                                    </li> 
+                                                </ul>
+                                            <!--
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/criteriaarea/selectall/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                                 <input name="showAll" type="checkbox" value="all">
                                                     <xsl:attribute name="onclick">
                                                         <xsl:text>if(checked) {showallpressed('facets');} else{showallreleased('facets');}</xsl:text>
                                                     </xsl:attribute>
                                                 </input>
+                                                             -->
                                             </td>
                                         </tr>
                                         <tr>
@@ -189,9 +211,27 @@
                         
                         <table border="0" id="customOutputs_facet">
                             <tr><!--ROW 1-->
-                                <td width="140">
+                                <td>
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out1" name="output_facet" value="hierarchy" checked="checked"/>
+                                            <label for="out1">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/outputarea/hiers/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                                    <!--
                                     <input type="checkbox" checked="checked" name="output_facet" value="hierarchy"/>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/outputarea/hiers/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriafacetslocale/outputarea/hiers/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>  
+                                    -->
                                 </td>
                             </tr>
                         </table>

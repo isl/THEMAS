@@ -196,6 +196,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             ArrayList<Long> resultNodesIdsL = new ArrayList<Long>();
                 
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator,Q,TA,sis_session);
+            boolean extendSearcResultsWithRnts = false;//searchCriteria.expandWithRecusiveNts;
             
             if (startRecord!=null && startRecord.matches("SaveAll")) {
 
@@ -224,7 +225,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 
                 ArrayList<String> allTerms = new ArrayList<String>();                
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
-                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIdsL);
+                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIdsL,extendSearcResultsWithRnts, null);
                 dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_global_descriptor_results, termsInfo, allTerms , resultNodesIdsL);
                 
 
@@ -297,7 +298,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             
             
             
-            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIdsL);
+            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIdsL, extendSearcResultsWithRnts, null);
             dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_paging_results, termsInfo, resultsTerms , resultNodesIdsL);
             
             //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));     
