@@ -190,7 +190,7 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
     </context-param>
     <context-param>
         <param-name>TermModificationChecks</param-name>
-        <param-value>1:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
+        <param-value>1:::3:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
         <description> Configurable list of term modification consistency checks</description>
         <description>List of available values. (if a value is not checked</description>
         <description>1: Check if name declared is null or empty</description>

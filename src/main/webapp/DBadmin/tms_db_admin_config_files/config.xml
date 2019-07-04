@@ -39,29 +39,29 @@
     <Neo4j_DB_Backups_SubPATH>/Backups/db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>/Backups/xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>/TSVs/</Neo4j_ExportFileDirectory>    
-    -->
-    
+    -->    
     <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS_DB_Folder</Neo4j_DB_FOLDER_PATH>
     <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
-    
+        
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
      
- 
+    <!-- Greek Sample config
     <PrimaryLanguage>Greek</PrimaryLanguage>
     <PrimaryLanguagePrefix>EL</PrimaryLanguagePrefix>	
     <UnclassifiedTermsFacetName>ΟΡΦΑΝΟΙ ΟΡΟΙ</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Ορφανοί όροι</UnclassifiedTermsHierarchyName>    
+     -->
 
-    <!-- English sample config
+    <!-- English sample config -->
     <PrimaryLanguage>English</PrimaryLanguage>
     <PrimaryLanguagePrefix>EN</PrimaryLanguagePrefix>
     <UnclassifiedTermsFacetName>UNCLASSIFIED TERMS</UnclassifiedTermsFacetName>
     <UnclassifiedTermsHierarchyName>Unclassified terms</UnclassifiedTermsHierarchyName>
-    -->      
+    
     
     <!-- Arabic sample config   
     <PrimaryLanguage>Arabic</PrimaryLanguage>
