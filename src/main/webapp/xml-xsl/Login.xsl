@@ -78,9 +78,10 @@
                     </xsl:call-template>                    
                 </title>
                 <link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@" />
-                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
-                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-                     
+                <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+                
                 <script language="JavaScript" type="text/javascript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>           
                 <xsl:if test="$locale/header/favicon/text()!=''">
                     <link rel='shortcut icon' type='image/x-icon'>
@@ -166,34 +167,12 @@
                             <xsl:call-template name="Login_Contents"/>
                         </div>
                     
-                        <div id="footer" align="center">
-                            <xsl:call-template name="page_footer"/>
-                        </div>
+                        
+                        <xsl:call-template name="page_footer"/>
+                        
+                        
                     </div>
-                    <table style="width:100%; margin-left:auto; margin-right:auto;" >
-                        <tr>
-                            <td style="text-align:center;">
-                                <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
-                                    <xsl:attribute name="src">
-                                        <xsl:call-template name="getTranslationMessage">
-                                            <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/>                            
-                                            <xsl:with-param name="targetLang" select="$lang"/>
-                                            <xsl:with-param name="disableEscape" select="'no'"/>
-                                        </xsl:call-template>
-                                        <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
-                                    </xsl:attribute>
-                                    <xsl:attribute name="title">
-                                        <xsl:call-template name="getTranslationMessage">
-                                            <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/>                            
-                                            <xsl:with-param name="targetLang" select="$lang"/>
-                                            <xsl:with-param name="disableEscape" select="'no'"/>
-                                        </xsl:call-template>
-                                        <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
-                                    </xsl:attribute>
-                                </img>
-                            </td>
-                        </tr>
-                    </table>
+                    <xsl:call-template name="page_logos"/>
                 </div>
             </body>
         </html>

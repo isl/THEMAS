@@ -497,7 +497,7 @@ public class OfflineToolsClass {
                     ArrayList<String> allHierarchies = new ArrayList<String>();
                     ArrayList<String> allGuideTerms = new ArrayList<String>();
 
-                    exp.exportThesaurusActions(refSessionUserInfo, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+                    exp.exportThesaurusActions(refSessionUserInfo,null, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "exported in time " + Utilities.stopTimer(startTime) + " sec.");                    
                 }

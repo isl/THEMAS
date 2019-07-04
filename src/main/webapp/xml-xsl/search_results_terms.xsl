@@ -65,7 +65,11 @@
                         <xsl:when test="count(//data/terms/term)=0 or //data/terms/term[1]/descriptor = '' ">
                             <td align="left" valign="top" colspan="5">
                                 <strong>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tableresultslocale/noresultsmsg/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$tableresultslocale/noresultsmsg/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                 </strong>
                             </td>
                         </xsl:when>
@@ -141,9 +145,13 @@
                                     </strong>
                                 </td>
                             </xsl:for-each>
-                            <td>
+                            <td style="width: 70px; text-align:center;">
                                 <strong>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tableresultslocale/columns/actions/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$tableresultslocale/columns/actions/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                 </strong>
 			    </td>
                         </xsl:otherwise>
@@ -355,7 +363,7 @@
                                     </xsl:call-template> 
                             </xsl:if>
                                                   
-                        <td align="center" width="10%">
+                        <td align="center" style="width: 70px;">
 				
                             <a href="#">
                                 <img width="16" height="16" border="0"  style="margin-left:4px;">

@@ -99,12 +99,13 @@
                             <div id="logindiv">
                                 <xsl:call-template name="Login_Contents"/>
                             </div>
+                                                        
+                            <xsl:call-template name="page_footer"/>
+
                             
-                            <div id="footer" align="center">
-                                <xsl:call-template name="page_footer"/>
-                            </div>
                             
                         </div>
+                        <xsl:call-template name="page_logos"/>
                     </div>
                 
                 </body>

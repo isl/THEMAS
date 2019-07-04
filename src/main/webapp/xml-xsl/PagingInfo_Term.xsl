@@ -110,6 +110,27 @@
                                 </xsl:attribute>
                             </img>
                         </a>
+                        &#160;
+                         <a href="#" style="font-weight: bold;">
+                            <xsl:attribute name="onClick">downloadFileType('SearchResults_Terms','','','true','RDF');</xsl:attribute>
+                            <xsl:attribute name="title">
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveskosimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                            </xsl:attribute>
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$paginglocale/saveskosimage/text/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
+                                
+                            <!--<img  height="16" width="16" border="0" class="img_link" >
+                                <xsl:attribute name="src">
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveskosimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                </xsl:attribute>
+                                <xsl:attribute name="title">
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveskosimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                </xsl:attribute>
+                            </img>-->
+                        </a>
                               
                     
                 <hr></hr>

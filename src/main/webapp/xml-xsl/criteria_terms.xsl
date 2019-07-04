@@ -55,14 +55,54 @@ This file is part of the THEMAS system.
                     <td/>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align:middle;">
                         <xsl:call-template name="getTranslationMessage"> 
                             <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/title/option"/> 
                             <xsl:with-param name="targetLang" select="$lang"/> 
                             <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>  
+                        
+                        <xsl:text> </xsl:text>
+                        <span style="margin-left:20px;">
+                        <!-- Logical combine operator selection -->
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
                         </xsl:call-template>    
-                    </td>
+                        
+                        <ul class="checkboxes checkboxes-horizontal" style="vertical-align: text-bottom; display:inline-block;">
+                            <li>
+                                <label for="operator_term_and" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>
+                                </label>
+                                <input id="operator_term_and" name="operator_term" type="radio" value="and" checked="checked" style="vertical-align: text-bottom;"/>
+                            </li>
+                            <li>
+                                <label for="operator_term_or" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template> 
+                                </label>
+                                
+                                <input id="operator_term_or" name="operator_term" type="radio" value="or" style="vertical-align: text-bottom;"/>
+                            </li>
+                        </ul>
+                        
+                           
+                        
+                           
+                        
+                    </span>
+                    </td>                    
                 </tr>
+                
                 <tr>
                     <td align="left" valign="top" cellspacing="5">
                         <table border="0">
@@ -360,29 +400,7 @@ This file is part of the THEMAS system.
                                                     </li> 
                                                 </ul>
                                             </td>
-                                        </tr>
-                                        <!-- Logical combine operator selection -->
-                                        <tr>
-                                            <td align="left" id="criteria_and_or">
-                                                <xsl:call-template name="getTranslationMessage"> 
-                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
-                                                    <xsl:with-param name="targetLang" select="$lang"/> 
-                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                </xsl:call-template>    
-                                                <xsl:call-template name="getTranslationMessage"> 
-                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
-                                                    <xsl:with-param name="targetLang" select="$lang"/> 
-                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                </xsl:call-template>    
-                                                <input name="operator_term" type="radio" value="and" checked="checked"/>
-                                                <xsl:call-template name="getTranslationMessage"> 
-                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
-                                                    <xsl:with-param name="targetLang" select="$lang"/> 
-                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
-                                                </xsl:call-template>    
-                                                <input name="operator_term" type="radio" value="or"/>
-                                            </td>
-                                        </tr>
+                                        </tr>                                        
                                         
                                         <!-- Optional Configuration option to expand results with rnts -->
                                         <xsl:if test="$expandWithRntsOption='yes'">
@@ -402,6 +420,22 @@ This file is part of the THEMAS system.
                                                     </ul>                                            
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>
+                                                    <ul class="checkboxes checkboxes-horizontal"> 
+                                                        <li>
+                                                            <label for="restrictToApprovedcbxId">
+                                                                <xsl:call-template name="getTranslationMessage"> 
+                                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/restrictToApproved/option"/> 
+                                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                                </xsl:call-template>   
+                                                            </label>
+                                                            <input type="checkbox" id="restrictToApprovedcbxId" name="restrictToApprovedTermsname" value="restrictToApprovedTerms"/>                                            
+                                                        </li> 
+                                                    </ul>                                            
+                                                </td>
+                                            </tr>
                                         </xsl:if>
                                     </table>
                                 </td>
@@ -410,7 +444,7 @@ This file is part of the THEMAS system.
                             <!-- select all or none of the output fields -->
                             <tr>
                                 <td colspan="2">
-                                    <br/>
+                                    
                                     <br/>
                                     <xsl:call-template name="getTranslationMessage"> 
                                         <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> 
@@ -695,7 +729,7 @@ This file is part of the THEMAS system.
                         </table>
                     </td>
                 </tr>
-                <tr >
+                <tr>
                     <td align="right">
                         <input name="submit4search" class="button" type="button">
                             <xsl:attribute name="value">

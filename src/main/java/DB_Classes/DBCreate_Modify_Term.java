@@ -669,7 +669,7 @@ public class DBCreate_Modify_Term {
                     Q.reset_set(check_nodes_set);
 
                     //if(MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0){ // this is the case here --> just do it!
-                    dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
+                    dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, -1, Q, sis_session);
                     Q.reset_set(check_nodes_set);
                     //}
 

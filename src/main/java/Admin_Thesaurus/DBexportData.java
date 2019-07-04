@@ -56,6 +56,7 @@ import Utils.NodeInfoSortItemContainer;
 import Utils.NodeInfoStringContainer;
 
 import XMLHandling.WriteFileData;
+import javax.servlet.http.HttpServletRequest;
 
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
@@ -74,6 +75,7 @@ public class DBexportData {
     }
 
     public void exportThesaurusActions(UserInfoClass SessionUserInfo, /*CommonUtilsDBadmin common_utils,*/
+            HttpServletRequest reqOrNull,
             String exprortThesaurus,
             String exportSchemaName,
             OutputStreamWriter logFileWriter,
@@ -82,6 +84,7 @@ public class DBexportData {
             ArrayList<String> allGuideTerms){
 
         DBGeneral dbGen = new DBGeneral();
+        Utilities u = new Utilities();
 
         QClass Q = new QClass(); 
         TMSAPIClass TA = new TMSAPIClass();
@@ -190,7 +193,13 @@ public class DBexportData {
 
             
             dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies, allGuideTerms);
-
+            
+            if(reqOrNull!=null){
+                ArrayList<String> output = new ArrayList<>();
+                output.add(ConstantParameters.created_by_kwd);
+                output.add(ConstantParameters.modified_by_kwd);
+                u.updateUserNamesWithDescription(reqOrNull, output,exportSchemaName, termsInfo,null);
+            }
             //end query and close connection
             Q.free_all_sets();
             Q.TEST_end_query();

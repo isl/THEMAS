@@ -72,6 +72,7 @@ public class Parameters {
 
     public static boolean ShowReferenceURIalso = false;
     public static boolean SkosExportUsingXmlBase = false;
+    public static boolean SkosReplaceLoginNamesWithDescription = false;
     
     public static boolean DisplayExternalLinkUrls = false;
     public static boolean ModificationDateAffectingOnlyDirectlyModifiedTerm = false;
@@ -248,46 +249,48 @@ public class Parameters {
 
                 Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs = false;
                 
-                String boolValStr3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/XMLImport_Resolve_NodeLabels_DeclaredAsTerms[1]", document);
+                String boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/XMLImport_Resolve_NodeLabels_DeclaredAsTerms/configvalue[1]", document);
+                Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs = boolValStr.toLowerCase().equals("true")||boolValStr.toLowerCase().equals("yes");
                 
-                Parameters.adminXMLImport_Remove_NodeLabels_Declared_As_BTs = boolValStr3.toLowerCase().equals("true")||boolValStr3.toLowerCase().equals("yes");
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosExportUsingXmlBase/configvalue[1]", document);
+                Parameters.SkosExportUsingXmlBase = boolValStr.toLowerCase().equals("true")|| boolValStr.toLowerCase().equals("yes");
                 
-                String boolValStr4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosExportUsingXmlBase[1]", document);
-                Parameters.SkosExportUsingXmlBase = boolValStr4.toLowerCase().equals("true")|| boolValStr4.toLowerCase().equals("yes");
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/SkosReplaceLoginNamesWithDescription/configvalue[1]", document);
+                Parameters.SkosReplaceLoginNamesWithDescription = boolValStr.toLowerCase().equals("true")|| boolValStr.toLowerCase().equals("yes");
                 
-                String boolValStr5 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayExternalLinkUrls[1]", document);
-                Parameters.DisplayExternalLinkUrls = boolValStr5.toLowerCase().equals("true")|| boolValStr5.toLowerCase().equals("yes");
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayExternalLinkUrls/configvalue[1]", document);
+                Parameters.DisplayExternalLinkUrls = boolValStr.toLowerCase().equals("true")|| boolValStr.toLowerCase().equals("yes");
                 
-                String boolValStr6 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/ModificationDateAffectingOnlyDirectlyModifiedTerm[1]", document);
-                Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm = boolValStr6.toLowerCase().equals("true")|| boolValStr6.toLowerCase().equals("yes");
-                
-                
-                String boolValStr7 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AbilityToExpandSearchResultsWithRNTs[1]", document);
-                
-                Parameters.AbilityToExpandSearchResultsWithRNTs = boolValStr7.toLowerCase().equals("true")||boolValStr7.toLowerCase().equals("yes");
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/ModificationDateAffectingOnlyDirectlyModifiedTerm/configvalue[1]", document);
+                Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm = boolValStr.toLowerCase().equals("true")|| boolValStr.toLowerCase().equals("yes");
+                                
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AbilityToExpandSearchResultsWithRNTs/configvalue[1]", document);
+                Parameters.AbilityToExpandSearchResultsWithRNTs = boolValStr.toLowerCase().equals("true")||boolValStr.toLowerCase().equals("yes");
                 
                 Parameters.ThesTeamEditOnlyCreatedByTerms = false;
-                String boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms[1]", document);
-                
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UserRolesConfigs/ThesaurusTeam/EditOnlyCreatedByTerms/configvalue[1]", document);                
                 if(boolValStr.toLowerCase().equals("true")||boolValStr.toLowerCase().equals("yes")){
                     Parameters.ThesTeamEditOnlyCreatedByTerms = true;
-                }
-                else{
-                    Parameters.ThesTeamEditOnlyCreatedByTerms = false;
                 }
                 
                 
                 Parameters.CreatorInAlphabeticalTermDisplay = false;
-                String boolValStr_2 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayCreatorInAlphabeticalTerm[1]", document);
-
-                if (boolValStr_2.toLowerCase().equals("true") || boolValStr_2.toLowerCase().equals("yes")) {
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DisplayCreatorInAlphabeticalTerm/configvalue[1]", document);
+                if (boolValStr.toLowerCase().equals("true") || boolValStr.toLowerCase().equals("yes")) {
                     Parameters.CreatorInAlphabeticalTermDisplay = true;
-                } else {
-                    Parameters.CreatorInAlphabeticalTermDisplay = false;
                 }
 
-                String boolValStr_3 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf[1]", document);
-                if (boolValStr_3.toLowerCase().equals("true") || boolValStr_3.toLowerCase().equals("yes")) {
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/AtRenameStoreOldNameAsUf/configvalue[1]", document);
+                if (boolValStr.toLowerCase().equals("true") || boolValStr.toLowerCase().equals("yes")) {
                     Parameters.AtRenameSaveOldNameAsUf = true;
                 } else {
                     Parameters.AtRenameSaveOldNameAsUf = false;
@@ -297,8 +300,9 @@ public class Parameters {
 
                 UnclassifiedTermsFacetLogicalname = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/UnclassifiedTermsFacetName[1]", document);
 
-                String boolValStr_4 = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/@toLowerCase[1]", document);
-                if (boolValStr_4.toLowerCase().equals("true") || boolValStr_4.toLowerCase().equals("yes")) {
+                boolValStr = "";
+                boolValStr = xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/Transliterations/@toLowerCase[1]", document);
+                if (boolValStr.toLowerCase().equals("true") || boolValStr.toLowerCase().equals("yes")) {
                     Parameters.TransliterationsToLowerCase = true;
                 } else {
                     Parameters.TransliterationsToLowerCase = false;
@@ -315,6 +319,25 @@ public class Parameters {
 
                         Parameters.TransliterationsReplacements.put(replaceWhat.replace(delimeter, ""), replaceWith == null ? "" : replaceWith);
                     }
+                }
+
+                
+                boolValStr = "";
+                boolValStr =  xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/FormatXML/configvalue[1]", document);
+                if (boolValStr != null && boolValStr.toLowerCase().compareTo("false") == 0) {
+                    FormatXML = false;
+                }
+                else{
+                    FormatXML = true;
+                }
+
+                boolValStr = "";
+                boolValStr =  xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/DebugMode/configvalue[1]", document);
+                if (boolValStr!=null && boolValStr.toLowerCase().compareTo("true") == 0) {
+                    DEBUG = true;
+                }
+                else{
+                    DEBUG = false;
                 }
 
                 NodeList SupportedUILangCodesList = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document, XPathConstants.NODESET);
@@ -473,15 +496,7 @@ public class Parameters {
                 SkipAutomaticBackups = true;
             }
 
-            String doNotFormatXML = xpath.evaluate("web-app/context-param[param-name='FormatXML']/param-value[1]", document);
-            if (doNotFormatXML != null && doNotFormatXML.compareTo("false") == 0) {
-                FormatXML = false;
-            }
-
-            String DebugMode = xpath.evaluate("web-app/context-param[param-name='DebugMode']/param-value[1]", document);
-            if (DebugMode.compareTo("true") == 0) {
-                DEBUG = true;
-            }
+            
 
             /*
             String TempMailListREADSTR = xpath.evaluate("web-app/context-param[param-name='mailList']/param-value[1]", document);

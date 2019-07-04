@@ -1256,7 +1256,7 @@ public class ConsistensyCheck {
         dbGen.collect_Recurcively_ALL_BTs_Of_Set(selectedThesaurus,set_1, set_2, true,Q,sis_session);
         Q.reset_set( set_2);
 
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_1, set_2, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_1, set_2, false,-1,Q,sis_session);
         Q.reset_set( set_2);
 
 
@@ -1721,7 +1721,7 @@ public class ConsistensyCheck {
             Q.reset_name_scope();
             int set_leafTerms = Q.set_get_new();
             Q.reset_set(set_leafTerms);
-            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_exclude_target, set_leafTerms, false, Q, sis_session);
+            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_exclude_target, set_leafTerms, false, -1, Q, sis_session);
             Q.reset_set(set_leafTerms);
             
             //if no nts then no further check is needed
@@ -2238,7 +2238,7 @@ public class ConsistensyCheck {
         //ArrayList<String> test = dbGen.get_Node_Names_Of_Set(set_0, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test.toString());
         int set_1 = Q.set_get_new();
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,-1,Q,sis_session);
         Q.reset_set( set_1);
         
 
@@ -2513,7 +2513,7 @@ public class ConsistensyCheck {
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_0 has" + getStringList_Of_Set(Q,sis_session,dbGen,set_0, "'\n'"));
 
         int set_1 = Q.set_get_new();
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, true,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, true,-1,Q,sis_session);
         Q.reset_set( set_1);
         Q.free_set(set_0);
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_1 has" + getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
@@ -2955,7 +2955,7 @@ public class ConsistensyCheck {
 
         int set_1 = Q.set_get_new();
         //dbGen.collect_Recurcively_ALL_NTs_Of_Set(sessionInstance,set_0, set_1, true,Q,sis_session);
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,-1,Q,sis_session);
         Q.reset_set( set_1);        
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_1 has:\n" + getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
 

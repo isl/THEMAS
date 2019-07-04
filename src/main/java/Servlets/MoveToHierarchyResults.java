@@ -140,7 +140,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                         Q.set_put(check_nodes_set);
                         Q.reset_set(check_nodes_set);
 
-                        dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
+                        dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, -1, Q, sis_session);
                         Q.reset_set(check_nodes_set);
 
                         if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg,SessionUserInfo.UILang) == false) {
@@ -256,7 +256,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                         Q.reset_set(check_nodes_set);
 
                         if (MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0) {
-                            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
+                            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, -1, Q, sis_session);
                             Q.reset_set(check_nodes_set);
                         }
 

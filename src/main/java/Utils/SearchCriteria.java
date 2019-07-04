@@ -49,6 +49,7 @@ public class SearchCriteria {
     
     public String CombineOperator;
     public boolean expandWithRecusiveNts = false;
+    public boolean restrictToApproved = false;
     
     public ArrayList<String> input;
     public ArrayList<String> operator;
@@ -102,10 +103,17 @@ public class SearchCriteria {
     
     private void checkRequestForRntExpansionParameter(HttpServletRequest request,Utilities u){
         this.expandWithRecusiveNts = false;
+        this.restrictToApproved = false;
+        
         try{
             String expandToRNTs = u.getDecodedParameterValue(request.getParameter("extendWithRntsName"));
             if(expandToRNTs!=null && expandToRNTs.toLowerCase().equals("extendWithRnts".toLowerCase())){
                 this.expandWithRecusiveNts = true;
+            }
+            
+            String restrictToApproved = u.getDecodedParameterValue(request.getParameter("restrictToApprovedTermsname"));
+            if(restrictToApproved!=null && restrictToApproved.toLowerCase().equals("restrictToApprovedTerms".toLowerCase())){
+                this.restrictToApproved = true;
             }
         }
         catch(java.io.UnsupportedEncodingException ex){

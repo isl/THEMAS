@@ -201,7 +201,7 @@ public class ExportData extends ApplicationBasicServlet {
             ArrayList<String> allHierarchies = new ArrayList<>();
             ArrayList<String> allGuideTerms = new ArrayList<>();
             
-            exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+            exp.exportThesaurusActions(SessionUserInfo, request, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "exported in time " + Utilities.stopTimer(startTime) + " sec.");

@@ -2056,7 +2056,7 @@ public class DBMergeThesauri {
      * @param termExtLinks currently reading only the from, to and link type values of external links specification
      * @param vocabularyIdentifiers  currently not updated
      */
-    void ReadThesaurusExternalLinksAndVocabularies(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, String exprortThesaurus, Object object, HashMap<String, ArrayList<ExternalLink>> termExtLinks, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+    public void ReadThesaurusExternalLinksAndVocabularies(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, String exprortThesaurus, Object object, HashMap<String, ArrayList<ExternalLink>> termExtLinks, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
         
         DBGeneral dbGen = new DBGeneral();
         

@@ -239,7 +239,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute ref="referenceId" use="required"/>
+								<!--  use="required" -->
+								<xs:attribute ref="referenceId"/>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -267,7 +268,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute ref="referenceId" use="required"/>
+								<!-- use="required" -->
+								<xs:attribute ref="referenceId" />
 							</xs:extension>
 							<!-- this reference id should be included in the terms/term/descriptor/@referenceId -->
 						</xs:simpleContent>
@@ -280,7 +282,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute ref="referenceId" use="required"/>
+								<!--  use="required" -->
+								<xs:attribute ref="referenceId"/>
 								<xs:attribute name="linkClass">
 									<xs:annotation>
 										<xs:documentation>This optional attribute contains the node label (further categorization) that has been used for the defintion of the Narrower Term (inverse of Broader Term) relationship.</xs:documentation>

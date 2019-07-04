@@ -185,7 +185,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
-            ArrayList<String> GuideTermsToExport = new ArrayList<String>();
+            ArrayList<String> GuideTermsToExport = new ArrayList<>();
 
             GuideTermsToExport.addAll(GuideTerms);
             Collections.sort(GuideTermsToExport);
@@ -928,6 +928,10 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         }
         */
 
+        
+        
+        
+        
         ArrayList<String> nts = targetTermInfo.descriptorInfo.get(ConstantParameters.nt_kwd);
         ArrayList<SortItem> guidTermNts = new ArrayList<>();
         if (XMLguideTermsRelations.containsKey(targetSortItem.getLogName())) {
@@ -996,6 +1000,18 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         ArrayList<String> translations = targetTermInfo.descriptorInfo.get(ConstantParameters.translation_kwd);
 
         
+        ArrayList<String> allSources = targetTermInfo.descriptorInfo.get(ConstantParameters.primary_found_in_kwd);
+        if(allSources==null){
+            allSources = new ArrayList<>();
+        }
+        ArrayList<String> translationSources = targetTermInfo.descriptorInfo.get(ConstantParameters.translations_found_in_kwd);
+        if(translationSources!=null){
+            for(String trSource : translationSources){
+                if(!allSources.contains(trSource)){
+                    allSources.add(trSource);
+                }
+            }
+        }
         
         if(translations.size()>1){
             //keep at most one tranlsation per language
@@ -1080,68 +1096,75 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
                 //targetSortItem.getLogName()
             }
-            Collections.sort(translations);
-            for (int j = 0; j < translations.size(); j++) {
-                String translationValue = translations.get(j);
-                String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
-                String langCode = parts[0].toLowerCase();
-                String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
-                logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            if(translations!=null){
+                Collections.sort(translations);
+                for (int j = 0; j < translations.size(); j++) {
+                    String translationValue = translations.get(j);
+                    String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
+                    String langCode = parts[0].toLowerCase();
+                    String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
+                    logFileWriter.append(Utilities.escapeXML(langWord));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                }
+            }
+            if(ufs!=null){
+                Collections.sort(ufs);
+                for (int j = 0; j < ufs.size(); j++) {
+                    String value = ufs.get(j);
+
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
+                    logFileWriter.append(Utilities.escapeXML(value));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                }
+            }
+            if(ufTranslations!=null){
+                Collections.sort(ufTranslations);
+                for (int j = 0; j < ufTranslations.size(); j++) {
+                    String translationValue = ufTranslations.get(j);
+                    String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
+                    String langCode = parts[0].toLowerCase();
+                    String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
+                    logFileWriter.append(Utilities.escapeXML(langWord));
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                }
             }
 
-            Collections.sort(ufs);
-            for (int j = 0; j < ufs.size(); j++) {
-                String value = ufs.get(j);
-
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
-                logFileWriter.append(Utilities.escapeXML(value));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
-            }
-            Collections.sort(ufTranslations);
-            for (int j = 0; j < ufTranslations.size(); j++) {
-                String translationValue = ufTranslations.get(j);
-                String[] parts = translationValue.split(Parameters.TRANSLATION_SEPERATOR);
-                String langCode = parts[0].toLowerCase();
-                String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
-                logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
-            }
-
-            //broader
-            Collections.sort(bts);
-            for (String btTermName : bts) {
-                ArrayList<String> termReferenceId = new ArrayList<String>();
-                if (ConstantParameters.filterBts_Nts_Rts) {
-                    if (termsInfo.containsKey(btTermName) == false) {
+            if(bts!=null){
+                //broader
+                Collections.sort(bts);
+                for (String btTermName : bts) {
+                    ArrayList<String> termReferenceId = new ArrayList<String>();
+                    if (ConstantParameters.filterBts_Nts_Rts) {
+                        if (termsInfo.containsKey(btTermName) == false) {
+                            continue;
+                        }
+                    }
+                    if (termsFilter.size() > 0 && termsFilter.contains(btTermName) == false) {
                         continue;
                     }
-                }
-                if (termsFilter.size() > 0 && termsFilter.contains(btTermName) == false) {
-                    continue;
-                }
 
-                if (termsInfo.containsKey(btTermName)) {
-                    termReferenceId.addAll(termsInfo.get(btTermName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd));
-                }
-
-                String uriVal = "";
-                long termId = -1;
-                if(!termReferenceId.isEmpty()){
-                    try{
-                        termId = Long.parseLong(termReferenceId.get(0));
-                    }catch(NumberFormatException ex){
-                        Utils.StaticClass.handleException(ex);
+                    if (termsInfo.containsKey(btTermName)) {
+                        termReferenceId.addAll(termsInfo.get(btTermName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd));
                     }
-                }
-                if (termId > 0) {
-                    uriVal = getSkosUri(false,schemePrefix,termId) ;
-                }
 
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + uriVal + "\"/> <!-- " + Utilities.escapeXMLComment(btTermName) + " -->\n");
+                    String uriVal = "";
+                    long termId = -1;
+                    if(!termReferenceId.isEmpty()){
+                        try{
+                            termId = Long.parseLong(termReferenceId.get(0));
+                        }catch(NumberFormatException ex){
+                            Utils.StaticClass.handleException(ex);
+                        }
+                    }
+                    if (termId > 0) {
+                        uriVal = getSkosUri(false,schemePrefix,termId) ;
+                    }
 
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + uriVal + "\"/> <!-- " + Utilities.escapeXMLComment(btTermName) + " -->\n");
+
+                }
             }
 
             //Narrower
@@ -1284,39 +1307,41 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                 }*/
             }
-            Collections.sort(rts);
-            for (int j = 0; j < rts.size(); j++) {
-                String termName = rts.get(j);
+            if(rts!=null){
+                Collections.sort(rts);
+                for (int j = 0; j < rts.size(); j++) {
+                    String termName = rts.get(j);
 
-                if (ConstantParameters.filterBts_Nts_Rts) {
-                    if (termsInfo.containsKey(termName) == false) {
+                    if (ConstantParameters.filterBts_Nts_Rts) {
+                        if (termsInfo.containsKey(termName) == false) {
+                            continue;
+                        }
+                    }
+                    if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
                         continue;
                     }
-                }
-                if (termsFilter.size() > 0 && termsFilter.contains(termName) == false) {
-                    continue;
-                }
-                ArrayList<String> termtcs = new ArrayList<String>();
+                    ArrayList<String> termtcs = new ArrayList<String>();
 
-                if (termsInfo.containsKey(termName)) {
-                    termtcs.addAll(termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd));
-                }
+                    if (termsInfo.containsKey(termName)) {
+                        termtcs.addAll(termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd));
+                    }
 
-                String rtUriVal = "";
-                long termId = -1;
-                if (!termtcs.isEmpty()) {
-                     try{
-                        termId = Long.parseLong(termtcs.get(0));
-                    }catch(NumberFormatException ex){
-                        Utils.StaticClass.handleException(ex);
-                    }                            
-                }
-                if (termId> 0) {
-                    rtUriVal = getSkosUri(false,schemePrefix,termId) ;
-                }
+                    String rtUriVal = "";
+                    long termId = -1;
+                    if (!termtcs.isEmpty()) {
+                         try{
+                            termId = Long.parseLong(termtcs.get(0));
+                        }catch(NumberFormatException ex){
+                            Utils.StaticClass.handleException(ex);
+                        }                            
+                    }
+                    if (termId> 0) {
+                        rtUriVal = getSkosUri(false,schemePrefix,termId) ;
+                    }
 
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_related+" rdf:resource=\"" + rtUriVal + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
+                    logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_related+" rdf:resource=\"" + rtUriVal + "\"/> <!-- " + Utilities.escapeXMLComment(termName) + " -->\n");
 
+                }
             }
 
             if (scopeNotes != null && scopeNotes.size() > 0) {
@@ -1421,45 +1446,67 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 }
             }
             
+            if(allSources!=null){
+                Collections.sort(allSources);
+                for (int j = 0; j < allSources.size(); j++) {
+                    String value = allSources.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\t\t<dcterms:source>");
+                        logFileWriter.append(Utilities.escapeXML(value));
+                        logFileWriter.append("</dcterms:source>\r\n");
+                    }
+                }
+            }
+
+            if(creators!=null){
+                Collections.sort(creators);
+                for (int j = 0; j < creators.size(); j++) {
+                    String value = creators.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\t\t<dcterms:creator>");
+                        logFileWriter.append(Utilities.escapeXML(value));
+                        logFileWriter.append("</dcterms:creator>\r\n");
+                    }
+                }
+            }
             
-
-            Collections.sort(creators);
-            for (int j = 0; j < creators.size(); j++) {
-                String value = creators.get(j);
-                if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dcterms:creator>");
-                    logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:creator>\r\n");
-                }
-            }
-            Collections.sort(creationDates);
-            for (int j = 0; j < creationDates.size(); j++) {
-                String value = creationDates.get(j);
-                if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dcterms:created>");
-                    logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:created>\r\n");
+            if(creationDates!=null){
+                Collections.sort(creationDates);
+                for (int j = 0; j < creationDates.size(); j++) {
+                    String value = creationDates.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\t\t<dcterms:created>");
+                        logFileWriter.append(Utilities.escapeXML(value));
+                        logFileWriter.append("</dcterms:created>\r\n");
+                    }
                 }
             }
 
-            Collections.sort(modificators);
-            for (int j = 0; j < modificators.size(); j++) {
-                String value = modificators.get(j);
-                if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dcterms:contributor>");
-                    logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:contributor>\r\n");
+            if(modificators!=null){
+                Collections.sort(modificators);
+                for (int j = 0; j < modificators.size(); j++) {
+                    String value = modificators.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\t\t<dcterms:contributor>");
+                        logFileWriter.append(Utilities.escapeXML(value));
+                        logFileWriter.append("</dcterms:contributor>\r\n");
+                    }
                 }
             }
-            Collections.sort(modificationDates);
-            for (int j = 0; j < modificationDates.size(); j++) {
-                String value = modificationDates.get(j);
-                if (value != null && value.length() > 0) {
-                    logFileWriter.append("\t\t<dcterms:modified>");
-                    logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:modified>\r\n");
+            
+            if(modificationDates!=null){
+                Collections.sort(modificationDates);
+                for (int j = 0; j < modificationDates.size(); j++) {
+                    String value = modificationDates.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\t\t<dcterms:modified>");
+                        logFileWriter.append(Utilities.escapeXML(value));
+                        logFileWriter.append("</dcterms:modified>\r\n");
+                    }
                 }
             }
+            
+            
             
             if(termExtLinks!=null && termExtLinks.containsKey(targetSortItem.getLogName())){
                 ArrayList<ExternalLink> extLinks = termExtLinks.get(targetSortItem.getLogName());
@@ -1489,14 +1536,16 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             }
             logFileWriter.append("\t</rdf:Description>\r\n");
             
-            Collections.sort(exactMatchNodes);
-            for (int j = 0; j < exactMatchNodes.size(); j++) {
-                String value = exactMatchNodes.get(j);
-                if (value != null && value.length() > 0) {
-                    logFileWriter.append("\r\n\t<rdf:Description rdf:about=\"" + Utilities.escapeXML(schemePrefix+ value) + "\">\r\n");
-                    
-                    logFileWriter.append("\t\t<"+ConstantParameters.XML_owlSameAs+" rdf:resource=\""+targetTermId+"\"/>\r\n");
-                    logFileWriter.append("\t</rdf:Description>\r\n");
+            if(exactMatchNodes!=null){
+                Collections.sort(exactMatchNodes);
+                for (int j = 0; j < exactMatchNodes.size(); j++) {
+                    String value = exactMatchNodes.get(j);
+                    if (value != null && value.length() > 0) {
+                        logFileWriter.append("\r\n\t<rdf:Description rdf:about=\"" + Utilities.escapeXML(schemePrefix+ value) + "\">\r\n");
+
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_owlSameAs+" rdf:resource=\""+targetTermId+"\"/>\r\n");
+                        logFileWriter.append("\t</rdf:Description>\r\n");
+                    }
                 }
             }
         }
@@ -1604,7 +1653,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
     }
 
     public void WriteHierarchiesFromSortItems(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
-            HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
+            HashMap<SortItem, ArrayList<SortItem>> hierarchyFacets, 
+            HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             HashMap<String, ArrayList<ExternalLink>> termExtLinks,
             ArrayList<String> FacetsFilter,
@@ -1810,7 +1860,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 ConstantParameters.note_kwd
             };
 
-            ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
+            ArrayList<SortItem> allTerms = new ArrayList<>();
 
             if (termsFilter.isEmpty()) {
                 allTerms.addAll(Utilities.getSortItemVectorFromTermsInfo(termsInfo, false));
@@ -1831,7 +1881,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             SortItemComparator linkClassTransliterationComparator = new SortItemComparator((SortItemComparator.SortItemComparatorField.TRANSLITERATION));
             Collections.sort(allTerms, transliterationComparator);
 
-            ArrayList<String> specialCategories = new ArrayList<String>();
+            ArrayList<String> specialCategories = new ArrayList<>();
 
             specialCategories.add(ConstantParameters.rt_kwd);
             specialCategories.add(ConstantParameters.bt_kwd);
@@ -1869,7 +1919,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                     for (int m = 0; m < output.length; m++) {
                         String category = output[m];
-                        ArrayList<String> values = new ArrayList<String>();
+                        ArrayList<String> values = new ArrayList<>();
                         if (targetTermInfo.descriptorInfo.containsKey(category)) {
                             values.addAll(targetTermInfo.descriptorInfo.get(category));
                         }

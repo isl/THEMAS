@@ -34,10 +34,87 @@
 body{
     font-family: Verdana, Arial, Helvetica, sans-serif; 
     font-size: 11pt;
-    background-color:#FFFFFF;
+    background-color:#343839;
     font-weight: normal;
     line-height: normal;
     word-spacing: normal;
+}
+
+div#page-logos{
+    position:relative;
+    width: 1024px;
+        
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom: 20px;
+}
+div#logos-line-1{
+
+    width:100%;
+    /*
+    clear: both;
+    text-align: center;
+    position:relative;
+    */
+    background-color:#FFFFFF;
+    text-align: center;        
+}
+div#logos-line-2{
+
+    width:100%;
+    /*
+    clear: both;
+    text-align: center;
+    position:relative;
+    */
+    /*same as body bg */
+    background-color: #343839;
+    text-align: right;
+    margin-top:20px; 
+}
+
+div#logos-line-3{
+
+   text-align: right;
+    width:100%;    
+    margin-top:20px; 
+    /*font-family: Myriad pro;
+    font-size: 14pt; */
+    /*same as body */
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    /*same as body bg */
+    background-color: #343839;
+    margin-bottom: 20px;
+}
+
+div#logos-line-3 .developedtext{
+    color: #D1D1D1;
+    
+}
+div#logos-line-3 a{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+div#logos-line-3 a:hover{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+div#logos-line-3 a:visited{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+img#project-logo-img{
+    position: absolute; 
+    left: 50px;
+}
+img#acknowledgement-logo-img{
+    margin-top:8px; 
+    margin-bottom:5px;
 }
 
 #all{
@@ -81,12 +158,14 @@ img.disabledImage{
     filter: alpha(opacity=50); /* For IE8 and earlier */
 }
 #header {    
-    background-color: #E2E2E2;
+    /*background-color: #E2E2E2;*/
+    background-image: url(../images/leftmenu.jpg);
     height:77px;    
 }
 
 #headerLogin {    
     background-color: #FFFFFF;
+    
     height:77px;    
 }
 
@@ -215,11 +294,11 @@ legend {
 
 #page {
     position:relative;
-    top:5px;
+    margin-top:5px;
     height:720px;
     width: 1024px;  
     background-color: #FFFFFF;
-    border: 1px solid #898a5e;
+    /*border: 1px solid #898a5e;*/
     margin-left:auto;
     margin-right:auto;
 }

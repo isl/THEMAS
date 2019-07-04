@@ -114,6 +114,8 @@ public class MergeThesauri extends ApplicationBasicServlet {
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
             String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
             String WebAppUsersFileName = request.getSession().getServletContext().getRealPath("/" + UsersClass.WebAppUsersXMLFilePath);
+            String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
+
 
             String language = getServletContext().getInitParameter("LocaleLanguage");
             String country = getServletContext().getInitParameter("LocaleCountry");
@@ -165,8 +167,7 @@ public class MergeThesauri extends ApplicationBasicServlet {
                 wtmsUsers.AddNewThesaurusForCurrentTMSUser(WebAppUsersFileName, sessionInstance, mergedThesaurusName);
             }
 
-            //Now XSL should be found and java xsl transformation should be performed
-            String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
+            
             u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"), sessionInstance.path +"/");
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus merge operation of thesauri: " + thesaurusName1 + ", " + thesaurusName2 + " in thesaurus " + mergedThesaurusName + " was successfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");

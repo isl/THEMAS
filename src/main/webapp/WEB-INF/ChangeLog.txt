@@ -1,3 +1,40 @@
+2019-07-03
+=======================================
+- Footer customizable changes
+- Ability to restrict the "extend with rnts" option to the set of terms with the Approved terms set (excluding non Approved term subtree)
+- Ability to export the arbitrary search result set in SKOS/RDF
+- Export Sources in SKOS/RDF
+- Replace creators and contributors names with the user description from the login xml (should later be retrieved from the database) - configurable by config.xml
+- Rewrite rule mechanism change for skos export uri resolution
+
+2019-05-09
+=======================================
+- added the extent results with rnts option in UI
+- transformed search checkboxes ul li with labels
+- hard coded the option to restrict output fields (basically bts, rts, nts) of search results. should be defined in the UI
+
+2019-04-01
+=======================================
+- Move to Hierarchy bug resolution (modifiying also other terms) when  configuration "ModificationDateAffectingOnlyDirectlyModifiedTerm" is enabled
+
+2019-03-27
+=======================================
+- Bug resolution in case of editing rights of team users in case EditOnlyCreatedByTerms option is enabled ( team users should be able to edit the For Insertion terms even if they have not been created by them)
+- Bug resolution in edit source note pop up card
+- Configuration parameter DisplayExternalLinkUrls added (enabling or disabling display of the external links for terms.heirarchies facets)
+- Configuration parameter ModificationDateAffectingOnlyDirectlyModifiedTerm in order to change the last modified by and last modified on porperties of just the term that was directly edited (not its pervious or new BTs, NTs, RTs)
+
+
+2019-03-13
+=======================================
+- Bug fixes regarding users edit/delete password and copyright until date script
+
+2019-03-04
+=======================================
+- Show permanent link copy functionality to readers also
+- do not invalidate the session if user is granted the read access to the external thesaurus even if externalreader is not activated
+- Minor bug resolution. White page while system was under maintenance due to lack of import of xsl that retrieves translation messages
+
 2019-03-02
 =======================================
 - Addition of Permanent link copy functionality in Card of term, hierarchy Facet

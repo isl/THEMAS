@@ -3080,7 +3080,7 @@ public class DBFixCurrentData {
                 //int card2 = Q.set_get_card(set_all_bts);
 
                 int set_all_nts = Q.set_get_new();
-                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_target_node, set_all_nts, false, Q, sis_session);
+                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_target_node, set_all_nts, false, -1, Q, sis_session);
                 Q.reset_set(set_all_nts);
                 //int card3 = Q.set_get_card(set_all_nts);
 

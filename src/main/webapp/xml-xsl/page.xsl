@@ -159,9 +159,9 @@
                             </div>
                         </xsl:if>					
                         <!-- footer -->
-                        <div id="footer">
+                        <!--<div id="footer">-->
                             <xsl:call-template name="page_footer"/>
-                        </div>
+                        <!--</div>-->
                         <!-- LEGEND DIV CODE-->
                         <div id="legendDiv" name="legendDiv" class="legendThes">
                             <table cellspacing="0" cellpadding="0" border="0">
@@ -197,7 +197,8 @@
                             </table>
                         </div>
                     </div>
-                    <table style="width:100%; margin-left:auto; margin-right:auto;" >
+                    <xsl:call-template name="page_logos"/>
+                    <!--<table style="width:100%; margin-left:auto; margin-right:auto;" >
                         <tr>
                             <td style="text-align:center;">
                                 <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
@@ -210,7 +211,7 @@
                                 </img>
                             </td>
                         </tr>
-                    </table>        
+                    </table>   -->     
                 </div>
         
             </body>

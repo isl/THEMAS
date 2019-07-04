@@ -348,7 +348,7 @@ public class ScheduledBackups extends TimerTask {
             ArrayList<String> allHierarchies = new ArrayList<String>();
             ArrayList<String> allGuideTerms = new ArrayList<String>();
 
-            dbExport.exportThesaurusActions(SessionUserInfo, exprortThesaurus, ConstantParameters.xmlschematype_THEMAS, 
+            dbExport.exportThesaurusActions(SessionUserInfo, null, exprortThesaurus, ConstantParameters.xmlschematype_THEMAS, 
                     logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
             //dbExport.FOR_DELETE_exportTranslationCategories(sessionInstance,ConstantParameters.xmlschematype_THEMAS, Q,TA, sis_session, logFileWriter, targetLocale);
             //dbExport.FOR_DELETE_exportFacetsAndHierarchies(sessionInstance,ConstantParameters.xmlschematype_THEMAS, Q, sis_session, logFileWriter, targetLocale);

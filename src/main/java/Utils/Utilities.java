@@ -33,12 +33,14 @@
  */
 package Utils;
 
+import Admin_Thesaurus.DBMergeThesauri;
 import DB_Admin.CommonUtilsDBadmin;
 import DB_Admin.ConfigDBadmin;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
 import Users.UsersClass;
+import XMLHandling.WriteFileData;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
@@ -67,6 +69,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
@@ -107,6 +110,16 @@ public class Utilities {
         
         String lastPart = (isFacet ? "/Facet/":"/Concept/")+refId;
         return lastPart;
+    }
+    
+    String guessBaseHref(HttpServletRequest request){
+        String retUrl = "";
+        
+        String url = request.getRequestURL().toString();
+        String contextPath = request.getContextPath();
+        retUrl = url.substring(0, url.indexOf(contextPath))+contextPath;
+        
+        return retUrl;
     }
     
     /**
@@ -2166,7 +2179,8 @@ public class Utilities {
 
     
     
-    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, 
+            ArrayList<String> allGuideTerms, Locale targetLocale) {
 
         StringBuffer dataNeeded = new StringBuffer();
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
@@ -2194,8 +2208,155 @@ public class Utilities {
         return dataNeeded;
     }
 
+    /*
     public void writeResultsInOutputStream(){
         
+    }
+    */
+    
+    public void writeResultsInRDFFile(UserInfoClass SessionUserInfo,
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session,
+            String SkosExportConceptScheme, 
+            String SkosExportBaseNameSpace,
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name,
+            HashMap<String, NodeInfoSortItemContainer> termsInfo) {
+        
+        WriteFileData writer = new WriteFileData();
+        
+        ConstantParameters.referenceThesaurusSchemeName = SkosExportConceptScheme;
+        ConstantParameters.SchemePrefix = SkosExportBaseNameSpace;
+        String logFileNamePath = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".rdf";
+        
+        OutputStreamWriter logFileWriter = null;
+        
+        try {
+            OutputStream fout = new FileOutputStream(logFileNamePath);
+            OutputStream bout = new BufferedOutputStream(fout);
+            logFileWriter = new OutputStreamWriter(bout, "UTF-8");
+
+
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
+
+        } catch (FileNotFoundException | UnsupportedEncodingException exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+        String exportSchemaName = ConstantParameters.xmlschematype_skos;
+        String exprortThesaurus = SessionUserInfo.selectedThesaurus;
+        
+        DBMergeThesauri dbMerge = new DBMergeThesauri();
+        
+        HashMap<String, ArrayList<String>> hierarchyFacetsStrFormat = new HashMap<>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
+        HashMap<String,ArrayList<ExternalLink>> termExtLinks = new HashMap<>();
+        ArrayList<ExternalVocabulary> vocabularyIdentifiers = new ArrayList<>();
+        /*
+            hierarchyFacets.forEach( (key,value) -> {
+                hierarchyFacetsStrFormat.put(key.getLogName(), new ArrayList<String>(value.stream().map(item -> item.getLogName()).collect(Collectors.toList())));
+            });
+        */    
+        
+        try{
+
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
+                /* WriteTranslationCategories for SKOS export format it does not produce anything
+                writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
+                */
+
+                dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
+                
+                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
+                
+                //writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
+                //writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, 
+                        exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat,
+                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null);
+                
+                /* WriteGuideTerms for SKOS export format it only writes in comments
+                writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
+                */
+                
+                /*
+                WriteSources for SKOS export format it does not produce anything
+                writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                */
+                
+                /*
+                WriteExtVocabularies for SKOS export format it does not produce anything
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
+                */
+                writer.WriteFileEnd(logFileWriter, exportSchemaName);
+            }catch (IOException e) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in Utilities writeResultsInRDFFile() Message:" + e.getMessage());
+                Utils.StaticClass.handleException(e);
+
+            }
+        //produce rdf/skos file
+                    //String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
+                    /*
+                    String SkosExportConceptScheme = request.getParameter("skosConceptScheme");
+                    String SkosExportBaseNameSpace = request.getParameter("skosBaseNameSpace");
+                    
+                    Filename += ".rdf";
+                    if(SkosExportBaseNameSpace!=null && SkosExportBaseNameSpace.length()>0 &&  SkosExportConceptScheme!=null && SkosExportConceptScheme.length()>0){
+                        ConstantParameters.referenceThesaurusSchemeName = SkosExportConceptScheme;
+                        ConstantParameters.SchemePrefix = SkosExportBaseNameSpace;
+                    }
+                    else{
+
+                        ConstantParameters.referenceThesaurusSchemeName = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName + "#" + exprortThesaurus;
+                        ConstantParameters.SchemePrefix = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName +"/"+ exprortThesaurus;
+                    }
+                    
+                    logFileNamePath += "/" + Filename;
+
+
+
+
+
+                        try {
+                            OutputStream fout = new FileOutputStream(logFileNamePath);
+                            OutputStream bout = new BufferedOutputStream(fout);
+                            logFileWriter = new OutputStreamWriter(bout, "UTF-8");
+
+
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
+
+                        } catch (FileNotFoundException | UnsupportedEncodingException exc) {
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+                            Utils.StaticClass.handleException(exc);
+                        }
+
+                    ArrayList<String> thesauriNames = new ArrayList<>();
+                    ArrayList<String> allHierarchies = new ArrayList<>();
+                    ArrayList<String> allGuideTerms = new ArrayList<>();
+
+                    exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+                    
+                    
+                    try{
+
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
+                writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
+
+                writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
+                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
+                writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
+                writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
+                writer.WriteFileEnd(logFileWriter, exportSchemaName);
+            }catch (Exception e) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in DBexportData exportThesaurusActions() Message:" + e.getMessage());
+                Utils.StaticClass.handleException(e);
+
+            }
+
+                    */
     }
     
     public void writeResultsInXMLFile(PrintWriter outStream, ArrayList<String> allTerms, String startXML, ArrayList<String> output, 
@@ -2786,6 +2947,7 @@ public class Utilities {
         }
     }
 
+
     public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TOPTERM,TERM /*,SOURCE*/};
 
     public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
@@ -3052,7 +3214,7 @@ public class Utilities {
     
     public static ArrayList<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(HashMap<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
     
-        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<>();
         if(termsInfo!=null){
             Iterator<String> termEnum = termsInfo.keySet().iterator();
             while(termEnum.hasNext()){
@@ -3089,6 +3251,180 @@ public class Utilities {
         return returnResults;
     }
     
+    public HashMap<String, NodeInfoStringContainer> getStringContainerFromSortItemContainer(HashMap<String, NodeInfoSortItemContainer> sortItemContainer){
+        HashMap<String, NodeInfoStringContainer> retVal = new HashMap<>();
+        
+        if(sortItemContainer!=null){
+            
+            Iterator<String> termEnum = sortItemContainer.keySet().iterator();
+            
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
+                NodeInfoSortItemContainer targetInfo = sortItemContainer.get(termName);
+                
+                String[] output = targetInfo.descriptorInfo.keySet().toArray(new String[targetInfo.descriptorInfo.keySet().size()]);
+                int index = -1;
+                for(int i=0; i<output.length; i++){
+                    if(output[i].compareTo(ConstantParameters.id_kwd)==0){
+                        index = i;
+                        break;
+                    }
+                }
+                
+                if(index>=0){
+                    output[index] = ConstantParameters.system_referenceUri_kwd;
+                }
+                
+                NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+                for(String str : output){
+                    
+                    ArrayList<SortItem> vals = null; 
+                    if(str.compareTo(ConstantParameters.system_referenceUri_kwd)==0){
+                        vals = targetInfo.descriptorInfo.get(ConstantParameters.id_kwd);
+                        newContainer.descriptorInfo.get(str).add(""+vals.get(0).thesarurusReferenceId);
+                    }
+                    else{
+                        vals = targetInfo.descriptorInfo.get(str);
+                        if(str.compareTo(ConstantParameters.translation_kwd)==0 || str.compareTo(ConstantParameters.uf_translations_kwd)==0){
+                            for(SortItem si : vals){
+                                newContainer.descriptorInfo.get(str).add(si.linkClass +Parameters.TRANSLATION_SEPERATOR + si.log_name);
+                            }
+                        }
+                        else{
+                            for(SortItem si : vals){
+                                newContainer.descriptorInfo.get(str).add(si.log_name);
+                            }
+                        }
+                    }
+                    
+                    
+                }
+                retVal.put(termName, newContainer);
+            }
+        }
+        return retVal;
+    }
+    
+    public String getSkosExportConceptScheme(HttpServletRequest request, String thesaurus){
+        String baseWebAppLocation = guessBaseHref(request);
+        return baseWebAppLocation+"#"+thesaurus;
+        
+    }
+    
+    public String getSkosBaseName(HttpServletRequest request, String thesaurus){
+        String baseWebAppLocation = guessBaseHref(request);
+        return baseWebAppLocation+"/"+thesaurus;
+        
+    }
+    
+    public void updateUserNamesWithDescription(HttpServletRequest request, 
+            ArrayList<String> output, 
+            String exportScheme,
+            HashMap<String, NodeInfoStringContainer> termsStrInfo,
+            HashMap<String, NodeInfoSortItemContainer> termsInfo){
+        
+        if(exportScheme.equals(ConstantParameters.xmlschematype_skos) && Parameters.SkosReplaceLoginNamesWithDescription){
+            if(output.contains(ConstantParameters.created_by_kwd) || 
+                    output.contains(ConstantParameters.modified_by_kwd)){
+
+                HashMap<String,String> knownUserNames = new HashMap<>();
+
+                Iterator<String> termsEnumaration = termsInfo!=null ? termsInfo.keySet().iterator() : termsStrInfo.keySet().iterator();
+                while (termsEnumaration.hasNext()) {
+                    String termName = termsEnumaration.next();
+                    if(termsInfo!=null){
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(!knownUserNames.containsKey(si.log_name)){
+                                    knownUserNames.put(si.log_name, si.log_name);
+                                }
+                            }
+                        }
+
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(!knownUserNames.containsKey(si.log_name)){
+                                    knownUserNames.put(si.log_name, si.log_name);
+                                }
+                            }
+                        }     
+                    }
+                    else{
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(String si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(!knownUserNames.containsKey(si)){
+                                    knownUserNames.put(si, si);
+                                }
+                            }
+                        }
+
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(String si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(!knownUserNames.containsKey(si)){
+                                    knownUserNames.put(si, si);
+                                }
+                            }
+                        } 
+                    }
+
+                }
+
+                //check if user description has been defined
+                UsersClass wtmsUsers = new UsersClass();
+                Set<String> userKeys = knownUserNames.keySet();
+                for(String str : userKeys){
+                    UserInfoClass userClass = wtmsUsers.SearchTMSUser(request, str);
+                    if(userClass.description!=null && userClass.description.trim().length()>0){
+                        knownUserNames.put(str, userClass.description.trim());
+                    }
+                }
+
+                Iterator<String> termsEnum = termsInfo!=null ? termsInfo.keySet().iterator() : termsStrInfo.keySet().iterator();
+                while (termsEnum.hasNext()) {
+                    String termName = termsEnum.next();
+                    if(termsInfo!=null){
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }
+                        }
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(String str : knownUserNames.keySet()){                            
+                                Collections.replaceAll(termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd), str, knownUserNames.get(str));                            
+                            }
+                            /*
+                            for(SortItem si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }*/
+                        }
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(String str : knownUserNames.keySet()){                            
+                                Collections.replaceAll(termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd), str, knownUserNames.get(str));                            
+                            }
+                            /*for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }*/
+                        }
+                    }
+                }
+            }
+        }
+    }
     
 }
 

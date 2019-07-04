@@ -54,8 +54,75 @@
                 </tr>                
                 <tr>
                     <td>
-                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/title/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
+                        <xsl:text> </xsl:text>
+                        <span style="margin-left:20px;">
+                        <!-- Logical combine operator selection -->
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
+                        
+                        <ul class="checkboxes checkboxes-horizontal" style="vertical-align: text-bottom; display:inline-block;">
+                            <li>
+                                <label for="operator_source_and" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>
+                                </label>
+                                <input id="operator_source_and" name="operator_source" type="radio" value="and" checked="checked" style="vertical-align: text-bottom;"/>
+                            </li>
+                            <li>
+                                <label for="operator_source_or" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template> 
+                                </label>
+                                
+                                <input id="operator_source_or" name="operator_source" type="radio" value="or" style="vertical-align: text-bottom;"/>
+                            </li>
+                        </ul>
+                        </span>
                     </td>
+                    
+                        
+                          <!--
+              
+  <tr>
+                                            <td align="right" id="criteria_sources_and_or">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>
+                                                    
+                                               <xsl:call-template name="getTranslationMessage">
+                                                   <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
+                                                   <xsl:with-param name="targetLang" select="$lang"/> 
+                                                   <xsl:with-param name="disableEscape" select="'no'"/> 
+                                               </xsl:call-template>    
+                                               <input name="operator_source" type="radio" value="and" checked="checked"/>
+                                               <xsl:call-template name="getTranslationMessage"> 
+                                                   <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
+                                                   <xsl:with-param name="targetLang" select="$lang"/> 
+                                                   <xsl:with-param name="disableEscape" select="'no'"/> 
+                                               </xsl:call-template>    
+                                               <input name="operator_source" type="radio" value="or"/>
+                                            </td>
+                                        </tr>-->
+                        
+                           
+                        
+                    
                 </tr>                
                 <tr>
                     <td align="left" valign="top" cellspacing="5" >
@@ -175,20 +242,18 @@
 -->
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td align="right" id="criteria_sources_and_or">
-                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
-                                               <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    <input name="operator_source" type="radio" value="and" checked="checked"/>
-                                               <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    <input name="operator_source" type="radio" value="or"/>
-                                            </td>
-                                        </tr>
+                                        
                                     </table>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
                                     <br/><br/>
-                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>    
                                     <input type="checkbox" name="output_source" value="name" checked="checked" class="hiddenInput" disabled="disabled"/>
                                 </td>
                                 
