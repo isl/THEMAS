@@ -1013,7 +1013,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             }
         }
         
-        if(translations.size()>1){
+        if(translations!=null && translations.size()>1){
             //keep at most one tranlsation per language
             //this is a skos recommendation and this is this patch has been addded
             ArrayList<String> simpleLangCode = new ArrayList<>();
@@ -1041,7 +1041,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             
             if(!moveToUfTranslations.isEmpty()){
                 for(String movement : moveToUfTranslations){
-                    if(!ufTranslations.contains(movement)){
+                    if(ufTranslations!=null && !ufTranslations.contains(movement)){
                         ufTranslations.add(movement);
                     }
                 }
