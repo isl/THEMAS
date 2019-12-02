@@ -1,3 +1,13 @@
+2019-12-02
+=======================================
+- Corrected the extend with recursive nts functionality so that 
+  every term contains all of the broader / narrower / related terms 
+  regardless if they have already been included in the file in order to 
+  become compatible with skosmos. Also in the same functionality corrected 
+  the bug where each page did not display (BT,NT, RT) terms that were not 
+  part of this specific page
+
+
 2019-07-03
 =======================================
 - Footer customizable changes
