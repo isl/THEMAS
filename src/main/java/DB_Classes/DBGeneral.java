@@ -6244,33 +6244,7 @@ public class DBGeneral {
         if (btOutputSelected && !ntOutputSelected) {
             output.add(ConstantParameters.nt_kwd);
         }
-        /*
-         if(output.contains(nt_kwd)||output.contains(bt_kwd)){
-            
-         StringObject BTClassObj = new StringObject();
-         StringObject BTLinkObj = new StringObject();
-         getKeywordPair(sessionInstance, bt_kwd, BTClassObj, BTLinkObj, Q, sis_session);
-
-         Q.reset_name_scope();
-         Q.set_current_node(BTClassObj);
-         Q.set_current_node(BTLinkObj);
-         int set_guideTerms = Q.get_subclasses(0);
-         Q.reset_set(set_guideTerms);
-            
-         StringObject label = new StringObject();
-         ArrayList<String> guideTermsVec = new ArrayList<String>();
-         while(Q.retur_nodes(set_guideTerms, label)!=QClass.APIFail){
-         guideTermsVec.add(label.getValue());
-         }
-         Q.free_set(set_guideTerms);
-            
-         output.addAll(guideTermsVec);
-         }
-         */
-        //IntegerObject resultIdObj = new IntegerObject();
-        //StringObject resultNodeObj = new StringObject();
-        //StringObject resultClassObj = new StringObject();
-
+        
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
         
@@ -6464,6 +6438,29 @@ public class DBGeneral {
 
                 String value = row.get_v8_cmv().getString();
                 
+                
+                long valueIdL = row.get_v8_cmv().getSysid();
+                long valueRefIdL = row.get_v8_cmv().getRefid();
+                String valueTransliterationStr = row.get_v8_cmv().getTransliterationString();
+                
+                
+                if (categoryKwd == null) {
+                    if (category.startsWith(BTLinkObj.getValue())) {
+                        categoryKwd = ConstantParameters.bt_kwd;
+                    } else {
+                        continue;
+                    }
+                }
+                
+                if (categoryKwd.equals(ConstantParameters.modified_on_kwd) || categoryKwd.equals(ConstantParameters.created_on_kwd)) {
+                    //no value change needed
+                } else /*if (categoryKwd.compareTo(translation_kwd)==0) {
+                 value = value.replaceFirst(DBThesaurusReferences.languageIdentifierSuffix, ": ");
+                 }
+                 else
+                 */ {
+                    value = removePrefix(value);
+                }
                 if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
                     if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
                         if(Parameters.DEBUG){
@@ -6474,74 +6471,60 @@ public class DBGeneral {
                     }                    
                 }
                 
-                long valueIdL = row.get_v8_cmv().getSysid();
-                long valueRefIdL = row.get_v8_cmv().getRefid();
-                String valueTransliterationStr = row.get_v8_cmv().getTransliterationString();
+                
                 // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
                 //String valueId = String.valueOf(linkID.getValue());
                 //clsID = new IntegerObject();
                 //linkID = new IntegerObject();
                 //cmv = new CMValue();
 
-                if (categoryKwd == null) {
-                    if (category.startsWith(BTLinkObj.getValue())) {
-                        categoryKwd = ConstantParameters.bt_kwd;
-                    } else {
-                        continue;
-                    }
-                }
+                
 
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.bt_kwd)) {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
                 }
-                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
+                else if(categoryKwd.equals(ConstantParameters.rt_kwd)){
                     category = category.replaceFirst(RTLinkObj.getValue(), "");
                 }
                 
                 SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);
 
-                if (categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.comment_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.note_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.scope_note_kwd) 
+                        || categoryKwd.equals(ConstantParameters.translations_scope_note_kwd) 
+                        || categoryKwd.equals(ConstantParameters.historical_note_kwd)
+                        || categoryKwd.equals(ConstantParameters.comment_kwd) 
+                        || categoryKwd.equals(ConstantParameters.note_kwd) ) {
 
                     continue;
                 }
 
-                if (categoryKwd.compareTo(ConstantParameters.modified_on_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.created_on_kwd) == 0) {
-                    //no value change needed
-                } else /*if (categoryKwd.compareTo(translation_kwd)==0) {
-                 value = value.replaceFirst(DBThesaurusReferences.languageIdentifierSuffix, ": ");
-                 }
-                 else
-                 */ {
-                    value = removePrefix(value);
-                }
+                
 
                 SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
 
                 //the translation category will be as follows --> to_EN, to_IT etc
-                if (categoryKwd.compareTo(ConstantParameters.translation_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.translation_kwd)) {
                     valueSortItem = new SortItem(value, valueIdL, category.substring(category.indexOf(ConstantParameters.thesaursTranslationCategorysubString) + translationCategorySubStringLength));
                 }
-                if (categoryKwd.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.uf_translations_kwd)) {
                     valueSortItem = new SortItem(value, valueIdL, category.substring(category.indexOf(ConstantParameters.thesaursUFTranslationCategorysubString) + translationUFCategorySubStringLength));
                 }
-                if (categoryKwd.compareTo(ConstantParameters.uf_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.uf_kwd) || categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     valueSortItem.linkClass = "";
                 }
 
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
-                if (output.contains(categoryKwd)) {
-                    termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                if (output.contains(categoryKwd) ) {
+                    if(!termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).contains(valueSortItem)){
+                        termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    }
                 } else {
                     continue;
                 }
 
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.bt_kwd)) {
 
-                    if (resultNodesIdsL.contains(valueIdL)) {
+                    if (resultNodesIdsL.contains(valueIdL) ) {
 
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6550,9 +6533,11 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        }                        
                     }
-                } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                } else if (categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6561,7 +6546,10 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "", targetTermSortItem.getLogNameTransliteration(), targetTermSortItem.getThesaurusReferenceId()));
+                        SortItem newRt = new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "", targetTermSortItem.getLogNameTransliteration(), targetTermSortItem.getThesaurusReferenceId());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).contains(newRt)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(newRt);
+                        }
                     }
                 }
             }
@@ -6704,7 +6692,7 @@ public class DBGeneral {
             filteringLinks.add(ConstantParameters.rt_kwd);
             filteringLinks.add(ConstantParameters.bt_kwd);
         }
-        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<>();
         if (Q.bulk_return_full_link_id(set_to_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -6716,11 +6704,20 @@ public class DBGeneral {
 
                 String category = row.get_v5_categ();
                 String categoryKwd = keyWordsMappings.get(category); // LINKS TO TERMS ARE EITHER BT LINKS OR RT LINKS
+                if (category.startsWith(BTLinkObj.getValue())) {
+                    categoryKwd = ConstantParameters.nt_kwd;
+                }
                 if (categoryKwd != null && categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                     categoryKwd = ConstantParameters.nt_kwd;
                 }
                 
+                
                 String value = removePrefix(row.get_v1_cls());
+                long valueIdL = row.get_v2_clsid();
+                long valueRefIdL = row.get_v11_clsRefid();
+                String valueTransliterationStr = row.get_v10_clsTransliteration();
+                
+                
                 if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
                     if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
                         if(Parameters.DEBUG){
@@ -6730,9 +6727,7 @@ public class DBGeneral {
                     }                    
                 }
                 
-                long valueIdL = row.get_v2_clsid();
-                long valueRefIdL = row.get_v11_clsRefid();
-                String valueTransliterationStr = row.get_v10_clsTransliteration();
+                
                 // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
                 //String valueId = String.valueOf(linkID.getValue());
                 //clsID = new IntegerObject();
@@ -6750,10 +6745,10 @@ public class DBGeneral {
                         continue;
                     }
                 }
-                if (categoryKwd.compareTo(ConstantParameters.nt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.nt_kwd)) {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
                 }
-                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
+                else if(categoryKwd.equals(ConstantParameters.rt_kwd)){
                     category = category.replaceFirst(RTLinkObj.getValue(), "");
                 }
 
@@ -6768,12 +6763,14 @@ public class DBGeneral {
                 SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
                 if (output.contains(categoryKwd)) {
-                    termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    if(!termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).contains(valueSortItem)){
+                        termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    }
                 } else {
                     continue;
                 }
 
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.nt_kwd)) {
 
                     if (resultNodesIdsL.contains(valueIdL)) {
 
@@ -6783,10 +6780,12 @@ public class DBGeneral {
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
-
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.bt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.bt_kwd).add(targetTermSortItem.getACopy());
+                        }
+                        
                     }
-                } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                } else if (categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6795,7 +6794,11 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        //termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        }
                     }
 
                 }
