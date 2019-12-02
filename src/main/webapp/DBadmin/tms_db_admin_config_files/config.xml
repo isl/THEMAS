@@ -114,6 +114,11 @@
                 external link image will appear in Term/Hierarchy/Facet cards. 
                 Default value: false</description>
         </DisplayExternalLinkUrls>
+        <ExternalLinksOverrideDomainValues>
+            <!-- <configvalue>https://isl.ics.forth.gr/dyas-themas/HUMANITIES-THESAURUS###https://humanitiesthesaurus.academyofathens.gr/dyas-resource</configvalue>
+            <configvalue>https://isl.ics.forth.gr/dyas-themas#HUMANITIES-THESAURUS###https://humanitiesthesaurus.academyofathens.gr/</configvalue> -->
+            <description>defines a set of replacements that can be applied to the display/copy link operation defined as {originalvalue}###{replacement}. It will also be aplied to the RDF/SKOS export iff AbilityToExpandSearchResultsWithRNTs has been set to true</description>
+        </ExternalLinksOverrideDomainValues>
         <FormatXML>
             <configvalue>true</configvalue>
             <description>FormatXML: boolean value used in order to "pretty print" all generated xml files. 

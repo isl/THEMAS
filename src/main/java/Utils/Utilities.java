@@ -140,6 +140,14 @@ public class Utilities {
             firstPart+="/";
         }
         firstPart+=targetThesaurus;
+        
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(firstPart.startsWith(entry.getKey())){
+                    firstPart = firstPart.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
         return firstPart;
     }
     
@@ -402,7 +410,7 @@ public class Utilities {
             
             if(refIdL>0){
                 xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
-                if(Parameters.ShowReferenceURIalso){
+                    if(Parameters.ShowReferenceURIalso){
                     xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
                 }
             }
@@ -3021,6 +3029,13 @@ public class Utilities {
         */
         //retVal += String.format("%07d", referenceId);
         
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(retVal.startsWith(entry.getKey())){
+                    retVal = retVal.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
         return escapeXML(retVal);
     }
     
@@ -3306,14 +3321,28 @@ public class Utilities {
     }
     
     public String getSkosExportConceptScheme(HttpServletRequest request, String thesaurus){
-        String baseWebAppLocation = guessBaseHref(request);
-        return baseWebAppLocation+"#"+thesaurus;
+        String baseWebAppLocation = guessBaseHref(request)+"#"+thesaurus;
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(baseWebAppLocation.startsWith(entry.getKey())){
+                    baseWebAppLocation = baseWebAppLocation.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return baseWebAppLocation;
         
     }
     
     public String getSkosBaseName(HttpServletRequest request, String thesaurus){
-        String baseWebAppLocation = guessBaseHref(request);
-        return baseWebAppLocation+"/"+thesaurus;
+        String baseWebAppLocation = guessBaseHref(request) +"/"+thesaurus;
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(baseWebAppLocation.startsWith(entry.getKey())){
+                    baseWebAppLocation = baseWebAppLocation.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return baseWebAppLocation;
         
     }
     

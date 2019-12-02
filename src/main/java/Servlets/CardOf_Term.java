@@ -297,11 +297,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             elapsedTimeSec = Utilities.stopTimer(startTime);   
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms --> time elapsed: " + elapsedTimeSec);
             
-            
-           
             if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
                 if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS,true, SessionUserInfo.UILang));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, true, SessionUserInfo.UILang));
                     xml.append(xmlResults);
                     xml.append(u.getXMLEnd());
                 }

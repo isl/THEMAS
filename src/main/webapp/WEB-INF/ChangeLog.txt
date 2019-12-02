@@ -6,6 +6,7 @@
   become compatible with skosmos. Also in the same functionality corrected 
   the bug where each page did not display (BT,NT, RT) terms that were not 
   part of this specific page
+- Added configuration for external uri link replacements 
 
 
 2019-07-03

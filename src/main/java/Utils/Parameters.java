@@ -104,9 +104,6 @@ public class Parameters {
     public static String Save_Results_Temp_Folder;
     public static String Save_Results_Folder;
 
-    
-    
-
     public static String TRANSLATION_SEPERATOR;
     public static ArrayList<String> CLASS_SET;
     public static String DELIMITER1;
@@ -114,6 +111,9 @@ public class Parameters {
 
     public static String[] alphabetical_mode;
     public static String[] alphabetical_ignored_nodes;
+    
+    public static HashMap<String,String> ExternalURIsReplacements = new HashMap<>();
+    
     public static ArrayList<String> alphabetical_mode_PAGING_COUNT_NODES;
 
     public static boolean TransliterationsToLowerCase = false;
@@ -340,6 +340,23 @@ public class Parameters {
                     DEBUG = false;
                 }
 
+                NodeList replacementsConfigValuesList  = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/BehaviorConfigs/ExternalLinksOverrideDomainValues/configvalue", document, XPathConstants.NODESET);
+                if(replacementsConfigValuesList!=null){
+                    int howmanyItems = replacementsConfigValuesList.getLength();
+                    for (int i = 0; i < howmanyItems; i++) {
+
+                        String configAndReplacement = xpath.evaluate("./text()", replacementsConfigValuesList.item(i));
+                        if(configAndReplacement!=null && !configAndReplacement.isEmpty() && configAndReplacement.contains("###")){
+                            String originalVal = configAndReplacement.split("###")[0];
+                            String replacementVal = configAndReplacement.split("###")[1];
+                            if(originalVal!=null && !originalVal.isEmpty() && replacementVal!=null && !replacementVal.isEmpty()){
+                                ExternalURIsReplacements.put(originalVal, replacementVal);
+                            }                            
+                        }
+                    }
+                    
+                }
+                
                 NodeList SupportedUILangCodesList = (NodeList) xpath.evaluate("TMS_DB_ADMIN_COFIGURATIONS/SupportedUILangCodes/langcode", document, XPathConstants.NODESET);
                 if (SupportedUILangCodesList != null) {
                     int howmanyItems = SupportedUILangCodesList.getLength();
