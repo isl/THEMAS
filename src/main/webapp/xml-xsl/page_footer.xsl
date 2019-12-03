@@ -258,67 +258,109 @@ This file is part of the THEMAS system.
     
     <xsl:template name="page_logos">
         <div id="page-logos">
-            <div id="logos-line-1">
-                <a target="_blank">
-                    <xsl:attribute name="href">
-                        <xsl:call-template name="getTranslationMessage"> 
-                            <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/href/option"/> 
-                            <xsl:with-param name="targetLang" select="$lang"/> 
-                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                        </xsl:call-template>    
-                    </xsl:attribute>
-                    <img border="0" id="project-logo-img">
+            <div id="logos-line-1" class="w3-row">
+                <div class="w3-col m3">
+                    <a target="_blank">
+                        <xsl:attribute name="href">
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/href/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
+                        </xsl:attribute>
+                        <img border="0" id="project-logo-img" class="img-responsive">
+                            <xsl:attribute name="style">
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/stylevalue/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
+                            </xsl:attribute>
+                            <xsl:attribute name="src">
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/src/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
+                            </xsl:attribute>
+                            <xsl:attribute name="title">
+                                <xsl:call-template name="getTranslationMessage">
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/title/option"/>                            
+                                    <xsl:with-param name="targetLang" select="$lang"/>
+                                    <xsl:with-param name="disableEscape" select="'no'"/>
+                                </xsl:call-template>
+                                <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
+                            </xsl:attribute>
+                        </img>
+                    </a>
+
+                </div>
+                <div class="w3-col m6" align="middle">
+                    <img border="0" id="acknowledgement-logo-img" class="img-responsive">
                         <!--<xsl:attribute name="style">
                             <xsl:call-template name="getTranslationMessage"> 
-                                <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/stylevalue/option"/> 
+                                <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/stylevalue/option"/> 
                                 <xsl:with-param name="targetLang" select="$lang"/> 
                                 <xsl:with-param name="disableEscape" select="'no'"/> 
                             </xsl:call-template>    
                         </xsl:attribute>-->
                         <xsl:attribute name="src">
-                            <xsl:call-template name="getTranslationMessage"> 
-                                <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/src/option"/> 
-                                <xsl:with-param name="targetLang" select="$lang"/> 
-                                <xsl:with-param name="disableEscape" select="'no'"/> 
-                            </xsl:call-template>    
+                            <xsl:call-template name="getTranslationMessage">
+                                <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/>                            
+                                <xsl:with-param name="targetLang" select="$lang"/>
+                                <xsl:with-param name="disableEscape" select="'no'"/>
+                            </xsl:call-template>
+                            <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
                         </xsl:attribute>
                         <xsl:attribute name="title">
                             <xsl:call-template name="getTranslationMessage">
-                                <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogoimage/title/option"/>                            
+                                <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/>                            
                                 <xsl:with-param name="targetLang" select="$lang"/>
                                 <xsl:with-param name="disableEscape" select="'no'"/>
                             </xsl:call-template>
                             <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
                         </xsl:attribute>
                     </img>
-                </a>
+                </div>
 
-
-                <img border="0" id="acknowledgement-logo-img">
-                    <!--<xsl:attribute name="style">
-                        <xsl:call-template name="getTranslationMessage"> 
-                            <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/stylevalue/option"/> 
-                            <xsl:with-param name="targetLang" select="$lang"/> 
-                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                        </xsl:call-template>    
-                    </xsl:attribute>-->
-                    <xsl:attribute name="src">
-                        <xsl:call-template name="getTranslationMessage">
-                            <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/>                            
-                            <xsl:with-param name="targetLang" select="$lang"/>
-                            <xsl:with-param name="disableEscape" select="'no'"/>
-                        </xsl:call-template>
-                        <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
-                    </xsl:attribute>
-                    <xsl:attribute name="title">
-                        <xsl:call-template name="getTranslationMessage">
-                            <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/>                            
-                            <xsl:with-param name="targetLang" select="$lang"/>
-                            <xsl:with-param name="disableEscape" select="'no'"/>
-                        </xsl:call-template>
-                        <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
-                    </xsl:attribute>
-                </img>
+                
+                
+                <div class="w3-col m3">
+                    
+                    <a target="_blank">
+                        <xsl:attribute name="href">
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogorightsideimage/href/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
+                        </xsl:attribute>
+                        <img border="0" id="project-logo-right-side-img" class="img-responsive">
+                            <xsl:attribute name="style">
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogorightsideimage/stylevalue/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
+                            </xsl:attribute>
+                            <xsl:attribute name="src">
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogorightsideimage/src/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template>    
+                            </xsl:attribute>
+                            <xsl:attribute name="title">
+                                <xsl:call-template name="getTranslationMessage">
+                                    <xsl:with-param name="targetLangElements" select="$locale/footer/projectlogorightsideimage/title/option"/>                            
+                                    <xsl:with-param name="targetLang" select="$lang"/>
+                                    <xsl:with-param name="disableEscape" select="'no'"/>
+                                </xsl:call-template>
+                                
+                            </xsl:attribute>
+                        </img>
+                    </a>
+                </div>
             </div>
             <div id="logos-line-2">
                 

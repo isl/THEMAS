@@ -98,7 +98,8 @@
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                             </img>
-                        </a>&#160;
+                        </a>
+                        &#160;
                          <a href="#">
                             <xsl:attribute name="onClick">downloadFile('SearchResults_Terms','','','true');</xsl:attribute>
                             <img  height="16" width="16" border="0" class="img_link" >

@@ -45,8 +45,8 @@
     <waitfordownload>
         <headerimage>
             <src>
-                <option lang="en">images/thesaurus_header_en.jpg</option>
-                <option lang="el">images/thesaurus_header_gr.jpg</option>
+                <option lang="en">images/thesaurus_header_login_en.png</option>
+                <option lang="el">images/thesaurus_header_login_gr.jpg</option>
             </src>
             <title>
                 <option lang="en">Thesaurus Management System</option>
