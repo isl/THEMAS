@@ -34,18 +34,19 @@
 -->
 <TMS_DB_ADMIN_COFIGURATIONS>
     <!--    
-    <Neo4j_DB_FOLDER_PATH>/home/tzortzak/Projects/THEMAS_NEO4J_Database</Neo4j_DB_FOLDER_PATH>
+    <Neo4j_DB_FOLDER_PATH>/home/tzortzak/Projects/DBFolder</Neo4j_DB_FOLDER_PATH>
     <Neo4j_DB_PATH>/Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>/Backups/db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>/Backups/xml_backups</Neo4j_XML_Backups_SubPATH>
     <Neo4j_ExportFileDirectory>/TSVs/</Neo4j_ExportFileDirectory>    
+    <Neo4j_GenericTSVFile>/TSVs/System/Generic.tsv</Neo4j_GenericTSVFile>
+    <Neo4j_SpecificTSVFile>/TSVs/System/Specific.tsv</Neo4j_SpecificTSVFile>	
     -->    
-    <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS_DB_Folder</Neo4j_DB_FOLDER_PATH>
+    <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS\DBFolder</Neo4j_DB_FOLDER_PATH>
     <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
-    <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>
-        
+    <Neo4j_ExportFileDirectory>\TSVs\</Neo4j_ExportFileDirectory>        
     <Neo4j_GenericTSVFile>\TSVs\System\Generic.tsv</Neo4j_GenericTSVFile>
     <Neo4j_SpecificTSVFile>\TSVs\System\Specific.tsv</Neo4j_SpecificTSVFile>	
      

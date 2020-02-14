@@ -119,8 +119,8 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
                     + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""+(Parameters.SkosExportUsingXmlBase ? "\n\txml:base=\""+xmlBase+"\"":"")
                     //+ "\n\txml:base=\""+ConstantParameters.SchemePrefix+"/\""
                     +">\n");
-            logFileWriter.append("\t<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
-                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\n");
+            logFileWriter.append("\n\t<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
+                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\n\n");
             
             logFileWriter.append("\t<rdf:Description rdf:about=\""+ schemePrefix + Skos_Facet+"\">\n"+
 		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\n"+
