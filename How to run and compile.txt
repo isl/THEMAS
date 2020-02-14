@@ -35,6 +35,8 @@ How to run for the first time
     /WEB-INF/DBadmin/tms_db_admin_config_files/config.xml
 - - edit Primary UI Language in web.xml (UILanguage)
 - - edit log path in /WEB-INF/classes/logging.properties
+- iff in linux then make sure that e.g. tomcat user is defined as owner 
+  of the DB folder and the webapp folder recursively
 
 - if everything ready then login with admin/admin123
 - Navigate to (Left menu) Thesauri / gear icon / 3rd tab thesauri management
