@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -179,7 +179,7 @@ This file is part of the THEMAS system.
                 </td>
                 <!--  border:2px solid #999999; -->
                 <td  width="200" valign="middle"  style="color:#898a5e; font-size:9px; text-align:right; padding-left:5px; padding-right:5px;">
-                    <!--<b>target="_blank" href="http://www.ics.forth.gr/isl/cci-gr.html"-->
+                    <!--<b>target="_blank" href="https://www.ics.forth.gr/isl/cci-gr.html"-->
                     <i>
                         <xsl:choose>
                             <xsl:when test="$locale/footer/appurl/option[@lang=$lang]/text()!=''">

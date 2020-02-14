@@ -18,7 +18,7 @@ Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
 Tel:+30-2810-391632
 Fax: +30-2810-391638
 E-mail: isl@ics.forth.gr
-http://www.ics.forth.gr/isl
+https://www.ics.forth.gr/isl
 
 Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 

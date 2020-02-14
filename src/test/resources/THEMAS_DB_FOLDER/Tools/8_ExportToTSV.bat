@@ -21,7 +21,7 @@ REM Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, Crete, Greec
 REM     Tel: +30-2810-391632
 REM     Fax: +30-2810-391638
 REM  E-mail: isl@ics.forth.gr
-REM WebSite: http://www.ics.forth.gr/isl/cci.html
+REM WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
 REM 
 REM =============================================================================
 REM Authors: 
