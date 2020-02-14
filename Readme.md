@@ -53,7 +53,7 @@ conservation (maintenance) according to the consistency checks
 specified by the relevant ISO and ELOT standards. 
 
 ## Build
-Instructions on how to compile the THEMAS system are included in file: **How to compile.txt**
+Instructions on how to compile the THEMAS system are included in file: **How to run and compile.txt**
 
 ## Dependencies
 The THEMAS dependencies and licenses used are described in file: **THEMAS-Dependencies-LicensesUsed.txt**
