@@ -88,7 +88,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
             String term_decoded    = u.getDecodedParameterValue(request.getParameter("targetTerm"));
 
 
-            Boolean caseOfUndoRenameCycle = new Boolean(false);
+            Boolean caseOfUndoRenameCycle = false;
 
 
             //open connection and start Query

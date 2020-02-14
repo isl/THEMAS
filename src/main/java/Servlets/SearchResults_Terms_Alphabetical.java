@@ -115,7 +115,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
             int alphabeticalPagingFirst = 1;
-            int alphabeticalPagingListStep = new Integer(ListStepStr).intValue();
+            int alphabeticalPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int alphabeticalPagingQueryResultsCount = 0;
                         
             searchCriteria = (SearchCriteria) sessionInstance.getAttribute("SearchCriteria_Terms");

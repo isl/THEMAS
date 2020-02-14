@@ -57,7 +57,7 @@ public class SVGOBJ extends Object {
     fill        = new String("#E9E9C6");
     stroke      = new String("brown");
     fontfamily  = SVGFont.getFamily();
-    fontsize    = new Integer(SVGFont.getSize()).toString(); // new String(SVGFont.getSize());
+    fontsize    = Integer.valueOf(SVGFont.getSize()).toString(); // new String(SVGFont.getSize());
     textfill    = new String("black");
     text        = new String(TEXT);
     url         = new String(URLL);

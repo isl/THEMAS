@@ -84,7 +84,7 @@ public class FixCurrentData extends ApplicationBasicServlet {
                 response.sendRedirect("Index");
                 return;
             }
-            Boolean fixed = new Boolean(true);
+            Boolean fixed = true;
 
             QClass Q = new QClass();
             TMSAPIClass TA = new TMSAPIClass();

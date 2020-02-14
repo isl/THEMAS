@@ -129,7 +129,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             SearchCriteria searchCriteria = null;
 
             //initial values --> will change from the following code
-            int sourcesPagingListStep = new Integer(ListStepStr).intValue();
+            int sourcesPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int sourcesPagingFirst = 1;
             int sourcesPagingQueryResultsCount = 0;
 

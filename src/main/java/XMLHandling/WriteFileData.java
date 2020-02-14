@@ -38,11 +38,9 @@ package XMLHandling;
  */
 
 //package XMLHandling;
-import DB_Classes.DBGeneral;
 import Utils.ConstantParameters;
 import Utils.ExternalLink;
 import Utils.ExternalVocabulary;
-import Utils.Linguist;
 import Utils.NodeInfoStringContainer;
 import Utils.Parameters;
 import Utils.SortItem;
@@ -56,9 +54,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.format.DateTimeFormatter;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -94,10 +92,9 @@ public class WriteFileData {
         Utilities u = new Utilities();
 
         //locale/footer/tooltipappnameandversion
-        logFileWriter.append(ConstantParameters.xmlHeader);//+ "\r\n"
+        logFileWriter.append(ConstantParameters.xmlHeader);//+ "\n"
 
-        logFileWriter.append("<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
-                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\r\n");
+       
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 /* could use xml:base=""
 and then all rdfAbouts could just include the concept name
@@ -113,26 +110,28 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             String schemePrefix = (Parameters.SkosExportUsingXmlBase? "": xmlBase) ;
 
             
-            logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"
-                    + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\r\n"
-                    + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\r\n"
-                    + "\txmlns:owl=\"http://www.w3.org/2002/07/owl#\"\r\n"                    
-                    + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n"
-                    + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\"\r\n"
-                    + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""+(Parameters.SkosExportUsingXmlBase ? "\r\n\txml:base=\""+xmlBase+"\"":"")
-                    //+ "\r\n\txml:base=\""+ConstantParameters.SchemePrefix+"/\""
-                    +">\r\n\r\n");
+            logFileWriter.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n"
+                    + "\txmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n"
+                    + "\txmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n"
+                    + "\txmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n"                    
+                    + "\txmlns:dcterms=\"http://purl.org/dc/terms/\"\n"
+                    + "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n"
+                    + "\txmlns:iso-thes=\"http://purl.org/iso25964/skos-thes#\""+(Parameters.SkosExportUsingXmlBase ? "\n\txml:base=\""+xmlBase+"\"":"")
+                    //+ "\n\txml:base=\""+ConstantParameters.SchemePrefix+"/\""
+                    +">\n");
+            logFileWriter.append("\t<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
+                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\n");
             
-            logFileWriter.append("\t<rdf:Description rdf:about=\""+ schemePrefix + Skos_Facet+"\">\r\n"+
-		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\r\n"+
-                "\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\r\n"+
-		"\t</rdf:Description>\r\n\r\n");
+            logFileWriter.append("\t<rdf:Description rdf:about=\""+ schemePrefix + Skos_Facet+"\">\n"+
+		"\t\t<rdfs:subClassOf rdf:resource=\"http://www.w3.org/2004/02/skos/core#Collection\"/>\n"+
+                "\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"en\"> grouping of concepts of the same inherent category</"+ConstantParameters.XML_skos_scopeNote+">\n"+
+		"\t</rdf:Description>\n\n");
             
-            logFileWriter.append("\t<rdf:Description rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\r\n"
-                    + "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\r\n"
-                    + "\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + Utilities.escapeXML(importThesaurusName) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n"
-                    + "\t\t<dcterms:date>" + Utilities.GetNow() + "</dcterms:date>\r\n"
-                    + "\t</rdf:Description>\r\n");
+            logFileWriter.append("\t<skos:ConceptScheme rdf:about=\"" + ConstantParameters.referenceThesaurusSchemeName + "\">\n"
+                    //+ "\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#ConceptScheme\"/>\n"
+                    + "\t\t<"+ConstantParameters.XML_skos_prefLabel+">" + Utilities.escapeXML(importThesaurusName) + "</"+ConstantParameters.XML_skos_prefLabel+">\n"
+                    + "\t\t<dcterms:date>" + java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "</dcterms:date>\n"
+                    + "\t</skos:ConceptScheme>\n");
 
             /*
             	<rdf:Description rdf:about="https://vocabs.dariah.eu/bbt/Facet/">
@@ -142,13 +141,15 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             */
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-            //logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \r\n\t"            
-            //+ "xmlns=\"http://localhost/THEMAS\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n");
+            //logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\" exportDate=\"" + Utilities.GetNow() + "\" \n\t"            
+            //+ "xmlns=\"http://localhost/THEMAS\"\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
             logFileWriter.append("<data thesaurus=\"" + Utilities.escapeXML(importThesaurusName) + "\""+
-                                      " exportDate=\"" + Utilities.GetNow() + "\""+
-                                      " schemaversion=\"" + u.translateFromTranslationsXML("locale/version", null,uiLang) + "\">\r\n");
+                                      " exportDate=\"" + java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\""+
+                                      " schemaversion=\"" + u.translateFromTranslationsXML("locale/version", null,uiLang) + "\">\n");
+            logFileWriter.append("\t<!-- " + u.translateFromTranslationsXML("locale/footer/tooltipappnameandversion", null,uiLang) +" "+
+                u.translateFromTranslationsXML("locale/version", null, uiLang) +" -->\n");
         }
-
+         
         logFileWriter.flush();
     }
 
@@ -156,7 +157,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting translation categories");
-            logFileWriter.write("\r\n\t<TranslationCategories translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">\r\n");
+            logFileWriter.write("\n\t<TranslationCategories translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">\n");
 
             ArrayList<String> sortedTrCategs = new ArrayList<String>(translationPairs.keySet());
             Collections.sort(sortedTrCategs);
@@ -165,17 +166,17 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 //String languageWord = allTrCategories.nextElement();
                 String languageId = translationPairs.get(languageWord);
 
-                logFileWriter.write("\t\t<TranslationPair>\r\n");
+                logFileWriter.write("\t\t<TranslationPair>\n");
                 logFileWriter.write("\t\t\t<TranslationWord>");
                 logFileWriter.write(languageWord);
-                logFileWriter.write("</TranslationWord>\r\n");
+                logFileWriter.write("</TranslationWord>\n");
                 logFileWriter.write("\t\t\t<TranslationIdentifier>");
                 logFileWriter.write(languageId);
-                logFileWriter.write("</TranslationIdentifier>\r\n");
-                logFileWriter.write("\t\t</TranslationPair>\r\n");
+                logFileWriter.write("</TranslationIdentifier>\n");
+                logFileWriter.write("\t\t</TranslationPair>\n");
 
             }
-            logFileWriter.write("\t</TranslationCategories>\r\n");
+            logFileWriter.write("\t</TranslationCategories>\n");
         }
         logFileWriter.flush();
     }
@@ -192,19 +193,19 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             if (GuideTermsToExport.size() > 0) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Node Labels");
-                logFileWriter.append("\r\n\t<!-- Export of Node Labels - Guide Terms in SKOS not implemented yet ");
-                logFileWriter.append("\r\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
+                logFileWriter.append("\n\t<!-- Export of Node Labels - Guide Terms in SKOS not implemented yet ");
+                logFileWriter.append("\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\n");
 
                 for (int i = 0; i < GuideTermsToExport.size(); i++) {
                     logFileWriter.append("\t\t<" + ConstantParameters.XMLNodeLabelElementName + " index=\"" + (i + 1) + "\">");
                     //logFileWriter.append("\t\t\t<name>");
                     logFileWriter.append(Utilities.escapeXML(GuideTermsToExport.get(i)));
-                    //logFileWriter.append("</name>\r\n");
-                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\r\n");
+                    //logFileWriter.append("</name>\n");
+                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\n");
                 }
 
-                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
-                logFileWriter.append("\r\n\t-->\r\n");
+                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\n");
+                logFileWriter.append("\n\t-->\n");
             }
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
@@ -216,18 +217,18 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             if (GuideTermsToExport.size() > 0) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Node Labels");
-                logFileWriter.append("\r\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + " count=\"" + GuideTermsToExport.size() + "\">\r\n");
+                logFileWriter.append("\n\t<" + ConstantParameters.XMLNodeLabelsWrapperElementName + " count=\"" + GuideTermsToExport.size() + "\">\n");
 
                 for (int i = 0; i < GuideTermsToExport.size(); i++) {
                     //logFileWriter.append("\t\t<"+ConstantParameters.XMLNodeLabelElementName+" index=\"" + (i + 1) + "\">");
                     logFileWriter.append("\t\t<" + ConstantParameters.XMLNodeLabelElementName + ">");
                     //logFileWriter.append("\t\t\t<name>");
                     logFileWriter.append(Utilities.escapeXML(GuideTermsToExport.get(i)));
-                    //logFileWriter.append("</name>\r\n");
-                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\r\n");
+                    //logFileWriter.append("</name>\n");
+                    logFileWriter.append("</" + ConstantParameters.XMLNodeLabelElementName + ">\n");
                 }
 
-                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\r\n");
+                logFileWriter.append("\t</" + ConstantParameters.XMLNodeLabelsWrapperElementName + ">\n");
             }
 
         }
@@ -337,41 +338,41 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 }
  
                 
-                logFileWriter.append("\r\n\t<!-- Facet -->\r\n");
+                logFileWriter.append("\n\t<!-- Facet -->\n");
                 String appendVal = "\t<rdf:Description" ;
                 if(facetNameSortItem.getThesaurusReferenceId()>0){
                     appendVal += " rdf:about=\""+ getSkosUri(true,schemePrefix,facetNameSortItem.getThesaurusReferenceId()) +"\"";
                 }
-                appendVal+=">\r\n";
+                appendVal+=">\n";
                 logFileWriter.append(appendVal);
-                logFileWriter.append("\t\t<rdf:type rdf:resource=\""+schemePrefix+Skos_Facet+"\"/>\r\n");
+                logFileWriter.append("\t\t<rdf:type rdf:resource=\""+schemePrefix+Skos_Facet+"\"/>\n");
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogName()));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\n");
                 if(facetNameSortItem.getLogNameTransliteration()!=null && facetNameSortItem.getLogNameTransliteration().length()>0){
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(facetNameSortItem.getLogNameTransliteration()));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\n");
                 }
 
                 for (SortItem hierarchyVal : values) {
                     if (hierarchyVal != null && hierarchyVal.getLogName() !=null && hierarchyVal.getLogName().length() >0  && hierarchyVal.getThesaurusReferenceId() > 0) {
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + getSkosUri(false,schemePrefix,hierarchyVal.getThesaurusReferenceId()) + "\"/> <!-- " + Utilities.escapeXMLComment(hierarchyVal.getLogName()) + " -->\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_member+" rdf:resource=\"" + getSkosUri(false,schemePrefix,hierarchyVal.getThesaurusReferenceId()) + "\"/> <!-- " + Utilities.escapeXMLComment(hierarchyVal.getLogName()) + " -->\n");
                     }
                 }
 
-                logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
-                logFileWriter.append("\t</rdf:Description>\r\n");
+                logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\n");
+                logFileWriter.append("\t</rdf:Description>\n");
             }
 
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Facets");
-            logFileWriter.append("\r\n\t<facets count=\"" + facetsToExportInSortItemFormat.size() + "\">\r\n");
+            logFileWriter.append("\n\t<facets count=\"" + facetsToExportInSortItemFormat.size() + "\">\n");
 
             for (SortItem item : facetsToExportInSortItemFormat) {
-                //logFileWriter.append("\t\t<facet index=\"" + (i + 1) + "\">\r\n");
-                logFileWriter.append("\t\t<facet>\r\n");
+                //logFileWriter.append("\t\t<facet index=\"" + (i + 1) + "\">\n");
+                logFileWriter.append("\t\t<facet>\n");
                 String appendValue = "\t\t\t<name";
 
                 if (item.getThesaurusReferenceId() > 0) {
@@ -384,18 +385,18 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 logFileWriter.append(appendValue);
 
                 logFileWriter.append(Utilities.escapeXML(item.getLogName()));
-                logFileWriter.append("</name>\r\n");
+                logFileWriter.append("</name>\n");
 
                 if (item.getLogNameTransliteration() != null && item.getLogNameTransliteration().length() > 0) {
                     logFileWriter.append("\t\t\t<" + ConstantParameters.system_transliteration_kwd + ">");
                     logFileWriter.append(Utilities.escapeXML(item.getLogNameTransliteration()));
-                    logFileWriter.append("</" + ConstantParameters.system_transliteration_kwd + ">\r\n");
+                    logFileWriter.append("</" + ConstantParameters.system_transliteration_kwd + ">\n");
                 }
 
-                logFileWriter.append("\t\t</facet>\r\n");
+                logFileWriter.append("\t\t</facet>\n");
             }
 
-            logFileWriter.append("\t</facets>\r\n");
+            logFileWriter.append("\t</facets>\n");
 
         }
         logFileWriter.flush();
@@ -500,26 +501,26 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (targetTermId.length() > 0) {
             if (isTopConcept) {
-                logFileWriter.append("\r\n\t<!-- TopConcept -->\r\n");
+                logFileWriter.append("\n\t<!-- TopConcept -->\n");
             } else {
-                logFileWriter.append("\r\n\t<!-- Concept -->\r\n");
+                logFileWriter.append("\n\t<!-- Concept -->\n");
             }
-            logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
-            logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
-            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetTermId+"</"+ConstantParameters.XML_skos_Notation+">\r\n");
+            logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\n");
+            //logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n");
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetTermId+"</"+ConstantParameters.XML_skos_Notation+">\n");
             logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetTermName));
-            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\n");
             
             
             if(transliterationStr!=null && transliterationStr.length()>0){
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(transliterationStr));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\n");
             }
 
             //status
-            logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\n");
             
             
             Collections.sort(translations);
@@ -530,7 +531,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\n");
             }
 
             Collections.sort(ufs);
@@ -539,7 +540,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(value));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\n");
             }
             Collections.sort(ufTranslations);
             for (int j = 0; j < ufTranslations.size(); j++) {
@@ -549,7 +550,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
                 logFileWriter.append(Utilities.escapeXML(langWord));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\n");
             }
 
             //broader
@@ -671,9 +672,9 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
-                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\n");
+                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -703,8 +704,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                         }
 
-                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\r\n");
+                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\n");
                     }
 
                 }
@@ -744,7 +745,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (scopeNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(scopeNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\n");
                 }
             }
 
@@ -753,7 +754,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 for (int j = 0; j < scopeNoteTranslations.size(); j++) {
                     String noteStr = scopeNoteTranslations.get(j);
                     noteStr = noteStr.replaceAll("\t", " ");
-                    noteStr = noteStr.replaceAll("\r\n", " ");
+                    noteStr = noteStr.replaceAll("\n", " ");
                     noteStr = noteStr.replaceAll("\r", " ");
                     noteStr = noteStr.replaceAll("\n", " ");
                     noteStr = noteStr.replaceAll(" +", " ");
@@ -765,7 +766,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             noteStr = noteStr.trim();
                             logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + langCode.toLowerCase() + "\">");
                             logFileWriter.append(Utilities.escapeXML(noteStr));
-                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
+                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\n");
                         }
                     }
 
@@ -777,7 +778,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              String scopeNoteVal = scopeNoteTranslations.get(0);
              scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
              scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
-             scopeNoteVal = scopeNoteVal.replaceAll("\r\n", "\n");
+             scopeNoteVal = scopeNoteVal.replaceAll("\n", "\n");
              scopeNoteVal = scopeNoteVal.replaceAll(" \n", "\n");
 
              String[] parts = scopeNoteVal.split("\n");
@@ -793,7 +794,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
              logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
              logFileWriter.append(Utilities.escapeXML(value));
-             logFileWriter.append("</skos:scopeNote>\r\n");
+             logFileWriter.append("</skos:scopeNote>\n");
              }
              langCode = partStr.replaceFirst(Parameters.TRANSLATION_SEPERATOR, "");
              value = "";
@@ -810,7 +811,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
              logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
              logFileWriter.append(Utilities.escapeXML(value));
-             logFileWriter.append("</skos:scopeNote>\r\n");
+             logFileWriter.append("</skos:scopeNote>\n");
              }
              }
              }*/
@@ -819,7 +820,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (historicalNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_historyNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(historicalNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\n");
                 }
             }
 
@@ -828,7 +829,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (commentNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_EditorialNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(commentNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\n");
                 }
             }
             
@@ -837,7 +838,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (noteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Note+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(noteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\n");
                 }
             }
 
@@ -847,7 +848,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (value != null && value.length() > 0) {
                     logFileWriter.append("\t\t<dcterms:creator>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:creator>\r\n");
+                    logFileWriter.append("</dcterms:creator>\n");
                 }
             }
             Collections.sort(creationDates);
@@ -856,7 +857,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (value != null && value.length() > 0) {
                     logFileWriter.append("\t\t<dcterms:created>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:created>\r\n");
+                    logFileWriter.append("</dcterms:created>\n");
                 }
             }
 
@@ -866,7 +867,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (value != null && value.length() > 0) {
                     logFileWriter.append("\t\t<dcterms:contributor>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:contributor>\r\n");
+                    logFileWriter.append("</dcterms:contributor>\n");
                 }
             }
             Collections.sort(modificationDates);
@@ -875,16 +876,16 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (value != null && value.length() > 0) {
                     logFileWriter.append("\t\t<dcterms:modified>");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</dcterms:modified>\r\n");
+                    logFileWriter.append("</dcterms:modified>\n");
                 }
             }
 
             if (isTopConcept) {
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\n");
             } else {
-                logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
+                logFileWriter.append("\t\t<skos:inScheme rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\n");
             }
-            logFileWriter.append("\t</rdf:Description>\r\n");
+            logFileWriter.append("\t</skos:Concept>\n");
         }
     }
     
@@ -1073,27 +1074,27 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (targetTermId.length() > 0) {
             if (isTopConcept) {
-                logFileWriter.append("\r\n\t<!-- TopConcept -->\r\n");
+                logFileWriter.append("\n\t<!-- TopConcept -->\n");
             } else {
-                logFileWriter.append("\r\n\t<!-- Concept -->\r\n");
+                logFileWriter.append("\n\t<!-- Concept -->\n");
             }
-            //logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\r\n");
-            logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\r\n");
-            logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\r\n");
-            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetSortItem.getThesaurusReferenceId()+"</"+ConstantParameters.XML_skos_Notation+">\r\n");            
+            //logFileWriter.append("\t<rdf:Description rdf:about=\"" + targetTermId + "\">\n");
+            //logFileWriter.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n");
+            logFileWriter.append("\t<skos:Concept rdf:about=\"" + targetTermId + "\">\n");            
+            logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Notation+">"+targetSortItem.getThesaurusReferenceId()+"</"+ConstantParameters.XML_skos_Notation+">\n");            
             logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
             logFileWriter.append(Utilities.escapeXML(targetSortItem.getLogName()));
-            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+            logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\n");
             
             if(transliterationStr!=null && transliterationStr.length()>0){
                 logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_hiddenLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                 logFileWriter.append(Utilities.escapeXML(transliterationStr));
-                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\r\n");
+                logFileWriter.append("</"+ConstantParameters.XML_skos_hiddenLabel+">\n");
             }
 
             if(targetTermStatus.length()>0){
                 //status
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_iso_thes_status+">"+targetTermStatus+"</"+ConstantParameters.XML_iso_thes_status+">\n");
                 //targetSortItem.getLogName()
             }
             if(translations!=null){
@@ -1105,7 +1106,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + langCode + "\">");
                     logFileWriter.append(Utilities.escapeXML(langWord));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_prefLabel+">\n");
                 }
             }
             if(ufs!=null){
@@ -1115,7 +1116,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(value));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\n");
                 }
             }
             if(ufTranslations!=null){
@@ -1127,7 +1128,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     String langWord = translationValue.replaceFirst(parts[0] + Parameters.TRANSLATION_SEPERATOR, "");
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_altLabel+" xml:lang=\"" + langCode + "\">");
                     logFileWriter.append(Utilities.escapeXML(langWord));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_altLabel+">\n");
                 }
             }
 
@@ -1264,9 +1265,9 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                     Collections.sort(ntsWithThisGuideTerm);
                     if (ntsWithThisGuideTerm != null && ntsWithThisGuideTerm.size() > 0) {
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\r\n");
-                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_narrower+">\n");
+                        logFileWriter.append("\t\t\t<"+ConstantParameters.XML_skos_collection+">\n");
+                        logFileWriter.append("\t\t\t\t<"+ConstantParameters.XML_skos_prefLabel+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">" + Utilities.escapeXML(targetGuideTerm) + "</"+ConstantParameters.XML_skos_prefLabel+">\n");
 
                         for (int k = 0; k < ntsWithThisGuideTerm.size(); k++) {
                             String ntStr = ntsWithThisGuideTerm.get(k);
@@ -1301,8 +1302,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                         }
 
-                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\r\n");
-                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\r\n");
+                        logFileWriter.append("\t\t\t</"+ConstantParameters.XML_skos_collection+">\n");
+                        logFileWriter.append("\t\t</"+ConstantParameters.XML_skos_narrower+">\n");
                     }
 
                 }*/
@@ -1349,7 +1350,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (scopeNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(scopeNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\n");
                 }
             }
 
@@ -1358,7 +1359,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 for (int j = 0; j < scopeNoteTranslations.size(); j++) {
                     String noteStr = scopeNoteTranslations.get(j);
                     noteStr = noteStr.replaceAll("\t", " ");
-                    noteStr = noteStr.replaceAll("\r\n", " ");
+                    noteStr = noteStr.replaceAll("\n", " ");
                     noteStr = noteStr.replaceAll("\r", " ");
                     noteStr = noteStr.replaceAll("\n", " ");
                     noteStr = noteStr.replaceAll(" +", " ");
@@ -1370,7 +1371,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             noteStr = noteStr.trim();
                             logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_scopeNote+" xml:lang=\"" + langCode.toLowerCase() + "\">");
                             logFileWriter.append(Utilities.escapeXML(noteStr));
-                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\r\n");
+                            logFileWriter.append("</"+ConstantParameters.XML_skos_scopeNote+">\n");
                         }
                     }
 
@@ -1382,7 +1383,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              String scopeNoteVal = scopeNoteTranslations.get(0);
              scopeNoteVal = scopeNoteVal.replaceAll("\t", " ");
              scopeNoteVal = scopeNoteVal.replaceAll(" +", " ");
-             scopeNoteVal = scopeNoteVal.replaceAll("\r\n", "\n");
+             scopeNoteVal = scopeNoteVal.replaceAll("\n", "\n");
              scopeNoteVal = scopeNoteVal.replaceAll(" \n", "\n");
 
              String[] parts = scopeNoteVal.split("\n");
@@ -1398,7 +1399,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
              logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
              logFileWriter.append(Utilities.escapeXML(value));
-             logFileWriter.append("</skos:scopeNote>\r\n");
+             logFileWriter.append("</skos:scopeNote>\n");
              }
              langCode = partStr.replaceFirst(Parameters.TRANSLATION_SEPERATOR, "");
              value = "";
@@ -1415,7 +1416,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
              if (langCode != null && langCode.length() > 0 && value != null && value.length() > 0) {
              logFileWriter.append("\t\t<skos:scopeNote xml:lang=\"" + langCode.toLowerCase() + "\">");
              logFileWriter.append(Utilities.escapeXML(value));
-             logFileWriter.append("</skos:scopeNote>\r\n");
+             logFileWriter.append("</skos:scopeNote>\n");
              }
              }
              }*/
@@ -1424,7 +1425,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (historicalNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_historyNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(historicalNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_historyNote+">\n");
                 }
             }
 
@@ -1433,7 +1434,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (commentNoteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_EditorialNote+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(commentNoteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_EditorialNote+">\n");
                 }
             }
             
@@ -1442,7 +1443,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 if (noteVal.length() > 0) {
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_Note+" xml:lang=\"" + Parameters.PrimaryLang.toLowerCase() + "\">");
                     logFileWriter.append(Utilities.escapeXML(noteVal));
-                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\r\n");
+                    logFileWriter.append("</"+ConstantParameters.XML_skos_Note+">\n");
                 }
             }
             
@@ -1453,7 +1454,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (value != null && value.length() > 0) {
                         logFileWriter.append("\t\t<dcterms:source>");
                         logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</dcterms:source>\r\n");
+                        logFileWriter.append("</dcterms:source>\n");
                     }
                 }
             }
@@ -1465,7 +1466,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (value != null && value.length() > 0) {
                         logFileWriter.append("\t\t<dcterms:creator>");
                         logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</dcterms:creator>\r\n");
+                        logFileWriter.append("</dcterms:creator>\n");
                     }
                 }
             }
@@ -1477,7 +1478,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (value != null && value.length() > 0) {
                         logFileWriter.append("\t\t<dcterms:created>");
                         logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</dcterms:created>\r\n");
+                        logFileWriter.append("</dcterms:created>\n");
                     }
                 }
             }
@@ -1489,7 +1490,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (value != null && value.length() > 0) {
                         logFileWriter.append("\t\t<dcterms:contributor>");
                         logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</dcterms:contributor>\r\n");
+                        logFileWriter.append("</dcterms:contributor>\n");
                     }
                 }
             }
@@ -1501,7 +1502,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     if (value != null && value.length() > 0) {
                         logFileWriter.append("\t\t<dcterms:modified>");
                         logFileWriter.append(Utilities.escapeXML(value));
-                        logFileWriter.append("</dcterms:modified>\r\n");
+                        logFileWriter.append("</dcterms:modified>\n");
                     }
                 }
             }
@@ -1523,28 +1524,28 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             }
                         }
                         
-                        logFileWriter.append("\t\t<"+targetMatchElement+" rdf:resource=\"" + Utilities.escapeXML(extLink.linkUri) + "\"/>\r\n");                        
+                        logFileWriter.append("\t\t<"+targetMatchElement+" rdf:resource=\"" + Utilities.escapeXML(extLink.linkUri) + "\"/>\n");                        
                     }
                 }
             }
             
 
             if (isTopConcept) {
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_topConceptOf+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\n");
             } else {
-                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_inScheme+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\r\n");
+                logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_inScheme+" rdf:resource=\"" + ConstantParameters.referenceThesaurusSchemeName + "\"/> <!-- " + Utilities.escapeXMLComment(importThesaurusName) + " -->\n");
             }
-            logFileWriter.append("\t</rdf:Description>\r\n");
+            logFileWriter.append("\t</skos:Concept>\n");
             
             if(exactMatchNodes!=null){
                 Collections.sort(exactMatchNodes);
                 for (int j = 0; j < exactMatchNodes.size(); j++) {
                     String value = exactMatchNodes.get(j);
                     if (value != null && value.length() > 0) {
-                        logFileWriter.append("\r\n\t<rdf:Description rdf:about=\"" + Utilities.escapeXML(schemePrefix+ value) + "\">\r\n");
+                        logFileWriter.append("\n\t<rdf:Description rdf:about=\"" + Utilities.escapeXML(schemePrefix+ value) + "\">\n");
 
-                        logFileWriter.append("\t\t<"+ConstantParameters.XML_owlSameAs+" rdf:resource=\""+targetTermId+"\"/>\r\n");
-                        logFileWriter.append("\t</rdf:Description>\r\n");
+                        logFileWriter.append("\t\t<"+ConstantParameters.XML_owlSameAs+" rdf:resource=\""+targetTermId+"\"/>\n");
+                        logFileWriter.append("\t</rdf:Description>\n");
                     }
                 }
             }
@@ -1612,8 +1613,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             if (allHierarchies.size() > 0) {
 
-                //logFileWriter.append("\r\n\t<hierarchies>\r\n");
-                logFileWriter.append("\r\n\t<hierarchies count=\"" + allHierarchies.size() + "\">\r\n");
+                //logFileWriter.append("\n\t<hierarchies>\n");
+                logFileWriter.append("\n\t<hierarchies count=\"" + allHierarchies.size() + "\">\n");
 
                 for (int i = 0; i < allHierarchies.size(); i++) {
                     String hierarchyName = allHierarchies.get(i);
@@ -1622,11 +1623,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                         Collections.sort(facets);
                     }
 
-                    //logFileWriter.append("\t\t<hierarchy index=\"" + (i+1) + "\">\r\n");
-                    logFileWriter.append("\t\t<hierarchy>\r\n");
+                    //logFileWriter.append("\t\t<hierarchy index=\"" + (i+1) + "\">\n");
+                    logFileWriter.append("\t\t<hierarchy>\n");
                     logFileWriter.append("\t\t\t<name>");
                     logFileWriter.append(Utilities.escapeXML(hierarchyName));
-                    logFileWriter.append("</name>\r\n");
+                    logFileWriter.append("</name>\n");
                     for (int k = 0; k < facets.size(); k++) {
                         String facetName = facets.get(k);
                         if (facetFilter.size() > 0 && facetFilter.contains(facetName) == false) {
@@ -1635,15 +1636,15 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                         if (facetName != null && facetName.length() > 0) {
                             logFileWriter.append("\t\t\t<facet>");
                             logFileWriter.append(Utilities.escapeXML(facetName));
-                            logFileWriter.append("</facet>\r\n");
+                            logFileWriter.append("</facet>\n");
                         }
 
                     }
-                    logFileWriter.append("\t\t</hierarchy>\r\n");
+                    logFileWriter.append("\t\t</hierarchy>\n");
 
                 }
 
-                logFileWriter.append("\t</hierarchies>\r\n");
+                logFileWriter.append("\t</hierarchies>\n");
 
             }
 
@@ -1699,8 +1700,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
             } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-                //logFileWriter.append("\r\n\t<hierarchies>\r\n");
-                logFileWriter.append("\r\n\t<hierarchies count=\"" + allHierarchies.size() + "\">\r\n");
+                //logFileWriter.append("\n\t<hierarchies>\n");
+                logFileWriter.append("\n\t<hierarchies count=\"" + allHierarchies.size() + "\">\n");
 
                 for (SortItem hierarchySortItem : allHierarchies) {
                     ArrayList<SortItem> facets = hierarchyFacets.get(hierarchySortItem);
@@ -1708,8 +1709,8 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                         Collections.sort(facets, transliterationComparator);
                     }
 
-                    //logFileWriter.append("\t\t<hierarchy index=\"" + (i+1) + "\">\r\n");
-                    logFileWriter.append("\t\t<hierarchy>\r\n");
+                    //logFileWriter.append("\t\t<hierarchy index=\"" + (i+1) + "\">\n");
+                    logFileWriter.append("\t\t<hierarchy>\n");
                     String appendVal = "\t\t\t<name";
                     if (hierarchySortItem.getThesaurusReferenceId() > 0) {
                         appendVal += " " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"" + hierarchySortItem.getThesaurusReferenceId() + "\"";
@@ -1717,11 +1718,11 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                     appendVal += ">";
                     logFileWriter.append(appendVal);
                     logFileWriter.append(Utilities.escapeXML(hierarchySortItem.getLogName()));
-                    logFileWriter.append("</name>\r\n");
+                    logFileWriter.append("</name>\n");
                     if (hierarchySortItem.getLogNameTransliteration() != null && hierarchySortItem.getLogNameTransliteration().length() > 0) {
                         logFileWriter.append("\t\t\t<" + ConstantParameters.system_transliteration_kwd + ">");
                         logFileWriter.append(Utilities.escapeXML(hierarchySortItem.getLogNameTransliteration()));
-                        logFileWriter.append("</" + ConstantParameters.system_transliteration_kwd + ">\r\n");
+                        logFileWriter.append("</" + ConstantParameters.system_transliteration_kwd + ">\n");
                     }
                     for (SortItem facet : facets) {
                         if (facet != null && facet.getLogName().length() > 0) {
@@ -1735,14 +1736,14 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                             appendVal += ">";
                             logFileWriter.append(appendVal);
                             logFileWriter.append(Utilities.escapeXML(facet.getLogName()));
-                            logFileWriter.append("</facet>\r\n");
+                            logFileWriter.append("</facet>\n");
                         }
 
                     }
-                    logFileWriter.append("\t\t</hierarchy>\r\n");
+                    logFileWriter.append("\t\t</hierarchy>\n");
                 }
 
-                logFileWriter.append("\t</hierarchies>\r\n");
+                logFileWriter.append("\t</hierarchies>\n");
             }
         }
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Finished Exporting Hierarchies");
@@ -1754,25 +1755,25 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             Utilities u = new Utilities();
             if (XMLsources.size() > 0) {
-                logFileWriter.append("\r\n\t<sources count=\"" + XMLsources.size() + "\">");
+                logFileWriter.append("\n\t<sources count=\"" + XMLsources.size() + "\">");
                 ArrayList<String> sourceNames = new ArrayList<String>(XMLsources.keySet());
                 Collections.sort(sourceNames);
 
                 for (int k = 0; k < sourceNames.size(); k++) {
                     String targetSource = sourceNames.get(k);
                     String targetSourceNote = XMLsources.get(targetSource);
-                    //logFileWriter.append("\r\n\t\t<source index=\""+(k+1)+"\">");
-                    logFileWriter.append("\r\n\t\t<source>");
-                    logFileWriter.append("\r\n\t\t\t<name>" + u.escapeXML(targetSource) + "</name>");
+                    //logFileWriter.append("\n\t\t<source index=\""+(k+1)+"\">");
+                    logFileWriter.append("\n\t\t<source>");
+                    logFileWriter.append("\n\t\t\t<name>" + u.escapeXML(targetSource) + "</name>");
                     if (targetSourceNote != null && targetSourceNote.trim().length() > 0) {
-                        targetSourceNote = targetSourceNote.replaceAll("\r\n", " ");
+                        targetSourceNote = targetSourceNote.replaceAll("\n", " ");
                         targetSourceNote = targetSourceNote.replaceAll("\r", " ");
                         targetSourceNote = targetSourceNote.replaceAll("\n", " ");
-                        logFileWriter.append("\r\n\t\t\t<" + ConstantParameters.source_note_kwd + ">" + u.escapeXML(targetSourceNote) + "</" + ConstantParameters.source_note_kwd + ">");
+                        logFileWriter.append("\n\t\t\t<" + ConstantParameters.source_note_kwd + ">" + u.escapeXML(targetSourceNote) + "</" + ConstantParameters.source_note_kwd + ">");
                     }
-                    logFileWriter.append("\r\n\t\t</source>");
+                    logFileWriter.append("\n\t\t</source>");
                 }
-                logFileWriter.append("\r\n\t</sources>\r\n");
+                logFileWriter.append("\n\t</sources>\n");
             }
         }
 
@@ -1896,15 +1897,15 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
             specialCategories.add(ConstantParameters.note_kwd);
 
             if (allTerms.size() > 0) {
-                //logFileWriter.append("\r\n\t<terms>\r\n");
-                logFileWriter.append("\r\n\t<terms count=\"" + allTerms.size() + "\">\r\n");
+                //logFileWriter.append("\n\t<terms>\n");
+                logFileWriter.append("\n\t<terms count=\"" + allTerms.size() + "\">\n");
                 for (SortItem termItem : allTerms) {
                     String termName = termItem.getLogName();
 
                     NodeInfoStringContainer targetTermInfo = termsInfo.get(termName);
 
-                    //logFileWriter.append("\t\t<term index=\"" + (i + 1) + "\">\r\n");
-                    logFileWriter.append("\t\t<term>\r\n");
+                    //logFileWriter.append("\t\t<term index=\"" + (i + 1) + "\">\n");
+                    logFileWriter.append("\t\t<term>\n");
                     logFileWriter.append("\t\t\t<descriptor");
 
                     Long number = Utilities.retrieveThesaurusReferenceFromNodeInfoStringContainer(targetTermInfo);
@@ -1915,7 +1916,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                         }
                     }
 
-                    logFileWriter.append(">" + Utilities.escapeXML(termName) + "</descriptor>\r\n");
+                    logFileWriter.append(">" + Utilities.escapeXML(termName) + "</descriptor>\n");
 
                     for (int m = 0; m < output.length; m++) {
                         String category = output[m];
@@ -1930,7 +1931,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                              if(number>0){
                              logFileWriter.append("\t\t\t<" + category + " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+number+"\">");
                              logFileWriter.append(Utilities.escapeXML(u.consrtuctReferenceUri(importThesaurusName, Utilities.ReferenceUriKind.TERM, number)));
-                             logFileWriter.append("</" + category + ">\r\n");
+                             logFileWriter.append("</" + category + ">\n");
                              }*/
                             continue;
                         }
@@ -1945,7 +1946,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                 } else {
                                     logFileWriter.append(Utilities.escapeXML(values.get(k)));
                                 }
-                                logFileWriter.append("</" + category + ">\r\n");
+                                logFileWriter.append("</" + category + ">\n");
                             }
                         } else {
                             if (category.equals(ConstantParameters.bt_kwd) || category.equals(ConstantParameters.rt_kwd)) {
@@ -1972,7 +1973,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                     appendVal += ">";
                                     logFileWriter.append(appendVal);
                                     logFileWriter.append(Utilities.escapeXML(val));
-                                    logFileWriter.append("</" + category + ">\r\n");
+                                    logFileWriter.append("</" + category + ">\n");
                                 }
                             } else if (category.equals(ConstantParameters.translations_scope_note_kwd)) {
 
@@ -1985,7 +1986,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                             noteStr = noteStr.trim();
                                             logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                             logFileWriter.append(Utilities.escapeXML(noteStr));
-                                            logFileWriter.append("</" + category + ">\r\n");
+                                            logFileWriter.append("</" + category + ">\n");
                                         }
                                     }
 
@@ -2001,7 +2002,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                     if (noteStr != null && noteStr.length() > 0) {
                                         logFileWriter.append("\t\t\t<" + category + ">");
                                         logFileWriter.append(Utilities.escapeXML(noteStr));
-                                        logFileWriter.append("</" + category + ">\r\n");
+                                        logFileWriter.append("</" + category + ">\n");
                                     }
                                 }
 
@@ -2020,7 +2021,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                                 logFileWriter.append("\t\t\t<" + category + ">");
                                 logFileWriter.append(Utilities.escapeXML(statusVal));
-                                logFileWriter.append("</" + category + ">\r\n");
+                                logFileWriter.append("</" + category + ">\n");
                             } else if (category.equals(ConstantParameters.translation_kwd)
                                     || category.equals(ConstantParameters.uf_translations_kwd)) {
                                 Collections.sort(values);
@@ -2040,7 +2041,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
                                         logFileWriter.append("\t\t\t<" + category + " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(langCode.toUpperCase()) + "\">");
                                         logFileWriter.append(Utilities.escapeXML(val));
-                                        logFileWriter.append("</" + category + ">\r\n");
+                                        logFileWriter.append("</" + category + ">\n");
                                     }
                                 }
                             } else if (category.equals(ConstantParameters.nt_kwd)) {
@@ -2139,7 +2140,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                             appendVal += ">";
                                             logFileWriter.append(appendVal);
                                             logFileWriter.append(Utilities.escapeXML(ntStr.getLogName()));
-                                            logFileWriter.append("</" + category + ">\r\n");
+                                            logFileWriter.append("</" + category + ">\n");
                                         }
 
                                     } else {
@@ -2164,7 +2165,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                             appendVal += " " + ConstantParameters.XMLLinkClassAttributeName + "=\"" + Utilities.escapeXML(targetGuideTerm) + "\">";
                                             logFileWriter.append(appendVal);
                                             logFileWriter.append(Utilities.escapeXML(ntStr.getLogName()));
-                                            logFileWriter.append("</" + category + ">\r\n");
+                                            logFileWriter.append("</" + category + ">\n");
 
                                         }
 
@@ -2186,16 +2187,16 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                                 if(extLink.vocabularyIdentifier.length()>0){
                                     logFileWriter.append(" "+ConstantParameters.externalLink_attr_vocabId_kwd+"=\""+extLink.vocabularyIdentifier+"\"");
                                 }
-                                logFileWriter.append(">"+Utilities.escapeXML(extLink.linkUri)+"</"+ConstantParameters.externalLink_kwd+">\r\n");
+                                logFileWriter.append(">"+Utilities.escapeXML(extLink.linkUri)+"</"+ConstantParameters.externalLink_kwd+">\n");
                             }
                         }
                     }
 
-                    logFileWriter.append("\t\t</term>\r\n");
+                    logFileWriter.append("\t\t</term>\n");
 
                 }
 
-                logFileWriter.append("\t</terms>\r\n");
+                logFileWriter.append("\t</terms>\n");
             }
 
         }
@@ -2207,10 +2208,10 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
-            logFileWriter.append("\r\n</rdf:RDF>");
+            logFileWriter.append("\n</rdf:RDF>");
         } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
 
-            logFileWriter.append("\r\n</data>");
+            logFileWriter.append("\n</data>");
         }
 
         logFileWriter.flush();
@@ -2278,7 +2279,7 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
         if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             Utilities u = new Utilities();
             if (vocabularyIdentifiers.size() > 0) {
-                logFileWriter.append("\r\n\t<"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+" count=\"" + vocabularyIdentifiers.size() + "\">");
+                logFileWriter.append("\n\t<"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+" count=\"" + vocabularyIdentifiers.size() + "\">");
                 
                 ArrayList<String> vocNames = new ArrayList<>();
                 for(ExternalVocabulary extVoc : vocabularyIdentifiers){
@@ -2290,30 +2291,30 @@ xml:base="http://www.ics.forth.gr/isl/CRM/">
                 for (int k = 0; k < vocNames.size(); k++) {
                     String vocId = vocNames.get(k);
                     ExternalVocabulary vocObj = vocabularyIdentifiers.stream().filter(x -> x.vocabularyIdentifier.equals(vocId)).findFirst().get();
-                    //logFileWriter.append("\r\n\t\t<source index=\""+(k+1)+"\">");
-                    logFileWriter.append("\r\n\t\t<"+ConstantParameters.XMLExternalVocabulariesElementName+">");
-                    logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ShortName+">" + u.escapeXML(vocId) + "</"+ConstantParameters.XMLExternalVocabularies_ShortName+">");
+                    //logFileWriter.append("\n\t\t<source index=\""+(k+1)+"\">");
+                    logFileWriter.append("\n\t\t<"+ConstantParameters.XMLExternalVocabulariesElementName+">");
+                    logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ShortName+">" + u.escapeXML(vocId) + "</"+ConstantParameters.XMLExternalVocabularies_ShortName+">");
                     
                     for(String str : vocObj.vocabularyFullName){
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_FullName+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_FullName+">");
+                        logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_FullName+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_FullName+">");
                     }
                     
                     for(String str : vocObj.vocabularyDescription){
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Description+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Description+">");
+                        logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Description+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Description+">");
                     }
                     for(String str : vocObj.vocabularyUri){
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Uri+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Uri+">");
+                        logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Uri+">" + u.escapeXML(str) + "</"+ConstantParameters.XMLExternalVocabularies_Uri+">");
                     }
                     if(vocObj.vocabularyVersionString!=null && vocObj.vocabularyVersionString.length()>0){
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Version+">" + u.escapeXML(vocObj.vocabularyVersionString) + "</"+ConstantParameters.XMLExternalVocabularies_Version+">");
+                        logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_Version+">" + u.escapeXML(vocObj.vocabularyVersionString) + "</"+ConstantParameters.XMLExternalVocabularies_Version+">");
                     }
                     if(vocObj.vocabularyReleaseTimestamp!=null && vocObj.vocabularyReleaseTimestamp.length()>0){
-                        logFileWriter.append("\r\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">" + u.escapeXML(vocObj.vocabularyReleaseTimestamp) + "</"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">");
+                        logFileWriter.append("\n\t\t\t<"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">" + u.escapeXML(vocObj.vocabularyReleaseTimestamp) + "</"+ConstantParameters.XMLExternalVocabularies_ReleaseTimestamp+">");
                     }
                     
-                    logFileWriter.append("\r\n\t\t</"+ConstantParameters.XMLExternalVocabulariesElementName+">");
+                    logFileWriter.append("\n\t\t</"+ConstantParameters.XMLExternalVocabulariesElementName+">");
                 }
-                logFileWriter.append("\r\n\t</"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+">\r\n");
+                logFileWriter.append("\n\t</"+ConstantParameters.XMLExternalVocabulariesWrapperElementName+">\n");
             }
         }
     }

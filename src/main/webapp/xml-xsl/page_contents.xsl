@@ -34,6 +34,22 @@
  -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
     <xsl:import href="page.xsl"/>
+    <!-- XSL INCLUDES for divs -->
+    <xsl:import href="criteria_terms.xsl"/>
+    <xsl:import href="criteria_facets.xsl"/>
+    <xsl:import href="criteria_hierarchies.xsl"/>
+    <xsl:import href="criteria_sources.xsl"/>
+    <xsl:import href="search_results_terms.xsl"/>
+    <xsl:import href="search_results_hierarchies.xsl"/>
+    <xsl:import href="search_results_facets.xsl"/>
+    <xsl:import href="search_results_sources.xsl"/>
+    <xsl:import href="search_results_users.xsl"/>
+    <xsl:import href="search_results_terms_systematic.xsl"/>
+    <xsl:import href="EditTermActions/PopUpInfo_Term.xsl"/>
+    <xsl:import href="EditHierarchyActions/PopUpInfo_Hierarchy.xsl"/>
+    <xsl:import href="EditFacetActions/PopUpInfo_Facet.xsl"/>
+    <xsl:import href="EditSourceActions/PopUpInfo_Source.xsl"/>
+    <xsl:import href="utilities.xsl"/>
     
     <!-- general VARIABLES -->
     <xsl:variable name="locale" select="document('../translations/translations.xml')/locale"/>
@@ -53,22 +69,7 @@
     <xsl:variable name="type" select="'AP'"/>
     <xsl:variable name="xpathBackLimit" select="0"/>
     <xsl:variable name="activeD" select="//part2/tabset2/tab/@active='yes'"/>
-    <!-- XSL INCLUDES for divs -->
-    <xsl:include href="criteria_terms.xsl"/>
-    <xsl:include href="criteria_facets.xsl"/>
-    <xsl:include href="criteria_hierarchies.xsl"/>
-    <xsl:include href="criteria_sources.xsl"/>
-    <xsl:include href="search_results_terms.xsl"/>
-    <xsl:include href="search_results_hierarchies.xsl"/>
-    <xsl:include href="search_results_facets.xsl"/>
-    <xsl:include href="search_results_sources.xsl"/>
-    <xsl:include href="search_results_users.xsl"/>
-    <xsl:include href="search_results_terms_systematic.xsl"/>
-    <xsl:include href="EditTermActions/PopUpInfo_Term.xsl"/>
-    <xsl:include href="EditHierarchyActions/PopUpInfo_Hierarchy.xsl"/>
-    <xsl:include href="EditFacetActions/PopUpInfo_Facet.xsl"/>
-    <xsl:include href="EditSourceActions/PopUpInfo_Source.xsl"/>
-    <xsl:include href="utilities.xsl"/>
+    
     <xsl:template match="/">
         <xsl:call-template name="page"/>
     </xsl:template>

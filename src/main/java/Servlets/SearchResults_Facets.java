@@ -126,7 +126,7 @@ public class SearchResults_Facets extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval--------------------------
             //initial values --> will change from the following code
-            int facetsPagingListStep = new Integer(ListStepStr).intValue();
+            int facetsPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int facetsPagingFirst = 1;
             int facetsPagingQueryResultsCount = 0;
 

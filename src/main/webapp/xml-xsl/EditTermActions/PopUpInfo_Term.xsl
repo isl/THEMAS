@@ -40,8 +40,9 @@ This file is part of the THEMAS system.
         Purpose of transformation follows.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:include href="../search_results_terms_alphabetical.xsl"/>
     <xsl:import href="../Configs.xsl"/>
+    <xsl:include href="../search_results_terms_alphabetical.xsl"/>
+    
     <xsl:variable name="TermIsEditable" select="//page/termName/@editable "/>
     
 

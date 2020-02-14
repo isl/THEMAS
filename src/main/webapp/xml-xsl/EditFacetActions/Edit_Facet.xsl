@@ -42,7 +42,7 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:import href="../Configs.xsl"/>
-    <xsl:include href="../utilities.xsl"/>    
+    <xsl:include href="../utilities.xsl"/>
     <xsl:variable name="targetEditField" select="//targetEditField"/>
     <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
     <xsl:template match="/">

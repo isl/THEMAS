@@ -41,9 +41,9 @@ This file is part of the THEMAS system.
         Purpose of transformation follows.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    
-    <xsl:output method="html"/>
     <xsl:import href="../Configs.xsl"/>
+    <xsl:output method="html"/>
+    
     <xsl:variable name="targetEditField" select="//targetEditField"/>
     <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
     <xsl:template match="/">

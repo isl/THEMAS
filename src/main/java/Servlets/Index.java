@@ -36,7 +36,6 @@ package Servlets;
 
 import DB_Admin.ConfigDBadmin;
 import DB_Classes.DBGeneral;
-import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
@@ -53,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.neo4j.graphdb.GraphDatabaseService;
 
 
 

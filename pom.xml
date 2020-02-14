@@ -4,7 +4,7 @@
 
     <groupId>gr.forth.ics.isl</groupId>
     <artifactId>THEMAS</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>1.4</version>
     <name>THEMAS</name>
     <packaging>war</packaging>     
     <licenses>
@@ -29,10 +29,10 @@
     </repositories>
     <dependencies>
         <dependency>
-            <!--<groupId>com.github.isl</groupId>-->
-            <groupId>gr.forth.ics.isl</groupId>
+            <groupId>com.github.isl</groupId>
+            <!--<groupId>gr.forth.ics.isl</groupId>-->
             <artifactId>Neo4j-sisapi</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.0</version>
+            <version>1.3.3</version>
         </dependency>
         <dependency>
             <groupId>net.sf.kxml</groupId>

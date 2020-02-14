@@ -97,7 +97,7 @@ public class SearchResults_Users extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
-            int usersPagingListStep = new Integer(ListStepStr).intValue();
+            int usersPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int usersPagingFirst = 1;
             int usersPagingQueryResultsCount = 0;
 

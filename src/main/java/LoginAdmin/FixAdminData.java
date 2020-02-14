@@ -98,7 +98,7 @@ public class FixAdminData extends ApplicationBasicServlet {
                 out.println("Session Invalidate");
                 return;
             }
-            Boolean fixed = new Boolean(true);
+            Boolean fixed = true;
             
             QClass Q = new QClass(); 
             TMSAPIClass TA = new TMSAPIClass();

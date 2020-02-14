@@ -570,23 +570,23 @@ public class CommonUtilsDBadmin {
         int current_minute = rightNow.get(Calendar.MINUTE);
         int current_sec = rightNow.get(Calendar.SECOND);
         // in case any value is 1 digit number => start it with zero (0)
-        String current_monthStr = new Integer(current_month).toString();
+        String current_monthStr = Integer.valueOf(current_month).toString();
         if (current_month <= 9) {
             current_monthStr = "0" + current_monthStr;
         }
-        String current_dayStr = new Integer(current_day).toString();
+        String current_dayStr = Integer.valueOf(current_day).toString();
         if (current_day <= 9) {
             current_dayStr = "0" + current_dayStr;
         }
-        String current_hourStr = new Integer(current_hour).toString();
+        String current_hourStr = Integer.valueOf(current_hour).toString();
         if (current_hour <= 9) {
             current_hourStr = "0" + current_hourStr;
         }
-        String current_minuteStr = new Integer(current_minute).toString();
+        String current_minuteStr = Integer.valueOf(current_minute).toString();
         if (current_minute <= 9) {
             current_minuteStr = "0" + current_minuteStr;
         }
-        String current_secStr = new Integer(current_sec).toString();
+        String current_secStr = Integer.valueOf(current_sec).toString();
         if (current_sec <= 9) {
             current_secStr = "0" + current_secStr;
         }

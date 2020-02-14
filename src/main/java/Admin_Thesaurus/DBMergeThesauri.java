@@ -5638,7 +5638,7 @@ public class DBMergeThesauri {
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
-        ArrayList<SortItem> defaultClassName = new ArrayList<SortItem>();
+        ArrayList<SortItem> defaultClassName = new ArrayList();
         defaultClassName.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_classes, true, Q, sis_session));
         Q.free_set(set_classes);
         Q.free_set(set_facets);

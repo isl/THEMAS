@@ -111,7 +111,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
-            int systematicPagingListStep = new Integer(ListStepStr).intValue();
+            int systematicPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int systematicPagingFirst = 1;
             int systematicPagingQueryResultsCount = 0;
              

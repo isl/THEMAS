@@ -140,7 +140,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             // -------------------- paging info And criteria retrieval--------------------------
 
             //initial values --> will change from the following code
-            int termsPagingListStep = new Integer(ListStepStr).intValue();
+            int termsPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int termsPagingFirst = 1;
             int termsPagingQueryResultsCount = 0;
 
@@ -462,9 +462,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 else if (outputMode != null && outputMode.compareTo(exportTypeRDF) == 0 ) {
                     
                     
-                    if (Parameters.FormatXML) {
-                        WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".rdf");
-                    }
+                    //if (Parameters.FormatXML) {
+                    //WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".rdf");
+                    //}
                     
                     out.println(Save_Results_file_name.concat(".rdf"));
                     out.flush();                    

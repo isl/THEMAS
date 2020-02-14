@@ -67,7 +67,7 @@ public class DBFixCurrentData {
             String webAppSaveResults_Folder, StringObject Save_Results_file_name,
             StringObject XSL_fileNameObject) {
 
-        Boolean fixed = new Boolean(true);
+        Boolean fixed = true;
         String webAppSaveResults_AbsolutePath = context.getRealPath("/" + webAppSaveResults_Folder);
         String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
 

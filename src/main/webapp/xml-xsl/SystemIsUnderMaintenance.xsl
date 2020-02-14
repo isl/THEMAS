@@ -39,13 +39,14 @@
         xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
         xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes"
         exclude-result-prefixes="xsl fo xs fn xdt">
+    <xsl:import href="./Configs.xsl"/>
     	<xsl:output method="html"  
             encoding="UTF-8"  
             indent="yes" 
             doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
             doctype-system="http://www.w3.org/TR/html4/loose.dtd"
             version="4.0" />
-	<xsl:import href="./Configs.xsl"/>
+	
 	<xsl:include href="page_header.xsl"/>
 	<xsl:include href="page_footer.xsl"/>
 	<xsl:variable name="locale" select="document('../translations/translations.xml')/locale"/>

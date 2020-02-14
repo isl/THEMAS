@@ -156,7 +156,7 @@ public class Links extends ApplicationBasicServlet {
                 date.set(Calendar.MILLISECOND, 0);
                 date.add(Calendar.SECOND, 8);
                 */
-                Long interval  = new Long(Parameters.AUTOMATIC_BACKUPS_HOURS_INTERVAL*60*60 * 1000);
+                Long interval  = Long.valueOf(Parameters.AUTOMATIC_BACKUPS_HOURS_INTERVAL*60*60 * 1000);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Automatic Backups->Starting Date: " + date.getTime() +" Interval = " + interval.longValue());
                 //Parameters.timer.scheduleAtFixedRate(task, date.getTime(), interval.longValue());
                 timer.scheduleAtFixedRate(task, date.getTime(), interval.longValue());

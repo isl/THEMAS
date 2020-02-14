@@ -125,7 +125,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
-            int hierarchiesPagingListStep = new Integer(ListStepStr).intValue();
+            int hierarchiesPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int hierarchiesPagingFirst = 1;
             int hierarchiesPagingQueryResultsCount = 0;
 
