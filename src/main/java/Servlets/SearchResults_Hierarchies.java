@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -44,6 +44,7 @@ import Utils.SessionWrapperClass;
 import Utils.SearchCriteria;
 
 import Utils.Parameters;
+import Utils.SortItem;
 import Utils.Utilities;
 import Utils.StringLocaleComparator;
 
@@ -124,37 +125,12 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
-            int hierarchiesPagingListStep = new Integer(ListStepStr).intValue();
+            int hierarchiesPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int hierarchiesPagingFirst = 1;
             int hierarchiesPagingQueryResultsCount = 0;
 
             if (updateTermsCirteria != null) { // detect if search was pressed or left menu option was triggered
                 searchCriteria = SearchCriteria.createSearchCriteriaObject(SessionUserInfo, "SearchCriteria_Hierarchies", updateTermsCirteria, request, u);
-                if(searchCriteria.input.size()==searchCriteria.value.size()){
-                    /*
-                    for(int k=0; k<searchCriteria.input.size(); k++){
-                        String inputKwd = searchCriteria.input.get(k);
-                        String value = searchCriteria.value.get(k);
-                        byte[] valbytes = value.getBytes("UTF-8");
-                        if(inputKwd.equals("name") ||inputKwd.equals("term")){
-                            //Utils.StaticClass.webAppSystemOutPrintln("Kwd: " + inputKwd + " value: " + value);
-                            if(valbytes.length > dbtr.getMaxBytesForDescriptor(SessionUserInfo.selectedThesaurus, Q, sis_session)){
-                                
-                                //end query and close connection
-                                Q.free_all_sets();
-                                Q.CHECK_end_query();
-                                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
-                                
-                                response.sendRedirect("Links?tab=HierarchiesSearchCriteria&CheckLength=true");
-                                return;
-                            }
-                        }                        
-                    }
-                    */
-                }
-                else{
-                    Utils.StaticClass.webAppSystemOutPrintln("Search Input Error");
-                }
                 
                 sessionInstance.setAttribute("SearchCriteria_Hierarchies", searchCriteria);
 
@@ -208,7 +184,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
             StringBuffer xml = new StringBuffer();
             
             long startTime = Utilities.startTimer();
-
+            
             ArrayList<String> allResultsHierarchies = getAllSearchHierarchies(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
             Collections.sort(allResultsHierarchies, new StringLocaleComparator(targetLocale));
 
@@ -251,7 +227,7 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
                     //create html and answer with html link for redirection --> download
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
                                        XSL, 
-                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path+"/");
                     
 					//Send HTML relative url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
@@ -960,12 +936,21 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
     }
 
-    public void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
+    private void writeResultsInXMLFile(UserInfoClass SessionUserInfo, ArrayList<String> allHierarchies, Utilities u, String title, SearchCriteria sc, String[] output, String webAppSaveResults_temporary_filesAbsolutePath, String Save_Results_file_name, QClass Q, IntegerObject sis_session,String pathToSaveScriptingAndLocale, Locale targetLocale) {
 
         DBGeneral dbGen = new DBGeneral();
         
         String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml";
 
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        StringObject hierObj = new StringObject();
+        CMValue hierCmv = new CMValue();
+        
+        StringObject belongsToHierClass = new StringObject();
+        StringObject belongsToHierarchyLink = new StringObject();
+        dbGen.getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+        
         OutputStreamWriter out = null;
         try {
             OutputStream fout = new FileOutputStream(Full_Save_Results_file_name);
@@ -1013,16 +998,44 @@ public class SearchResults_Hierarchies extends ApplicationBasicServlet {
 
                 for (int j = 0; j < output.length; j++) {
                     if (output[j].equals("name")) {
+                        
                         String currentHierarchy = (String) (allHierarchies.get(i));
-                        temp.append("<name>" + Utilities.escapeXML(currentHierarchy) + "</name>");
-
+                        
+                        hierObj.setValue(prefix_class.concat(currentHierarchy));
+                        Q.reset_name_scope();
+                        hierCmv.assign_empty();
+                        Q.set_current_node_and_retrieve_Cmv(hierObj,hierCmv);
+                        long refId  = hierCmv.getRefid();
+                        if (Parameters.OnlyTopTermsHoldReferenceId) {
+                            
+                            int set_topterms = Q.get_from_node_by_category(0, belongsToHierClass, belongsToHierarchyLink);
+                            ArrayList<SortItem> currCheck  = dbGen.get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session);
+                            if(currCheck!=null && !currCheck.isEmpty()){
+                                refId = currCheck.get(0).getThesaurusReferenceId();
+                            }
+                        }
+                        Q.reset_name_scope();
+                        
+                        temp.append("<name");
+                        if (refId > 0) {
+                            temp.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(refId).append("\"");
+                        }
+                        temp.append(">").append(Utilities.escapeXML(currentHierarchy)).append("</name>");
+                        
                     } else {
-                        ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
-                        Collections.sort(v, new StringLocaleComparator(targetLocale));
+                        //ArrayList<String> v = dbGen.returnResults_Hierarchy(SessionUserInfo, allHierarchies.get(i).toString(), output[j], Q, sis_session, targetLocale);
+                        //Collections.sort(v, new StringLocaleComparator(targetLocale));
 
+                        ArrayList<SortItem> v = dbGen.returnResults_HierarchyInSortItems(SessionUserInfo, allHierarchies.get(i), output[j], Q, sis_session, targetLocale);
+                        
                         for (int k = 0; k < v.size(); k++) {
-                            temp.append("<" + output[j] + ">");
-                            temp.append(v.get(k));
+                            
+                            temp.append("<" + output[j]);
+                            if(output[j].equals(ConstantParameters.facet_kwd)){
+                                temp.append(" " + ConstantParameters.system_referenceIdAttribute_kwd + "=\"").append(v.get(k).getThesaurusReferenceId()).append("\"");
+                            }
+                            temp.append(">");
+                            temp.append(v.get(k).getLogName());
                             temp.append("</" + output[j] + ">");
                         }
                     }

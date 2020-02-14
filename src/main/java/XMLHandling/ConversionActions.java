@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -140,7 +140,7 @@ public class ConversionActions {
 
             writer.WriteFacets(logFileWriter, outputScheme, importThesaurusName, xmlFacets, hierarchyFacets, termsInfo, filterFacets, filterTerms);
 
-            writer.WriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
+            writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
             writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations,null, filterTerms);
 
@@ -243,7 +243,7 @@ public class ConversionActions {
 
             writer.WriteFacets(logFileWriter, outputScheme, importThesaurusName, xmlFacets, hierarchyFacets, termsInfo, filterFacets, filterTerms);
 
-            writer.WriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
+            writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
             writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms);
 
@@ -430,7 +430,7 @@ public class ConversionActions {
 
             writer.WriteFacets(logFileWriter, outputScheme, importThesaurusName, xmlFacets, hierarchyFacets, termsInfo, filterFacets, filterTerms);
 
-            writer.WriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
+            writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
             writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms);
 

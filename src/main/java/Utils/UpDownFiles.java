@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -48,6 +48,8 @@ import java.util.HashMap;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 //import org.apache.commons.fileupload.
 //import org.apache.commons.fileupload.disk.*;
@@ -76,14 +78,16 @@ public class UpDownFiles {
      * @param req
      * @param formData
      * @return
-     */
+     
     public String[] prepareToUpXML(HttpServletRequest request, String[] formData){
         String[] dom = null;
         uploadParams.clear();
         
         try {
             // Create a new file upload handler
-            DiskFileUpload upload = new DiskFileUpload();
+            FileItemFactory factory = new DiskFileItemFactory();
+            // Create a new file upload handler
+            ServletFileUpload upload = new ServletFileUpload(factory);
             //DiskFileUpload uis deprecated
             //org.apache.commons.fileupload.servlet.ServletFileUpload upload = new org.apache.commons.fileupload.servlet.ServletFileUpload();
 
@@ -133,7 +137,7 @@ public class UpDownFiles {
             return dom;
         }
     }
-    
+    */
     /**
      *
      * @param req
@@ -148,7 +152,9 @@ public class UpDownFiles {
         try {
             
             // Create a new file upload handler
-            DiskFileUpload upload = new DiskFileUpload();
+            FileItemFactory factory = new DiskFileItemFactory();
+            // Create a new file upload handler
+            ServletFileUpload upload = new ServletFileUpload(factory);
             
             java.util.List items = upload.parseRequest(request);
             java.util.Iterator iter = items.iterator();
@@ -194,7 +200,7 @@ public class UpDownFiles {
      * @param pw
      * @param xml
      * @return
-     */
+    
     public boolean prepareToDownXML(PrintWriter pw, String xml){
         try{
             pw.write(ConstantParameters.xmlHeader);
@@ -207,7 +213,7 @@ public class UpDownFiles {
             Utils.StaticClass.handleException(e);
             return false;
         }
-    }
+    } */
     
     /**
      *

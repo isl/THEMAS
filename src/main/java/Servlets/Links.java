@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -74,11 +74,13 @@ public class Links extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
 
         try {
+            Utilities u = new Utilities();
+            UsersClass tmsUsers = new UsersClass();
             ServletContext context = getServletContext();
             String tab = request.getParameter("tab");
             String CheckLength = request.getParameter("CheckLength");
             String username = request.getParameter("username");
-            String password = request.getParameter("password");
+            String password = tmsUsers.getMD5Hex(request.getParameter("password"));
             String overrideUILangParameter = request.getParameter("lang");
             String selectedThesaurusNAME = request.getParameter("selectedThesaurusNAME");            
             String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
@@ -86,8 +88,8 @@ public class Links extends ApplicationBasicServlet {
             String language = context.getInitParameter("LocaleLanguage");
             String country = context.getInitParameter("LocaleCountry");
 
-            Utilities u = new Utilities();
-            UsersClass tmsUsers = new UsersClass();
+            
+            
             StringBuffer xml = new StringBuffer();
             String currentTABup = new String("SearchCriteria");
             
@@ -154,7 +156,7 @@ public class Links extends ApplicationBasicServlet {
                 date.set(Calendar.MILLISECOND, 0);
                 date.add(Calendar.SECOND, 8);
                 */
-                Long interval  = new Long(Parameters.AUTOMATIC_BACKUPS_HOURS_INTERVAL*60*60 * 1000);
+                Long interval  = Long.valueOf(Parameters.AUTOMATIC_BACKUPS_HOURS_INTERVAL*60*60 * 1000);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Automatic Backups->Starting Date: " + date.getTime() +" Interval = " + interval.longValue());
                 //Parameters.timer.scheduleAtFixedRate(task, date.getTime(), interval.longValue());
                 timer.scheduleAtFixedRate(task, date.getTime(), interval.longValue());

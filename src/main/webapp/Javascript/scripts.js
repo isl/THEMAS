@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -31,6 +31,31 @@
  * 
  * This file is part of the THEMAS system.
  */
+
+function copyToClipborad(refLink,refLinkTxtDiv, msgtemplate, txtToCopy){
+    el = document.createElement('textarea');
+    el.value = txtToCopy;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    
+    $("#"+refLinkTxtDiv).html(msgtemplate.replace('%s',txtToCopy));
+    $("#"+refLink).show().delay(2000).fadeOut();
+    
+    
+    
+    
+    /*
+    var tt = $("#"+refLink);
+        tt.show().delay(2000).hide();
+      
+      */
+   
+   //alert ('Copied: ' + txtToCopy +" to clipboard");
+    
+}
+
 function getAjaxActiveXObject() {
     var xmlHttp;
     try {  // Firefox, Opera 8.0+, Safari  
@@ -431,6 +456,12 @@ function prepareResults(servletName, hierName, display, usePreviousCriteria) {
 
 function downloadFile(servletName, hierName, display, usePreviousCriteria) {
 
+    
+    downloadFileType(servletName, hierName, display, usePreviousCriteria, 'XML');
+}
+
+function downloadFileType(servletName, hierName, display, usePreviousCriteria, extraParams){
+    
     DisplayPleaseWaitScreen(true);
     //alert('edw');
     var params = '?usePreviousCriteria=' + usePreviousCriteria;
@@ -440,7 +471,12 @@ function downloadFile(servletName, hierName, display, usePreviousCriteria) {
     else {
         params += '&pageFirstResult=SaveAll';
     }
-    params += '&answerType=XML';
+    if(extraParams =='XML'){
+        params += '&answerType=XML';
+    }
+    if(extraParams =='RDF'){
+        params += '&answerType=RDF';
+    }
     var xmlHttp = getAjaxActiveXObject();
 
     xmlHttp.onreadystatechange = function () {
@@ -469,8 +505,9 @@ function downloadFile(servletName, hierName, display, usePreviousCriteria) {
     xmlHttp.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
 
     xmlHttp.send(null);
-
 }
+
+
 
 function checkPageNumber(servlet, step, pageNum) {
 

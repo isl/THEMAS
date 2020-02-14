@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -184,7 +184,7 @@ public class CopyThesaurus extends ApplicationBasicServlet {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "End of thesaurus copy operation at: " + Utilities.GetNow() +". Time passed: "+((Utilities.stopTimer(startTime)) / 60) + " minutes.");
 
             //Now XSL should be found and java xsl transformation should be performed
-            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
+            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"), sessionInstance.path +"/");
 
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Thesaurus copy operation was sucessfully completed in: " + ((Utilities.stopTimer(startTime)) / 60) + " minutes.");

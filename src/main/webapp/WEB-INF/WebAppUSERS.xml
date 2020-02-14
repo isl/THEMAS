@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -35,39 +35,33 @@
 <WebAppUsers>
     <user>
         <name>admin</name>
-        <password>admin</password>
+        <password>0192023a7bbd73250516f069df18b500</password>
         <thesaurus group="ADMINISTRATOR"/>
         <description>Administrator WITHOUT thesaurus limitations</description>
     </user>
         
     <user>
         <name>com</name>
-        <password>com</password>
+        <password>1f15caa4dc0b8e50415b228c650424d8</password>
         <thesaurus group="THESAURUS_COMMITTEE">*</thesaurus>
         <description>Thesaurus Committee user for all thesauri</description>
     </user>
     <user>
         <name>team</name>
-        <password>team</password>
+        <password>3c00a48802fb8fc05502942b1d146f48</password>
         <thesaurus group="THESAURUS_TEAM">*</thesaurus>        
         <description>Thesaurus Team user for all thesauri</description>
     </user>
     <user>
         <name>lib</name>
-        <password>lib</password>
+        <password>152ed960b613b67008ca54c756b4ced0</password>
         <thesaurus group="LIBRARY">*</thesaurus>
         <description>Library user for all thesauri</description>
     </user>
     <user>
         <name>reader</name>
-        <password/>
+        <password>d41d8cd98f00b204e9800998ecf8427e</password>
         <thesaurus group="READER">*</thesaurus>
         <description>Reader user for all thesauri, viewing only Published Terms</description>
-    </user>
-    <user>
-        <name>ExternalReader</name> 
-        <password/>        
-        <thesaurus group="EXTERNALREADER">*</thesaurus>
-        <description>External Read only user for for all thesauri (no login required - all non published terms included)</description>
     </user>   
 </WebAppUsers>

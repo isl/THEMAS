@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -405,13 +405,13 @@ public class DBReaderFilters {
         // fill FROM_Vector and TO_Vector with the pairs of BT links,
         // BTlink_sysid_Vector with the sysids of BT links and
         // LinkIsHidden_Vector with true in case the link must be hidden (full of false initially)
-        ArrayList<String> FROM_Vector = new ArrayList<String>();
-        ArrayList<String> TO_Vector = new ArrayList<String>();
-        ArrayList<Long> BTlink_sysid_Vector = new ArrayList<Long>();
-        ArrayList<Boolean> LinkIsHidden_Vector = new ArrayList<Boolean>();
+        ArrayList<String> FROM_Vector = new ArrayList();
+        ArrayList<String> TO_Vector = new ArrayList();
+        ArrayList<Long> BTlink_sysid_Vector = new ArrayList();
+        ArrayList<Boolean> LinkIsHidden_Vector = new ArrayList();
         
         
-        ArrayList<Return_Link_Id_Row> retVals = new ArrayList<Return_Link_Id_Row>();
+        ArrayList<Return_Link_Id_Row> retVals = new ArrayList();
         if(Q.bulk_return_link_id(BTLinksSet, retVals)!=QClass.APIFail){
             for(Return_Link_Id_Row row: retVals){
                 FROM_Vector.add(row.get_v4_cmv().getString());
@@ -419,7 +419,7 @@ public class DBReaderFilters {
                 BTlink_sysid_Vector.add(row.get_v3_sysid());
                 // ATTENTION: reinitialize BTlink_sysid, otherwise the same int value is added to LinkIsHidden_Vector!!
                 //BTlink_sysid = new IntegerObject();
-                LinkIsHidden_Vector.add(new Boolean(false));
+                LinkIsHidden_Vector.add(false);
             }
         }
         /*
@@ -449,7 +449,7 @@ public class DBReaderFilters {
         int TO_VectorSize = TO_Vector.size();
         for (int i = 0; i < TO_VectorSize; i++) {
             // in case link has already been marked as hidden, ignore it
-            if ((Boolean)LinkIsHidden_Vector.get(i) == true) {
+            if ((Boolean)LinkIsHidden_Vector.get(i)) {
                 continue;
             }
             StringObject toValue = new StringObject((String)TO_Vector.get(i));
@@ -458,7 +458,7 @@ public class DBReaderFilters {
             if (IsDescriptorHiddenFromReader == true) {
                 //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"----------- HIDE BT link: " + GreekConverter.ISO72UniString((String)FROM_Vector.get(i)) + " -> " + GreekConverter.ISO72UniString((String)TO_Vector.get(i)) + " with sysid: " + BTlink_sysid_Vector.get(i));
                 // mark link as hidden
-                LinkIsHidden_Vector.set(i, new Boolean(true));
+                LinkIsHidden_Vector.set(i, true);
                 // hide the subbtree with root the to-value of this hidden link
                 HideBTSubTree(toValue.getValue(), FROM_Vector, TO_Vector, LinkIsHidden_Vector, SessionUserInfo, Q, sis_session);
             }
@@ -503,7 +503,7 @@ public class DBReaderFilters {
             if (root.equals(fromValue) == true) { // root found
                 //Utils.StaticClass.webAppSystemOut(Parameters.LogFilePrefix+"----------- HIDE BT link: " + GreekConverter.ISO72UniString((String)FROM_Vector.get(i)) + " -> " + GreekConverter.ISO72UniString((String)TO_Vector.get(i)));
                 // mark link as hidden
-                LinkIsHidden_Vector.set(i, new Boolean(true));
+                LinkIsHidden_Vector.set(i, true);
                 
                 // recursively mark as hidden the subtree of BT-links with root the to-value of this link
                 String toValue = (String)TO_Vector.get(i);

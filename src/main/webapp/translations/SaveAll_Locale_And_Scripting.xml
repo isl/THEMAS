@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -45,8 +45,8 @@
     <waitfordownload>
         <headerimage>
             <src>
-                <option lang="en">images/thesaurus_header_en.jpg</option>
-                <option lang="el">images/thesaurus_header_gr.jpg</option>
+                <option lang="en">images/thesaurus_header_login_en.png</option>
+                <option lang="el">images/thesaurus_header_login_gr.png</option>
             </src>
             <title>
                 <option lang="en">Thesaurus Management System</option>
@@ -93,22 +93,27 @@
             <forinsertion>
                 <option lang="en">For insertion</option>
                 <option lang="el">Για εισαγωγή</option>
+                <option lang="ar">للإدراج</option>
             </forinsertion>
             <underconstruction>
                 <option lang="en">Under construction</option>
                 <option lang="el">Υπό επεξεργασία</option>
+                <option lang="ar">تحت التشيد</option>
             </underconstruction>
             <underapproval>
                 <option lang="en">For approval</option>
                 <option lang="el">Υπό έγκριση</option>
+                <option lang="ar">للموافقة</option>
             </underapproval>
             <forreinspection>
                 <option lang="en">For Reinspection</option>
                 <option lang="el">Για αναθεώρηση</option>
+                <option lang="ar">لإعادة التعيين</option>
             </forreinspection>
             <approved>
                 <option lang="en">Approved</option>
                 <option lang="el">Εκδοθείς</option>
+                <option lang="ar">وافق</option>
             </approved>
         </statuses>
     </common>
@@ -116,6 +121,7 @@
         <titleprefix>
             <option lang="en">Terms Search Results  </option>
             <option lang="el">Αποτελέσματα Aναζήτησης Όρων </option>
+            <option lang="ar"> شروط البحث عن النتائج</option>
         </titleprefix>
         <noterms>
             <option lang="en">No Terms were found.</option>

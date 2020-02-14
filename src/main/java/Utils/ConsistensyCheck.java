@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -319,34 +319,108 @@ public class ConsistensyCheck {
      * @param uiLang
      * @return 
      */
-    public boolean create_modify_check_03(ArrayList<String> translations_Vector,StringObject errorMsg,String pathToErrorsXML, final String uiLang){
+    public boolean create_modify_check_03(ArrayList<String> translations_Vector, 
+            String targetTermWithoutPrefix,
+            HashMap<String, String> translationHash, 
+            StringObject errorMsg,
+            String pathToErrorsXML, 
+             boolean resolveError, OutputStreamWriter logFileWriter,             
+            int policy,
+            final String uiLang){
         if(Parameters.TermModificationChecks.contains(3)==false)
             return true;
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"create_modify_check_3");
-        //Check if more than one translations are inserted   
-
-        /* Former code probably not exactly what is 
-        translations_Vector.trimToSize();
-        if (translations_Vector.size() > 1) {
+        
+        if(translations_Vector!=null && translations_Vector.size()>1){
+        
+            ArrayList<String> checkStartingLanguagePrefixes = new ArrayList<>(translationHash.keySet());
+            ArrayList<String> checkLangCodes = new ArrayList<>();
+            boolean errorOccured = false;
+            for(String langCode : checkStartingLanguagePrefixes){
+                String checkStartWith = langCode+Parameters.TRANSLATION_SEPERATOR;    
+                if(translations_Vector.stream().filter(x -> x!=null && x.trim().length()>0 && x.trim().startsWith(checkStartWith)).count()>1){
+                    //find out which translations will be removed
+                    checkLangCodes.add(checkStartWith);
+                    errorOccured = true;
+                    if(Parameters.DEBUG){
+                        Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+".create_modify_check_03 failed for: "+targetTermWithoutPrefix+ " with translations: "+ translations_Vector.toString() );
             
-            int count = 0;
-            for(int i=0; i< translations_Vector.size(); i++){
-                if(translations_Vector.get(i)!=null && translations_Vector.get(i).trim().length()>0){
-                    count++;
+                    }
                 }
             }
-            if(count!=1){
-                errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
-                //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
-                return false;
+            if(errorOccured){
+                ArrayList<String> errorArgs = new ArrayList<String>();
+                errorArgs.add(targetTermWithoutPrefix);
+                errorArgs.add(translations_Vector.toString());
+                
+                switch(policy){
+                
+                case IMPORT_COPY_MERGE_THESAURUS_POLICY:{
+                    
+                    
+                    if(resolveError){
+                        
+                        ArrayList<String> removeTranslations = new ArrayList<>();
+                        
+                        
+                        for(String lang : checkLangCodes){
+                            
+                            int found =0;
+                            for(String str : translations_Vector){
+                                if(str.startsWith(lang)){
+                                    found++;
+                                    if(found>1){
+                                        removeTranslations.add(str);
+                                    }
+                                }
+                            }
+                        }
+                        translations_Vector.removeAll(removeTranslations);
+                        
+                        
+                        String newErrorArg = "";
+                        for(String str : removeTranslations){
+                            if(!newErrorArg.isEmpty()){
+                                newErrorArg+=", ";
+                            }
+                            newErrorArg+=str;
+                        }
+                        errorArgs.add(newErrorArg);
+
+                        
+                        try {
+                            logFileWriter.append("\r\n<targetTerm>");
+                            logFileWriter.append("<name>" + Utilities.escapeXML(errorArgs.get(0)) + "</name>");
+                            logFileWriter.append("<errorType>" + ConstantParameters.translation_kwd + "</errorType>");
+                            logFileWriter.append("<errorValue>" + Utilities.escapeXML(errorArgs.get(2).replace("[", "")) + "</errorValue>");
+                            logFileWriter.append("<reason>" + translate(3,3,Create_Modify_XML_STR,errorArgs,pathToErrorsXML, uiLang) + "</reason>");
+                            logFileWriter.append("</targetTerm>\r\n");
+                        } catch (IOException ex) {
+                            Logger.getLogger(ConsistensyCheck.class.getName()).log(Level.SEVERE, null, ex);
+                            Utils.StaticClass.handleException(ex);
+                        }
+                        
+                        return true; 
+                    }
+                    else{
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(3,2,Create_Modify_XML_STR,errorArgs,pathToErrorsXML, uiLang)));
+                        return false;
+                    }
+                    
+                }
+                case EDIT_TERM_POLICY:{
+                        
+                            errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
+                            return false;
+                                           
+                }
+                default:
+                    
+                        errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
+                        return false;
+                    
             }
-        }
-        return true;
-        */
-        if(translations_Vector!=null && translations_Vector.stream().filter(x -> x!=null && x.trim().length()>0).count()!=1){
-            errorMsg.setValue(errorMsg.getValue().concat(translate(3,1,Create_Modify_XML_STR,null,pathToErrorsXML, uiLang)));
-            //errorMsg.setValue(errorMsg.getValue().concat("Declaration of one and only translation for each term is obligatory.;
-            return false;
+         }
+            
         }
         return true;        
     }
@@ -1182,7 +1256,7 @@ public class ConsistensyCheck {
         dbGen.collect_Recurcively_ALL_BTs_Of_Set(selectedThesaurus,set_1, set_2, true,Q,sis_session);
         Q.reset_set( set_2);
 
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_1, set_2, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_1, set_2, false,-1,Q,sis_session);
         Q.reset_set( set_2);
 
 
@@ -1647,7 +1721,7 @@ public class ConsistensyCheck {
             Q.reset_name_scope();
             int set_leafTerms = Q.set_get_new();
             Q.reset_set(set_leafTerms);
-            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_exclude_target, set_leafTerms, false, Q, sis_session);
+            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_exclude_target, set_leafTerms, false, -1, Q, sis_session);
             Q.reset_set(set_leafTerms);
             
             //if no nts then no further check is needed
@@ -2164,7 +2238,7 @@ public class ConsistensyCheck {
         //ArrayList<String> test = dbGen.get_Node_Names_Of_Set(set_0, false, Q, sis_session);
         //Utils.StaticClass.webAppSystemOutPrintln(test.toString());
         int set_1 = Q.set_get_new();
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,-1,Q,sis_session);
         Q.reset_set( set_1);
         
 
@@ -2439,7 +2513,7 @@ public class ConsistensyCheck {
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_0 has" + getStringList_Of_Set(Q,sis_session,dbGen,set_0, "'\n'"));
 
         int set_1 = Q.set_get_new();
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, true,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, true,-1,Q,sis_session);
         Q.reset_set( set_1);
         Q.free_set(set_0);
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_1 has" + getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
@@ -2881,7 +2955,7 @@ public class ConsistensyCheck {
 
         int set_1 = Q.set_get_new();
         //dbGen.collect_Recurcively_ALL_NTs_Of_Set(sessionInstance,set_0, set_1, true,Q,sis_session);
-        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,Q,sis_session);
+        dbGen.collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus,set_0, set_1, false,-1,Q,sis_session);
         Q.reset_set( set_1);        
         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"set_1 has:\n" + getStringList_Of_Set(Q,sis_session,dbGen,set_1, "'\n'"));
 
@@ -3287,8 +3361,14 @@ public class ConsistensyCheck {
         
         String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='"+uiLang+"']";        
         //String expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']";
+        String str = u.translate(expressionBasePath, args, pathToErrorsXML);
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            expressionBasePath = "CONSISTENCIES_CHECKS/"+groupMode+"/TEST[@id='"+ errCode + "' ]/errorcase[@id='"+errorCase+"']/option[@lang='en']";        
+            str = u.translate(expressionBasePath, args, pathToErrorsXML);
+        }
 
-        return u.translate(expressionBasePath, args, pathToErrorsXML);
+        return str;
     }
     
     

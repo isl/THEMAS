@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -70,6 +70,13 @@ function openStatisticsDIV(divID) {
   var targetgetResultsServlet = 'Statistics?DIV=' + divID;
   
   window.location = targetgetResultsServlet;
+}
+
+function openCustomStatisticsDIV(divID){
+    DisplayPleaseWaitScreen(true);
+    var targetgetResultsServlet = 'CustomStatistics?DIV=' + divID;
+  
+    window.location = targetgetResultsServlet;
 }
 
 /*-----------------------------------------------------

@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -41,8 +41,9 @@ This file is part of the THEMAS system.
         Purpose of transformation follows.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    
+    <xsl:import href="../Configs.xsl"/>
     <xsl:output method="html"/>
+    
     <xsl:variable name="targetEditField" select="//targetEditField"/>
     <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
     <xsl:template match="/">
@@ -116,7 +117,7 @@ This file is part of the THEMAS system.
         <xsl:param name="lang" />
         <fieldset id="edit_source_create">
             <legend>
-                <xsl:value-of select="$specificlocale/create/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <table border="0" width="100%" align="center">
                 <tr style="height:4px; font-size:5px;">
@@ -125,7 +126,7 @@ This file is part of the THEMAS system.
                 <tr>
                     <td>
                         <b>
-                            <xsl:value-of select="$specificlocale/create/newname/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/newname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                         <input id="newSourceName_Id" type="text" size="57" name="newName_Source"/>
                         <br/>
@@ -136,7 +137,7 @@ This file is part of the THEMAS system.
                 </tr>
                 <tr valign="top">
                     <td bgcolor="#F2F2F2" align="center">
-                        <xsl:value-of select="$specificlocale/create/sn/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/sn/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <textarea id="modify_source_source_note_id" class="notetextarea" onkeydown="refreshCreateNew();" onkeyup="refreshCreateNew();"  onmouseover="refreshCreateNew();" onmouseout="refreshCreateNew();" onchange="refreshCreateNew();" onfocus="this.style.border='1px solid #000';refreshCreateNew();" onblur="this.style.border='1px solid #999966';refreshCreateNew();" name="source_note" >
                         </textarea>
                     </td>
@@ -156,7 +157,7 @@ This file is part of the THEMAS system.
         <table width="100%">
             <tr>
                 <td style="color:#898a5e; font-size:9px;">
-                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/create/instructionsnote/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/create/instructionsnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                 </td>
             </tr>
             <tr>
@@ -168,13 +169,13 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getServletResult( 'EditActions_Source','edit_source_create', '','')">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="cancelAction();DisplayPleaseWaitScreen(false);">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -188,7 +189,7 @@ This file is part of the THEMAS system.
         <xsl:param name="lang" />
         <fieldset id="renameFieldSet_Source">
             <legend>
-                <xsl:value-of select="$specificlocale/rename/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b>
                     <xsl:value-of select="//targetSource"/>
                 </b>
@@ -198,7 +199,7 @@ This file is part of the THEMAS system.
                 <table cellspacing="0"  cellpadding="3">
                     <tr bgcolor="#F2F2F2" valign = "middle" cellspacing="0"  >
                         <td align="right"> <!--  style="color:#999966"-->
-                            <xsl:value-of select="$specificlocale/rename/currentname/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/currentname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </td>
                         <td colspan="2">
                             <input id="oldSource" style="width:630px;" disabled="disabled" class="disabledbutton" name="oldsourcename" >
@@ -215,14 +216,14 @@ This file is part of the THEMAS system.
                     </tr>
                     <tr bgcolor="#F2F2F2" valign="middle">
                         <td align="right" >
-                            <xsl:value-of select="$specificlocale/rename/newname/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/newname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </td>
                         <!--EMPTY SEPERATOR LINE-->
                         <td>
                             <input type="text" style="width:630px;" id="newsourcename" name="source_rename">
                                 <xsl:attribute name="onkeyup">
                                     <xsl:text>if(event.keyCode==13) {if( confirm('</xsl:text>
-                                    <xsl:value-of select="$specificlocale/rename/jsconfirm/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/jsconfirm/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <xsl:text>')){getServletResult('EditActions_Source','renameFieldSet_Source','ResultOf_Rename_Source','');} else { window.location.reload( true );}}</xsl:text>
                                 </xsl:attribute>
                             </input>
@@ -235,7 +236,7 @@ This file is part of the THEMAS system.
                     </tr>
                     <tr bgcolor="#F2F2F2" valign="middle">
                         <td align="right" valign="top">
-                            <xsl:value-of select="$specificlocale/rename/result/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/result/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </td>
                         <td>
                             <textarea id="ResultOf_Rename_Source" name="errorSourceMSG" class="renametextarea" 
@@ -262,25 +263,25 @@ This file is part of the THEMAS system.
         <table width="100%">
             <tr>
                 <td style="color:#898a5e; font-size:9px;">
-                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/rename/instructionsnote/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/instructionsnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                 </td>
             </tr>
             <tr>
                 <td valign="bottom" align="right">
                     <input type="button" class="button">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="onclick">
                             <xsl:text>if (confirm('</xsl:text>
-                            <xsl:value-of select="$specificlocale/rename/jsconfirm/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/rename/jsconfirm/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <xsl:text>')) {getServletResult('EditActions_Source','renameFieldSet_Source','ResultOf_Rename_Source','');} else { window.location.reload( true );}</xsl:text>
                         </xsl:attribute>
                     </input> 
                     &#160;
                     <input type="button" class="button" onclick="window.location.reload( true );">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -294,7 +295,7 @@ This file is part of the THEMAS system.
         <xsl:param name="lang" />
         <fieldset id="edit_source_refs">
             <legend>
-                <xsl:value-of select="$specificlocale/moverefs/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b>
                     <xsl:value-of select="//source/name"/>
                 </b>
@@ -303,11 +304,11 @@ This file is part of the THEMAS system.
             <table  border="0" style="position:relative; margin-left:auto; margin-right:auto;"  >
                 <tr valign="top">
                     <td style="text-align:center;" bgcolor="#F2F2F2">
-                        <xsl:value-of select="$specificlocale/moverefs/movethes/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/movethes/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="//selectedThesaurus"/>
                         </b>
-                        <xsl:value-of select="$specificlocale/moverefs/tosource/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/tosource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr>
@@ -331,12 +332,12 @@ This file is part of the THEMAS system.
                 <tr>
                     <td style="color:#898a5e; font-size:9px;">
                         <br/>
-                        <xsl:value-of  disable-output-escaping="yes" select="$specificlocale/moverefs/instructionsnote1/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/instructionsnote1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr>
                     <td style="color:#898a5e; font-size:9px;">
-                        <xsl:value-of  disable-output-escaping="yes" select="$specificlocale/moverefs/instructionsnote2/option[@lang=$lang]"/>                       
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/instructionsnote2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>                           
                     </td>
                 </tr>
             </table>
@@ -362,7 +363,7 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" >
                         <xsl:attribute name="value">
-                            <xsl:value-of disable-output-escaping="yes" select="$specificlocale/moverefs/moveAndDeletebtntext/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moverefs/moveAndDeletebtntext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="onclick">
                             <xsl:text>getServletResult('EditActions_Source','edit_source_refs','','selectedIndexOnly');</xsl:text>
@@ -371,7 +372,7 @@ This file is part of the THEMAS system.
                     &#160;
                     <input type="button" class="button" onclick="window.location.reload( true );">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -386,7 +387,7 @@ This file is part of the THEMAS system.
         <xsl:param name="lang" />
         <fieldset id="edit_source_source_note">
             <legend>
-                <xsl:value-of select="$specificlocale/editsn/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editsn/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b>
                     <xsl:value-of select="//source/name"/>
                 </b>
@@ -395,7 +396,7 @@ This file is part of the THEMAS system.
             <table border="0" width="100%" align="center">
                 <tr valign="top">
                     <td bgcolor="#F2F2F2" align="center">
-                        <xsl:value-of select="$specificlocale/editsn/sn/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editsn/sn/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr>                    
@@ -422,7 +423,7 @@ This file is part of the THEMAS system.
         <table width="100%">
             <tr>
                 <td style="color:#898a5e; font-size:9px;">
-                    <xsl:value-of disable-output-escaping="yes" select="$specificlocale/editsn/instructionsnote/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editsn/instructionsnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                 </td>
             </tr>
             <tr>
@@ -434,11 +435,11 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" >
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalsavebutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalsavebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="onclick">
                             <xsl:text>if (confirm('</xsl:text>
-                            <xsl:value-of select="$specificlocale/editsn/jsconfirm/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/editsn/jsconfirm/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             <xsl:text>')) {                                 
                                 getServletResult('EditActions_Source','edit_source_source_note','','');
                                 } else { window.location.reload( true ); } </xsl:text>
@@ -447,7 +448,7 @@ This file is part of the THEMAS system.
                     &#160;
                     <input type="button" class="button" onclick="window.location.reload( true );">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>
@@ -461,7 +462,7 @@ This file is part of the THEMAS system.
         <xsl:param name="lang" />
         <fieldset id="edit_source_delete">
             <legend>
-                <xsl:value-of  select="$specificlocale/delete/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b>
                     <xsl:value-of select="//targetSource"/>
                 </b>
@@ -470,22 +471,22 @@ This file is part of the THEMAS system.
             <table width="100%" >
                 <tr>
                     <td style="text-align:center;">
-                        <xsl:value-of  disable-output-escaping="yes" select="$specificlocale/delete/confirmmessage/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/confirmmessage/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         <b>
                             <xsl:value-of select="//targetSource"/>
                         </b>
-                        <xsl:value-of  select="$specificlocale/delete/qmark/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/qmark/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         <br/>
                         <input type="checkbox" name="deleteRefs" />
-                        <xsl:value-of  select="$specificlocale/delete/deleterefs/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/deleterefs/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                 </tr>
                 <tr align="center">
                     <td style="color:#898a5e; font-size:9px;" >
                         <br/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/delete/instructionsnote1/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/instructionsnote1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         <xsl:value-of select="//targetSource"/>
-                        <xsl:value-of disable-output-escaping="yes" select="$specificlocale/delete/instructionsnote2/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/instructionsnote2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                     </td>
                 </tr>
             </table>
@@ -511,13 +512,13 @@ This file is part of the THEMAS system.
                 <td valign="bottom" align="right">
                     <input type="button" class="button" onclick="getDeleteResult('EditActions_Source','edit_source_delete', '','')">
                         <xsl:attribute name="value">
-                            <xsl:value-of select="$specificlocale/delete/deletebtntext/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/delete/deletebtntext/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                     &#160;
                     <input type="button" class="button" onclick="window.location.reload( true );">
                         <xsl:attribute name="value">
-                            <xsl:value-of  select="$specificlocale/generalcancelbutton/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/generalcancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </input>
                 </td>

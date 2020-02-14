@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -55,27 +55,27 @@
             <!-- <td class="resultRow" align="center" colspan="5"> -->
             <td class="PagingInfo" colspan="3">
                 <b>
-                    <xsl:value-of select="$paginglocale/statisticspart1/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </b>
                 <xsl:if test="$query_results_count = 0">
-                    <xsl:value-of select="$paginglocale/statisticspart2/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </xsl:if>
                 <xsl:if test="$query_results_count > 1">
-                    <xsl:value-of select="$paginglocale/statisticspart3/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart3/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     <xsl:value-of select="$query_results_count"/>
-                    <xsl:value-of select="$paginglocale/statisticspart4/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart4/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </xsl:if>
                 <xsl:if test="$query_results_count = 1">
-                    <xsl:value-of select="$paginglocale/statisticspart5/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart5/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     <xsl:value-of select="$query_results_count"/>
-                    <xsl:value-of select="$paginglocale/statisticspart6/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart6/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </xsl:if>
                 <b>
-                    <xsl:value-of select="$paginglocale/statisticspart7/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart7/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </b>
                 <xsl:value-of select="$pagingFirst"/> - <xsl:value-of select="$pagingLast"/>
                 <b> 
-                     <xsl:value-of select="$paginglocale/statisticspart8/option[@lang=$lang]"/>
+                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart8/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </b>
                 <xsl:value-of select="ceiling($pagingLast div $pagingListStep)"/> /
                 <xsl:value-of select="ceiling($query_results_count div $pagingListStep)"/>
@@ -94,10 +94,10 @@
                             <xsl:attribute name="onClick">prepareResults('SearchResults_Terms_Systematic','','','true');</xsl:attribute>
                              <img  height="16" width="16" border="0" class="img_link">
                                 <xsl:attribute name="src">
-                                    <xsl:value-of select="$paginglocale/saveimage/src/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                                 <xsl:attribute name="title">
-                                    <xsl:value-of select="$paginglocale/saveimage/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/saveimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                              </img>
                         </a>
@@ -160,7 +160,7 @@
                 </xsl:attribute>-->
                 <img src="images/paging/start.gif" width="14" height="14" class="img_link" border="0">
                     <xsl:attribute name="title">
-                        <xsl:value-of select="$paginglocale/statisticspart9/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart9/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </xsl:attribute>
                 </img>
             </a>			
@@ -207,14 +207,14 @@
                 <xsl:attribute name="onclick">DisplayPleaseWaitScreen(true);</xsl:attribute>
                 <img src="images/paging/end.gif" width="14" height="14" class="img_link" border="0">
                     <xsl:attribute name="title">
-                        <xsl:value-of select="$paginglocale/statisticspart10/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart10/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </xsl:attribute>
                 </img>
             </a>
         </xsl:if>
         <!-- go to specific page - part -->
         <xsl:if test="$pagingQueryResultsCount &gt; $pagingListStep">
-			&#160;&#160;<xsl:value-of select="$paginglocale/pageinputprompt/option[@lang=$lang]"/>
+			&#160;&#160;<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/pageinputprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             <!-- input for specific page number -->
             <input id="go_to_specific_page_input_term_systematic" name="go_to_specific_page_input_term_systematic" style="font-size: 8pt; width: 25pt">
                <xsl:attribute name="onKeyPress">
@@ -226,7 +226,7 @@
             </input>&#160;
             <input  class="button" type="button" style="font-size: 8pt;" >
                 <xsl:attribute name="value">
-                    <xsl:value-of select="$paginglocale/pageinput/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/pageinput/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </xsl:attribute>
                 <xsl:attribute name="onClick">
 					DisplayPleaseWaitScreen(true);

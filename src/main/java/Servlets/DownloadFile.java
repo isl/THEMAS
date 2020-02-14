@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -101,7 +101,7 @@ public class DownloadFile extends ApplicationBasicServlet  {
                     response.setContentType("text/xml;charset=UTF-8");
                 }
                 
-                response.setContentLength((new Long(srcdoc.length())).intValue());
+                response.setContentLength((Long.valueOf(srcdoc.length())).intValue());
                 response.setHeader("Content-Disposition", "attachment; filename="+srcdoc.getName());
                                                
                 fis = new FileInputStream(srcdoc);

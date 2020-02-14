@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -67,7 +67,7 @@
                                         </xsl:attribute>
                                     </xsl:otherwise>
                                 </xsl:choose>
-                                <xsl:value-of select="$locale/primarycontentarea/db/tabs/tab1/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/primarycontentarea/db/tabs/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                         </td>
                     </xsl:if>
@@ -88,7 +88,7 @@
                                         </xsl:attribute>
                                     </xsl:otherwise>
                                 </xsl:choose>
-                                <xsl:value-of select="$locale/primarycontentarea/db/tabs/tab2/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/primarycontentarea/db/tabs/tab2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                         </td>
                     </xsl:if>
@@ -170,13 +170,13 @@
         <xsl:param name="lang"/>
         <fieldset>
             <legend>
-                <xsl:value-of select="$specificlocale/restoredblegend/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/restoredblegend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <form method="post" id="Restore_DB_backupForm" action="" >
                 <!-- List of DB backups -->
                 &#160;
-                <xsl:value-of select="$specificlocale/backuplist/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/backuplist/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <br/>
                 <br/>
                 &#160;
@@ -207,7 +207,7 @@
                 &#160;
                 <input onClick="Restore_DB_backupDeleteButtonPressed()" type="submit">
                     <xsl:attribute name="value">
-                        <xsl:value-of select="$specificlocale/deletebutton/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/deletebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </xsl:attribute>
                     <!-- ONLY administrator has the right to delete a DB backup -->
                     <xsl:choose>
@@ -229,7 +229,7 @@
                 &#160;
                 <input onClick="Restore_DB_backupRestoreButtonPressed()" class="button" type="submit">
                     <xsl:attribute name="value">
-                        <xsl:value-of select="$specificlocale/restorebutton/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/restorebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </xsl:attribute>
                     <!-- ONLY administrator has the right to restore a DB backup -->
                     <xsl:choose>
@@ -252,7 +252,7 @@
                 <hr/>
                 <!-- Result area -->
                 &#160;
-                <xsl:value-of select="$specificlocale/result/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/result/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <textarea id="Restore_DB_backup_result_textarea_ID" name="Restore_DB_backup_result_textarea_NAME" class="admintextarea" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'" disabled="disabled">
                     <xsl:value-of select="//page/content_DBadmin/RestoreDBbackupResult/RestoreDBbackupResultMessage"/>
                 </textarea>
@@ -263,13 +263,13 @@
         <br/>
         <fieldset>
             <legend>
-                <xsl:value-of select="$specificlocale/createbackup/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/createbackup/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <form method="post" id="Create_DB_backupForm" action="">
                 <!-- Description - OK button -->
                 &#160;
-                <xsl:value-of select="$specificlocale/descriptionprompt/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/descriptionprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <input type="text" id="Create_DB_backup_Description_ID" name="Create_DB_backup_Description_NAME" style="width:500px;" onkeypress="if (event.keyCode == 13) return false;">
                     <!-- disable ENTER key-->
                     <xsl:attribute name="value">
@@ -279,14 +279,14 @@
                 &#160;
                 <input onClick="Create_DB_backupOKButtonPressed()"  class="button" type="submit">
                     <xsl:attribute name="value">
-                        <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/okbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </xsl:attribute>
                 </input>
                 <!-- LINE -->
                 <hr/>
                 <!-- Result area -->
                 &#160;
-                <xsl:value-of select="$specificlocale/result/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/result/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <textarea id="Create_DB_backup_result_textarea_ID" name="Create_DB_backup_result_textarea_NAME" class="admintextarea" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'" disabled="disabled">
                     <xsl:value-of select="//page/content_DBadmin/CreateDBbackupResult/CreateDBbackupResultMessage"/>
                 </textarea>
@@ -303,20 +303,20 @@
         <xsl:param name="lang"/>
         <fieldset >
             <legend>
-                <xsl:value-of select="$specificlocale/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <form method="post" id="Fix_DBForm" action="" style="width:100%;">
                 <!-- Description of the operation -->
                 &#160;
-                <xsl:value-of select="$specificlocale/descriptiontitle/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/descriptiontitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <br/>
                 <ul>
                     <li>
-                        <xsl:value-of select="$specificlocale/bullet1/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/bullet1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </li>
                     <li>
-                        <xsl:value-of select="$specificlocale/bullet2/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/bullet2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </li>
                 </ul>
                 <table >
@@ -324,7 +324,7 @@
                         <td style="width:820px;" align="center">
                             <input onClick="Fix_DBOKButtonPressed()" class="button" type="submit">
                                 <xsl:attribute name="value">
-                                    <xsl:value-of select="$specificlocale/okbutton/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/okbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                             </input>
                         </td>
@@ -335,7 +335,7 @@
                 <hr/>
                 <!-- Result area -->
                 &#160;
-                <xsl:value-of select="$specificlocale/result/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/result/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <textarea id="Fix_DB_result_textarea_ID" name="Fix_DB_result_textarea_NAME" class="admintextarea" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'" disabled="disabled">
                     <xsl:value-of select="//page/content_DBadmin/FixDBResult/FixDBResultMessage"/>
                 </textarea>

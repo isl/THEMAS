@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -34,10 +34,87 @@
 body{
     font-family: Verdana, Arial, Helvetica, sans-serif; 
     font-size: 11pt;
-    background-color:#FFFFFF;
+    background-color:#343839;
     font-weight: normal;
     line-height: normal;
     word-spacing: normal;
+}
+
+div#page-logos{
+    position:relative;
+    width: 1024px;
+        
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom: 20px;
+}
+div#logos-line-1{
+
+    width:100%;
+    /*
+    clear: both;
+    text-align: center;
+    position:relative;
+    */
+    background-color:#FFFFFF;
+    text-align: center;        
+}
+div#logos-line-2{
+
+    width:100%;
+    /*
+    clear: both;
+    text-align: center;
+    position:relative;
+    */
+    /*same as body bg */
+    background-color: #343839;
+    text-align: right;
+    margin-top:20px; 
+}
+
+div#logos-line-3{
+
+   text-align: right;
+    width:100%;    
+    margin-top:20px; 
+    /*font-family: Myriad pro;
+    font-size: 14pt; */
+    /*same as body */
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    /*same as body bg */
+    background-color: #343839;
+    margin-bottom: 20px;
+}
+
+div#logos-line-3 .developedtext{
+    color: #D1D1D1;
+    
+}
+div#logos-line-3 a{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+div#logos-line-3 a:hover{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+div#logos-line-3 a:visited{
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+img#project-logo-img{
+    position: absolute; 
+    left: 50px;
+}
+img#acknowledgement-logo-img{
+    margin-top:8px; 
+    margin-bottom:5px;
 }
 
 #all{
@@ -49,6 +126,16 @@ body{
     background-color:#343839;
     
     
+}
+.referenceUriTooltip{
+    position: absolute;
+    z-index: 1000; 
+    display: none; 
+    top: 70px; 
+    background: white; 
+    text-align: left; 
+    right:10px;    
+    border: 2px solid black;
 }
 
 .thesaurusFieldWidth{
@@ -71,12 +158,14 @@ img.disabledImage{
     filter: alpha(opacity=50); /* For IE8 and earlier */
 }
 #header {    
-    background-color: #E2E2E2;
+    /*background-color: #E2E2E2;*/
+    background-image: url(../images/leftmenu.jpg);
     height:77px;    
 }
 
 #headerLogin {    
     background-color: #FFFFFF;
+    
     height:77px;    
 }
 
@@ -205,11 +294,11 @@ legend {
 
 #page {
     position:relative;
-    top:5px;
+    margin-top:5px;
     height:720px;
     width: 1024px;  
     background-color: #FFFFFF;
-    border: 1px solid #898a5e;
+    /*border: 1px solid #898a5e;*/
     margin-left:auto;
     margin-right:auto;
 }
@@ -816,3 +905,59 @@ border-color: lightyellow;
 td.chosenContainerClass{
     height:150px;
 }
+
+
+
+ul.checkboxes  { 
+    margin: 0; 
+    padding: 0; 
+    margin-left: 0px;     
+    list-style: none; 
+} 
+
+ul.checkboxes li input { 
+    /*margin-right: .25em; */
+    margin-right: 5px;
+    vertical-align: middle;
+} 
+
+ul.checkboxes li { 
+    margin:3px 0px;
+    /*float: left;*/
+    /*border: 1px transparent solid; */
+    
+    vertical-align: middle;
+} 
+
+
+ul.checkboxes li label { 
+    margin-left: 0; 
+    width: 110px;
+    display: inline-block;
+    border: 1px transparent solid; 
+    vertical-align: middle;
+    cursor: pointer;
+} 
+ul.checkboxes li label:hover, 
+ul.checkboxes li label.focus  { 
+    background-color: #D9EDFC; /*lightyellow; */
+    border: 1px gray solid;             
+} 
+
+
+ul.checkboxes-horizontal li {
+    float: left;
+    margin: 0px;
+}
+
+ul.checkboxes-horizontal li label{
+    float: none;    
+    margin: 0px 5px 0px 20px;
+    width: auto;
+    border: 0px gray solid;   
+}
+ul.checkboxes-horizontal li label:hover, 
+ul.checkboxes-horizontal li label.focus  { 
+    background-color: #D9EDFC; /*lightyellow; */
+    border: 0px gray solid;             
+} 

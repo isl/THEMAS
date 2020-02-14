@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -45,6 +45,7 @@ import Utils.SessionWrapperClass;
 
 import Utils.NodeInfoSortItemContainer;
 import Utils.Parameters;
+import Utils.SortItem;
 import Utils.Utilities;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -75,6 +76,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
         request.setCharacterEncoding("UTF-8");
         // popup display card / edit mode / XML Stream Mode
         String outputMode = request.getParameter("mode");
+        
         boolean skipClose = false;
         if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
             response.setContentType("text/xml;charset=UTF-8");       
@@ -89,6 +91,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
         HttpSession session = request.getSession();
         ServletContext context = getServletContext();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
+        sessionInstance.readSession(session,request);
+        UserInfoClass SessionUserInfoCpy = (UserInfoClass)sessionInstance.getAttribute("SessionUser");
         init(request, response,sessionInstance);  
         
         PrintWriter out = response.getWriter(); 
@@ -180,6 +184,7 @@ public class CardOf_Term extends ApplicationBasicServlet {
             if(outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){                
                 output.add(ConstantParameters.system_transliteration_kwd);
                 output.add(ConstantParameters.facet_kwd);
+                
                 //output.add(ConstantParameters.rbt_kwd);
                 //output.add(ConstantParameters.rnt_kwd);
             }
@@ -240,12 +245,22 @@ public class CardOf_Term extends ApplicationBasicServlet {
             Q.reset_set(set_Target);
             
             //temp structure - Vector
-            ArrayList<String> allTerms = new ArrayList<String>();
-            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL);
+            ArrayList<String> allTerms = new ArrayList<>();
             
+            //"://"+request.getLocalAddr()+":" + request.getLocalPort() + "/" + Parameters.ApplicationName +"/";
+            String reqUrlPrefix = u.getExternalReaderReferenceUriPrefix(request,SessionUserInfo.selectedThesaurus);
+            //System.out.println("reqUrlPrefix = "+reqUrlPrefix) ;
+            
+            dbGen.collectTermSetInfo(SessionUserInfo, Q,TA, sis_session, set_Target, output, termsInfo, allTerms, resultNodesIdsL,false, null);
+            if(output.contains((ConstantParameters.system_referenceUri_kwd))){
+                 
+                 dbGen.constructReferenceURIs(reqUrlPrefix, termsInfo);
+            }
             boolean skipOutput = (outputMode!=null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0);
             u.getResultsInXmlGuideTermSorting(allTerms, termsInfo, output, xmlResults, Q, sis_session, targetLocale,SessionUserInfo,skipOutput,skipOutput);
             
+            
+           
             
             // in case of LIBRARY user group, mark term as (un)editable
             //boolean UserOfGroupLIBRARY = (SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_Library) == true);            
@@ -282,11 +297,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             elapsedTimeSec = Utilities.stopTimer(startTime);   
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms --> time elapsed: " + elapsedTimeSec);
             
-            
-           
             if(outputMode!=null && (outputMode.compareTo("edit")==0 || outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0 )){
                 if(outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM)==0){
-                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS,true, SessionUserInfo.UILang));
+                    xml.append(u.getXMLStart(ConstantParameters.LMENU_TERMS, true, SessionUserInfo.UILang));
                     xml.append(xmlResults);
                     xml.append(u.getXMLEnd());
                 }
@@ -305,7 +318,8 @@ public class CardOf_Term extends ApplicationBasicServlet {
                     u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
                 }
             } else if(outputMode==null){
-                xml.append(ConstantParameters.xmlHeader + "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                //xml.append(ConstantParameters.xmlHeader + "<page language=\""+SessionUserInfo.UILang+"\" primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">");
+                xml.append(u.getXMLStart("",true, SessionUserInfo.UILang));
                 xml.append(xmlResults);
                 xml.append(u.getXMLUserInfo(SessionUserInfo));
                 xml.append("</page>");
@@ -322,7 +336,9 @@ public class CardOf_Term extends ApplicationBasicServlet {
             }
             
             if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0){
-                if(session!=null) {session.invalidate();}
+                if(SessionUserInfoCpy==null){
+                    if(session!=null) {session.invalidate();}                
+                }
             }
             else {                
                 sessionInstance.writeBackToSession(session);
@@ -338,10 +354,10 @@ public class CardOf_Term extends ApplicationBasicServlet {
         //resultsInfo = resultsInfo.concat("<termName>" +targetTerm+"</termName>");
         xml.append(u.getXMLEnd());
             
-        if (outputMode.compareTo("edit") == 0) {
+        if (outputMode!=null && outputMode.compareTo("edit") == 0) {
             u.XmlPrintWriterTransform(out, xml,sessionInstance.path + "/xml-xsl/page_contents.xsl");
         }
-        else if (outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
+        else if (outputMode!=null &&outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
             
             out.append(xml.toString());
         }

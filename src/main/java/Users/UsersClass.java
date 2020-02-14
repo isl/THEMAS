@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -60,6 +60,8 @@ import neo4j_sisapi.TMSAPIClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 /*---------------------------------------------------------------------
@@ -161,6 +163,38 @@ public class UsersClass {
         XMLresults.append("</results>");
     }    
     
+    public String getMD5Hex(final String inputString) {
+
+        try{
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            if(inputString==null){
+                md.update("".getBytes());
+            }
+            else{
+                md.update(inputString.getBytes());
+            }
+
+            byte[] digest = md.digest();
+
+
+            return convertByteToHex(digest);
+        }
+        catch(NoSuchAlgorithmException ex){
+            Utils.StaticClass.handleException(ex);
+        }
+        return inputString;
+    }
+    
+    private static String convertByteToHex(byte[] byteData) {
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        return sb.toString();
+    }
+
     /*---------------------------------------------------------------------
                             AddNewThesaurusForCurrentTMSUser()
     -----------------------------------------------------------------------
@@ -553,7 +587,8 @@ public class UsersClass {
         // construct a new instance of UserInfoClass class for the new user
         UserInfoClass userInfo = new UserInfoClass();
         userInfo.name = username;
-        userInfo.password = password;
+        
+        userInfo.password = getMD5Hex(password);
         userInfo.thesaurusNames = thesaurusV;
         userInfo.thesaurusGroups = groupV;
         if (createUserAsAdministrator == true) {
@@ -676,10 +711,10 @@ public class UsersClass {
         }
         
         if (deletePassword == true) { // case of user password deletion
-            TargetUserInfo.password = "";
+            TargetUserInfo.password = getMD5Hex("");
             UserInfoClass SessionUserInfo = (UserInfoClass) sessionInstance.getAttribute("SessionUser");
             if(SessionUserInfo.name.compareTo(oldUserName)!=0){
-                SessionUserInfo.password = "";
+                SessionUserInfo.password = getMD5Hex("");
                 SessionUserInfo.description = description;
                 sessionInstance.setAttribute("SessionUser", SessionUserInfo);
             } 
@@ -1454,6 +1489,90 @@ public class UsersClass {
         return false;
     }    
     
+    /**
+     * just check if the given credentials are authorized to access the selected thesaurus and update the session accordingly
+     * Return null if not authorized
+     * @param request
+     * @param session
+     * @param sessionInstance
+     * @param username
+     * @param password
+     * @param selectedThesaurus
+     * @return 
+     */
+    public UserInfoClass getAuthenticatedUserInfo(HttpServletRequest request,HttpSession session, SessionWrapperClass sessionInstance, String username, String password, String selectedThesaurus) {
+        
+        UserInfoClass retSessionUserInfo = null;
+        session = request.getSession();
+        ServletContext context = session.getServletContext();
+        if(sessionInstance==null){
+            sessionInstance = new SessionWrapperClass();
+            sessionInstance.readSession(session,request);
+        }
+        String THEMASUsersFileName = "";
+        if(Parameters.BaseRealPath.length()>0){
+            THEMASUsersFileName = Parameters.BaseRealPath+WebAppUsersXMLFilePath;
+        }
+        else{
+             THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/"+WebAppUsersXMLFilePath);
+        }
+        
+        // load the XML file with the users to Vector THEMASUserInfoList
+        ArrayList THEMASUserInfoList = ReadWebAppUsersXMLFile(THEMASUsersFileName);
+        
+        // for each element of Vector THEMASUserInfoList
+        int THEMASUserInfoListSize = THEMASUserInfoList.size();
+        for (int i = 0; i < THEMASUserInfoListSize; i++) {
+            
+            // get info for current stored user
+            UserInfoClass userInfo = (UserInfoClass)(THEMASUserInfoList.get(i));
+            String userNameStored = userInfo.name; 
+            String passwordStored = userInfo.password; 
+            ArrayList thesaurusNamesStored = userInfo.thesaurusNames;
+            ArrayList thesaurusGroupsStored = userInfo.thesaurusGroups;
+            // compare current stored user's info with the given parameters
+            // check username
+            if (userNameStored.equals(username) == false) continue;
+            // check password
+            if (passwordStored.equals(password) == false) continue;            
+            // check selectedThesaurus
+            // for each element of Vector thesaurusNamesStored
+            boolean selectedThesaurusAuthenticationSucceded = false;
+            String userGroup = null;
+            
+            int thesaurusNamesStoredSize = thesaurusNamesStored.size();            
+            for (int j = 0; j < thesaurusNamesStoredSize; j++) {
+                userGroup = (String)(thesaurusGroupsStored.get(j));
+                // in case of group="ADMINISTRATOR" do not check selectedThesaurus
+                if (userGroup.equals(ConstantParameters.Group_Administrator) == true) {
+                    selectedThesaurusAuthenticationSucceded = true;
+                    break;                    
+                }
+                
+                String thesaurusNameStored = (String)(thesaurusNamesStored.get(j));                 
+                if (thesaurusNameStored.equals(selectedThesaurus) == true || thesaurusNameStored.equals(ConstantParameters.AllThesauriIndicator) == true) {
+                    selectedThesaurusAuthenticationSucceded = true;
+                    break;
+                }
+            }
+            
+            // in case of successful authentication
+            if (selectedThesaurusAuthenticationSucceded == true) {
+                // set the session attribute "SessionUser" to an instance of class 
+                // UserInfoClass filled with the full information of the authenticated user
+                String targetLang = (userInfo ==null || userInfo.UILang==null) ? Parameters.UILang : userInfo.UILang;
+                
+                
+                retSessionUserInfo = new UserInfoClass();
+                FillStructure(retSessionUserInfo, context,username,password,selectedThesaurus,userGroup,targetLang);
+                
+                return retSessionUserInfo;
+            }
+        }
+        
+       
+        return null;        
+    }
     /*----------------------------------------------------------------------
                          UpdateSessionUserSessionAttribute()
     -----------------------------------------------------------------------
@@ -1546,29 +1665,25 @@ public class UsersClass {
         //sessionInstance.setAttribute("SessionUser", SessionUserInfo);
     }
 
-    
-    public synchronized void SetSessionAttributeSessionUser(SessionWrapperClass sessionInstance,ServletContext context, String username, String password, String selectedThesaurus, String userGroup, String uiLang) {
-        // construct an instance of class UserInfoClass
-        UserInfoClass SessionUserInfo = new UserInfoClass();
+    public synchronized void FillStructure(UserInfoClass refSessionUserInfo,ServletContext context, String username, String password, String selectedThesaurus, String userGroup, String uiLang    ){
+        refSessionUserInfo.name = username;
         
-        // fill it with the given parameters
-        SessionUserInfo.name = username;
-        SessionUserInfo.password = password;
-        SessionUserInfo.selectedThesaurus = selectedThesaurus;
-        SessionUserInfo.userGroup = userGroup;
-        SessionUserInfo.UILang = uiLang;
+        refSessionUserInfo.password = password;
+        refSessionUserInfo.selectedThesaurus = selectedThesaurus;
+        refSessionUserInfo.userGroup = userGroup;
+        refSessionUserInfo.UILang = uiLang;
         
         // fill it with the configuration values for SVG mechanism
         // SVG_CategoriesFrom_for_traverse (replace keywords "%THES%" with g.e. "AAA" and "%thes%" with g.e. "aaa")
         String SVG_CategoriesFrom_for_traverse = context.getInitParameter("SVG_CategoriesFrom_for_traverse");
         SVG_CategoriesFrom_for_traverse = SVG_CategoriesFrom_for_traverse.replaceAll("%THES%", selectedThesaurus);
         SVG_CategoriesFrom_for_traverse = SVG_CategoriesFrom_for_traverse.replaceAll("%thes%", selectedThesaurus.toLowerCase());        
-        SessionUserInfo.SVG_CategoriesFrom_for_traverse = SVG_CategoriesFrom_for_traverse;
+        refSessionUserInfo.SVG_CategoriesFrom_for_traverse = SVG_CategoriesFrom_for_traverse;
         // SVG_CategoriesNames_for_traverse (replace keywords "%THES%" with g.e. "AAA" and "%thes%" with g.e. "aaa")
         String SVG_CategoriesNames_for_traverse = context.getInitParameter("SVG_CategoriesNames_for_traverse");
         SVG_CategoriesNames_for_traverse = SVG_CategoriesNames_for_traverse.replaceAll("%THES%", selectedThesaurus);
         SVG_CategoriesNames_for_traverse = SVG_CategoriesNames_for_traverse.replaceAll("%thes%", selectedThesaurus.toLowerCase());                
-        SessionUserInfo.SVG_CategoriesNames_for_traverse = SVG_CategoriesNames_for_traverse;
+        refSessionUserInfo.SVG_CategoriesNames_for_traverse = SVG_CategoriesNames_for_traverse;
         
         // fill it with the configuration values for Alphabetical display
         String DELIMITER1 = context.getInitParameter("DELIMITER1");
@@ -1584,7 +1699,7 @@ public class UsersClass {
             for(int i=0;i<tempArray1.length;i++){
                 alphabetical_From_Class[i] = tempArray1[i];
             }            
-            SessionUserInfo.alphabetical_From_Class = alphabetical_From_Class;            
+            refSessionUserInfo.alphabetical_From_Class = alphabetical_From_Class;            
         }
         // alphabetical_Links
         String[] alphabetical_Links;
@@ -1598,7 +1713,7 @@ public class UsersClass {
             for(int i=0;i<tempArray1.length;i++){
                 alphabetical_Links[i]=tempArray1[i];
             }            
-            SessionUserInfo.alphabetical_Links = alphabetical_Links;
+            refSessionUserInfo.alphabetical_Links = alphabetical_Links;
         }
         
         // CLASS_SET_INCLUDE configuration value
@@ -1626,13 +1741,19 @@ public class UsersClass {
             }            
         }
         CLASS_SET_INCLUDE.trimToSize();        
-        SessionUserInfo.CLASS_SET_INCLUDE = CLASS_SET_INCLUDE;
+        refSessionUserInfo.CLASS_SET_INCLUDE = CLASS_SET_INCLUDE;
         
         
-        if(SessionUserInfo.UILang==null || SessionUserInfo.UILang.length()==0){
-            SessionUserInfo.UILang = context.getInitParameter("UILanguage");
+        if(refSessionUserInfo.UILang==null || refSessionUserInfo.UILang.length()==0){
+            refSessionUserInfo.UILang = context.getInitParameter("UILanguage");
         }
+    }
+    
+    public synchronized void SetSessionAttributeSessionUser(SessionWrapperClass sessionInstance,ServletContext context, String username, String password, String selectedThesaurus, String userGroup, String uiLang) {
+        // construct an instance of class UserInfoClass
+        UserInfoClass SessionUserInfo = new UserInfoClass();
         
+        FillStructure(SessionUserInfo, context, username,password,selectedThesaurus, userGroup, uiLang);
             
         // set the session attribute
         sessionInstance.setAttribute("SessionUser", SessionUserInfo);        

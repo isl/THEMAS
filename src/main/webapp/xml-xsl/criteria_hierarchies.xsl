@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -37,7 +37,7 @@
     <xsl:template name="criteria_hierarchies">
         <fieldset id="searchHierarchiesForm">
             <legend>
-                <xsl:value-of select="$criteriahierarchieslocale/legend/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <table width="100%" height="100%" border="0" valign="top">
                 <tr>
@@ -45,8 +45,72 @@
                 </tr>
                 <tr>
                     <td>
-                        <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/title/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage">
+                            <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/title/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>   
+                        
+                         <xsl:text> </xsl:text>
+                        <span style="margin-left:20px;">
+                        <!-- Logical combine operator selection -->
+                        <xsl:call-template name="getTranslationMessage"> 
+                            <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
+                            <xsl:with-param name="targetLang" select="$lang"/> 
+                            <xsl:with-param name="disableEscape" select="'no'"/> 
+                        </xsl:call-template>    
+                        
+                        <ul class="checkboxes checkboxes-horizontal" style="vertical-align: text-bottom; display:inline-block;">
+                            <li>
+                                <label for="operator_hierarchy_and" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>
+                                </label>
+                                <input id="operator_hierarchy_and" name="operator_hierarchy" type="radio" value="and" checked="checked" style="vertical-align: text-bottom;"/>
+                            </li>
+                            <li>
+                                <label for="operator_hierarchy_or" style="margin:0px 5px;">
+                                    <xsl:call-template name="getTranslationMessage"> 
+                                        <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template> 
+                                </label>
+                                
+                                <input id="operator_hierarchy_or" name="operator_hierarchy" type="radio" value="or" style="vertical-align: text-bottom;"/>
+                            </li>
+                        </ul> 
+   
+                        </span>          
+                        <!--
+<tr>
+            <td align="left" id="criteria_hierarchies_and_or">
+                <xsl:call-template name="getTranslationMessage"> 
+                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option"/> 
+                    <xsl:with-param name="targetLang" select="$lang"/> 
+                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                </xsl:call-template>    
+               <xsl:call-template name="getTranslationMessage"> 
+                   <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option"/> 
+                   <xsl:with-param name="targetLang" select="$lang"/> 
+                   <xsl:with-param name="disableEscape" select="'no'"/> 
+               </xsl:call-template>    
+               <input name="operator_hierarchy" type="radio" value="and" checked="checked"/>
+                <xsl:call-template name="getTranslationMessage"> 
+                    <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option"/> 
+                    <xsl:with-param name="targetLang" select="$lang"/> 
+                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                </xsl:call-template>    
+                <input name="operator_hierarchy" type="radio" value="or"/>
+            </td>
+        </tr>   
+-->
                     </td>
+                    
+                    
                 </tr>
                 <tr>
                     <td align="left" valign="top" cellspacing="5">
@@ -57,51 +121,51 @@
                                         <tbody id="criteriaBody_hierarchy">
                                             <tr class="contentHeadText">
                                                 <td>
-                                                    <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/searchfields/title/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/searchfields/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </td>
                                                 <td>
-                                                    <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/title/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </td>
                                                 <td>
-                                                    <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/inputstitle/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/inputstitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </td>
                                             </tr>
                                             <tr id="criterion_hierarchy">
                                                 <td>
                                                     <select color="#FFFFFF" name="input_hierarchy" style="width:119px;">
                                                         <option value="name">
-                                                            <xsl:value-of select="$criteriahierarchieslocale/criteriaarea/searchfields/hierarchy/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/searchfields/hierarchy/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="term">
-                                                            <xsl:value-of select="$criteriahierarchieslocale/criteriaarea/searchfields/containsterm/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/searchfields/containsterm/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                     </select>
                                                 </td>
                                                 <td>
                                                     <select name="op_hierarchy">
                                                         <option value="=">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/equal/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/equal/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="~">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/similar/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/similar/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="~*">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/starts/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/starts/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="*~">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/ends/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/ends/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="!">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notequal/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notequal/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="!~">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notsimilar/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notsimilar/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="!~*">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notstarts/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notstarts/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                         <option value="!*~">
-                                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notends/option[@lang=$lang]"/>
+                                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/fieldoperators/notends/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                         </option>
                                                     </select>
                                                 </td>
@@ -115,47 +179,63 @@
                                 <td width="25" valign="top" align="left" id="criteria_hierarchies_add_remove" >
                                     <img width="20" height="20" border="0" onClick="addOutput('criteriaBody_hierarchy', 'criterion_hierarchy','inputvalue_hierarchy');">
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/plusimage/src/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/plusimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/plusimage/title/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/plusimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                     </img>
                                     <img width="20" height="20" border="0" onClick="removeRow(document.getElementById('criteria_hierarchies'));">
                                         <xsl:attribute name="src">
-                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/minusimage/src/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/minusimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                         <xsl:attribute name="title">
-                                            <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/minusimage/title/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/criteriaarea/minusimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:attribute>
                                     </img>
                                 </td>
                                 <td align="left" valign="top">
                                     <table border="0">
                                         <tr>
-                                            <td >
-                                                <xsl:value-of select="$criteriahierarchieslocale/criteriaarea/selectall/option[@lang=$lang]"/>
+                                            <td>
+                                                <ul class="checkboxes checkboxes-horizontal"> 
+                                                    <li>
+                                                        <label for="showAllHierscbx">
+                                                            <xsl:call-template name="getTranslationMessage"> 
+                                                                <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/selectall/option"/> 
+                                                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                            </xsl:call-template>    
+                                                        </label>
+                                                        <input type="checkbox" id="showAllHierscbx" name="showAll" value="all">                                            
+                                                            <xsl:attribute name="onclick">
+                                                                <xsl:text>if(checked) {showallpressed('hierarchies');} else{showallreleased('hierarchies');}</xsl:text>
+                                                            </xsl:attribute>
+                                                        </input>
+                                                    </li> 
+                                                </ul>
+                                                <!--
+                                                <xsl:call-template name="getTranslationMessage">
+                                                    <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/criteriaarea/selectall/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>    
                                                 <input name="showAll" type="checkbox" value="all" >
                                                     <xsl:attribute name="onclick">
                                                         <xsl:text>if(checked) {showallpressed('hierarchies');} else{showallreleased('hierarchies');}</xsl:text>
                                                     </xsl:attribute>
-                                                </input>
+                                                </input>-->
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td align="left" id="criteria_hierarchies_and_or">
-                                                <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/title/option[@lang=$lang]"/>
-                                               <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/and/option[@lang=$lang]"/><input name="operator_hierarchy" type="radio" value="and" checked="checked"/>
-                                                <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/criteriaarea/combineoperators/or/option[@lang=$lang]"/><input name="operator_hierarchy" type="radio" value="or"/>
-                                            </td>
-                                        </tr>
+                                        
                                     </table>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
+                                    
                                     <br/><br/>
-                                    <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/outputarea/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <input type="checkbox" name="output_hierarchy" value="name" checked="checked" class="hiddenInput" disabled="disabled"/>
                                 </td>
                                 <td align="right" valign="bottom">
@@ -169,10 +249,28 @@
                         <hr/>
                         
                         <table border="0" id="customOutputs_hierarchy">
-                            <tr><!--ROW 1-->
-                                <td width="140">
+                            <tr><!--ROW 1 width="140"-->
+                                <td>
+                                    
+                                    <ul class="checkboxes"> 
+                                        <li>
+                                            <input type="checkbox" id="out1" name="output_hierarchy" value="facet" checked="checked"/>
+                                            <label for="out1">
+                                                <xsl:call-template name="getTranslationMessage"> 
+                                                    <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/outputarea/facets/option"/> 
+                                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                                </xsl:call-template>   
+                                            </label>
+                                        </li> 
+                                    </ul>
+                                    <!--
                                     <input type="checkbox" checked="checked" name="output_hierarchy" value="facet"/>
-                                    <xsl:value-of select="$criteriahierarchieslocale/outputarea/facets/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage">
+                                        <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/outputarea/facets/option"/> 
+                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                        <xsl:with-param name="disableEscape" select="'no'"/> 
+                                    </xsl:call-template>  -->  
                                 </td>
                             </tr>
                         </table>
@@ -182,7 +280,7 @@
                     <td align="right">
                         <input name="submit4hierarchysearch" class="button" type="button">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$criteriatermslocale/simplesearchfieldset/searchbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriatermslocale/simplesearchfieldset/searchbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                             <xsl:attribute name="onClick">
                                 <xsl:text>if (CheckSearchUserInput("SearchHierarchies") == true) updateCriteria("SearchCriteria_Hierarchies","criteriaTab");</xsl:text>
@@ -205,12 +303,12 @@
                 <xsl:choose>
                     <xsl:when test="//results!=''">
                         <td style="color:#FF0000; font-size:9px;">
-                            <xsl:value-of disable-output-escaping="yes" select="$criteriahierarchieslocale/instructionsnote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/instructionsnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                     </xsl:when>
                     <xsl:otherwise>
                         <td style="color:#898a5e; font-size:9px;">
-                            <xsl:value-of disable-output-escaping="yes" select="$criteriahierarchieslocale/instructionsnote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$criteriahierarchieslocale/instructionsnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                         </td>
                     </xsl:otherwise>
                 </xsl:choose>

@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -68,7 +68,7 @@
                     
                     <head>
 			<title>
-				<xsl:value-of select="$locale/header/title/option[@lang=$lang]"/>
+				<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/header/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
 			</title>
 			<link rel="stylesheet" type="text/css" href="CSS/page.css?v=@DeploymentTimestamp@"/>
 			<script language="JavaScript" src="Javascript/scripts.js?v=@DeploymentTimestamp@"/>		
@@ -99,12 +99,13 @@
                             <div id="logindiv">
                                 <xsl:call-template name="Login_Contents"/>
                             </div>
+                                                        
+                            <xsl:call-template name="page_footer"/>
+
                             
-                            <div id="footer" align="center">
-                                <xsl:call-template name="page_footer"/>
-                            </div>
                             
                         </div>
+                        <xsl:call-template name="page_logos"/>
                     </div>
                 
                 </body>
@@ -127,7 +128,7 @@
                     <td>
                         <fieldset class="index">
                             <legend>
-                                <xsl:value-of select="$locale/loginadmin/loginfieldset/legend/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/loginfieldset/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </legend>
                             <br/>
                             <form name="loginForm" method="post" action="HiddenActions">
@@ -135,7 +136,7 @@
                                                     <!-- Όνομα Χρήστη -->
                                     <tr style="width:100%; background-color:#F2F2F2;">
                                         <td align="right">
-                                            <xsl:value-of select="$locale/loginadmin/loginfieldset/adminname/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/loginfieldset/adminname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </td>
                                         <td>
                                             <input type="text" name="username" style="width:130px;" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'"/>
@@ -144,7 +145,7 @@
                                                     <!-- Κωδικός -->
                                     <tr style="width:100%; background-color:#F2F2F2;">
                                         <td align="right">
-                                            <xsl:value-of select="$locale/loginadmin/loginfieldset/password/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/loginfieldset/password/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </td>
                                         <td>
                                             <input type="password" name="password" style="width:130px;" onfocus="this.style.border='1px solid #000'" onblur="this.style.border='1px solid #999966'"/>
@@ -155,12 +156,12 @@
                                         <td colspan="2" align="right" style="padding-top:10px;">
                                             <input type="submit" name="Submit" class="button">
                                                 <xsl:attribute name="value">
-                                                    <xsl:value-of select="$locale/loginadmin/loginfieldset/submitbutton/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/loginfieldset/submitbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                             </input>&#160;
                                             <input type="reset" name="Reset" class="button">
                                                 <xsl:attribute name="value">
-                                                    <xsl:value-of select="$locale/loginadmin/loginfieldset/cancelbutton/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/loginfieldset/cancelbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                             </input>
                                         </td>

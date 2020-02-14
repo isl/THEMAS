@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -59,8 +59,16 @@
         
         <TEST id="3">
             <errorcase id="1">
-                <option lang="en">Declaration of one and only translation for each term is obligatory.</option>
-                <option lang="el">Η δήλωση μίας μοναδικής μετάφρασης για κάθε περιγραφέα είναι υποχρεωτική.</option>
+                <option lang="en">Each term should include at most one translation term per language. For more you can use UF translation terms.</option>
+                <option lang="el">Για κάθε όρο επιτρέπεται το πολύ μία μετάφραση ανά γλώσσα. Για περισσότερες χρησιμοποιείστε το πεδίο των ΧΑ μεταφράσεων</option>
+            </errorcase>
+            <errorcase id="2">
+                <option lang="en">Term %s was found with translations %s. Each term though should include at most one translation term per language.</option>
+                <option lang="el">Ο όρος %s βρέθηκε με τις μεταφράσεις %s. Για κάθε όρο ωστόσο επιτρέπεται το πολύ μία μετάφραση ανά γλώσσα.</option>
+            </errorcase>
+            <errorcase id="3">
+                <option lang="en">Term %s was found with translations %s. Each term though should include at most one translation term per language. The following translation have been  removed: %s</option>
+                <option lang="el">Ο όρος %s βρέθηκε με τις μεταφράσεις %s. Για κάθε όρο ωστόσο επιτρέπεται το πολύ μία μετάφραση ανά γλώσσα. Αφαιρέθηκαν οι μεταφράσεις %s</option>
             </errorcase>
         </TEST>
         

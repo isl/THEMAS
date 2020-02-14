@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -84,6 +84,8 @@ public class ImportData extends ApplicationBasicServlet {
             return;
         }
         String basePath = request.getSession().getServletContext().getRealPath("");
+        
+            
 
         // ---------------------- LOCK SYSTEM ----------------------
         ConfigDBadmin config = new ConfigDBadmin(basePath);
@@ -149,6 +151,8 @@ public class ImportData extends ApplicationBasicServlet {
             String webAppSaveResults_Folder = Parameters.Save_Results_Folder;
             String pathToSaveScriptingAndLocale = Utilities.getXml_For_SaveAll_Locale_And_Scripting();
             Locale targetLocale = new Locale(language, country);
+            //path of XSL that will be used to transform xml answer to html
+            String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
 
             if ((importMethodChoice.equals("thesaurusImport") && (importThesaurusName != null))
                     || (importMethodChoice.equals("bulkImport") && importHierarchyName != null)) {
@@ -341,10 +345,8 @@ public class ImportData extends ApplicationBasicServlet {
                 logFileWriter.close();
             }
 
-            //Now XSL should be found and java xsl transformation should be performed
-            String XSL = context.getRealPath("/" + webAppSaveResults_Folder) + "/ImportCopyMergeThesaurus_Report.xsl";
 
-            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"));
+            u.XmlFileTransform(logFileNamePath, XSL, logPath + "/" + Filename.concat(".html"), sessionInstance.path +"/");
 
         } catch (Exception e) {
 

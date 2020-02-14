@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -40,6 +40,7 @@ This file is part of the THEMAS system.
                 xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
                 xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes" 
                 exclude-result-prefixes="xsl fo xs fn xdt">
+    <xsl:import href="../xml-xsl/Configs.xsl"/>
     <xsl:output method="html"  
                 encoding="UTF-8"  
                 indent="yes" 
@@ -65,10 +66,18 @@ This file is part of the THEMAS system.
         <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/savealltermshierarchicaltree"/>        
         <xsl:variable name="lang" select="page/@language"/>
         <xsl:variable name="pageTitle">
-            <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
+            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/titleprefix/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             <xsl:value-of select="//page/title"/>
         </xsl:variable>
         <html>
+            <xsl:if test="$lang='ar'">
+                <!--<xsl:attribute name="dir">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>-->
+                <xsl:attribute name="class">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>
+            </xsl:if>
             <head>
                 <title>
                     <xsl:value-of select="$pageTitle"/>
@@ -77,28 +86,30 @@ This file is part of the THEMAS system.
                 <script language="JavaScript" type="text/javascript" src="../../third-party-javascript/mktree/mktree.js?v=@DeploymentTimestamp@"></script>
                     
                 <script type="text/javascript">
-                    <xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/browserdetectionsaveasscript/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </script>
                    
                 <style rel="stylesheet" type="text/css">
                     ul.mktree  li.liBullet  .bullet {background: none; }                         
                 </style>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
             </head>
                    
             <body style="background-color: #FFFFFF; font-size: 12px; font-family: verdana, arial, helvetica, sans-serif;">
                 <table width="100%">
                     <tr>
                         <td class="criteriaInSaves">
-                            <xsl:value-of disable-output-escaping="yes" select="$localecommon/searchcriteria/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/searchcriteria/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                             <br/>
                                    
                             <xsl:choose>
                             <xsl:when test="count(//query/arg1) = 1 ">
-                                <xsl:value-of select="$localespecific/baselabel/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/baselabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 <b><xsl:value-of select="//query/arg1"/></b>.
                             </xsl:when>
                             <xsl:otherwise>                                
-                                <xsl:value-of select="$localespecific/baselabelformultiple/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/baselabelformultiple/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 <xsl:variable name="howManyTopTerms" select="count(//query/arg1)"/>
                                 <xsl:for-each select="//query/arg1">
                                     <b><xsl:value-of select="."/></b>
@@ -118,11 +129,11 @@ This file is part of the THEMAS system.
                                     <xsl:value-of select="$pageTitle"/>
                                     <xsl:text>');</xsl:text>
                                 </xsl:attribute>
-                                <xsl:value-of select="$localecommon/saveas/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/saveas/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                             &#160;
                             <a href="#" class="SaveAsAndPrintLinks" onclick="print()">
-                                <xsl:value-of select="$localecommon/print/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/print/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                             -->
                         </td>
@@ -135,7 +146,7 @@ This file is part of the THEMAS system.
                                 <xsl:attribute name="href">
                                     <xsl:value-of select="//typicalHierarchicalLocation"/>
                                 </xsl:attribute>
-                                <xsl:value-of select="$localespecific/linktotypical/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/linktotypical/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                             <br/>
                         </td>
@@ -149,7 +160,7 @@ This file is part of the THEMAS system.
                             <tr>
                                 <td align="left" valign="top" colspan="5">
                                     <b>
-                                        <xsl:value-of select="$localespecific/noterms/option[@lang=$lang]"/>        
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/noterms/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>            
                                     </b>
                                 </td>
                             </tr>

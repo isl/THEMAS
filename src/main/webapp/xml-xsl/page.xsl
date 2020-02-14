@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -40,15 +40,15 @@
     xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
     xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes"
     exclude-result-prefixes="xsl fo xs fn xdt">
-    <xsl:include href="page_head_html.xsl"/>
-    <xsl:include href="page_header.xsl"/>
-    <xsl:include href="page_footer.xsl"/>
-    <xsl:include href="Configs.xsl"/>
-    <xsl:include href="page_leftmenu.xsl"/>
-    <xsl:include href="Admin_DB.xsl"/>
-    <xsl:include href="Statistics.xsl"/>
-    <xsl:include href="Admin_Thesaurus.xsl"/>
-    <xsl:include href="HiddenActions/HiddenActions.xsl"/>
+    <xsl:import href="Configs.xsl"/>
+    <xsl:import href="page_head_html.xsl"/>
+    <xsl:import href="page_header.xsl"/>
+    <xsl:import href="page_footer.xsl"/>    
+    <xsl:import href="page_leftmenu.xsl"/>
+    <xsl:import href="Admin_DB.xsl"/>
+    <xsl:import href="Statistics.xsl"/>
+    <xsl:import href="Admin_Thesaurus.xsl"/>
+    <xsl:import href="HiddenActions/HiddenActions.xsl"/>
     <xsl:output method="html"  
             encoding="UTF-8"  
             indent="yes" 
@@ -80,10 +80,10 @@
                         <td style="text-align:center;">
                       <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
                           <xsl:attribute name="src">
-                              <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
+                              <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                           </xsl:attribute>
                           <xsl:attribute name="title">
-                              <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
+                              <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                           </xsl:attribute>
                       </img>
                       </td>
@@ -159,9 +159,9 @@
                             </div>
                         </xsl:if>					
                         <!-- footer -->
-                        <div id="footer">
+                        <!--<div id="footer">-->
                             <xsl:call-template name="page_footer"/>
-                        </div>
+                        <!--</div>-->
                         <!-- LEGEND DIV CODE-->
                         <div id="legendDiv" name="legendDiv" class="legendThes">
                             <table cellspacing="0" cellpadding="0" border="0">
@@ -197,20 +197,21 @@
                             </table>
                         </div>
                     </div>
-                    <table style="width:100%; margin-left:auto; margin-right:auto;" >
+                    <xsl:call-template name="page_logos"/>
+                    <!--<table style="width:100%; margin-left:auto; margin-right:auto;" >
                         <tr>
                             <td style="text-align:center;">
                                 <img border="0" style="margin-top:10px; margin-left:auto; margin-right:auto;">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$locale/loginpage/image/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$locale/loginpage/image/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginpage/image/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                 </img>
                             </td>
                         </tr>
-                    </table>        
+                    </table>   -->     
                 </div>
         
             </body>

@@ -18,12 +18,34 @@ Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
 Tel:+30-2810-391632
 Fax: +30-2810-391638
 E-mail: isl@ics.forth.gr
-http://www.ics.forth.gr/isl
+https://www.ics.forth.gr/isl
 
 Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
 
 This file is part of the THEMAS system.
+
+
+================================================================
+How to run for the first time
+================================================================
+- create the database minimal structure using the file /libs/DBFolder.zip
+- deploy war file e.g. Tomcat
+- - edit database paths, Primary DB language and configurable options in file:
+    /WEB-INF/DBadmin/tms_db_admin_config_files/config.xml
+- - edit Primary UI Language in web.xml (UILanguage)
+- - edit log path in /WEB-INF/classes/logging.properties
+- iff in linux then make sure that e.g. tomcat user is defined as owner 
+  of the DB folder and the webapp folder recursively
+
+- if everything ready then login with admin/admin123
+- Navigate to (Left menu) Thesauri / gear icon / 3rd tab thesauri management
+- Create a Thesaurus with initialize db option (only needed for the first time)
+- Navigate to LoginAdmin in order to edit its translations e.g. EN -> English 
+- Logout 
+- Login and start build your thesaurus. 
+- In order to create more thesauri follow the same procedure but 
+- without selecting the the initialize db option
 
 
 ================================================================
@@ -33,19 +55,19 @@ The following instructions have been tested in the following environment
 but should be sufficient guidance for the installation to different environments
 
 OS: windows 10 64 bit
-IDE: Netbeans 8.2 IDE (All version for Windows)
-Java: jdk1.8.0_181 64 bit
-Server: Apache Tomcat 8.0.27 (coming with Netbeans 8.2)
+IDE: Netbeans 11.0 IDE
+Java: jdk1.8.0_231 64 bit
+Server: Apache Tomcat 9.0.19 (coming with Netbeans 11.0)
 
-THEMAS: version used 1.3
+THEMAS: version used 1.4
 
-1) In Netbeans 8.2 menu open Team > Git > Clone -> Repository Url: https://github.com/isl/THEMAS.git
+1) In Netbeans 11.0 menu open Team > Git > Clone -> Repository Url: https://github.com/isl/THEMAS.git
 
-2) Prepare database folder according to the 
-   instructions found below with prefix ##2##
+2) Create the necessary database folder structure by unzipping file /libs/DBFolder.zip 
+   to the desired database location
    
 3) Configure Themas according to the instructions 
-   found below with prefix ##3##
+   found below with prefix ##1##
 
 4) Download the third party javascript files or use the copies provided at 
    /libs/Javascript folder and place them respectively in:
@@ -55,20 +77,20 @@ THEMAS: version used 1.3
    -- /src/main/webapp/third-party-javascript/ckeditor
 
 5) configure the aforementioned javascript thrid-party plugins 
-   according to the instructions with prefix ##5##
+   according to the instructions with prefix ##2##
    
-6) Netbeans 8.2 > Tools > Server> Apache~ > Platform > VM Options 
+6) Netbeans 11.0 > Tools > Server> Apache~ > Platform > VM Options 
    -Dfile.encoding=UTF8
 
 7) Build Project - Run and enjoy! 
-   Use admin/admin as username/password 
+   Use admin/admin123 as username/password  (similar for other default users)
    Start by creating a new thesaurus
    with initialize db option 
    (left menu > Thesauri > Top menu > Thesauri management > 
    Create Thesaurus with "Initialize the database" option checked)
 
    * in case dependency Neo4j-sisapi is not resolved you can downloaded it directly from 
-     https://github.com/isl/Neo4j-sisapi/releases/tag/1.3
+     https://github.com/isl/Neo4j-sisapi/releases/tag/1.4
 	 
    * in case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
      dependencies cannot be resolved, you can find copies of these jars in libs folder  	 
@@ -76,20 +98,7 @@ THEMAS: version used 1.3
 	 
 
 ================================================================
-##2## Configure Database Folder
-================================================================
-Choose the local folder e.g. {DB_FOLDER} that will host 
-Neo4j database files and copy there 
-  1) the contents of /src/test/resources/THEMAS_DB_FOLDER
-  2) Extract in subfoler "{DB_FOLDER}/TSVs/System" the contents
-     of file TSVs.zip that accompany Neo4j-sisapi-1.3 available at
-	 https://github.com/isl/Neo4j-sisapi/releases/download/1.3/TSVs.zip
-	 
-	 A local copy can be also found in /libs subfolder
-================================================================
-
-================================================================
-##3## Configure THEMAS
+##1## Configure THEMAS
 ================================================================
 a) File  "/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml"
 - Database Paths and configuration (/src/main/webapp/DBadmin/tms_db_admin_config_files/config.xml)
@@ -120,7 +129,7 @@ b) IF DEPLOYED UNDER different name e.g. THEMAS-DEMO
 ================================================================
    
 ================================================================
-##5## third-party-javascript plugins configurations
+##2## third-party-javascript plugins configurations
 ===============================================================
 a) Chosen Javascript Plugin 
    Customize chozen plugin by adding at the end of chosen.css

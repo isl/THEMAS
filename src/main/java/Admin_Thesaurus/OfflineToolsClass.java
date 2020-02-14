@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -199,23 +199,23 @@ public class OfflineToolsClass {
         int current_minute = rightNow.get(Calendar.MINUTE);
         int current_sec = rightNow.get(Calendar.SECOND);
         // in case any value is 1 digit number => start it with zero (0)
-        String current_monthStr = new Integer(current_month).toString();
+        String current_monthStr = Integer.valueOf(current_month).toString();
         if (current_month <= 9) {
             current_monthStr = "0" + current_monthStr;
         }
-        String current_dayStr = new Integer(current_day).toString();
+        String current_dayStr = Integer.valueOf(current_day).toString();
         if (current_day <= 9) {
             current_dayStr = "0" + current_dayStr;
         }
-        String current_hourStr = new Integer(current_hour).toString();
+        String current_hourStr = Integer.valueOf(current_hour).toString();
         if (current_hour <= 9) {
             current_hourStr = "0" + current_hourStr;
         }
-        String current_minuteStr = new Integer(current_minute).toString();
+        String current_minuteStr = Integer.valueOf(current_minute).toString();
         if (current_minute <= 9) {
             current_minuteStr = "0" + current_minuteStr;
         }
-        String current_secStr = new Integer(current_sec).toString();
+        String current_secStr = Integer.valueOf(current_sec).toString();
         if (current_sec <= 9) {
             current_secStr = "0" + current_secStr;
         }
@@ -251,13 +251,11 @@ public class OfflineToolsClass {
             }
             else{
                 //set default mode for test
-                mode = fixDbMode;
-                //arguements.add("EMPTY");
-                //arguements.add("TEST");
-                //arguements.add("MERGED");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\MergeLog.xml");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\TESTIMPORT.xml");
-                //arguements.add("C:\\Users\\tzortzak\\Desktop\\import-output\\importFromXMLLog.xml");
+                //mode = importXMLMode;
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\_THEMAS_ProjectFolder\\Development\\THEMAS\\target\\THEMAS-2.0-SNAPSHOT");
+                //arguements.add("NEWTHES2");
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\Export_Thesaurus_NEWTHESAURUS_2018-12-04_19-18-59-872.xml");
+                //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\importFromXMLLog.xml");
                 
                 //add default arguments if needed
                 //arguements.add()
@@ -421,7 +419,7 @@ public class OfflineToolsClass {
                     //Now XSL should be found and java xsl transformation should be performed
                     String XSL = Parameters.BaseRealPath + File.separator + Parameters.Save_Results_Folder + File.separator + "ImportCopyMergeThesaurus_Report.xsl";
 
-                    u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml",".html"));
+                    u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml",".html"),Parameters.BaseRealPath);
 
 
                 } catch (IOException ex) {
@@ -499,7 +497,7 @@ public class OfflineToolsClass {
                     ArrayList<String> allHierarchies = new ArrayList<String>();
                     ArrayList<String> allGuideTerms = new ArrayList<String>();
 
-                    exp.exportThesaurusActions(refSessionUserInfo, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+                    exp.exportThesaurusActions(refSessionUserInfo,null, exportThesarus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
                     Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "exported in time " + Utilities.stopTimer(startTime) + " sec.");                    
                 }
@@ -561,7 +559,7 @@ public class OfflineToolsClass {
                 
                 //Now XSL should be found and java xsl transformation should be performed
                 String XSL = baseApplicationFilePath+  "/Save_Results_Displays/ImportCopyMergeThesaurus_Report.xsl";
-                u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml", ".html"));
+                u.XmlFileTransform(logFileNamePath, XSL, logFileNamePath.replace(".xml", ".html"), Parameters.BaseRealPath+"/");
                 
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Merge operation of thesauri: "+
                         thesaurusName1+", " + thesaurusName2 + " to thesarus "+ mergedThesaurusName

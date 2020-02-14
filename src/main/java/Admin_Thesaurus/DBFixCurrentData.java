@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -67,7 +67,7 @@ public class DBFixCurrentData {
             String webAppSaveResults_Folder, StringObject Save_Results_file_name,
             StringObject XSL_fileNameObject) {
 
-        Boolean fixed = new Boolean(true);
+        Boolean fixed = true;
         String webAppSaveResults_AbsolutePath = context.getRealPath("/" + webAppSaveResults_Folder);
         String pathToSaveScriptingAndLocale = context.getRealPath("/translations/SaveAll_Locale_And_Scripting.xml");
 
@@ -3080,7 +3080,7 @@ public class DBFixCurrentData {
                 //int card2 = Q.set_get_card(set_all_bts);
 
                 int set_all_nts = Q.set_get_new();
-                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_target_node, set_all_nts, false, Q, sis_session);
+                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_target_node, set_all_nts, false, -1, Q, sis_session);
                 Q.reset_set(set_all_nts);
                 //int card3 = Q.set_get_card(set_all_nts);
 

@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -34,7 +34,9 @@
 package Servlets;
 
 import DB_Classes.DBGeneral;
+import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
+import Users.UsersClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 import Utils.SearchCriteria;
@@ -58,7 +60,11 @@ import neo4j_sisapi.TMSAPIClass;
 
 public class SearchResults_Terms extends ApplicationBasicServlet {
 
+    String exportTypeXML = "XML";
+    String exportTypeRDF = "RDF";
+    
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         
         
         request.setCharacterEncoding("UTF-8");
@@ -99,6 +105,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             //TOOLS
             Utilities u = new Utilities();
             DBGeneral dbGen = new DBGeneral();
+            DBThesaurusReferences dbtr = new DBThesaurusReferences();
 
             //Servlet needed Parameters
             
@@ -116,9 +123,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
 
             //Data Storage
-            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<String, NodeInfoSortItemContainer>();
+            HashMap<String, NodeInfoSortItemContainer> termsInfo = new HashMap<>();
             SortItemComparator transliterationComparator = new SortItemComparator(Utils.SortItemComparator.SortItemComparatorField.TRANSLITERATION);
-            ArrayList<Long> resultNodesIds = new ArrayList<Long>();
+            ArrayList<Long> resultNodesIds = new ArrayList<>();
 
 
             //open connection
@@ -133,7 +140,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             // -------------------- paging info And criteria retrieval--------------------------
 
             //initial values --> will change from the following code
-            int termsPagingListStep = new Integer(ListStepStr).intValue();
+            int termsPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int termsPagingFirst = 1;
             int termsPagingQueryResultsCount = 0;
 
@@ -302,6 +309,8 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             String[] inputValue = new String[searchCriteria.value.size()];
             String operator = searchCriteria.CombineOperator;
 
+            boolean extendSearchResultsWithRnts = searchCriteria.expandWithRecusiveNts;
+            boolean restrictToApproved = searchCriteria.restrictToApproved;
             searchCriteria.input.toArray(input);
             searchCriteria.operator.toArray(ops);
             searchCriteria.value.toArray(inputValue);
@@ -333,6 +342,37 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator, Q, TA, sis_session);
 
 
+            ArrayList<String> completeSetIds = new ArrayList<> ();
+
+            //in case that search extension with rnts has been selected
+            //we need to fill the completeSetIds structure in order to 
+            //define the set of result terms that should be included.
+            //thus the desired result set will not be augmented with bts, rts tt
+            //that fall out of the desired set
+            if(extendSearchResultsWithRnts){
+                
+                int filteringSet = -1;
+                if(restrictToApproved){
+                    StringObject THESstatusApproved = new StringObject();
+                    dbtr.getThesaurusClass_StatusApproved(SessionUserInfo.selectedThesaurus, THESstatusApproved);
+                    Q.reset_name_scope();
+                    Q.set_current_node(THESstatusApproved);
+                    filteringSet = Q.get_all_instances(0);
+                    Q.reset_set(filteringSet);                    
+                }
+                Q.reset_set(set_global_descriptor_results);
+
+                //System.out.println("before extendSearcResultsWithRnts card: " + Q.set_get_card(set_global_descriptor_results));
+                //if(MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0){ // this is the case here --> just do it!
+                dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, set_global_descriptor_results, set_global_descriptor_results, true,filteringSet, Q, sis_session);
+                Q.reset_set(set_global_descriptor_results);
+                //System.out.println("after extendSearcResultsWithRnts card: " + Q.set_get_card(set_global_descriptor_results));
+                completeSetIds.addAll(dbGen.get_Node_Names_Of_Set(set_global_descriptor_results, true, Q, sis_session));
+                
+            }
+            //System.out.println(completeSetIds.size());
+            
+            
             if (startRecord != null && startRecord.matches("SaveAll")) {
 
                 //Extra parameters
@@ -350,10 +390,12 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 String pathToSaveScriptingAndLocale = Parameters.BaseRealPath+File.separator+"translations"+File.separator+"SaveAll_Locale_And_Scripting.xml";
                 //Read Term Ids
                 
-                ArrayList<String> allTerms = new ArrayList<String>();
+                ArrayList<String> allTerms = new ArrayList<>();
                 
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
-                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIds);
+                //the true parameter at the end should be defined through the UI. For now hard coded
+                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIds, 
+                        extendSearchResultsWithRnts, completeSetIds);
                 
 
                 ArrayList<SortItem> allTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
@@ -362,12 +404,13 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 allTerms.addAll(Utilities.getStringVectorFromSortItemVector(allTermsInSortItems));
                 //Collections.sort(allTerms, new StringLocaleComparator(targetLocale));
                 
+                
                 //Write XML file
                 String startXML = "<page language=\"" + SessionUserInfo.UILang + "\""+
                                        " primarylanguage=\""+Parameters.PrimaryLang.toLowerCase()+"\">"
                                         + "<title>" + time + "</title><query>" + searchCriteria.getQueryString(u) + "</query>";
 
-                if (outputMode != null && ( outputMode.compareTo("XML") == 0 ||outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 )) {
+                if (outputMode != null && ( outputMode.compareTo(exportTypeXML) == 0 || outputMode.compareTo(exportTypeRDF) == 0  ||outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 )) {
                     //nothing
                 } else {
                     startXML += "<pathToSaveScriptingAndLocale>" + pathToSaveScriptingAndLocale + "</pathToSaveScriptingAndLocale>";
@@ -375,6 +418,22 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
                 if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0 ){
                     u.writeResultsInXMLFile(out,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo,true,false);
+                }
+                else if(outputMode != null && outputMode.compareTo(exportTypeRDF)==0){
+                 
+                    
+                    u.updateUserNamesWithDescription(request, output, ConstantParameters.xmlschematype_skos,  null, termsInfo);
+                    
+                    String SkosExportConceptScheme = u.getSkosExportConceptScheme(request,SessionUserInfo.selectedThesaurus);
+                    String SkosExportBaseNameSpace = u.getSkosBaseName(request,SessionUserInfo.selectedThesaurus);
+                    
+                    u.writeResultsInRDFFile(SessionUserInfo, 
+                            Q, TA, sis_session,
+                            SkosExportConceptScheme, SkosExportBaseNameSpace,
+                            webAppSaveResults_temporary_filesAbsolutePath, 
+                            Save_Results_file_name,termsInfo
+                            );
+
                 }
                 else{
                     u.writeResultsInXMLFile(null,allTerms, startXML, output, webAppSaveResults_temporary_filesAbsolutePath, Save_Results_file_name, Q, sis_session, termsInfo, resultNodesIds, targetLocale,SessionUserInfo,false,false);
@@ -391,7 +450,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                 dbGen.CloseDBConnection(Q, null, sis_session, null, false);
 
                 
-                if (outputMode != null && outputMode.compareTo("XML") == 0 ) {
+                if (outputMode != null && outputMode.compareTo(exportTypeXML) == 0 ) {
                     if (Parameters.FormatXML) {
                         WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml");
                     }
@@ -399,6 +458,16 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     out.println(Save_Results_file_name.concat(".xml"));
                     out.flush();
                     
+                } 
+                else if (outputMode != null && outputMode.compareTo(exportTypeRDF) == 0 ) {
+                    
+                    
+                    //if (Parameters.FormatXML) {
+                    //WriteFileData.formatXMLFile(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".rdf");
+                    //}
+                    
+                    out.println(Save_Results_file_name.concat(".rdf"));
+                    out.flush();                    
                 } 
                 else if(outputMode != null && outputMode.compareTo(Utils.ConstantParameters.XMLSTREAM) == 0) {
                     //nothing to do results already streamed
@@ -408,7 +477,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     //transform XML to HTML
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
                                        XSL, 
-                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path+"/");
                     
                     //Send HTML url to output and return
                     out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));
@@ -420,10 +489,10 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
 
             }
 
-            ArrayList<SortItem> allTerms = new ArrayList<SortItem>();
+            ArrayList<SortItem> allTerms = new ArrayList<>();
             Q.reset_set(set_global_descriptor_results);
             
-            ArrayList<Return_Full_Nodes_Row> retVals = new ArrayList<Return_Full_Nodes_Row>();
+            ArrayList<Return_Full_Nodes_Row> retVals = new ArrayList<>();
             if(Q.bulk_return_full_nodes(set_global_descriptor_results, retVals)!=QClass.APIFail){
                 for(Return_Full_Nodes_Row row: retVals){
                     
@@ -460,8 +529,9 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
             Q.reset_set(set_paging_results);
 
             
-            ArrayList<String> resultsTerms = new ArrayList<String>();
-            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIds);
+            ArrayList<String> resultsTerms = new ArrayList<>();
+            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIds,
+                    extendSearchResultsWithRnts ,completeSetIds);
             //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));
             ArrayList<SortItem> resultsTermsInSortItems = Utilities.getSortItemVectorFromTermsInfoSortItemContainer(termsInfo, false);
             Collections.sort(resultsTermsInSortItems,transliterationComparator);

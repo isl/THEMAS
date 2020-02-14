@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -984,13 +984,15 @@ public class EditDisplays_User extends ApplicationBasicServlet {
     private void EditUserPassword(HttpServletRequest request, PrintWriter out, final String uiLang) throws IOException {
         Utilities u = new Utilities();
         // get input parameters
-        String oldUserPassword = u.getDecodedParameterValue(request.getParameter("oldUserPassword"));
-        String newUserPassword1 = u.getDecodedParameterValue(request.getParameter("newUserPassword1"));
-        String newUserPassword2 = u.getDecodedParameterValue(request.getParameter("newUserPassword2"));
+        UsersClass tmsUsers = new UsersClass();
+        
+        String oldUserPassword =  tmsUsers.getMD5Hex(u.getDecodedParameterValue(request.getParameter("oldUserPassword")));
+        String newUserPassword1 = tmsUsers.getMD5Hex(u.getDecodedParameterValue(request.getParameter("newUserPassword1")));
+        String newUserPassword2 = tmsUsers.getMD5Hex(u.getDecodedParameterValue(request.getParameter("newUserPassword2")));
         String targetUser = u.getDecodedParameterValue(request.getParameter("targetUser"));
         String THEMASUsersFileName = request.getSession().getServletContext().getRealPath("/" + UsersClass.WebAppUsersXMLFilePath);
 
-        UsersClass tmsUsers = new UsersClass();
+        
         int resultOfEditUserPassword = tmsUsers.EditUserPassword(THEMASUsersFileName, targetUser, oldUserPassword, newUserPassword1, newUserPassword2);
 
         ServletContext context = getServletContext();

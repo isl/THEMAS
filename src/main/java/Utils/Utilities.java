@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -33,12 +33,14 @@
  */
 package Utils;
 
+import Admin_Thesaurus.DBMergeThesauri;
 import DB_Admin.CommonUtilsDBadmin;
 import DB_Admin.ConfigDBadmin;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
 import Users.UsersClass;
+import XMLHandling.WriteFileData;
 import java.io.*;
 import java.util.*;
 import neo4j_sisapi.*;
@@ -67,6 +69,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import neo4j_sisapi.TMSAPIClass;
 
 /*---------------------------------------------------------------------
@@ -82,6 +85,72 @@ public class Utilities {
     public Utilities() {
     }
 
+    
+
+    /**
+     * Constructs the uri that will be used in order to directly access a concept or Facet
+     * @param req
+     * @param targetThesaurus
+     * @param isFacet
+     * @param refId
+     * @return 
+     */    
+    public String getExternalReaderReferenceUri(HttpServletRequest req, String targetThesaurus, boolean isFacet,long refId){
+        //tried getServername etc but behind a proxy server could not determine the port 
+        // server port return 443 while local port returned 8443 
+        // so did not use getScheme, getServerName, getContextPath etc but applied 
+        // string handling instead.
+        
+        String lastPart = "/"+targetThesaurus+(isFacet ? "/Facet/":"/Concept/")+refId;
+        String firstPart = getExternalReaderReferenceUriPrefix(req, targetThesaurus);
+        return firstPart + lastPart;
+    }
+    
+    public String getExternalReaderReferenceUriSuffix(boolean isFacet,long refId){
+        
+        String lastPart = (isFacet ? "/Facet/":"/Concept/")+refId;
+        return lastPart;
+    }
+    
+    String guessBaseHref(HttpServletRequest request){
+        String retUrl = "";
+        
+        String url = request.getRequestURL().toString();
+        String contextPath = request.getContextPath();
+        retUrl = url.substring(0, url.indexOf(contextPath))+contextPath;
+        
+        return retUrl;
+    }
+    
+    /**
+     * 
+     * @param req
+     * @param targetThesaurus
+     * @return 
+     */
+    public String getExternalReaderReferenceUriPrefix(HttpServletRequest req, String targetThesaurus){
+         //String lastPart = "/"+targetThesaurus+(isFacet ? "/Facet/":"/Concept/")+refId;
+        String firstPart = req.getRequestURL().toString();
+        String servletPath = req.getServletPath();        
+        
+        if(!firstPart.isEmpty() && !servletPath.isEmpty() && firstPart.endsWith(servletPath)){
+            firstPart = firstPart.substring(0, firstPart.length() - servletPath.length());
+        }
+        if(!firstPart.endsWith("/")){
+            firstPart+="/";
+        }
+        firstPart+=targetThesaurus;
+        
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(firstPart.startsWith(entry.getKey())){
+                    firstPart = firstPart.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return firstPart;
+    }
+    
     public String mergeStrings(String value1possiblyContainingValue2, String value2){
         String returnVal = value2;
         if(value1possiblyContainingValue2==null || value1possiblyContainingValue2.trim().length()==0){
@@ -134,7 +203,7 @@ public class Utilities {
                  // "<?xml-stylesheet href=\"" + xsl + "\" type=\"text/xsl\"?>" +
                 // (canceled by karam - 7/2/2008): it has NO sense because each servlet calls xslTransform()
                 // method of this class with the corresponding XSL file as parameter and writes the final HTML code to writer output
-                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() + "\">";
+                "\r\n<page" +/*( (targetThesaurus!=null && targetThesaurus.length()>0) ? (" thesaurus=\""+targetThesaurus.toUpperCase()+"\"") :"") + */" language=\"" + uiLang + "\" primarylanguage=\"" + Parameters.PrimaryLang.toLowerCase() +"\" showReferenceURI=\""+(Parameters.DisplayExternalLinkUrls?"yes":"no")  +"\"" +  ">";
                 if(!skipLeftMenu){
                     XMLStart+= "\r\n<leftmenu>"
                     + "\r\n<activemode>" + LeftMenuMode + "</activemode>"
@@ -165,7 +234,8 @@ public class Utilities {
             upTabsetXML += "<tab active=\"no\">" + tabsetArray1[i] + "</tab>";
         }
         upActiveTab = upActiveTab.replaceAll("&", "&amp;");
-        upTabsetXML = upTabsetXML.replaceAll("<tab active=\"no\">" + upActiveTab + "</tab>", "<tab active=\"yes\">" + upActiveTab + "</tab>");
+        upTabsetXML = upTabsetXML.replaceAll("<tab active=\"no\">" + upActiveTab + "</tab>",
+                "<tab active=\"yes\" expand_search_results_with_rnts=\""+(Parameters.AbilityToExpandSearchResultsWithRNTs ? "yes" : "no") + "\">" + upActiveTab + "</tab>");
 
         String XMLMiddleStr =
                 "<content>"
@@ -220,7 +290,7 @@ public class Utilities {
         String XMLTHEMASUserInfo = "<THEMASUserInfo>";
         XMLTHEMASUserInfo += "<name>" + SessionUserInfo.name + "</name>";
         // tra=\"" + tmsUsers.translateGroup(SessionUserInfo.userGroup) + "\"
-        XMLTHEMASUserInfo += "<userGroup>" + SessionUserInfo.userGroup + "</userGroup>";
+        XMLTHEMASUserInfo += "<userGroup"+(Parameters.ThesTeamEditOnlyCreatedByTerms? " thesteamcaneditforinsertions='true'>":">") + SessionUserInfo.userGroup + "</userGroup>";
         XMLTHEMASUserInfo += "<selectedThesaurus>" + SessionUserInfo.selectedThesaurus + "</selectedThesaurus>";
         XMLTHEMASUserInfo += "<selectedThesaurusLowerCase>" + SessionUserInfo.selectedThesaurus.toLowerCase() + "</selectedThesaurusLowerCase>";
         XMLTHEMASUserInfo += "</THEMASUserInfo>";
@@ -340,7 +410,7 @@ public class Utilities {
             
             if(refIdL>0){
                 xmlResults.append(" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+refIdL+"\"");
-                if(Parameters.ShowReferenceURIalso){
+                    if(Parameters.ShowReferenceURIalso){
                     xmlResults.append(" "+ConstantParameters.system_referenceUri_kwd+"=\""+consrtuctReferenceUri(SessionUserInfo.selectedThesaurus.toUpperCase(), Utilities.ReferenceUriKind.TERM, refIdL)+"\""); 
                 }
             }
@@ -783,137 +853,9 @@ public class Utilities {
 
     }
 
-    /*---------------------------------------------------------------------
-    getResultsInXml_Facet()
-    -----------------------------------------------------------------------
-    INPUT: - Vector allTerms: the Vector with the terms to be parsed
-    - String[] output: the properties of each term to be collected
-    OUTPUT: a String with the XML representation of the results
-    CALLED BY: servlets: ViewAll with output = {"name", ConstantParameters.dn_kwd}
-    ----------------------------------------------------------------------*/
-    public String getResultsInXml_Facet(UserInfoClass SessionUserInfo, ArrayList<String> displayFacets, String[] output, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen) {
-
-        StringBuffer XMLresults = new StringBuffer();
-        ;
-        XMLresults.append("<data>");
-        XMLresults.append("<output>");
-        for (String category : output) {
-
-            if (category.compareTo("id") == 0 || category.compareTo("name") == 0) {
-                continue;
-            } else {
-                XMLresults.append("<" + category + "/>");
-            }
-        }
-        XMLresults.append("</output>");
-
-        XMLresults.append("<facets>");
+    
         
-        for (String currentFacet : displayFacets) {
-            XMLresults.append("<facet>");
-            for (int j = 0; j < output.length; j++) {
-                if (output[j].equals("name")) {
-                    XMLresults.append("<name>");
-                    XMLresults.append(escapeXML(currentFacet));
-                    XMLresults.append("</name>");
-
-                } else {
-            
-                    ArrayList<String> v = dbGen.returnResults_Facet(SessionUserInfo, currentFacet, output[j], Q, sis_session, targetLocale);
-                    if (v != null && v.size() > 0) {
-                        Collections.sort(v, new StringLocaleComparator(targetLocale));
-                    }
-
-                    for (int k = 0; k < v.size(); k++) {
-                        XMLresults.append("<" + output[j] + ">");
-                        XMLresults.append(escapeXML(v.get(k)));
-                        XMLresults.append("</" + output[j] + ">");
-                            }
-                            
-                        }
-                    }
-            XMLresults.append("</facet>");
-        }
-        XMLresults.append("</facets>");
-        XMLresults.append("</data>");
-
-        return XMLresults.toString();
-    }
-        
-    public String getResultsInXml_FacetUsingHierarchySortItems(UserInfoClass SessionUserInfo, String[] output, ArrayList<SortItem> displayFacets, QClass Q, IntegerObject sis_session, Locale targetLocale, DBGeneral dbGen, boolean skipOutput) {
-
-        StringBuffer XMLresults = new StringBuffer();
-        
-        XMLresults.append("<data thesaurus=\""+SessionUserInfo.selectedThesaurus.toUpperCase()+"\" translationsSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">");
-        if(!skipOutput){
-            XMLresults.append("<output>");
-            for (int m = 0; m < output.length; m++) {
-
-                String category = output[m];
-                if (category.compareTo(ConstantParameters.id_kwd) == 0 || category.compareTo("name") == 0) {
-                    continue;
-                } else {
-                    XMLresults.append("<" + category + "/>");
-                }
-            }
-            XMLresults.append("</output>");
-        }
-        XMLresults.append("<facets>");
-        for (SortItem currentFacetsortItem : displayFacets) {
-            
-            XMLresults.append("<facet>");
-            for (String outputField : output) {
-                
-                if (outputField.equals("name")) {
-                    String appendVal = "<name";
-                    if(currentFacetsortItem.getThesaurusReferenceId()>0){
-                        appendVal += " "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+currentFacetsortItem.getThesaurusReferenceId()+"\"";
-                        if(Parameters.ShowReferenceURIalso){
-                            appendVal += " "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.FACET, currentFacetsortItem.getThesaurusReferenceId())) +"\"";
-                        }
-                    }
-                    appendVal+=">";
-                    XMLresults.append(appendVal);
-                    XMLresults.append(escapeXML(currentFacetsortItem.getLogName()));
-                    XMLresults.append("</name>");
-
-                } else if(outputField.equals(ConstantParameters.system_transliteration_kwd) && currentFacetsortItem.getLogNameTransliteration()!=null && currentFacetsortItem.getLogNameTransliteration().length()>0){
-                    XMLresults.append("<"+ConstantParameters.system_transliteration_kwd+">");
-                    XMLresults.append(escapeXML(currentFacetsortItem.getLogNameTransliteration()));
-                    XMLresults.append("</"+ConstantParameters.system_transliteration_kwd+">");
-                }
-                else {
-
-                    ArrayList<SortItem> v = dbGen.returnResults_FacetInSortItems(SessionUserInfo, currentFacetsortItem.getLogName(), outputField, Q, sis_session, targetLocale);
-                    if (v != null && v.size() > 0) {
-                        Collections.sort(v, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
-                    }
-
-                    for (SortItem hierItem : v) {
-                        String appendVal = "<" + outputField;
-                        if(hierItem.getThesaurusReferenceId()>0){
-                            appendVal+=" "+ConstantParameters.system_referenceIdAttribute_kwd+"=\""+hierItem.getThesaurusReferenceId()+"\"";
-                            if(Parameters.ShowReferenceURIalso){
-                                appendVal+=" "+ConstantParameters.system_referenceUri_kwd+"=\""+Utilities.escapeXML(this.consrtuctReferenceUri(SessionUserInfo.selectedThesaurus, ReferenceUriKind.TOPTERM, hierItem.getThesaurusReferenceId())) +"\"";
-                            }
-                            
-                        }
-                        appendVal+=">";
-                        XMLresults.append(appendVal);
-                        XMLresults.append(escapeXML(hierItem.getLogName()));
-                        XMLresults.append("</" + outputField + ">");
-                    }
-
-                }
-            }
-            XMLresults.append("</facet>");
-        }
-        XMLresults.append("</facets>");
-        XMLresults.append("</data>");
-
-        return XMLresults.toString();
-    }
-
+   
     /*----------------------------------------------------------------------
     getVectorInXml()
     ------------------------------------------------------------------------
@@ -1884,7 +1826,14 @@ public class Utilities {
         */
     }
 
-    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath) {
+    /**
+     * Enabling relative import - include uris in xslts
+     * @param xmlInputPath
+     * @param xslPath
+     * @param outputFullPath
+     * @param rootUri 
+     */
+    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath, String rootUri) {
 
 
         OutputStreamWriter out = null;
@@ -1904,8 +1853,12 @@ public class Utilities {
 
             // Use the factory to create a template containing the xsl file
 
-            Templates template = factory.newTemplates(new StreamSource(new FileInputStream(xslPath)));
-
+            String xslPathUri = xslPath.replace(Parameters.BaseRealPath,rootUri).replaceAll("\\\\","/");
+            StreamSource sSource = new StreamSource(new FileInputStream(xslPath));
+            sSource.setSystemId(xslPathUri);
+            //StreamSource sSource = new StreamSource(xslPathUri);
+            Templates template = factory.newTemplates(sSource);
+            
             // Use the template to create a transformer
             Transformer xformer = template.newTransformer();
 
@@ -1914,8 +1867,9 @@ public class Utilities {
             File xmlFile = new File(xmlInputPath);
 
             Source source = new StreamSource(xmlFile);
+            //source.setSystemId(rootUri);
             Result result = new StreamResult(out);
-
+            //result.setSystemId(rootUri);
             // Apply the xsl file to the source file and write the result to the output file
             xformer.transform(source, result);
 
@@ -1952,6 +1906,78 @@ public class Utilities {
             Utils.StaticClass.handleException(exc);
         }
     }
+
+    /*
+    public void XmlFileTransform(String xmlInputPath, String xslPath, String outputFullPath) {
+
+
+        OutputStreamWriter out = null;
+        try {
+            OutputStream fout = new FileOutputStream(outputFullPath);
+            OutputStream bout = new BufferedOutputStream(fout);
+            out = new OutputStreamWriter(bout, "UTF-8");
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+
+        try {
+            // Create transformer factory
+            TransformerFactory factory = TransformerFactory.newInstance();
+
+            // Use the factory to create a template containing the xsl file
+
+            StreamSource sSource = new StreamSource(new FileInputStream(xslPath));
+            
+            Templates template = factory.newTemplates(sSource);
+            
+            // Use the template to create a transformer
+            Transformer xformer = template.newTransformer();
+
+            // Prepare the input and output files
+
+            File xmlFile = new File(xmlInputPath);
+
+            Source source = new StreamSource(xmlFile);
+            Result result = new StreamResult(out);
+            
+            // Apply the xsl file to the source file and write the result to the output file
+            xformer.transform(source, result);
+
+
+        } catch (FileNotFoundException e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "1=" + e.getMessage());
+            Utils.StaticClass.handleException(e);
+        } catch (TransformerConfigurationException e) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "2=" + e.getMessage());
+            Utils.StaticClass.handleException(e);
+            // An error occurred in the XSL file
+        } catch (TransformerException e) {
+            
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "3=" + e.getMessage());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getMessageAndLocation());
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getLocationAsString());
+
+            // An error occurred while applying the XSL file
+            // Get location of error in input file
+            SourceLocator locator = e.getLocator();
+
+            int col = locator.getColumnNumber();
+            int line = locator.getLineNumber();
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "LINE=" + line + " COL=" + col);
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + e.getMessage());
+            Utils.StaticClass.handleException(e);
+
+        }
+
+        try {
+            out.close();
+        } catch (Exception exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in closing file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+    }*/
 
     public String getBTNTWithGuideTermsResultsInXml(String term, String attribute, String GuideTermPrefix, ArrayList<SortItem> btsORnts, ArrayList<String> existingGuideTermsVec, Locale targetLocale) {
 
@@ -2159,79 +2185,10 @@ public class Utilities {
         return returnVals;
     }
 
-    public String getHierarchyResultsInXml(UserInfoClass SessionUserInfo, String hierarchy, String[] output, String for_deletion, QClass Q, IntegerObject sis_session, DBGeneral dbGen, Locale targetLocale) {
-
-        StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
-
-        ArrayList<String> v = new ArrayList<String>();
-        StringBuffer sb = new StringBuffer();
-        sb.append("<current>");
-        sb.append("<hierarchy>");
-
-        // (delete icon was pressed from Search results TAB)
-        sb.append("<for_deletion>");
-        if (for_deletion != null) {
-            sb.append("true");
-        }
-        sb.append("</for_deletion>");
-
-        // for each value of output = {"name", "facets", "letter_code", "created", "created_by", "modified", "modified_by"}
-        for (int j = 0; j < output.length; j++) {
-            if (output[j].equals("name")) {
-                sb.append("<name>" + Utilities.escapeXML(hierarchy) + "</name>");
-            } else {
-
-                if (output[j].equals("letter_code")) {
-                    v.addAll(dbGen.returnResults_Hierarchy(SessionUserInfo, hierarchy, output[j], Q, sis_session, targetLocale));
-                    if (!v.isEmpty()) {
-                        Collections.sort(v, strCompar);
-                        for (int k = 0; k < v.size(); k++) {
-                            ArrayList<String> temp = new ArrayList<String>();
-                            //temp.addAll((Vector) v.get(k)); //BUG??
-                            temp.add(v.get(k));
-
-                            sb.append("<" + output[j] + ">");
-
-                            sb.append("<name>");
-                            sb.append(Utilities.escapeXML(temp.get(0).toString()));
-                            sb.append("</name>");
-                            
-                            sb.append("<editable>");
-                            if(temp.size()>1){ //BUG?? this check did not exist
-                                sb.append(Utilities.escapeXML(temp.get(1).toString()));
-                            }
-                            sb.append("</editable>");
-                            
-
-                            sb.append("</" + output[j] + ">");
-                        }
-
-                    }
-
-                } else {
-                    v.addAll(dbGen.returnResults_Hierarchy(SessionUserInfo, hierarchy, output[j], Q, sis_session, targetLocale));
-                    if (!v.isEmpty()) {
-                        Collections.sort(v, strCompar);
-                        sb.append("<" + output[j] + ">");
-                        for (int k = 0; k < v.size(); k++) {
-                            sb.append("<name>");
-                            sb.append(Utilities.escapeXML(v.get(k).toString()));
-                            sb.append("</name>");
-                        }
-                        sb.append("</" + output[j] + ">");
-                    }
-                }
-            }
-            v.clear();
-        }
-        sb.append("</hierarchy>");
-        sb.append("</current>");
-
-        return sb.toString();
-    }
-
     
-    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, ArrayList<String> allGuideTerms, Locale targetLocale) {
+    
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, 
+            ArrayList<String> allGuideTerms, Locale targetLocale) {
 
         StringBuffer dataNeeded = new StringBuffer();
         Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
@@ -2259,8 +2216,155 @@ public class Utilities {
         return dataNeeded;
     }
 
+    /*
     public void writeResultsInOutputStream(){
         
+    }
+    */
+    
+    public void writeResultsInRDFFile(UserInfoClass SessionUserInfo,
+            QClass Q, TMSAPIClass TA, IntegerObject sis_session,
+            String SkosExportConceptScheme, 
+            String SkosExportBaseNameSpace,
+            String webAppSaveResults_temporary_filesAbsolutePath, 
+            String Save_Results_file_name,
+            HashMap<String, NodeInfoSortItemContainer> termsInfo) {
+        
+        WriteFileData writer = new WriteFileData();
+        
+        ConstantParameters.referenceThesaurusSchemeName = SkosExportConceptScheme;
+        ConstantParameters.SchemePrefix = SkosExportBaseNameSpace;
+        String logFileNamePath = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".rdf";
+        
+        OutputStreamWriter logFileWriter = null;
+        
+        try {
+            OutputStream fout = new FileOutputStream(logFileNamePath);
+            OutputStream bout = new BufferedOutputStream(fout);
+            logFileWriter = new OutputStreamWriter(bout, "UTF-8");
+
+
+            //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
+
+        } catch (FileNotFoundException | UnsupportedEncodingException exc) {
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+            Utils.StaticClass.handleException(exc);
+        }
+
+        String exportSchemaName = ConstantParameters.xmlschematype_skos;
+        String exprortThesaurus = SessionUserInfo.selectedThesaurus;
+        
+        DBMergeThesauri dbMerge = new DBMergeThesauri();
+        
+        HashMap<String, ArrayList<String>> hierarchyFacetsStrFormat = new HashMap<>();
+        HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations = new HashMap<>();
+        HashMap<String,ArrayList<ExternalLink>> termExtLinks = new HashMap<>();
+        ArrayList<ExternalVocabulary> vocabularyIdentifiers = new ArrayList<>();
+        /*
+            hierarchyFacets.forEach( (key,value) -> {
+                hierarchyFacetsStrFormat.put(key.getLogName(), new ArrayList<String>(value.stream().map(item -> item.getLogName()).collect(Collectors.toList())));
+            });
+        */    
+        
+        try{
+
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
+                /* WriteTranslationCategories for SKOS export format it does not produce anything
+                writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
+                */
+
+                dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
+                
+                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
+                
+                //writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
+                //writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, 
+                        exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat,
+                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null);
+                
+                /* WriteGuideTerms for SKOS export format it only writes in comments
+                writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
+                */
+                
+                /*
+                WriteSources for SKOS export format it does not produce anything
+                writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                */
+                
+                /*
+                WriteExtVocabularies for SKOS export format it does not produce anything
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
+                */
+                writer.WriteFileEnd(logFileWriter, exportSchemaName);
+            }catch (IOException e) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in Utilities writeResultsInRDFFile() Message:" + e.getMessage());
+                Utils.StaticClass.handleException(e);
+
+            }
+        //produce rdf/skos file
+                    //String Full_Save_Results_file_name = webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name + ".xml";
+                    /*
+                    String SkosExportConceptScheme = request.getParameter("skosConceptScheme");
+                    String SkosExportBaseNameSpace = request.getParameter("skosBaseNameSpace");
+                    
+                    Filename += ".rdf";
+                    if(SkosExportBaseNameSpace!=null && SkosExportBaseNameSpace.length()>0 &&  SkosExportConceptScheme!=null && SkosExportConceptScheme.length()>0){
+                        ConstantParameters.referenceThesaurusSchemeName = SkosExportConceptScheme;
+                        ConstantParameters.SchemePrefix = SkosExportBaseNameSpace;
+                    }
+                    else{
+
+                        ConstantParameters.referenceThesaurusSchemeName = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName + "#" + exprortThesaurus;
+                        ConstantParameters.SchemePrefix = "http://"+hostName+":" + port + "/" + Parameters.ApplicationName +"/"+ exprortThesaurus;
+                    }
+                    
+                    logFileNamePath += "/" + Filename;
+
+
+
+
+
+                        try {
+                            OutputStream fout = new FileOutputStream(logFileNamePath);
+                            OutputStream bout = new BufferedOutputStream(fout);
+                            logFileWriter = new OutputStreamWriter(bout, "UTF-8");
+
+
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + time + " LogFile of export data from thesaurus: " + exprortThesaurus + " in file: " + logFileNamePath + ".");
+
+                        } catch (FileNotFoundException | UnsupportedEncodingException exc) {
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Error in opening file: " + exc.getMessage());
+                            Utils.StaticClass.handleException(exc);
+                        }
+
+                    ArrayList<String> thesauriNames = new ArrayList<>();
+                    ArrayList<String> allHierarchies = new ArrayList<>();
+                    ArrayList<String> allGuideTerms = new ArrayList<>();
+
+                    exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+                    
+                    
+                    try{
+
+                writer.WriteFileStart(logFileWriter, exportSchemaName, exprortThesaurus, SessionUserInfo.UILang);
+                writer.WriteTranslationCategories(logFileWriter, exportSchemaName, translationCategories);
+
+                writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
+                writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
+                writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
+                writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
+                writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
+                writer.WriteFileEnd(logFileWriter, exportSchemaName);
+            }catch (Exception e) {
+                Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in DBexportData exportThesaurusActions() Message:" + e.getMessage());
+                Utils.StaticClass.handleException(e);
+
+            }
+
+                    */
     }
     
     public void writeResultsInXMLFile(PrintWriter outStream, ArrayList<String> allTerms, String startXML, ArrayList<String> output, 
@@ -2725,7 +2829,14 @@ public class Utilities {
             
         }       
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getXml_For_Messages());
+        }
+
+        return str;
     }
     
     public String translateFromTranslationsXML(String messageXPath, String[] args, final String uiLang){
@@ -2740,7 +2851,14 @@ public class Utilities {
             
         }        
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("translations.xml"));
+        }
+        return str;
     }
     
     public String translateFromSaveAllLocaleAndScriptingXML(String messageXPath, String[] args, final String uiLang){
@@ -2754,7 +2872,13 @@ public class Utilities {
             }            
         }        
         String tagetMessageFullXPath = messageXPath + "/option[@lang=\"" + uiLang + "\"]";
-        return translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        String str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        //if not supported display the english label
+        if(str==null || str.trim().isEmpty()){
+            tagetMessageFullXPath = messageXPath + "/option[@lang=\"en\"]";
+            str = translate(tagetMessageFullXPath, argsVector, Utilities.getTranslationsXml("SaveAll_Locale_And_Scripting.xml"));
+        }
+        return str;
     }
     
     
@@ -2831,6 +2955,7 @@ public class Utilities {
         }
     }
 
+
     public enum ReferenceUriKind {NONE,FACET,HIERARCHY,TOPTERM,TERM /*,SOURCE*/};
 
     public String consrtuctReferenceUri(String thesaurusName,ReferenceUriKind kind,long referenceId){
@@ -2904,6 +3029,13 @@ public class Utilities {
         */
         //retVal += String.format("%07d", referenceId);
         
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(retVal.startsWith(entry.getKey())){
+                    retVal = retVal.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
         return escapeXML(retVal);
     }
     
@@ -3097,7 +3229,7 @@ public class Utilities {
     
     public static ArrayList<SortItem> getSortItemVectorFromTermsInfoSortItemContainer(HashMap<String, NodeInfoSortItemContainer> termsInfo, boolean removeTransliterationPrefix){
     
-        ArrayList<SortItem>  returnResults = new ArrayList<SortItem>();
+        ArrayList<SortItem>  returnResults = new ArrayList<>();
         if(termsInfo!=null){
             Iterator<String> termEnum = termsInfo.keySet().iterator();
             while(termEnum.hasNext()){
@@ -3134,6 +3266,194 @@ public class Utilities {
         return returnResults;
     }
     
+    public HashMap<String, NodeInfoStringContainer> getStringContainerFromSortItemContainer(HashMap<String, NodeInfoSortItemContainer> sortItemContainer){
+        HashMap<String, NodeInfoStringContainer> retVal = new HashMap<>();
+        
+        if(sortItemContainer!=null){
+            
+            Iterator<String> termEnum = sortItemContainer.keySet().iterator();
+            
+            while(termEnum.hasNext()){
+                String termName = termEnum.next();
+                NodeInfoSortItemContainer targetInfo = sortItemContainer.get(termName);
+                
+                String[] output = targetInfo.descriptorInfo.keySet().toArray(new String[targetInfo.descriptorInfo.keySet().size()]);
+                int index = -1;
+                for(int i=0; i<output.length; i++){
+                    if(output[i].compareTo(ConstantParameters.id_kwd)==0){
+                        index = i;
+                        break;
+                    }
+                }
+                
+                if(index>=0){
+                    output[index] = ConstantParameters.system_referenceUri_kwd;
+                }
+                
+                NodeInfoStringContainer newContainer = new NodeInfoStringContainer(NodeInfoStringContainer.CONTAINER_TYPE_TERM, output);
+                for(String str : output){
+                    
+                    ArrayList<SortItem> vals = null; 
+                    if(str.compareTo(ConstantParameters.system_referenceUri_kwd)==0){
+                        vals = targetInfo.descriptorInfo.get(ConstantParameters.id_kwd);
+                        newContainer.descriptorInfo.get(str).add(""+vals.get(0).thesarurusReferenceId);
+                    }
+                    else{
+                        vals = targetInfo.descriptorInfo.get(str);
+                        if(str.compareTo(ConstantParameters.translation_kwd)==0 || str.compareTo(ConstantParameters.uf_translations_kwd)==0){
+                            for(SortItem si : vals){
+                                newContainer.descriptorInfo.get(str).add(si.linkClass +Parameters.TRANSLATION_SEPERATOR + si.log_name);
+                            }
+                        }
+                        else{
+                            for(SortItem si : vals){
+                                newContainer.descriptorInfo.get(str).add(si.log_name);
+                            }
+                        }
+                    }
+                    
+                    
+                }
+                retVal.put(termName, newContainer);
+            }
+        }
+        return retVal;
+    }
+    
+    public String getSkosExportConceptScheme(HttpServletRequest request, String thesaurus){
+        String baseWebAppLocation = guessBaseHref(request)+"#"+thesaurus;
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(baseWebAppLocation.startsWith(entry.getKey())){
+                    baseWebAppLocation = baseWebAppLocation.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return baseWebAppLocation;
+        
+    }
+    
+    public String getSkosBaseName(HttpServletRequest request, String thesaurus){
+        String baseWebAppLocation = guessBaseHref(request) +"/"+thesaurus;
+        if(Parameters.ExternalURIsReplacements.size()>0){
+            for(Map.Entry<String, String> entry : Parameters.ExternalURIsReplacements.entrySet()){
+                if(baseWebAppLocation.startsWith(entry.getKey())){
+                    baseWebAppLocation = baseWebAppLocation.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return baseWebAppLocation;
+        
+    }
+    
+    public void updateUserNamesWithDescription(HttpServletRequest request, 
+            ArrayList<String> output, 
+            String exportScheme,
+            HashMap<String, NodeInfoStringContainer> termsStrInfo,
+            HashMap<String, NodeInfoSortItemContainer> termsInfo){
+        
+        if(exportScheme.equals(ConstantParameters.xmlschematype_skos) && Parameters.SkosReplaceLoginNamesWithDescription){
+            if(output.contains(ConstantParameters.created_by_kwd) || 
+                    output.contains(ConstantParameters.modified_by_kwd)){
+
+                HashMap<String,String> knownUserNames = new HashMap<>();
+
+                Iterator<String> termsEnumaration = termsInfo!=null ? termsInfo.keySet().iterator() : termsStrInfo.keySet().iterator();
+                while (termsEnumaration.hasNext()) {
+                    String termName = termsEnumaration.next();
+                    if(termsInfo!=null){
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(!knownUserNames.containsKey(si.log_name)){
+                                    knownUserNames.put(si.log_name, si.log_name);
+                                }
+                            }
+                        }
+
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(!knownUserNames.containsKey(si.log_name)){
+                                    knownUserNames.put(si.log_name, si.log_name);
+                                }
+                            }
+                        }     
+                    }
+                    else{
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(String si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(!knownUserNames.containsKey(si)){
+                                    knownUserNames.put(si, si);
+                                }
+                            }
+                        }
+
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(String si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(!knownUserNames.containsKey(si)){
+                                    knownUserNames.put(si, si);
+                                }
+                            }
+                        } 
+                    }
+
+                }
+
+                //check if user description has been defined
+                UsersClass wtmsUsers = new UsersClass();
+                Set<String> userKeys = knownUserNames.keySet();
+                for(String str : userKeys){
+                    UserInfoClass userClass = wtmsUsers.SearchTMSUser(request, str);
+                    if(userClass.description!=null && userClass.description.trim().length()>0){
+                        knownUserNames.put(str, userClass.description.trim());
+                    }
+                }
+
+                Iterator<String> termsEnum = termsInfo!=null ? termsInfo.keySet().iterator() : termsStrInfo.keySet().iterator();
+                while (termsEnum.hasNext()) {
+                    String termName = termsEnum.next();
+                    if(termsInfo!=null){
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }
+                        }
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if(termsStrInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.created_by_kwd)){
+                            for(String str : knownUserNames.keySet()){                            
+                                Collections.replaceAll(termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd), str, knownUserNames.get(str));                            
+                            }
+                            /*
+                            for(SortItem si : termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.created_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }*/
+                        }
+                        if(termsInfo.get(termName).descriptorInfo.containsKey(ConstantParameters.modified_by_kwd)){
+                            for(String str : knownUserNames.keySet()){                            
+                                Collections.replaceAll(termsStrInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd), str, knownUserNames.get(str));                            
+                            }
+                            /*for(SortItem si : termsInfo.get(termName).descriptorInfo.get(ConstantParameters.modified_by_kwd)){
+                                if(knownUserNames.containsKey(si.log_name)){
+                                    si.log_name = knownUserNames.get(si.log_name);
+                                }
+                            }*/
+                        }
+                    }
+                }
+            }
+        }
+    }
     
 }
 

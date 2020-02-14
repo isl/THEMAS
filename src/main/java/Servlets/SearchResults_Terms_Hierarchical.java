@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -622,7 +622,7 @@ public class SearchResults_Terms_Hierarchical extends ApplicationBasicServlet {
             } else {
                 writeHierarchicalResultsInXMLFile(null, SessionUserInfo.selectedThesaurus.toUpperCase(), targetTerm, allTermsOfDescriptorsTopTerms, ntsOfDesciptorsTopTerms, topTerms, referencesPerHier, u,
                         time, "<arg1>" + Utilities.escapeXML(targetTerm) + "</arg1>", webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", pathToSaveScriptingAndLocale, targetLocale, SessionUserInfo.UILang);
-                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", XSL, webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path +"/");
 
                 //Send HTML relative url to output and return
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));

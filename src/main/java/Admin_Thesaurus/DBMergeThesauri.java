@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -2056,7 +2056,7 @@ public class DBMergeThesauri {
      * @param termExtLinks currently reading only the from, to and link type values of external links specification
      * @param vocabularyIdentifiers  currently not updated
      */
-    void ReadThesaurusExternalLinksAndVocabularies(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, String exprortThesaurus, Object object, HashMap<String, ArrayList<ExternalLink>> termExtLinks, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
+    public void ReadThesaurusExternalLinksAndVocabularies(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, String exprortThesaurus, Object object, HashMap<String, ArrayList<ExternalLink>> termExtLinks, ArrayList<ExternalVocabulary> vocabularyIdentifiers) {
         
         DBGeneral dbGen = new DBGeneral();
         
@@ -5618,7 +5618,8 @@ public class DBMergeThesauri {
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         DBGeneral dbGen = new DBGeneral();
         UsersClass wtmsUsers = new UsersClass();
-
+ 
+ 
         UserInfoClass SessionUserInfo = new UserInfoClass(refSessionUserInfo);
         wtmsUsers.UpdateSessionUserSessionAttribute(SessionUserInfo, mergedThesaurusName);
 
@@ -5637,7 +5638,7 @@ public class DBMergeThesauri {
         Q.set_intersect(set_classes, set_facets);
         Q.reset_set(set_classes);
 
-        ArrayList<SortItem> defaultClassName = new ArrayList<SortItem>();
+        ArrayList<SortItem> defaultClassName = new ArrayList();
         defaultClassName.addAll(dbGen.get_Node_Names_Of_Set_In_SortItems(set_classes, true, Q, sis_session));
         Q.free_set(set_classes);
         Q.free_set(set_facets);

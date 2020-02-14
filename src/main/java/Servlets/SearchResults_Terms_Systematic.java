@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -111,7 +111,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
-            int systematicPagingListStep = new Integer(ListStepStr).intValue();
+            int systematicPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int systematicPagingFirst = 1;
             int systematicPagingQueryResultsCount = 0;
              
@@ -232,7 +232,7 @@ public class SearchResults_Terms_Systematic extends ApplicationBasicServlet {
             
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml", 
                                    XSL, 
-                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
+                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"), sessionInstance.path +"/");
                     
                 float elapsedTimeSec = Utilities.stopTimer(startTime);
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Search results in terms Systematic View --> time elapsed: " + elapsedTimeSec);

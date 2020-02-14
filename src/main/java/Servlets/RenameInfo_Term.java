@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -88,7 +88,7 @@ public class RenameInfo_Term extends ApplicationBasicServlet {
             String term_decoded    = u.getDecodedParameterValue(request.getParameter("targetTerm"));
 
 
-            Boolean caseOfUndoRenameCycle = new Boolean(false);
+            Boolean caseOfUndoRenameCycle = false;
 
 
             //open connection and start Query

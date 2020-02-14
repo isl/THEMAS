@@ -1,0 +1,106 @@
+2020-02-14
+=======================================
+- updated the obsolete dependency commons-fileupload from 1.0 to 1.3.3 with the necessary adjustments
+- skos export format changed to use skos:Concept instead of rdf:Description with type skos:Concept for compatibility with DOM processing systems
+- usage of 1.8.0_231 issues resolution
+- Links to ISL and CCI update
+- release of 1.4 version
+
+
+2019-12-02
+=======================================
+- Corrected the extend with recursive nts functionality so that 
+  every term contains all of the broader / narrower / related terms 
+  regardless if they have already been included in the file in order to 
+  become compatible with skosmos. Also in the same functionality corrected 
+  the bug where each page did not display (BT,NT, RT) terms that were not 
+  part of this specific page
+- Added configuration for external uri link replacements 
+- Secondary logo addition
+
+
+2019-07-03
+=======================================
+- Footer customizable changes
+- Ability to restrict the "extend with rnts" option to the set of terms with the Approved terms set (excluding non Approved term subtree)
+- Ability to export the arbitrary search result set in SKOS/RDF
+- Export Sources in SKOS/RDF
+- Replace creators and contributors names with the user description from the login xml (should later be retrieved from the database) - configurable by config.xml
+- Rewrite rule mechanism change for skos export uri resolution
+
+2019-05-09
+=======================================
+- added the extent results with rnts option in UI
+- transformed search checkboxes ul li with labels
+- hard coded the option to restrict output fields (basically bts, rts, nts) of search results. should be defined in the UI
+
+2019-04-01
+=======================================
+- Move to Hierarchy bug resolution (modifiying also other terms) when  configuration "ModificationDateAffectingOnlyDirectlyModifiedTerm" is enabled
+
+2019-03-27
+=======================================
+- Bug resolution in case of editing rights of team users in case EditOnlyCreatedByTerms option is enabled ( team users should be able to edit the For Insertion terms even if they have not been created by them)
+- Bug resolution in edit source note pop up card
+- Configuration parameter DisplayExternalLinkUrls added (enabling or disabling display of the external links for terms.heirarchies facets)
+- Configuration parameter ModificationDateAffectingOnlyDirectlyModifiedTerm in order to change the last modified by and last modified on porperties of just the term that was directly edited (not its pervious or new BTs, NTs, RTs)
+
+
+2019-03-13
+=======================================
+- Bug fixes regarding users edit/delete password and copyright until date script
+
+2019-03-04
+=======================================
+- Show permanent link copy functionality to readers also
+- do not invalidate the session if user is granted the read access to the external thesaurus even if externalreader is not activated
+- Minor bug resolution. White page while system was under maintenance due to lack of import of xsl that retrieves translation messages
+
+2019-03-02
+=======================================
+- Addition of Permanent link copy functionality in Card of term, hierarchy Facet
+- Bug resolution of session invalidate when an External Reader link was visited while already logged in
+- The inactive term modification Consistency check number 3 was modified in order 
+  to check if at most 1 translation per language has been selected. This is useful
+  in order to build thesauri that follow the relevant skos recommendation 
+- Skos export customization in order to 
+    - use xml:base or not according to a parameter in config.xml file
+    - node labels - guide-terms  are only included in comments. The previous decision of linking narrower to a collection was not skos valid
+	- adjust pref-labels so that only the first is left per language all others are set to be alt labels (uf translations) in order to be skos compatible
+    - included status in export file using property http://purl.org/iso25964/skos-thes#status 
+
+2018-12-04
+========================================
+- Passwords stored using md5
+- implemented xslt function that asks for label in specific language and if not found returns the english label 
+
+2018-07-27
+========================================
+- External links supported in import export functionalities (not in UI though)
+
+2018-06-28
+========================================
+- GDPR texts added 
+
+2018-06-13
+========================================
+- Configuration parameter added in order to be able to skip
+  GuideTerms declared as Terms during XML import (closing the gap)
+
+2018-06-08
+========================================
+- XMLStream ability Permanent links creation and response in XML format to Requests such as 
+  - http://localhost:8084/THEMAS/PARTHENOS/Concept/5836
+  - http://localhost:8084/THEMAS/PARTHENOS/Facet/4
+
+2018-03-05
+========================================
+- UI language selection in Login Screen
+
+2018-02-21
+========================================
+-Searching Type ahead bug resolution and improvement
+
+2017-12-21
+========================================
+- Transliteration search

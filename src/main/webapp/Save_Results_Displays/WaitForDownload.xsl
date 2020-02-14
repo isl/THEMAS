@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -42,13 +42,15 @@
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+    <xsl:import href="../xml-xsl/Configs.xsl"/>
     <xsl:output method="html"
             encoding="UTF-8"  
             indent="yes" 
             doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
             doctype-system="http://www.w3.org/TR/html4/loose.dtd"
             version="4.0" />	
-
+            
+            
     <!-- TODO customize transformation rules 
          syntax recommendation http://www.w3.org/TR/xslt 
     -->
@@ -61,19 +63,29 @@
     Author     : tzortzak
 -->
         <html>
+            <xsl:if test="$lang='ar'">
+                <!--<xsl:attribute name="dir">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>-->
+                <xsl:attribute name="class">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>
+            </xsl:if>
             <head>
                 <title>
-                    <xsl:value-of select="$locale/pagetitle/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/pagetitle/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </title>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
             </head>
             <body bgcolor="#FFFFFF">
                 <div align="left" style="position:absolute; top:0px; left:0px; width:680px; overflow:hidden" >
                     <img  border="0" >
                         <xsl:attribute name="src">
-                            <xsl:value-of select="$locale/headerimage/src/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/headerimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                         <xsl:attribute name="title">
-                            <xsl:value-of select="$locale/headerimage/title/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/headerimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>
                     </img>
                 </div>
@@ -85,15 +97,15 @@
                                 <br/>                                                
                                 <img>
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$locale/pleasewaitimage/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/pleasewaitimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$locale/pleasewaitimage/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/pleasewaitimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                 </img>
                                 <br/>   
                                     <font face="Helvetica,verdana,Arial" size="2" color="#000066">
-                                        <xsl:value-of disable-output-escaping="yes" select="$locale/pleasewaitmessage/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/pleasewaitmessage/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'yes'"/> </xsl:call-template>    
                                     </font>
                                 <br/>
                                 <br/>

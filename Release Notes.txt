@@ -18,12 +18,35 @@ Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
 Tel:+30-2810-391632
 Fax: +30-2810-391638
 E-mail: isl@ics.forth.gr
-http://www.ics.forth.gr/isl
+https://www.ics.forth.gr/isl
 
 Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
 
 This file is part of the THEMAS system.
+
+=============================================================================
+THEMAS 1.4
+=============================================================================
+- UI languages support - if not defined then select the English term
+- Password encryption
+- Ability to display External Reader links permanent links + copy option in the display cards of Facets / Terms (DisplayExternalLinkUrls in config.xml )
+- Rewrite rule mechanism change for skos export uri resolution
+- Ability to ModificationDateAffectingOnlyDirectlyModifiedTerm 
+- Ability to extend results with rnts and rbts - AbilityToExpandSearchResultsWithRNTs in config.xml
+- SKOS compatibility issues addressed
+- - node labels / guide-terms are omitted and are currently only displayed in comments. (Previous representation decision is not skos valid) 
+- - adjusted pref-labels so that only the first is left per language all others are set to be alt labels (uf translations) in order to be skos compatible (consistency check no 3)
+- SKOSmos export 
+- - ability to export in SKOS/RDF an arbitrary search result set of terms
+- - ability to export sources in SKOS/RDF
+- - ability to use xml:base in SKOS/RDf (SkosExportUsingXmlBase in config.xml)
+- - ability to replace creators and contributors names with the user description from the login xml (SkosReplaceLoginNamesWithDescription in config.xml)
+- - format change in order to support XPath selection of skos:Concept
+- UI improvements + additional footer customizable changes
+- update of library commons-file-upload
+- usage of 1.8.0_231 issues resolution
+- xslt import issues resolution
 
 =============================================================================
 THEMAS 1.3 Release notes (intermediate-release of version 2.0)

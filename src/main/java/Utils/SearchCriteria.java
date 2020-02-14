@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -48,6 +48,8 @@ import javax.servlet.http.*;
 public class SearchCriteria {
     
     public String CombineOperator;
+    public boolean expandWithRecusiveNts = false;
+    public boolean restrictToApproved = false;
     
     public ArrayList<String> input;
     public ArrayList<String> operator;
@@ -99,6 +101,28 @@ public class SearchCriteria {
 
     }
     
+    private void checkRequestForRntExpansionParameter(HttpServletRequest request,Utilities u){
+        this.expandWithRecusiveNts = false;
+        this.restrictToApproved = false;
+        
+        try{
+            String expandToRNTs = u.getDecodedParameterValue(request.getParameter("extendWithRntsName"));
+            if(expandToRNTs!=null && expandToRNTs.toLowerCase().equals("extendWithRnts".toLowerCase())){
+                this.expandWithRecusiveNts = true;
+            }
+            
+            String restrictToApproved = u.getDecodedParameterValue(request.getParameter("restrictToApprovedTermsname"));
+            if(restrictToApproved!=null && restrictToApproved.toLowerCase().equals("restrictToApprovedTerms".toLowerCase())){
+                this.restrictToApproved = true;
+            }
+        }
+        catch(java.io.UnsupportedEncodingException ex){
+            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"Update Search Criteria Error : " + ex.getMessage());
+            Utils.StaticClass.handleException(ex);
+        }
+        
+    }
+    
     private String getAndOperatroDisplayString(String targetLang){
         String retVal = "";
         if(Lang_DefinitionsFor_SearchCriteria_And.containsKey(targetLang)){
@@ -144,7 +168,8 @@ public class SearchCriteria {
             //String showAll = null;
             if (targetSearchCriteriaMode.equals("SearchCriteria_Terms")) {
 
-               
+                // id="extendWithRntscbxId" name="extendWithRntsName" value="extendWithRnts"
+                
                 if (targetSearchCriteriaValue.equals("*")) {
 
                     //In this case View All icon was pressed from the left menu
@@ -236,6 +261,11 @@ public class SearchCriteria {
                 else
                 if (targetSearchCriteriaValue.equals("parseCriteria")) { 
 
+                    //only when specific criteria are used does this make sense
+                    //selection of all already contains everything while
+                    //quicksearch is available in a sepearate menu
+                    sc.checkRequestForRntExpansionParameter(request, u);
+                    
                     sc.CombineOperator = request.getParameter("operator_term");
 
                     String[] temp1 = request.getParameterValues("input_term");

@@ -23,15 +23,15 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
  =============================================================================
  Elias Tzortzakakis <tzortzak@ics.forth.gr>
  
- This file is part of the THEMAS system.
- -->
+This file is part of the THEMAS system.
+-->
 <xsl:stylesheet version="2.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                 xmlns:fo="http://www.w3.org/1999/XSL/Format" 
@@ -52,7 +52,7 @@
     <!-- #feffd0 -->
     <!-- #D9EDFC -->
     <!-- #B6DCF9 -->
-        <!-- #343839 -->
+    <!-- #343839 -->
        
     <xsl:variable name="pageBgColor">        
         <!--<xsl:text>#D9EDFC</xsl:text>-->
@@ -71,5 +71,42 @@
         <xsl:text>#FFFFFF</xsl:text>
     </xsl:variable>
         
+    <xsl:template name="getTranslationMessage">
+        <!--<xsl:param name="rootDoc"/>-->
+        <xsl:param name="targetLangElements"/>
+        <xsl:param name="targetLang"/>
+        <xsl:param name="disableEscape"/>
     
+        <xsl:variable name="retVal" select="$targetLangElements[@lang=$targetLang]"/>
+    
+        <xsl:choose>
+            <xsl:when test="$disableEscape = 'yes'">
+                <xsl:choose>
+                    <xsl:when test="string-length($retVal)!=0">
+                        <xsl:value-of disable-output-escaping="yes" select="$retVal"/>
+                    </xsl:when>    
+                    <xsl:otherwise>
+                        <!-- show as default the english language if target language was not found -->
+                        <xsl:value-of disable-output-escaping="yes" select="$targetLangElements[@lang='en']"/>                
+                    </xsl:otherwise>
+
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                
+                <xsl:choose>
+                    <xsl:when test="string-length($retVal)!=0">
+                        <xsl:value-of select="$retVal"/>
+                    </xsl:when>    
+                    <xsl:otherwise>
+                        <!-- show as default the english language if target language was not found -->
+                        <xsl:value-of select="$targetLangElements[@lang='en']"/>                
+                    </xsl:otherwise>
+
+                </xsl:choose>
+            </xsl:otherwise>
+
+        </xsl:choose>
+   
+    </xsl:template>
 </xsl:stylesheet>

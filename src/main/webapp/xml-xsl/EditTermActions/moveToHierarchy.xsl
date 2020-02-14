@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -56,7 +56,7 @@
 	
         <fieldset id="moveTo_HierarchyFieldSetID" style="padding-left:3px;">
             <legend>
-                <xsl:value-of select="$specificlocale/moveterm/title/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 <b> 
                     <xsl:value-of select="//targetTerm"/>
                 </b>
@@ -78,10 +78,10 @@
                 <a href="#" onClick="window.location.reload(true);">						
                     <img width="16" height="16" border="0">
                         <xsl:attribute name="src">
-                            <xsl:value-of select="$specificlocale/moveterm/moveimage/src/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/moveimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>                                                
                         <xsl:attribute name="title">
-                            <xsl:value-of select="$specificlocale/moveterm/moveimage/title/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/moveimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </xsl:attribute>                                                
                     </img>
                 </a>
@@ -138,7 +138,7 @@
                         <xsl:value-of select="$TDwidth1"/>
                         <xsl:text>;</xsl:text>
                     </xsl:attribute>
-                    <xsl:value-of select="$specificlocale/moveterm/baseform/term/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/term/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <xsl:attribute name="style">
@@ -161,7 +161,7 @@
                         <xsl:value-of select="$TDwidth3"/>
                         <xsl:text>;</xsl:text>
                     </xsl:attribute>
-                    <xsl:value-of select="$specificlocale/moveterm/baseform/fromhier/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/fromhier/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <select id="MoveFromHierarchy" name="MoveFromHierarchy">
@@ -196,7 +196,7 @@
                         <xsl:value-of select="$TDwidth1"/>
                         <xsl:text>;</xsl:text>
                     </xsl:attribute>
-                    <xsl:value-of select="$specificlocale/moveterm/baseform/tohier/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/tohier/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <xsl:attribute name="style">
@@ -232,7 +232,7 @@
                         <xsl:value-of select="$TDwidth3"/>
                         <xsl:text>;</xsl:text>
                     </xsl:attribute>
-                    <xsl:value-of select="$specificlocale/moveterm/baseform/targetbt/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/targetbt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <select id="MoveBTterm" name="MoveBTterm" style="width:100%;">
@@ -253,26 +253,26 @@
                 <td align="center">
                     <!--<fieldset style="width:780px;">
                         <legend>
-                            <xsl:value-of select="$specificlocale/moveterm/baseform/mode/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/mode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </legend>-->
                         <table border="0" cellspacing="2" style="width:780px;" >
                             <tr align="center">
                                 <td colspan="3">
                                     <b>
-                                        <!--<xsl:value-of select="$specificlocale/moveterm/baseform/mode/option[@lang=$lang]"/>-->
+                                        <!--<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/mode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    -->
                                         <br/>
                                     </b>
                                 </td>
                             </tr>
                             <tr align="center">
                                 <td >
-                                    <xsl:value-of select="$specificlocale/moveterm/baseform/movenode/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/movenode/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </td>
                                 <td>
-                                    <xsl:value-of select="$specificlocale/moveterm/baseform/movesubtree/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/movesubtree/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </td>
                                 <td>
-                                    <xsl:value-of select="$specificlocale/moveterm/baseform/connectsubtree/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/connectsubtree/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </td>
                             </tr>
                             <tr>
@@ -298,7 +298,7 @@
                 <td align="center">
                     <fieldset style="text-align:center; width:780px;" >
                         <legend style="text-align:left;">
-                            <xsl:value-of select="$specificlocale/moveterm/baseform/bts/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/bts/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </legend>
                          
 							in case target has at least 1 BT 
@@ -316,7 +316,7 @@
                             &#160;											
                             <input type="button">
                                 <xsl:attribute name="value">                                                                     
-                                    <xsl:value-of select="$specificlocale/moveterm/baseform/deletebutton/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/baseform/deletebutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </xsl:attribute>
                                 <xsl:attribute name="onClick">                                                                     
                                     <xsl:text>MTH_DeleteBTButtonPressed();</xsl:text>
@@ -369,7 +369,7 @@
         <table width="100%" height="100%" border="0">
             <tr>
                 <td bgcolor="#F2F2F2">
-                    <xsl:value-of select="$specificlocale/moveterm/formwitherror/termname/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/formwitherror/termname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <xsl:value-of select="$TargetTermName"/>
@@ -377,15 +377,15 @@
             </tr>
             <tr>
                 <td bgcolor="#F2F2F2">
-                    <xsl:value-of select="$specificlocale/moveterm/formwitherror/msg/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/formwitherror/msg/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
-                    <xsl:value-of select="$specificlocale/moveterm/formwitherror/nomove/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/formwitherror/nomove/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
             </tr>
             <tr>
                 <td bgcolor="#F2F2F2">
-                    <xsl:value-of select="$specificlocale/moveterm/formwitherror/reason/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$specificlocale/moveterm/formwitherror/reason/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </td>
                 <td>
                     <xsl:value-of select="$reasonTargetTermCannotBeMovedToHierarchy"/>

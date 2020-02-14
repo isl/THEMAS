@@ -24,7 +24,7 @@ ${licensePrefix}Address: N. Plastira 100 Vassilika Vouton, GR-700 13 Heraklion, 
 ${licensePrefix}    Tel: +30-2810-391632
 ${licensePrefix}    Fax: +30-2810-391638
 ${licensePrefix} E-mail: isl@ics.forth.gr
-${licensePrefix}WebSite: http://www.ics.forth.gr/isl/cci.html
+${licensePrefix}WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
 ${licensePrefix}
 ${licensePrefix}=============================================================================
 ${licensePrefix}Authors: 

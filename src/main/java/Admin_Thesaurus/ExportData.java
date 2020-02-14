@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -201,7 +201,7 @@ public class ExportData extends ApplicationBasicServlet {
             ArrayList<String> allHierarchies = new ArrayList<>();
             ArrayList<String> allGuideTerms = new ArrayList<>();
             
-            exp.exportThesaurusActions(SessionUserInfo, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
+            exp.exportThesaurusActions(SessionUserInfo, request, exprortThesaurus, exportSchemaName, logFileWriter,thesauriNames,allHierarchies,allGuideTerms);
 
 
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "exported in time " + Utilities.stopTimer(startTime) + " sec.");

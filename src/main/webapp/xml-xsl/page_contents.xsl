@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -34,6 +34,22 @@
  -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes">
     <xsl:import href="page.xsl"/>
+    <!-- XSL INCLUDES for divs -->
+    <xsl:import href="criteria_terms.xsl"/>
+    <xsl:import href="criteria_facets.xsl"/>
+    <xsl:import href="criteria_hierarchies.xsl"/>
+    <xsl:import href="criteria_sources.xsl"/>
+    <xsl:import href="search_results_terms.xsl"/>
+    <xsl:import href="search_results_hierarchies.xsl"/>
+    <xsl:import href="search_results_facets.xsl"/>
+    <xsl:import href="search_results_sources.xsl"/>
+    <xsl:import href="search_results_users.xsl"/>
+    <xsl:import href="search_results_terms_systematic.xsl"/>
+    <xsl:import href="EditTermActions/PopUpInfo_Term.xsl"/>
+    <xsl:import href="EditHierarchyActions/PopUpInfo_Hierarchy.xsl"/>
+    <xsl:import href="EditFacetActions/PopUpInfo_Facet.xsl"/>
+    <xsl:import href="EditSourceActions/PopUpInfo_Source.xsl"/>
+    <xsl:import href="utilities.xsl"/>
     
     <!-- general VARIABLES -->
     <xsl:variable name="locale" select="document('../translations/translations.xml')/locale"/>
@@ -53,22 +69,7 @@
     <xsl:variable name="type" select="'AP'"/>
     <xsl:variable name="xpathBackLimit" select="0"/>
     <xsl:variable name="activeD" select="//part2/tabset2/tab/@active='yes'"/>
-    <!-- XSL INCLUDES for divs -->
-    <xsl:include href="criteria_terms.xsl"/>
-    <xsl:include href="criteria_facets.xsl"/>
-    <xsl:include href="criteria_hierarchies.xsl"/>
-    <xsl:include href="criteria_sources.xsl"/>
-    <xsl:include href="search_results_terms.xsl"/>
-    <xsl:include href="search_results_hierarchies.xsl"/>
-    <xsl:include href="search_results_facets.xsl"/>
-    <xsl:include href="search_results_sources.xsl"/>
-    <xsl:include href="search_results_users.xsl"/>
-    <xsl:include href="search_results_terms_systematic.xsl"/>
-    <xsl:include href="EditTermActions/PopUpInfo_Term.xsl"/>
-    <xsl:include href="EditHierarchyActions/PopUpInfo_Hierarchy.xsl"/>
-    <xsl:include href="EditFacetActions/PopUpInfo_Facet.xsl"/>
-    <xsl:include href="EditSourceActions/PopUpInfo_Source.xsl"/>
-    <xsl:include href="utilities.xsl"/>
+    
     <xsl:template match="/">
         <xsl:call-template name="page"/>
     </xsl:template>
@@ -88,6 +89,7 @@
 					    
 		<!-- _________________ UP part TABs _________________  260 -->
         <xsl:variable name="up" select="//part1/tabset1/tab[@active='yes']/text()"/>
+        <xsl:variable name="expand_search_results_with_rnts" select="//part1/tabset1/tab[@active='yes']/@expand_search_results_with_rnts"/>
         <xsl:choose>
             <xsl:when test="$up='Alphabetical' ">
                 <div id="DisplayCardArea"/>
@@ -167,7 +169,9 @@
                 </xsl:call-template>
                 <div id="content" >
                     <div id="centralDiv" class="tab-body">
-                        <xsl:call-template name="criteria"/>
+                        <xsl:call-template name="criteria">
+                            <xsl:with-param name="expandWithRntsOption" select="$expand_search_results_with_rnts" />
+                        </xsl:call-template>                            
                     </div>
                 </div>
             </xsl:when>
@@ -477,7 +481,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab1/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -495,7 +499,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab2/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab2/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -513,7 +517,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab3/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab3/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -544,7 +548,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab8/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab8/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                         </tr>
@@ -572,7 +576,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab1/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -609,7 +613,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab8/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab8/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                         </tr>
@@ -636,7 +640,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab1/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -673,7 +677,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab8/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab8/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                         </tr>
@@ -700,7 +704,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab1/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             
@@ -737,7 +741,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab8/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab8/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                         </tr>
@@ -763,7 +767,7 @@
                                             </xsl:attribute>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:value-of select="$tablist/tab1/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$tablist/tab1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </a>
                             </td>
                             <td style="width:26%; ">

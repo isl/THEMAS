@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -55,7 +55,7 @@
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <xsl:value-of select="$locale/loginadmin/tabs/adminsystem/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/tabs/adminsystem/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </a>
                     </td>
                     <td id="THEMAS_SystemConfigurations_TAB" onclick="THEMAS_HiddenActionsDIV('THEMAS_HiddenSystemConfigurations_DIV');" style="width:10%;">
@@ -72,7 +72,7 @@
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <xsl:value-of select="$locale/loginadmin/tabs/systemconfigs/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/tabs/systemconfigs/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </a>
                     </td>
                     <td id="THEMAS_HiddenTranslations_TAB" onclick="THEMAS_HiddenActionsDIV('THEMAS_HiddenTranslations_DIV');" style="width:10%;">
@@ -89,7 +89,7 @@
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <xsl:value-of select="$locale/loginadmin/tabs/translations/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/tabs/translations/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </a>
                     </td>
                     <td id="THEMAS_HiddenFixData_TAB" onclick="THEMAS_HiddenActionsDIV('THEMAS_HiddenFixData_DIV');" style="width:10%;">
@@ -106,13 +106,13 @@
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <xsl:value-of select="$locale/loginadmin/tabs/datacorrections/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/tabs/datacorrections/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </a>
                     </td>
                     <td id="Exit_THEMAS_HiddenActions" style="width:10%;">
                         
                         <a href="Index" class="inactive" onFocus="if(this.blur)this.blur()" >
-                            <xsl:value-of select="$locale/loginadmin/tabs/themasreturn/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/loginadmin/tabs/themasreturn/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </a>
                     </td>
                     
@@ -195,29 +195,29 @@
                 <!-- _______________________  Έναρξη / Τερματισμός SIS server _______________________ -->
         <fieldset style="width:930px;">
             <legend>
-                <xsl:value-of select="$adminsystemlocale/startstopNeo4j/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/startstopNeo4j/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <table>
                 <tr>
                     <td class="CategName">
                         <b>
-                            <xsl:value-of select="$adminsystemlocale/Neo4jstatus/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/Neo4jstatus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <xsl:if test="//Start_StopNeo4j/Neo4jStatus = 'ON' ">
                         <td class="CategName" style="color: green">
                             <b>
-                                <xsl:value-of select="$adminsystemlocale/active/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/active/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         <table>
                             <tr>
                                 <td class="CategName">
-                                    <xsl:value-of select="$adminsystemlocale/promptstop/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/promptstop/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <b>
                                         <a href="Start_StopNeo4j?action=STOP">
-                                            <xsl:value-of select="$adminsystemlocale/stopNeo4jDb/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/stopNeo4jDb/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </a>
                                     </b>
                                 </td>
@@ -227,16 +227,16 @@
                     <xsl:if test="//Start_StopNeo4j/Neo4jStatus = 'OFF' ">
                         <td class="CategName" style="color: red">
                             <b>
-                                <xsl:value-of select="$adminsystemlocale/inactive/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/inactive/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         <table>
                             <tr>
                                 <td class="CategName">
-                                    <xsl:value-of select="$adminsystemlocale/promptstart/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/promptstart/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <b>
                                         <a href="Start_StopNeo4j?action=START">
-                                            <xsl:value-of select="$adminsystemlocale/startneo4j/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/startneo4j/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </a>
                                     </b>
                                 </td>
@@ -251,29 +251,29 @@
 		<!-- _______________________  (Ξε)Κλείδωμα συστήματος _______________________ -->
         <fieldset style="width:930px;">
             <legend>
-                <xsl:value-of select="$adminsystemlocale/lockunlocksystem/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/lockunlocksystem/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <table>
                 <tr>
                     <td class="CategName">
                         <b>
-                            <xsl:value-of select="$adminsystemlocale/systemstatus/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/systemstatus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <xsl:if test="//Lock_UnlockSystem/SystemStatus = 'ON' ">
                         <td class="CategName" style="color: green">
                             <b>
-                                <xsl:value-of select="$adminsystemlocale/unlocked/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/unlocked/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         <table>
                             <tr>
                                 <td class="CategName">
-                                    <xsl:value-of select="$adminsystemlocale/promptlock/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/promptlock/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <b>
                                         <a href="Lock_UnlockSystem?action=LOCK">
-                                            <xsl:value-of select="$adminsystemlocale/performlock/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/performlock/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </a>
                                     </b>
                                 </td>
@@ -283,16 +283,16 @@
                     <xsl:if test="//Lock_UnlockSystem/SystemStatus = 'OFF' ">
                         <td class="CategName" style="color: red">
                             <b>
-                                <xsl:value-of select="$adminsystemlocale/locked/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/locked/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                         </td>
                         <table>
                             <tr>
                                 <td class="CategName">
-                                    <xsl:value-of select="$adminsystemlocale/promptunlock/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/promptunlock/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     <b>
                                         <a href="Lock_UnlockSystem?action=UNLOCK">
-                                            <xsl:value-of select="$adminsystemlocale/performunlock/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/performunlock/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </a>
                                     </b>
                                 </td>
@@ -307,7 +307,7 @@
 	<!-- _______________________  Επαναρχικοποίηση βάσης δεδομένων μέσω εξαγωγής/εισαγωγής δεδομένων σε XML _______________________ -->
         <fieldset style="width:930px;" id="resetDbFieldsetId">
             <legend>
-                <xsl:value-of select="$adminsystemlocale/resetdb/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/resetdb/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <br/>
             <table>
@@ -315,7 +315,7 @@
                     <td class="CategName">
                         
                             <a style="cursor: pointer;" onclick="getServletResult('StartExportImportToXML','resetDbFieldsetId','','');">
-                                <xsl:value-of select="$adminsystemlocale/resetdbstart/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$adminsystemlocale/resetdbstart/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                         
                     </td>                    
@@ -331,7 +331,7 @@
                 <!-- _______________________  Translations _______________________ -->
         <fieldset style="width:930px;">
             <legend>
-                <xsl:value-of select="$admintranslationslocale/fieldsetlabel/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/fieldsetlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             
             <br/>
@@ -345,7 +345,7 @@
                 <tr>
                     <td>
                         <b>
-                            <xsl:value-of select="$admintranslationslocale/applyingthesaurus/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/applyingthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                         <xsl:text>&#160;</xsl:text>
                         <input type="text" id="ConfigTranslationsCategoriesThesaurus_Admin_Id" name="ConfigTranslationsCategoriesThesaurus_Admin" size="20">
@@ -361,7 +361,7 @@
                         <xsl:text>&#160;&#160;</xsl:text>
                         <input type="button" class="button" onClick="callAdminTranslationsServlet('Translations','preview'  )">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$admintranslationslocale/previewcategories/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/previewcategories/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
@@ -380,7 +380,7 @@
                             <xsl:if test="count(page/Translations[@thesaurus!=''])>0">
 
                                 <b>
-                                    <xsl:value-of select="$admintranslationslocale/selectedthesaurus/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/selectedthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </b>
                                 <xsl:text>&#160;</xsl:text>
                                 <xsl:value-of select="page/Translations/@thesaurus"/>
@@ -404,12 +404,12 @@
                                                     <tr><!--bgcolor="#E8E9BE"-->
                                                         <th class="translationstablecolumn">
                                                             <b>
-                                                                <xsl:value-of select="$admintranslationslocale/identifierlabel/option[@lang=$lang]"/>
+                                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/identifierlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                             </b>
                                                         </th>
                                                         <th class="translationstablecolumn">
                                                             <b>
-                                                                <xsl:value-of select="$admintranslationslocale/languagelabel/option[@lang=$lang]"/>
+                                                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/languagelabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                             </b>
                                                         </th>
                                                     </tr>
@@ -436,10 +436,10 @@
                                                             <td>
                                                                 <img width="20" height="20" border="0" id ="removeLanguageImg" onClick="deleteTableRow('translationstablebody', this);">
                                                                     <xsl:attribute name="src">
-                                                                        <xsl:value-of select="$admintranslationslocale/removeimage/src/option[@lang=$lang]"/>
+                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                                     </xsl:attribute>
                                                                     <xsl:attribute name="title">
-                                                                        <xsl:value-of select="$admintranslationslocale/removeimage/title/option[@lang=$lang]"/>
+                                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                                     </xsl:attribute>                                                                    
                                                                 </img>
                                                             </td>
@@ -451,20 +451,20 @@
                                         <td valign="top">
                                             <img width="20" height="20" border="0" onClick="addLanguageRow('translationstablebody','inputvalue_term');">
                                                 <xsl:attribute name="src">
-                                                    <xsl:value-of select="$admintranslationslocale/addimage/src/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/addimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:attribute name="title">
-                                                    <xsl:value-of select="$admintranslationslocale/addimage/title/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/addimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                             </img>
                                             
                                             <!--<br/>
                                             <img width="20" height="20" border="0" id ="removeLanguageImg" onClick="removeLanguageRow(document.getElementById('translationstablebody'));">
                                                 <xsl:attribute name="src">
-                                                    <xsl:value-of select="$admintranslationslocale/removeimage/src/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:attribute name="title">
-                                                    <xsl:value-of select="$admintranslationslocale/removeimage/title/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                                 <xsl:choose>
                                                     <xsl:when test="count(/page/Translations/TranslationPair)>0">
@@ -484,10 +484,10 @@
                                         <td style="display:none">
                                             <img width="20" height="20" border="0" id ="removeLanguageImgTemplate" onClick="deleteTableRow('translationstablebody', this);">
                                                     <xsl:attribute name="src">
-                                                        <xsl:value-of select="$admintranslationslocale/removeimage/src/option[@lang=$lang]"/>
+                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                     </xsl:attribute>
                                                     <xsl:attribute name="title">
-                                                        <xsl:value-of select="$admintranslationslocale/removeimage/title/option[@lang=$lang]"/>
+                                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/removeimage/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                     </xsl:attribute>
                                                 </img>
                                          </td>
@@ -502,7 +502,7 @@
                                         <td style="text-align:right;">
                                             <input type="button" class="button" onclick="callAdminTranslationsServlet('Translations','save');">
                                                 <xsl:attribute name="value">
-                                                    <xsl:value-of select="$admintranslationslocale/savebuttonlabel/option[@lang=$lang]"/>
+                                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$admintranslationslocale/savebuttonlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                                 </xsl:attribute>
                                             </input>
                                         </td>
@@ -537,7 +537,7 @@
         <xsl:variable name="datafixeslocale" select="$locale/loginadmin/datacorrections"/>
         <fieldset style="width:930px;">
             <legend>
-                <xsl:value-of select="$datafixeslocale/datacorrectionactions/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/datacorrectionactions/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <table width="100%">
                 <tr>
@@ -548,7 +548,7 @@
                 <tr>
                     <td colspan="3">
                         <b>
-                            <xsl:value-of select="$datafixeslocale/applyingthesaurus/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/applyingthesaurus/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                         <input type="text" id="FixThesData_Admin_Id" name="FixThesData_Admin" size="20" onkeypress="if (event.keyCode == 13) return false;"/>
                     </td>
@@ -560,137 +560,137 @@
                 </tr>
                 <tr><!--PREFIXES ERRORS-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/prefixes/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/prefixes/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Prefixes')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','Prefixes')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--NAMING ERRORS-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/naming/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/naming/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','RepairNames')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','RepairNames')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--DATES-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/dates/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/dates/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Transform_Dates')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','Transform_Dates')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--GARBADGE-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/garbadge/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/garbadge/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Garbage_Collection')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','Garbage_Collection')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--UNCLASSIFIED SOURCES-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/unclassifiedsources/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/unclassifiedsources/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Unclassified_Source_relations')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','Unclassified_Source_relations')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--UNCLASSIFIED EDITORS-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/unclassifiededitors/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/unclassifiededitors/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Unclassified_Editor_relations')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Fix','Unclassified_Editor_relations')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                 </tr>
                 <tr><!--UNCLASSIFIED TERMS-->
                     <td style="text-align:justify">
-                        <xsl:value-of select="$datafixeslocale/unclassifiedterms/option[@lang=$lang]"/>
+                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/unclassifiedterms/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                     </td>
                     <td align="center">
                         <input type="button" class="button" onClick="callAdminFixServlet('FixAdminData','Preview','Unclassified_HierarchyTerms')">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/showreport/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/showreport/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>
                     <td align="center">
                         <input type="button" class="disabledbutton" disabled="disabled">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$datafixeslocale/fixbutton/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$datafixeslocale/fixbutton/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                             <xsl:attribute name="onclick">
                                 <xsl:text>alert('</xsl:text>
-                                <xsl:value-of select="$locale/generalmessages/underconstruction/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$locale/generalmessages/underconstruction/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 <xsl:text>');</xsl:text>
                             </xsl:attribute>
                         </input>
@@ -703,7 +703,7 @@
         <xsl:variable name="systemconfigslocale" select="$locale/loginadmin/systemconfigs"/>
         <fieldset style="width:930px;" id="SystemConfigurations_Fieldset_Id">
             <legend>
-                <xsl:value-of select="$systemconfigslocale/systemconfigurations/option[@lang=$lang]"/>
+                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/systemconfigurations/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             </legend>
             <table >
                 <tr>
@@ -714,7 +714,7 @@
                 <tr>
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/uilanguage/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/uilanguage/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -726,7 +726,7 @@
                     </td>
                     <td style="color:#898a5e; font-size:9px;">
                         <i>
-                            <xsl:value-of select="$systemconfigslocale/uilanguagenote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/uilanguagenote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </i>
                     </td>
                 </tr>
@@ -738,7 +738,7 @@
                 <tr>
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/liststep/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/liststep/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -759,7 +759,7 @@
                 <tr>
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/taxcodesformat/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/taxcodesformat/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -771,7 +771,7 @@
                     </td>
                     <td style="color:#898a5e; font-size:9px;">
                         <i>
-                            <xsl:value-of select="$systemconfigslocale/taxcodesformatnote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/taxcodesformatnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </i>
                     </td>
                 </tr>
@@ -783,7 +783,7 @@
                 <tr style="display:none;">
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/backupstarttime/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/backupstarttime/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -804,7 +804,7 @@
                 <tr style="display:none;">
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/backupinterval/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/backupinterval/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -816,7 +816,7 @@
                     </td>
                     <td style="color:#898a5e; font-size:9px;">
                         <i>
-                            <xsl:value-of select="$systemconfigslocale/backupintervalnote/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/backupintervalnote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </i>
                     </td>
                 </tr>
@@ -828,7 +828,7 @@
                 <tr style="display:none;">
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/backupdescription/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/backupdescription/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -849,7 +849,7 @@
                 <!--<tr>
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/emails/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/emails/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -870,7 +870,7 @@
                 <tr>
                     <td align="right">
                         <b>
-                            <xsl:value-of select="$systemconfigslocale/mailserver/option[@lang=$lang]"/>
+                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/mailserver/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                         </b>
                     </td>
                     <td>
@@ -893,7 +893,7 @@
                         </input>
                         <input type="button" class="button" onclick="callSystemConfigurationsServlet();">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="$systemconfigslocale/savechanges/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$systemconfigslocale/savechanges/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </xsl:attribute>
                         </input>
                     </td>

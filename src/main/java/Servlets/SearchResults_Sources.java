@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -129,7 +129,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
             SearchCriteria searchCriteria = null;
 
             //initial values --> will change from the following code
-            int sourcesPagingListStep = new Integer(ListStepStr).intValue();
+            int sourcesPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int sourcesPagingFirst = 1;
             int sourcesPagingQueryResultsCount = 0;
 
@@ -246,7 +246,7 @@ public class SearchResults_Sources extends ApplicationBasicServlet {
                     //create html and answer with html link for redirection --> download
                     u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +  File.separator+ Save_Results_file_name + ".xml", 
                                        XSL, 
-                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));
+                                       webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path +"/");
 
                     //Send HTML relative url to output and return
                     out.println(webAppSaveResults_Folder + "/"+ webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));

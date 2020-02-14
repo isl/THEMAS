@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -40,31 +40,12 @@
         <param-name>appname</param-name>
         <param-value>THEMAS</param-value>
     </context-param>
+    
     <context-param>
         <param-name>UILanguage</param-name>
         <param-value>en</param-value>
         <!--<param-value>el</param-value>-->
     </context-param>
-    <!-- adding filter mechanism that will clean urls of skos export e.g. 
-    skos uri:
-    http://139.91.183.91:8084/THEMAS/BBT/Facet/6
-    will be translated to :
-    http://139.91.183.91:8084/THEMAS/CardOf_Facet?referenceId=6&external_user=ExternalReader&external_thesaurus=BBT&mode=XMLSTREAM
-    
-    These rules are defined in the /WEB-INF/urlrewrite.xml 
-    where external_user parameter should be set to the name of a user that has been assigned the 
-    EXTERNALREADER role for the specified thesaurus  
-    -->
-    <filter>
-        <filter-name>UrlRewriteFilter</filter-name>
-        <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>UrlRewriteFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
     <!-- ||||||||||||||||||||||||||||||||||||||||| -->
     <context-param>
         <param-name>ListStep</param-name>
@@ -79,6 +60,7 @@
         <param-name>SVG_navbar_enabled</param-name>
         <param-value>true</param-value>
     </context-param>
+    <!-- SVG configuration in order to include e.g. the creator or the term -->
     <!--<context-param>
         <param-name>SVG_CategoriesFrom_for_traverse</param-name>
         <param-value>%THES%Descriptor:::%THES%HierarchyTerm:::%THES%HierarchyTerm:::%THES%HierarchyTerm:::%THES%Term:::%THES%HierarchyTerm:::%THES%HierarchyTerm</param-value>
@@ -184,10 +166,6 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <param-value>:</param-value>
     </context-param>
     <context-param>
-        <param-name>FormatXML</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
         <param-name>DELIMITER2</param-name>
         <param-value>###</param-value>
     </context-param>
@@ -204,12 +182,20 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
         <param-value>%THES%_ALT:::%THES%_UF:::FACET:::%thes%_scope_note:::%thes%_translations_scope_note</param-value>
     </context-param>
     <context-param>
+        <!-- Abandoned not used any more -->
+        <!-- this was used in order to decare which nodes should be included in -->
+        <!-- term counting and thus define the paging numbers -->
         <param-name>alphabetical_mode_PAGING_COUNT_NODES</param-name>
         <param-value>1:::1:::0:::0:::0</param-value>
     </context-param>
     <context-param>
         <param-name>TermModificationChecks</param-name>
-        <param-value>1:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
+        <param-value>1:::3:::7:::9:::11:::12:::15:::16:::18:::20:::24:::25:::26:::27</param-value>
+        <description> Configurable list of term modification consistency checks</description>
+        <description>List of available values. (if a value is not checked</description>
+        <description>1: Check if name declared is null or empty</description>
+        <description>3: Check if more than one translations are inserted per language (useful for SKOS compatibility)</description>
+        <description>7: Check if a loop relation has been declared of a descriptor with itself </description>
     </context-param>
     <!--<context-param>
         replaced by transliterations search which is performed by default
@@ -254,11 +240,6 @@ This list must be parallel to SVG_CategoriesStyles_for_traverse</description>
     <context-param>
         <param-name>SkipAutomaticBackups</param-name>
         <param-value>true</param-value>
-        <!--<param-value>true</param-value>-->
-    </context-param>
-    <context-param>
-        <param-name>DebugMode</param-name>
-        <param-value>false</param-value>
         <!--<param-value>true</param-value>-->
     </context-param>
     <listener>

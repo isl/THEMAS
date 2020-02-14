@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -140,7 +140,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                         Q.set_put(check_nodes_set);
                         Q.reset_set(check_nodes_set);
 
-                        dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
+                        dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, -1, Q, sis_session);
                         Q.reset_set(check_nodes_set);
 
                         if (MoveToHierBugFix(SessionUserInfo.selectedThesaurus, check_nodes_set, Q, sis_session, dbGen, errorMsg,SessionUserInfo.UILang) == false) {
@@ -256,7 +256,7 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
                         Q.reset_set(check_nodes_set);
 
                         if (MoveToHierarchyOption.compareTo("MOVE_NODE_AND_SUBTREE") == 0) {
-                            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, Q, sis_session);
+                            dbGen.collect_Recurcively_ALL_NTs_Of_Set(SessionUserInfo.selectedThesaurus, check_nodes_set, check_nodes_set, true, -1, Q, sis_session);
                             Q.reset_set(check_nodes_set);
                         }
 
@@ -476,37 +476,39 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
     }
 
     ArrayList<String> getMoveNodeOnlyModifiedTerms(UserInfoClass SessionUserInfo, QClass Q, TMSAPIClass TA, IntegerObject sis_session, DBGeneral dbGen, String TargetTermName, String MoveBTterm) {
-        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<>();
 
-        //if successfull must update modify fields of source's direct bts and nts. Also update target 
-        //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        ArrayList<String> sourceBts = new ArrayList<String>();
-        sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
-        sourceBts.trimToSize();
+        if(!Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm){
+            //if successfull must update modify fields of source's direct bts and nts. Also update target 
+            //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
+            ArrayList<String> sourceBts = new ArrayList<String>();
+            sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
+            sourceBts.trimToSize();
 
-        ArrayList<String> sourceNts = new ArrayList<String>();
-        sourceNts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.nt_kwd, Q, TA, sis_session);
-        sourceNts.trimToSize();
+            ArrayList<String> sourceNts = new ArrayList<String>();
+            sourceNts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.nt_kwd, Q, TA, sis_session);
+            sourceNts.trimToSize();
 
-        otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim() + ",";
+            otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim() + ",";
 
-        for (int m = 0; m < sourceNts.size(); m++) {
-            if(otherModifiedNodes.contains(sourceNts.get(m))==false){
-                otherModifiedNodes.add(sourceNts.get(m));
+            for (int m = 0; m < sourceNts.size(); m++) {
+                if(otherModifiedNodes.contains(sourceNts.get(m))==false){
+                    otherModifiedNodes.add(sourceNts.get(m));
+                }
+                //otherModifiedNodes += sourceNts.get(m) + ",";
             }
-            //otherModifiedNodes += sourceNts.get(m) + ",";
-        }
-        for (int m = 0; m < sourceBts.size(); m++) {
-            if(otherModifiedNodes.contains(sourceBts.get(m))==false){
-                otherModifiedNodes.add(sourceBts.get(m));
+            for (int m = 0; m < sourceBts.size(); m++) {
+                if(otherModifiedNodes.contains(sourceBts.get(m))==false){
+                    otherModifiedNodes.add(sourceBts.get(m));
+                }
+                //otherModifiedNodes += sourceBts.get(m) + ",";
             }
-            //otherModifiedNodes += sourceBts.get(m) + ",";
-        }
 
-        //otherModifiedNodes = otherModifiedNodes.substring(0, otherModifiedNodes.lastIndexOf(','));
-        //if (otherModifiedNodes.length() > 0) {
-            //otherModifiedNodes = otherModifiedNodes;
-        //}
+            //otherModifiedNodes = otherModifiedNodes.substring(0, otherModifiedNodes.lastIndexOf(','));
+            //if (otherModifiedNodes.length() > 0) {
+                //otherModifiedNodes = otherModifiedNodes;
+            //}
+        }
         return otherModifiedNodes;
     }
 
@@ -515,36 +517,40 @@ public class MoveToHierarchyResults extends ApplicationBasicServlet {
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
         ArrayList<String> otherModifiedNodes = new ArrayList<String>();
 
-        ArrayList<String> sourceBts = new ArrayList<String>();
-        sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
-        sourceBts.trimToSize();
+        if(!Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm){
+            ArrayList<String> sourceBts = new ArrayList<String>();
+            sourceBts = dbGen.returnResults(SessionUserInfo, TargetTermName, ConstantParameters.bt_kwd, Q, TA, sis_session);
+            sourceBts.trimToSize();
 
-        otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim() + ",";
+            otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim() + ",";
 
-        for (int m = 0; m < sourceBts.size(); m++) {
-            if(otherModifiedNodes.contains(sourceBts.get(m))==false){
-                otherModifiedNodes.add(sourceBts.get(m));
+            for (int m = 0; m < sourceBts.size(); m++) {
+                if(otherModifiedNodes.contains(sourceBts.get(m))==false){
+                    otherModifiedNodes.add(sourceBts.get(m));
+                }
+                //otherModifiedNodes += sourceBts.get(m) + ",";
             }
-            //otherModifiedNodes += sourceBts.get(m) + ",";
-        }
 
-        //otherModifiedNodes = otherModifiedNodes.substring(0, otherModifiedNodes.lastIndexOf(','));
-        //if (otherModifiedNodes.length() > 0) {
-          //  otherModifiedNodes = otherModifiedNodes;
-        //}
+            //otherModifiedNodes = otherModifiedNodes.substring(0, otherModifiedNodes.lastIndexOf(','));
+            //if (otherModifiedNodes.length() > 0) {
+              //  otherModifiedNodes = otherModifiedNodes;
+            //}
+        }
         return otherModifiedNodes;
     }
 
     ArrayList<String> getConnectNodeModifiedTerms(String MoveBTterm) {
         //if successfull must update modify fields of source and target
         //source will be updated by CreateModify_Finalization called in DB_MODIFY mode
-        ArrayList<String> otherModifiedNodes = new ArrayList<String>();
+        ArrayList<String> otherModifiedNodes = new ArrayList<>();
 
-        otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim();
+        if(!Parameters.ModificationDateAffectingOnlyDirectlyModifiedTerm){
+            otherModifiedNodes.add(MoveBTterm.trim());// += MoveBTterm.trim();
 
         //if (otherModifiedNodes.length() > 0) {
 //            otherModifiedNodes = otherModifiedNodes;
 //        }
+        }
         return otherModifiedNodes;
     }
 

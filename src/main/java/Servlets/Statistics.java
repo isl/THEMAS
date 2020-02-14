@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -33,9 +33,7 @@
  */
 package Servlets;
 
-import DB_Classes.DBGeneral;
 import DB_Classes.DBStatistics;
-import Servlets.ApplicationBasicServlet;
 import Users.UserInfoClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
@@ -53,7 +51,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import neo4j_sisapi.*;
 
 /*---------------------------------------------------------------------
                             Statistics
@@ -121,7 +118,7 @@ public class Statistics extends ApplicationBasicServlet {
                 //create html and answer with html link for redirection --> download
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name + ".xml", 
                                    XSL, 
-                                   webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"));                
+                                   webAppSaveResults_temporary_filesAbsolutePath + File.separator + Save_Results_file_name.concat(".html"), sessionInstance.path +"/");                
                 
                 
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.concat(".html"));

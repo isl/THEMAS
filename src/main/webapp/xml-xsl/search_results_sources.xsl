@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -52,7 +52,7 @@
         <xsl:variable name="outputVar" select="//output"/>
         <!--<fieldset class="links">
         <legend>
-            <xsl:value-of select="$sourceslocale/tableresults/legend/option[@lang=$lang]"/>
+            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
         </legend>
         -->
             
@@ -77,7 +77,7 @@
                     <xsl:when test="count(//data/sources/source)=0">
                         <td align="left" valign="top" colspan="5">
                             <strong>
-                                <xsl:value-of select="$sourceslocale/tableresults/noresultsmsg/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/noresultsmsg/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </strong>
                         </td>
                     </xsl:when>
@@ -85,7 +85,7 @@
                     <xsl:otherwise>
                         <td height="5">
                             <strong>
-                                <xsl:value-of select="$sourceslocale/tableresults/columns/source/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/source/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </strong>
                         </td>
                         <xsl:for-each select="$outputVar/node()">
@@ -93,13 +93,13 @@
                                 <strong>
                                     <xsl:choose>
                                         <xsl:when test="name() = 'source_note' ">
-                                            <xsl:value-of select="$sourceslocale/tableresults/columns/sourcenote/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/sourcenote/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:when>
                                         <xsl:when test="name() = 'primary_found_in' ">
-                                            <xsl:value-of select="$sourceslocale/tableresults/columns/primarysource/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/primarysource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:when>
                                         <xsl:when test="name() = 'translations_found_in' ">
-                                            <xsl:value-of select="$sourceslocale/tableresults/columns/trsource/option[@lang=$lang]"/>
+                                            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/trsource/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:value-of select="name()"/>
@@ -113,7 +113,7 @@
                         <xsl:if test="$THEMASUserInfo_userGroup != 'READER'  and $THEMASUserInfo_userGroup != 'EXTERNALREADER'"> 
                             <td>
                                 <strong>
-                                    <xsl:value-of select="$sourceslocale/tableresults/columns/actions/legend/option[@lang=$lang]"/>
+                                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/actions/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </strong>
                             </td>
                         </xsl:if>
@@ -235,10 +235,10 @@
                                 <xsl:attribute name="onClick">showEditCard_Source('<xsl:value-of select="$currentJS"/>')</xsl:attribute>
                                 <img width="16" height="16" border="0">
                                     <xsl:attribute name="src">
-                                        <xsl:value-of select="$sourceslocale/tableresults/columns/actions/edit/src/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/actions/edit/src/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>
                                     <xsl:attribute name="title">
-                                        <xsl:value-of select="$sourceslocale/tableresults/columns/actions/edit/title/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$sourceslocale/tableresults/columns/actions/edit/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </xsl:attribute>                                        
                                 </img>
                             </a>

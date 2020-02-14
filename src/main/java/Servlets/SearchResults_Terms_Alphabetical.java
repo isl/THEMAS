@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -115,7 +115,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             // -------------------- paging info And criteria retrieval-------------------------- 
             //initial values --> will change from the following code
             int alphabeticalPagingFirst = 1;
-            int alphabeticalPagingListStep = new Integer(ListStepStr).intValue();
+            int alphabeticalPagingListStep = Integer.valueOf(ListStepStr).intValue();
             int alphabeticalPagingQueryResultsCount = 0;
                         
             searchCriteria = (SearchCriteria) sessionInstance.getAttribute("SearchCriteria_Terms");
@@ -196,6 +196,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             ArrayList<Long> resultNodesIdsL = new ArrayList<Long>();
                 
             int set_global_descriptor_results = dbGen.getSearchTermResultSet(SessionUserInfo, input, ops, inputValue, operator,Q,TA,sis_session);
+            boolean extendSearcResultsWithRnts = false;//searchCriteria.expandWithRecusiveNts;
             
             if (startRecord!=null && startRecord.matches("SaveAll")) {
 
@@ -224,7 +225,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
                 
                 ArrayList<String> allTerms = new ArrayList<String>();                
                 //READ RESULT SET'S REQUESTED OUTPUT AND WRITE RESULTS IN XML FILE
-                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIdsL);
+                dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_global_descriptor_results, output, termsInfo, allTerms, resultNodesIdsL,extendSearcResultsWithRnts, null);
                 dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_global_descriptor_results, termsInfo, allTerms , resultNodesIdsL);
                 
 
@@ -246,7 +247,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
 
                 u.XmlFileTransform(webAppSaveResults_temporary_filesAbsolutePath +File.separator+ Save_Results_file_name + ".xml",
                                    XSL, 
-                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"));
+                                   webAppSaveResults_temporary_filesAbsolutePath +File.separator+Save_Results_file_name.concat(".html"), sessionInstance.path +"/");
 				
                 //Send HTML relative url to output and return
                 out.println(webAppSaveResults_Folder + "/"+webAppSaveResults_temporary_files_Folder +"/"+  Save_Results_file_name.concat(".html"));
@@ -297,7 +298,7 @@ public class SearchResults_Terms_Alphabetical extends ApplicationBasicServlet {
             
             
             
-            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIdsL);
+            dbGen.collectTermSetInfo(SessionUserInfo, Q, TA, sis_session, set_paging_results, output, termsInfo, resultsTerms, resultNodesIdsL, extendSearcResultsWithRnts, null);
             dbGen.collectUsedForTermSetInfo(SessionUserInfo, Q, sis_session, set_paging_results, termsInfo, resultsTerms , resultNodesIdsL);
             
             //Collections.sort(resultsTerms, new StringLocaleComparator(targetLocale));     

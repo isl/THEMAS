@@ -23,7 +23,7 @@
      Tel: +30-2810-391632
      Fax: +30-2810-391638
   E-mail: isl@ics.forth.gr
- WebSite: http://www.ics.forth.gr/isl/cci.html
+ WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  
  =============================================================================
  Authors: 
@@ -47,6 +47,7 @@
     xmlns:fn="http://www.w3.org/2005/02/xpath-functions" 
     xmlns:xdt="http://www.w3.org/2005/02/xpath-datatypes" 
     exclude-result-prefixes="xsl fo xs fn xdt">
+    <xsl:import href="../xml-xsl/Configs.xsl"/>
     <xsl:output method="html"  
             encoding="UTF-8"  
             indent="yes" 
@@ -59,10 +60,18 @@
         <xsl:variable name="localespecific" select="document($pathToSaveScriptingAndLocale)/root/fixdata/unclassifiededitor"/>
         <xsl:variable name="lang" select="page/@language"/>
         <xsl:variable name="pageTitle">
-            <xsl:value-of select="$localespecific/titleprefix/option[@lang=$lang]"/>
+            <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/titleprefix/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             <xsl:value-of select="//title"/>
         </xsl:variable>
         <html>
+            <xsl:if test="$lang='ar'">
+                <!--<xsl:attribute name="dir">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>-->
+                <xsl:attribute name="class">
+                    <xsl:text>rtl</xsl:text>                    
+                </xsl:attribute>
+            </xsl:if>
             <head>
                 <style rel="stylesheet" type="text/css">
                     td {font-size: 12px; font-family: verdana, arial, helvetica, sans-serif; text-decoration:none; color:black;}
@@ -72,15 +81,17 @@
                     <xsl:value-of select="$pageTitle"/>
                 </title>
                 <script type="text/javascript">
-                    <xsl:value-of select="$localecommon/browserdetectionsaveasscript/option[@lang=$lang]"/>
+                    <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/browserdetectionsaveasscript/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </script>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
             </head>
             <body style="background-color: #FFFFFF;" >
                 <table width="100%">
                     <tr>
                         <td>
                             <b>
-                                <xsl:value-of select="$localespecific/intro/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/intro/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </b>
                             <br/>
                         </td>
@@ -92,11 +103,11 @@
                                     <xsl:value-of select="$pageTitle"/>
                                     <xsl:text>');</xsl:text>
                                 </xsl:attribute>
-                                <xsl:value-of select="$localecommon/saveas/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/saveas/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>                          
                             &#160;
                             <a href="#" class="SaveAsAndPrintLinks" onclick="print()">
-                                <xsl:value-of select="$localecommon/print/option[@lang=$lang]"/>
+                                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localecommon/print/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                             </a>
                         </td>
                     
@@ -109,7 +120,7 @@
                             <tr>
                                 <td align="left" valign="top" colspan="7">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/noerrors/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/noerrors/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                             </tr>
@@ -120,37 +131,37 @@
                             <tr>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/number/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/number/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/editorname/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/editorname/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/unclassifiedlink/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/unclassifiedlink/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/creator/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/creator/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/creationdate/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/creationdate/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/modificator/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/modificator/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                                 <td align="center">
                                     <strong>
-                                        <xsl:value-of select="$localespecific/modificationdate/option[@lang=$lang]"/>
+                                        <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$localespecific/modificationdate/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </strong>
                                 </td>
                             </tr>

@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -2097,6 +2097,16 @@ public class DBGeneral {
         return abortVctr;
         //}
     }
+    
+    public ArrayList<SortItem> returnResults_HierarchyInSortItems(UserInfoClass SessionUserInfo, String hierarchy, String output, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+        ArrayList<SortItem> returnVec = new ArrayList<>();
+        
+        if (output.equals(ConstantParameters.facet_kwd)) {
+            return getHierarchyFacetsInSortItems(SessionUserInfo, hierarchy, Q, sis_session, targetLocale);
+        }
+        return returnVec;
+    }
+
 
     /*---------------------------------------------------------------------
      getLinkValue_Hierarchy()
@@ -3505,7 +3515,7 @@ public class DBGeneral {
         Q.reset_set(set_tt_criteria_names);
 
         int cardttcr = Q.set_get_card(set_tt_criteria_names);
-        collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus, set_tt_criteria_names, set_results, true, Q, sis_session);
+        collect_Recurcively_ALL_NTs_Of_Set(selectedThesaurus, set_tt_criteria_names, set_results, true, -1, Q, sis_session);
         Q.reset_set(set_results);
 
         int cardr = Q.set_get_card(set_results);
@@ -4811,7 +4821,18 @@ public class DBGeneral {
 
     }
 
-    public void collect_Recurcively_ALL_NTs_Of_Set(String selectedThesaurus, int set_target, int set_result, boolean includeTarget, QClass Q, IntegerObject sis_session) {
+    /***
+     * 
+     * @param selectedThesaurus
+     * @param set_target
+     * @param set_result
+     * @param includeTarget
+     * @param filteringSet: a set that may be used for intersection filtering in every step of recursion. 
+     * if no such functionality is needed then provide -1 as value
+     * @param Q
+     * @param sis_session 
+     */
+    public void collect_Recurcively_ALL_NTs_Of_Set(String selectedThesaurus, int set_target, int set_result, boolean includeTarget, int filteringSet, QClass Q, IntegerObject sis_session) {
 
         int sisSessionId = sis_session.getValue();
         StringObject btClassFromObj = new StringObject();
@@ -4829,11 +4850,24 @@ public class DBGeneral {
         Q.set_copy(partial, set_target);
         Q.reset_set(partial);
 
+        if(filteringSet>0){
+            Q.reset_set(set_result);
+            Q.reset_set(filteringSet);
+            Q.set_intersect(set_result, filteringSet);
+            Q.reset_set(set_result);
+        }
         if (includeTarget) {
             Q.reset_set(set_result);
             Q.reset_set(set_target);
             Q.set_union(set_result, set_target);
             Q.reset_set(set_result);
+            
+            if(filteringSet>0){
+                Q.reset_set(set_result);
+                Q.reset_set(filteringSet);
+                Q.set_intersect(set_result, filteringSet);
+                Q.reset_set(set_result);
+            }
         }
 
         // Q.reset_name_scope();
@@ -4862,16 +4896,22 @@ public class DBGeneral {
             Q.reset_set(partial);
             Q.set_union(set_result, partial);
 
+            
             Q.free_set(partial_labels);
+            
+            if(filteringSet>0){
+                Q.reset_set(set_result);
+                Q.reset_set(filteringSet);
+                Q.set_intersect(set_result, filteringSet);
+                Q.reset_set(set_result);
+            }
 
         }
 
         Q.free_set(partial);
         Q.reset_set(set_result);
 
-        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nResult Set includes : \n'" + getStringList_Of_Set(set_result, "'\n'") + "'");
-        return;
-
+        //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nResult Set includes : \n'" + getStringList_Of_Set(set_result, "'\n'") + "'");        
     }
 
     public String getStringList_Of_Set(int set_print, String delimiter, QClass Q, IntegerObject sis_session) {
@@ -5233,7 +5273,7 @@ public class DBGeneral {
         //Locale targetLocale = new Locale(language, country);
         StringLocaleComparator strCompar = new StringLocaleComparator(targetLocale);
 
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> results = new ArrayList<>();
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
         String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
         StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
@@ -5258,6 +5298,62 @@ public class DBGeneral {
         Q.reset_name_scope();
 
         Collections.sort(results, strCompar);
+        return results;
+
+    }
+    
+    ArrayList<SortItem> getHierarchyFacetsInSortItems(UserInfoClass SessionUserInfo, String hierarchy, QClass Q, IntegerObject sis_session, Locale targetLocale) {
+
+        ArrayList<SortItem> results = new ArrayList<SortItem>();
+
+        int index = Parameters.CLASS_SET.indexOf("FACET");
+        String[] FacetClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+        SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(FacetClasses);
+
+        DBThesaurusReferences dbtr = new DBThesaurusReferences();
+        String prefix_class = dbtr.getThesaurusPrefix_Class(SessionUserInfo.selectedThesaurus, Q, sis_session.getValue());
+        StringObject hierObj = new StringObject(prefix_class.concat(hierarchy));
+
+        StringObject belongsToHierClass = new StringObject();
+        StringObject belongsToHierarchyLink = new StringObject();
+        getKeywordPair(SessionUserInfo.selectedThesaurus, ConstantParameters.belongs_to_hier_kwd, belongsToHierClass, belongsToHierarchyLink, Q, sis_session);
+
+        Q.reset_name_scope();
+        Q.set_current_node(hierObj);
+        int set_super_classes = Q.get_superclasses(0);
+        Q.reset_set(set_super_classes);
+
+
+        Q.reset_name_scope();
+        int set_facets = get_Instances_Set(FacetClasses, Q, sis_session);
+        Q.reset_set(set_facets);
+        //int card = Q.set_get_card(set_facets);
+
+        Q.set_intersect(set_super_classes, set_facets);
+        Q.reset_set(set_super_classes);
+
+        // FILTER hierarchies depending on user group
+        //DBFilters dbf = new DBFilters();
+        //set_sub_classes = dbf.FilterHierResults(SessionUserInfo, set_sub_classes, Q, sis_session);
+
+        /*
+        if (Parameters.OnlyTopTermsHoldReferenceId) {
+            //int card1 = Q.set_get_card(set_sub_classes);
+
+            int set_topterms = Q.get_from_node_by_category(set_super_classes, belongsToHierClass, belongsToHierarchyLink);
+
+            //int card = Q.set_get_card(set_topterms);
+            //String s1 = ""+card1+" " + card2 + " " + card3;
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_topterms, true, Q, sis_session));
+        } else {
+            results.addAll(get_Node_Names_Of_Set_In_SortItems(set_super_classes, true, Q, sis_session));
+        }*/
+        results.addAll(get_Node_Names_Of_Set_In_SortItems(set_super_classes, true, Q, sis_session));
+        Q.free_set(set_super_classes);
+        Q.free_set(set_facets);
+        Q.reset_name_scope();
+
+        Collections.sort(results, new SortItemComparator(SortItemComparator.SortItemComparatorField.TRANSLITERATION));
         return results;
 
     }
@@ -6105,15 +6201,41 @@ public class DBGeneral {
 
     }
 
+    public void constructReferenceURIs(String prefix, HashMap<String, NodeInfoSortItemContainer> termsInfo){
+        
+        if(termsInfo!=null){
+            
+            Utilities u = new Utilities();
+            HashMap<String, Long> collectIdsInfo = new HashMap<String,Long>();
+            
+            for (Map.Entry<String, NodeInfoSortItemContainer> entry : termsInfo.entrySet()) {
+                String termName = entry.getKey();
+                long referenceId = entry.getValue().descriptorInfo.get(ConstantParameters.id_kwd).get(0).getThesaurusReferenceId();
+                collectIdsInfo.put(termName, referenceId);
+            }
+            for (Map.Entry<String, Long> entry : collectIdsInfo.entrySet()) {
+                String termName = entry.getKey();
+                long referenceId = entry.getValue();
+                //termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(new SortItem(XMLHandling.WriteFileData.getSkosUri(false, prefix, referenceId)));
+                termsInfo.get(termName).descriptorInfo.get(ConstantParameters.system_referenceUri_kwd).add(new SortItem(prefix+u.getExternalReaderReferenceUriSuffix(false, referenceId)));
+            }
+        }
+    }
+    
     public void collectTermSetInfo(UserInfoClass SessionUserInfo,
             QClass Q, TMSAPIClass TA, IntegerObject sis_session,
-            int set_results,
+            int set_results,            
             ArrayList<String> output,
             HashMap<String, NodeInfoSortItemContainer> termsInfo,
             ArrayList<String> allTerms,
-            ArrayList<Long> resultNodesIds) throws IOException {
+            ArrayList<Long> resultNodesIds,
+            boolean restrictOutputInSearchResultsOnly, 
+            /*boolean restrictExpansionToApprovedTermsOnly, */
+            ArrayList<String> completeSetNames
+    ) throws IOException {
         DBexportData dbExport = new DBexportData();
 
+        
         boolean ntOutputSelected = output.contains(ConstantParameters.nt_kwd);
         boolean btOutputSelected = output.contains(ConstantParameters.bt_kwd);
         if (ntOutputSelected && !btOutputSelected) {
@@ -6122,36 +6244,10 @@ public class DBGeneral {
         if (btOutputSelected && !ntOutputSelected) {
             output.add(ConstantParameters.nt_kwd);
         }
-        /*
-         if(output.contains(nt_kwd)||output.contains(bt_kwd)){
-            
-         StringObject BTClassObj = new StringObject();
-         StringObject BTLinkObj = new StringObject();
-         getKeywordPair(sessionInstance, bt_kwd, BTClassObj, BTLinkObj, Q, sis_session);
-
-         Q.reset_name_scope();
-         Q.set_current_node(BTClassObj);
-         Q.set_current_node(BTLinkObj);
-         int set_guideTerms = Q.get_subclasses(0);
-         Q.reset_set(set_guideTerms);
-            
-         StringObject label = new StringObject();
-         ArrayList<String> guideTermsVec = new ArrayList<String>();
-         while(Q.retur_nodes(set_guideTerms, label)!=QClass.APIFail){
-         guideTermsVec.add(label.getValue());
-         }
-         Q.free_set(set_guideTerms);
-            
-         output.addAll(guideTermsVec);
-         }
-         */
-        //IntegerObject resultIdObj = new IntegerObject();
-        //StringObject resultNodeObj = new StringObject();
-        //StringObject resultClassObj = new StringObject();
-
+        
         String[] outputTable = new String[output.size()];
         output.toArray(outputTable);
-
+        
         ArrayList<String> resultTermNamesWithPrefixes = new ArrayList<>();
         Q.reset_set(set_results);
         ArrayList<Return_Nodes_Row> retVals = new ArrayList<>();
@@ -6159,7 +6255,10 @@ public class DBGeneral {
             for (Return_Nodes_Row row : retVals) {
 
                 long targetTermIdL = row.get_Neo4j_NodeId();
-                resultNodesIds.add(targetTermIdL);
+                if(!resultNodesIds.contains(targetTermIdL)){
+                    resultNodesIds.add(targetTermIdL);
+                }
+                
 
                 String targetTerm = removePrefix(row.get_v1_cls_logicalname());
                 resultTermNamesWithPrefixes.add(row.get_v1_cls_logicalname());
@@ -6169,7 +6268,8 @@ public class DBGeneral {
                 if (termsInfo.containsKey(targetTerm) == false) {
                     NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
                     newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL, transliteration, referenceId));
-                    //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                    
+                    //newContainer.descriptorInfo.get(ConstantParameters.system_transliteration_kwd).add(new SortItem("" + targetTermIdL, targetTermIdL,transliteration,referenceId));                         
+                    
                     termsInfo.put(targetTerm, newContainer);
                     allTerms.add(targetTerm);
                 }
@@ -6195,14 +6295,16 @@ public class DBGeneral {
         int set_to_links = Q.get_link_to(set_results);
         Q.reset_set(set_to_links);
 
-        Q.set_difference(set_to_links, set_from_links);
-        Q.reset_set(set_to_links);
+        if(!restrictOutputInSearchResultsOnly){
+            Q.set_difference(set_to_links, set_from_links);
+            Q.reset_set(set_to_links);
+        }
 
         DBFilters dbF = new DBFilters();
         dbF.FilterTermsResultsLinks(SessionUserInfo, set_from_links, set_to_links, Q, sis_session);
 
-        collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds);
-        collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds);
+        collectTermSetInfoFrom(SessionUserInfo.selectedThesaurus, Q, sis_session, set_from_links, output, termsInfo, allTerms, resultNodesIds,restrictOutputInSearchResultsOnly, completeSetNames);
+        collectTermSetInfoTo(SessionUserInfo.selectedThesaurus, Q, sis_session, set_to_links, output, termsInfo, allTerms, resultNodesIds,restrictOutputInSearchResultsOnly, completeSetNames);
 
         if (output.contains(ConstantParameters.rnt_kwd)) {
 
@@ -6217,7 +6319,7 @@ public class DBGeneral {
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
-                    ArrayList<SortItem> recNts = new ArrayList<SortItem>();
+                    ArrayList<SortItem> recNts = new ArrayList<>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6245,7 +6347,7 @@ public class DBGeneral {
                 if (Q.set_get_card(set_recursive_nts) > 0) {
 
                     retVals.clear();
-                    ArrayList<SortItem> recBts = new ArrayList<SortItem>();
+                    ArrayList<SortItem> recBts = new ArrayList<>();
                     if (Q.bulk_return_nodes(set_recursive_nts, retVals) != QClass.APIFail) {
                         for (Return_Nodes_Row row : retVals) {
 
@@ -6266,6 +6368,8 @@ public class DBGeneral {
         dbExport.ReadTermCommentCategories(SessionUserInfo.selectedThesaurus, Q, TA, sis_session, output, allTerms, termsInfo, resultNodesIds);
         dbExport.ReadTermFacetAndHierarchiesInSortItems(SessionUserInfo, Q, sis_session, set_results, output, allTerms, termsInfo, resultNodesIds);
 
+        //one safe option is to add extendSearcResultsWithRnts cotnrol here 
+        
         Q.free_set(set_to_links);
         Q.free_set(set_from_links);
 
@@ -6277,8 +6381,9 @@ public class DBGeneral {
         }
     }
 
-    public void collectTermSetInfoFrom(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_from_links,
-            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
+    private void collectTermSetInfoFrom(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_from_links,
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL,
+            boolean restrictOutputInSearchResultsOnly, ArrayList<String> completeSetNames) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6309,9 +6414,17 @@ public class DBGeneral {
          IntegerObject linkID = new IntegerObject();
          IntegerObject categID = new IntegerObject();
          */
+        
+        ArrayList<String> filteringLinks = new ArrayList<>();
+        if(restrictOutputInSearchResultsOnly){
+            filteringLinks.add(ConstantParameters.nt_kwd);
+            filteringLinks.add(ConstantParameters.rt_kwd);
+            filteringLinks.add(ConstantParameters.bt_kwd);
+        }
+        
         int translationCategorySubStringLength = ConstantParameters.thesaursTranslationCategorysubString.length();
         int translationUFCategorySubStringLength = ConstantParameters.thesaursUFTranslationCategorysubString.length();
-        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<>();
         if (Q.bulk_return_full_link_id(set_from_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
@@ -6324,15 +6437,13 @@ public class DBGeneral {
                 String categoryKwd = keyWordsMappings.get(category);
 
                 String value = row.get_v8_cmv().getString();
+                
+                
                 long valueIdL = row.get_v8_cmv().getSysid();
                 long valueRefIdL = row.get_v8_cmv().getRefid();
                 String valueTransliterationStr = row.get_v8_cmv().getTransliterationString();
-                // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
-                //String valueId = String.valueOf(linkID.getValue());
-                //clsID = new IntegerObject();
-                //linkID = new IntegerObject();
-                //cmv = new CMValue();
-
+                
+                
                 if (categoryKwd == null) {
                     if (category.startsWith(BTLinkObj.getValue())) {
                         categoryKwd = ConstantParameters.bt_kwd;
@@ -6340,26 +6451,8 @@ public class DBGeneral {
                         continue;
                     }
                 }
-
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
-                    category = category.replaceFirst(BTLinkObj.getValue(), "");
-                }
-                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
-                    category = category.replaceFirst(RTLinkObj.getValue(), "");
-                }
                 
-                SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);
-
-                if (categoryKwd.compareTo(ConstantParameters.scope_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.translations_scope_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.historical_note_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.comment_kwd) == 0
-                        || categoryKwd.compareTo(ConstantParameters.note_kwd) == 0) {
-
-                    continue;
-                }
-
-                if (categoryKwd.compareTo(ConstantParameters.modified_on_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.created_on_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.modified_on_kwd) || categoryKwd.equals(ConstantParameters.created_on_kwd)) {
                     //no value change needed
                 } else /*if (categoryKwd.compareTo(translation_kwd)==0) {
                  value = value.replaceFirst(DBThesaurusReferences.languageIdentifierSuffix, ": ");
@@ -6368,30 +6461,70 @@ public class DBGeneral {
                  */ {
                     value = removePrefix(value);
                 }
+                if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
+                    if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
+                        if(Parameters.DEBUG){
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +"Skipping from collectTermSetInfoFrom values: " + value + "   "+targetTerm);
+                        }
+                        continue;
+                        
+                    }                    
+                }
+                
+                
+                // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
+                //String valueId = String.valueOf(linkID.getValue());
+                //clsID = new IntegerObject();
+                //linkID = new IntegerObject();
+                //cmv = new CMValue();
+
+                
+
+                if (categoryKwd.equals(ConstantParameters.bt_kwd)) {
+                    category = category.replaceFirst(BTLinkObj.getValue(), "");
+                }
+                else if(categoryKwd.equals(ConstantParameters.rt_kwd)){
+                    category = category.replaceFirst(RTLinkObj.getValue(), "");
+                }
+                
+                SortItem targetTermSortItem = new SortItem(targetTerm, targetTermIdL, category, targetTermTransiteration, targetTermRefIdL);
+
+                if (categoryKwd.equals(ConstantParameters.scope_note_kwd) 
+                        || categoryKwd.equals(ConstantParameters.translations_scope_note_kwd) 
+                        || categoryKwd.equals(ConstantParameters.historical_note_kwd)
+                        || categoryKwd.equals(ConstantParameters.comment_kwd) 
+                        || categoryKwd.equals(ConstantParameters.note_kwd) ) {
+
+                    continue;
+                }
+
+                
 
                 SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
 
                 //the translation category will be as follows --> to_EN, to_IT etc
-                if (categoryKwd.compareTo(ConstantParameters.translation_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.translation_kwd)) {
                     valueSortItem = new SortItem(value, valueIdL, category.substring(category.indexOf(ConstantParameters.thesaursTranslationCategorysubString) + translationCategorySubStringLength));
                 }
-                if (categoryKwd.compareTo(ConstantParameters.uf_translations_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.uf_translations_kwd)) {
                     valueSortItem = new SortItem(value, valueIdL, category.substring(category.indexOf(ConstantParameters.thesaursUFTranslationCategorysubString) + translationUFCategorySubStringLength));
                 }
-                if (categoryKwd.compareTo(ConstantParameters.uf_kwd) == 0 || categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.uf_kwd) || categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     valueSortItem.linkClass = "";
                 }
 
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
-                if (output.contains(categoryKwd)) {
-                    termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                if (output.contains(categoryKwd) ) {
+                    if(!termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).contains(valueSortItem)){
+                        termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    }
                 } else {
                     continue;
                 }
 
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.bt_kwd)) {
 
-                    if (resultNodesIdsL.contains(valueIdL)) {
+                    if (resultNodesIdsL.contains(valueIdL) ) {
 
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6400,9 +6533,11 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        }                        
                     }
-                } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                } else if (categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6411,7 +6546,10 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "", targetTermSortItem.getLogNameTransliteration(), targetTermSortItem.getThesaurusReferenceId()));
+                        SortItem newRt = new SortItem(targetTermSortItem.getLogName(), targetTermSortItem.getSysId(), "", targetTermSortItem.getLogNameTransliteration(), targetTermSortItem.getThesaurusReferenceId());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).contains(newRt)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(newRt);
+                        }
                     }
                 }
             }
@@ -6519,8 +6657,9 @@ public class DBGeneral {
          */
     }
 
-    public void collectTermSetInfoTo(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_to_links,
-            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, ArrayList<Long> resultNodesIdsL) {
+    private void collectTermSetInfoTo(String selectedThesaurus, QClass Q, IntegerObject sis_session, int set_to_links,
+            ArrayList<String> output, HashMap<String, NodeInfoSortItemContainer> termsInfo, ArrayList<String> allTerms, 
+            ArrayList<Long> resultNodesIdsL, boolean restrictOutputInSearchResultsOnly, ArrayList<String> completeSetNames) {
         //step 1 collect all data around terms except status and scope notes
 
         DBThesaurusReferences dbtr = new DBThesaurusReferences();
@@ -6535,6 +6674,7 @@ public class DBGeneral {
         dbtr.getThesaurusCategory_BT(selectedThesaurus, Q, sis_session.getValue(), BTLinkObj);
         dbtr.getThesaurusCategory_RT(selectedThesaurus, Q, sis_session.getValue(), RTLinkObj);
 
+        
         /*
          StringObject fromcls = new StringObject();
          StringObject label = new StringObject();
@@ -6546,24 +6686,48 @@ public class DBGeneral {
          IntegerObject linkID = new IntegerObject();
          IntegerObject categID = new IntegerObject();
          */
-        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<Return_Full_Link_Id_Row>();
+        ArrayList<String> filteringLinks = new ArrayList<>();
+        if(restrictOutputInSearchResultsOnly){
+            filteringLinks.add(ConstantParameters.nt_kwd);
+            filteringLinks.add(ConstantParameters.rt_kwd);
+            filteringLinks.add(ConstantParameters.bt_kwd);
+        }
+        ArrayList<Return_Full_Link_Id_Row> retFLIVals = new ArrayList<>();
         if (Q.bulk_return_full_link_id(set_to_links, retFLIVals) != QClass.APIFail) {
             for (Return_Full_Link_Id_Row row : retFLIVals) {
 
                 String targetTerm = removePrefix(row.get_v8_cmv().getString());
+                
                 long targetTermIdL = row.get_v8_cmv().getSysid();
                 long targetTermRefIdL = row.get_v8_cmv().getRefid();
                 String targetTermTransiteration = row.get_v8_cmv().getTransliterationString();
 
                 String category = row.get_v5_categ();
                 String categoryKwd = keyWordsMappings.get(category); // LINKS TO TERMS ARE EITHER BT LINKS OR RT LINKS
+                if (category.startsWith(BTLinkObj.getValue())) {
+                    categoryKwd = ConstantParameters.nt_kwd;
+                }
                 if (categoryKwd != null && categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
                     categoryKwd = ConstantParameters.nt_kwd;
                 }
+                
+                
                 String value = removePrefix(row.get_v1_cls());
                 long valueIdL = row.get_v2_clsid();
                 long valueRefIdL = row.get_v11_clsRefid();
                 String valueTransliterationStr = row.get_v10_clsTransliteration();
+                
+                
+                if(restrictOutputInSearchResultsOnly && filteringLinks.contains(categoryKwd)){
+                    if(!completeSetNames.contains(value) || !completeSetNames.contains(targetTerm)){
+                        if(Parameters.DEBUG){
+                            Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix +"Skipping from collectTermSetInfoFrom values: " + value + "   "+targetTerm);
+                        }
+                        continue;
+                    }                    
+                }
+                
+                
                 // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
                 //String valueId = String.valueOf(linkID.getValue());
                 //clsID = new IntegerObject();
@@ -6581,10 +6745,10 @@ public class DBGeneral {
                         continue;
                     }
                 }
-                if (categoryKwd.compareTo(ConstantParameters.nt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.nt_kwd)) {
                     category = category.replaceFirst(BTLinkObj.getValue(), "");
                 }
-                else if(categoryKwd.compareTo(ConstantParameters.rt_kwd)==0){
+                else if(categoryKwd.equals(ConstantParameters.rt_kwd)){
                     category = category.replaceFirst(RTLinkObj.getValue(), "");
                 }
 
@@ -6599,12 +6763,14 @@ public class DBGeneral {
                 SortItem valueSortItem = new SortItem(value, valueIdL, category, valueTransliterationStr, valueRefIdL);
                 //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
                 if (output.contains(categoryKwd)) {
-                    termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    if(!termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).contains(valueSortItem)){
+                        termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem.getACopy());
+                    }
                 } else {
                     continue;
                 }
 
-                if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
+                if (categoryKwd.equals(ConstantParameters.nt_kwd)) {
 
                     if (resultNodesIdsL.contains(valueIdL)) {
 
@@ -6614,10 +6780,12 @@ public class DBGeneral {
                             termsInfo.put(value, newContainer);
                             allTerms.add(value);
                         }
-
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem.getACopy());
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.bt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.bt_kwd).add(targetTermSortItem.getACopy());
+                        }
+                        
                     }
-                } else if (categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
+                } else if (categoryKwd.equals(ConstantParameters.rt_kwd)) {
                     if (resultNodesIdsL.contains(valueIdL)) {
                         if (termsInfo.containsKey(value) == false) {
                             NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
@@ -6626,96 +6794,17 @@ public class DBGeneral {
                             allTerms.add(value);
                         }
 
-                        termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        //termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        
+                        if(!termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).contains(targetTermSortItem)){
+                            termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem.getACopy());
+                        }
                     }
 
                 }
             }
         }
 
-        /*
-         while (Q.retur_full_link_id(set_to_links, cls, clsID, label, linkID, categ, fromcls, categID, cmv, uniq_categ) != QClass.APIFail) {
-         //while (Q.retur_full_link(set_from_links, cls, label, categ, fromcls, cmv, uniq_categ, traversed) != QClass.APIFail) {
-         String targetTerm = removePrefix(cmv.getString());
-         String category = categ.getValue();
-         String categoryKwd = keyWordsMappings.get(category); // LINKS TO TERMS ARE EITHER BT LINKS OR RT LINKS
-         if(categoryKwd!=null && categoryKwd.compareTo(ConstantParameters.bt_kwd)==0){
-         categoryKwd=ConstantParameters.nt_kwd;
-         }
-         String value =  removePrefix(cls.getValue());
-           
-         int targetTermId = cmv.getSysid(); 
-         int  valueId = clsID.getValue();
-         // Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\t ID = " + targetTermId + " valueId = " +valueId);
-         //String valueId = String.valueOf(linkID.getValue());
-         clsID = new IntegerObject();
-         linkID = new IntegerObject();
-         cmv = new CMValue();
-            
-         // LINKS TO TERMS ARE EITHER BT LINKS OR RT LINKS
-         //if (category == null || category.compareTo(ConstantParameters.scope_note_kwd) == 0 || category.compareTo(ConstantParameters.translations_scope_note_kwd) == 0 || category.compareTo(ConstantParameters.historical_note_kwd) == 0) {
-         //    continue;
-         //}
-            
-         if(categoryKwd == null){
-         if(categ.getValue().startsWith(BTLinkObj.getValue())){
-         categoryKwd = ConstantParameters.nt_kwd;
-         }
-         else{
-         continue;
-         }
-         }
-         if(categoryKwd.compareTo(ConstantParameters.nt_kwd)==0){
-         category = category.replaceFirst(BTLinkObj.getValue(), "");
-         }
-                
-         SortItem targetTermSortItem = new SortItem(targetTerm,targetTermId,category);
-            
-         //if (category.compareTo(ConstantParameters.modified_on_kwd) == 0 || category.compareTo(ConstantParameters.created_on_kwd) == 0) {
-         //no value change needed
-         //} else {
-         //    value = dbGen.removePrefix(value);
-         //}
-            
-         SortItem valueSortItem      = new SortItem(value,valueId,category);
-         //Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix+"\n\nInserting: targetTerm=\t" + targetTerm+"\ncategory=\t" + category+"\nvalue=\t" + value);
-         if(output.contains(categoryKwd)){
-         termsInfo.get(targetTerm).descriptorInfo.get(categoryKwd).add(valueSortItem);
-         }
-         else {
-         continue;
-         }
-            
-         if (categoryKwd.compareTo(ConstantParameters.bt_kwd) == 0) {
-                
-         if(resultNodesIds.contains(valueId)){
-                
-         if (termsInfo.containsKey(value) == false) {
-         NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-         newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem(""+valueId,valueId,category));
-         termsInfo.put(value, newContainer);
-         allTerms.add(value);
-         }
-
-         termsInfo.get(value).descriptorInfo.get(ConstantParameters.nt_kwd).add(targetTermSortItem);
-         }
-         }
-         else if(categoryKwd.compareTo(ConstantParameters.rt_kwd) == 0) {
-         if(resultNodesIds.contains(valueId)){
-         if (termsInfo.containsKey(value) == false) {
-         NodeInfoSortItemContainer newContainer = new NodeInfoSortItemContainer(NodeInfoSortItemContainer.CONTAINER_TYPE_TERM, outputTable);
-         newContainer.descriptorInfo.get(ConstantParameters.id_kwd).add(new SortItem(""+valueId,valueId,category));
-         termsInfo.put(value, newContainer);
-         allTerms.add(value);
-         }
-
-         termsInfo.get(value).descriptorInfo.get(ConstantParameters.rt_kwd).add(targetTermSortItem);
-         }
-                
-         }
-
-         }
-         */
     }
 
     public ArrayList<String> collectGuideLinks(String selectedThesaurus, QClass Q, IntegerObject sis_session) {

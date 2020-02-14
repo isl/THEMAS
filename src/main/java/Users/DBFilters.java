@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -163,12 +163,9 @@ public class DBFilters {
             termIsEditable = dblf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
         }
         
-        if(Parameters.ThesTeamEditOnlyCreatedByTerms){
-            //ThesTeamEditOnlyCreatedByTerms
-            if(SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam)==true){
-                DBThesaurusTeamFilters dbteamf = new DBThesaurusTeamFilters();
-                termIsEditable = dbteamf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);
-            }
+        if(Parameters.ThesTeamEditOnlyCreatedByTerms && SessionUserInfo.userGroup.equals(Utils.ConstantParameters.Group_ThesaurusTeam)==true){
+            DBThesaurusTeamFilters dbteamf = new DBThesaurusTeamFilters();
+            termIsEditable = dbteamf.TermIsEditable(SessionUserInfo.selectedThesaurus, targetTerm, userLogicalName, Q, sis_session);            
         }
         
         return termIsEditable;

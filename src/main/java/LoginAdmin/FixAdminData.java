@@ -22,7 +22,7 @@
  *     Tel: +30-2810-391632
  *     Fax: +30-2810-391638
  *  E-mail: isl@ics.forth.gr
- * WebSite: http://www.ics.forth.gr/isl/cci.html
+ * WebSite: https://www.ics.forth.gr/isl/centre-cultural-informatics
  * 
  * =============================================================================
  * Authors: 
@@ -98,7 +98,7 @@ public class FixAdminData extends ApplicationBasicServlet {
                 out.println("Session Invalidate");
                 return;
             }
-            Boolean fixed = new Boolean(true);
+            Boolean fixed = true;
             
             QClass Q = new QClass(); 
             TMSAPIClass TA = new TMSAPIClass();
@@ -176,7 +176,7 @@ public class FixAdminData extends ApplicationBasicServlet {
                 String XML_file =webAppSaveResults_temporary_filesAbsolutePath + "/" + Save_Results_file_name.getValue() + ".xml";
                 String XSL_file =XSL_fileNameObject.getValue();
                 String HTML_file=webAppSaveResults_temporary_filesAbsolutePath+ "/" + Save_Results_file_name.getValue() + ".html";
-                u.XmlFileTransform(XML_file, XSL_file, HTML_file);
+                u.XmlFileTransform(XML_file, XSL_file, HTML_file, sessionInstance.path+"/");
                 out.println(webAppSaveResults_Folder + "/" + webAppSaveResults_temporary_files_Folder + "/" + Save_Results_file_name.getValue().concat(".html"));
                 
             } else {
