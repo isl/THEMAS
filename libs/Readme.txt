@@ -47,45 +47,69 @@ javascript:
 
 jar files:
 =============================================================================
-1) commons-fileupload-1.0.jar
+1) commons-fileupload-1.3.3.jar
 2) kxml2-2.3.0.jar
-3) Neo4j-sisapi-1.0.jar 
+3) Neo4j-sisapi-1.4.jar 
 
 
 
-The above meentioned files contained in this folder should be used according 
+The above mentioned files contained in this folder should be used according 
 to the instructions in "How to compile.txt"
 
 
 
-Other dependency libraries that are not included here are:
-
-Neo4j 2.2.5 jars:
+Other dependency libraries that are not included here (mostly deriving from Neo4j 3.2.5 dependency) are:
 =============================================================================
-1)  concurrentlinkedhashmap-lru-1.4.jar
-2)  lucene-core-3.6.2.jar
-3)  neo4j-consistency-check-2.2.5.jar
-4)  neo4j-csv-2.2.5.jar
-5)  neo4j-cypher-2.2.5.jar
-6)  neo4j-cypher-compiler-1.9-2.0.4.jar
-7)  neo4j-cypher-compiler-2.0-2.0.4.jar
-8)  neo4j-cypher-compiler-2.1-2.1.8.jar
-9)  neo4j-cypher-compiler-2.2-2.2.5.jar
-10) neo4j-graph-algo-2.2.5.jar
-11) neo4j-graph-matching-2.2.5.jar
-12) neo4j-import-tool-2.2.5.jar
-13) neo4j-io-2.2.5.jar
-14) neo4j-jmx-2.2.5.jar
-15) neo4j-kernel-2.2.5.jar
-16) neo4j-lucene-index-2.2.5.jar
-17) neo4j-primitive-collections-2.2.5.jar
-18) neo4j-shell-2.2.5.jar
-19) neo4j-udc-2.2.5.jar
-20) neo4j-unsafe-2.2.5.jar
-21) opencsv-2.3.jar
-22) org.apache.servicemix.bundles.jline-0.9.94_1.jar
-23) parboiled-core-1.1.7.jar
-24) parboiled-scala_2.10-1.1.7.jar
-25) scala-library-2.10.5.jar
-26) server-api-2.2.5.jar
+asm-5.2.jar
+bcpkix-jdk15on-1.53.jar
+bcprov-jdk15on-1.53.jar
+caffeine-2.3.3.jar
+commons-compress-1.12.jar
+commons-io-2.2.jar
+commons-lang3-3.3.2.jar
+concurrentlinkedhashmap-lru-1.4.2.jar
+lucene-analyzers-common-5.5.0.jar
+lucene-backward-codecs-5.5.0.jar
+lucene-codecs-5.5.0.jar
+lucene-core-5.5.0.jar
+lucene-queryparser-5.5.0.jar
+neo4j-3.2.5.jar
+neo4j-codegen-3.2.5.jar
+neo4j-collections-3.2.5.jar
+neo4j-command-line-3.2.5.jar
+neo4j-common-3.2.5.jar
+neo4j-configuration-3.2.5.jar
+neo4j-consistency-check-3.2.5.jar
+neo4j-csv-3.2.5.jar
+neo4j-cypher-3.2.5.jar
+neo4j-cypher-compiler-2.3-2.3.11.jar
+neo4j-cypher-compiler-3.1-3.1.6.jar
+neo4j-cypher-compiler-3.2-3.2.5.jar
+neo4j-cypher-frontend-2.3-2.3.11.jar
+neo4j-cypher-frontend-3.1-3.1.6.jar
+neo4j-cypher-frontend-3.2-3.2.5.jar
+neo4j-cypher-ir-3.2-3.2.5.jar
+neo4j-dbms-3.2.5.jar
+neo4j-graph-algo-3.2.5.jar
+neo4j-graph-matching-3.1.3.jar
+neo4j-graphdb-api-3.2.5.jar
+neo4j-import-tool-3.2.5.jar
+neo4j-index-3.2.5.jar
+neo4j-io-3.2.5.jar
+neo4j-jmx-3.2.5.jar
+neo4j-kernel-3.2.5.jar
+neo4j-logging-3.2.5.jar
+neo4j-lucene-index-3.2.5.jar
+neo4j-lucene-upgrade-3.2.5.jar
+neo4j-primitive-collections-3.2.5.jar
+neo4j-resource-3.2.5.jar
+neo4j-ssl-3.2.5.jar
+neo4j-udc-3.2.5.jar
+neo4j-unsafe-3.2.5.jar
+netty-all-4.1.15.Final.jar
+opencsv-2.3.jar
+parboiled-core-1.1.7.jar
+parboiled-scala_2.11-1.1.7.jar
+scala-library-2.11.8.jar
+scala-reflect-2.11.8.jar
 
