@@ -558,7 +558,7 @@ This file is part of the THEMAS system.
                     <tr>
                         <td colspan="2" style="text-align: right;">
                             
-                            <a href="./help-files/THEMAS_XML_schema_v_1.4.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
+                            <a href="./help-files/THEMAS_XML_schema_v_2.0.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
                                 <xsl:call-template name="getTranslationMessage"> 
                                     <xsl:with-param name="targetLangElements" select="$specificlocale/xmlschemalink/option"/> 
                                     <xsl:with-param name="targetLang" select="$lang"/> 
