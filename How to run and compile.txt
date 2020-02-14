@@ -27,6 +27,26 @@ This file is part of the THEMAS system.
 
 
 ================================================================
+How to run for the first time
+================================================================
+- create the database minimal structure using the file /libs/DBFolder.zip
+- deploy war file e.g. Tomcat
+- - edit database paths, Primary DB language and configurable options in file:
+    /WEB-INF/DBadmin/tms_db_admin_config_files/config.xml
+- - edit Primary UI Language in web.xml (UILanguage)
+- - edit log path in /WEB-INF/classes/logging.properties
+
+- if everything ready then login with admin/admin123
+- Navigate to (Left menu) Thesauri / gear icon / 3rd tab thesauri management
+- Create a Thesaurus with initialize db option (only needed for the first time)
+- Navigate to LoginAdmin in order to edit its translations e.g. EN -> English 
+- Logout 
+- Login and start build your thesaurus. 
+- In order to create more thesauri follow the same procedure but 
+- without selecting the the initialize db option
+
+
+================================================================
 How to compile
 ================================================================
 The following instructions have been tested in the following environment
@@ -61,7 +81,7 @@ THEMAS: version used 1.4
    -Dfile.encoding=UTF8
 
 7) Build Project - Run and enjoy! 
-   Use admin/admin as username/password 
+   Use admin/admin123 as username/password  (similar for other default users)
    Start by creating a new thesaurus
    with initialize db option 
    (left menu > Thesauri > Top menu > Thesauri management > 
