@@ -14,11 +14,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the Licence for the specific language governing permissions and limitations
 under the Licence.
 
-Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
+Contact:  POBox 1385, Heraklion Crete, GR-700 13 GREECE
 Tel:+30-2810-391632
 Fax: +30-2810-391638
 E-mail: isl@ics.forth.gr
-https://www.ics.forth.gr/isl
+https://www.ics.forth.gr/isl/centre-cultural-informatics
 
 Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 
@@ -26,8 +26,19 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 =============================================================================
-THEMAS 2.0 - Dev
+THEMAS 1.4.1
 =============================================================================
+- Guide Terms Editing
+- - display in parentheses the number of usages
+- - alert in case of trying to delete a guide term with usage
+- - added checkbox option to allow deletion even if it is used
+
+- Edit Terms 
+- - Ability for Admin and Thesaurus Committee to edit a term's node Labels of an 
+    'Approved' Term without having to turn it to 'Under construction' first and 
+     without modifying it's Last modified date
+
+- Use of Neo4j-sisapi 1.4.1 resolving bug with regex characters search
 
 =============================================================================
 THEMAS 1.4
