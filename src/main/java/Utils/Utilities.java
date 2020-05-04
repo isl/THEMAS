@@ -2215,6 +2215,37 @@ public class Utilities {
 
         return dataNeeded;
     }
+    
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsWithStatisticsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, 
+            HashMap<String,Integer> allGuideTerms, Locale targetLocale) {
+
+        StringBuffer dataNeeded = new StringBuffer();
+        Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
+        dataNeeded.append("<availableHierarchies>");
+        for (int i = 0; i < allHierarcies.size(); i++) {
+            dataNeeded.append("<hierarchy>" + escapeXML(allHierarcies.get(i)) + "</hierarchy>");
+        }
+        dataNeeded.append("</availableHierarchies>");
+
+        dataNeeded.append("<availableStatuses>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo) + "</status>");
+        //dataNeeded.append("<status>" + dbGen.Status_For_Reinspection + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo) + "</status>");
+        dataNeeded.append("</availableStatuses>");
+
+        ArrayList<String> gTerms = new ArrayList();
+        gTerms.addAll(allGuideTerms.keySet());
+        Collections.sort(gTerms, new StringLocaleComparator(targetLocale));
+        dataNeeded.append("<availableGuideTerms>");
+        for (String gTerm : gTerms) {
+            dataNeeded.append("<GuideTerm card=\""+allGuideTerms.get(gTerm)+"\">" + escapeXML(gTerm) + "</GuideTerm>");
+        }
+        dataNeeded.append("</availableGuideTerms>");
+
+        return dataNeeded;
+    }
 
     /*
     public void writeResultsInOutputStream(){

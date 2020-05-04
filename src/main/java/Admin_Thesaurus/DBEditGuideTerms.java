@@ -175,7 +175,10 @@ public class DBEditGuideTerms {
         return true;
     }
 
-    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, String deleteGuideTerm, StringObject errorMsg, final String uiLang) {
+    public boolean deleteGuideTerm(String selectedThesaurus, QClass Q, IntegerObject sis_session, 
+            String deleteGuideTerm, 
+            boolean deleteEvenIfContainingTerms,
+            StringObject errorMsg, final String uiLang) {
 
         DBGeneral dbGen = new DBGeneral();
         Utilities u = new Utilities();
@@ -202,12 +205,20 @@ public class DBEditGuideTerms {
         int set_move_instances = Q.get_instances(0);
         Q.reset_set(set_move_instances);
 
+        int howmanyTerms = Q.set_get_card(set_move_instances);
+        if(howmanyTerms>0 && ! deleteEvenIfContainingTerms){
+            Q.free_set(set_move_instances);
+            errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/GuideTermInUse", new String[]{deleteGuideTerm, ""+howmanyTerms}, uiLang));
+            
+            return false;
+        }
         Q.reset_name_scope();
 
         Q.set_current_node(BTClassObj);
         long toIdL = Q.set_current_node(BTLinkObj);
         int ret = Q.CHECK_IMPROVE_Add_Instance_Set(set_move_instances, new Identifier(toIdL));
         if (ret == QClass.APIFail) {
+            Q.free_set(set_move_instances);
             errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksCopyError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Copying failure of BT links of guide term: " + deleteGuideTerm);
             return false;
@@ -215,6 +226,7 @@ public class DBEditGuideTerms {
 
         ret = Q.CHECK_IMPROVE_Delete_Instance_Set(set_move_instances, new Identifier(fromIdL));
         if (ret == QClass.APIFail) {
+            Q.free_set(set_move_instances);
             errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/BTLinksDeletionError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Deletion failure of BT links of guide term: " + deleteGuideTerm);
             return false;
@@ -226,6 +238,7 @@ public class DBEditGuideTerms {
         Identifier fromIdIdentifier = new Identifier(fromIdL);     //ALLGRETHE_BTMyGuideTermLink
         ret = Q.CHECK_Delete_Named_Attribute(fromIdIdentifier, fromClsIdentifier);
         if (ret == QClass.APIFail) {
+            Q.free_set(set_move_instances);
             errorMsg.setValue(u.translateFromMessagesXML("root/EditGuideTerms/Delete/GeneralError", new String[]{deleteGuideTerm}, uiLang));
             //errorMsg.setValue("Deletion failure of guide term: " + deleteGuideTerm);
             return false;

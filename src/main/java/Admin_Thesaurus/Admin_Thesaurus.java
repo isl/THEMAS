@@ -111,15 +111,15 @@ public class Admin_Thesaurus extends ApplicationBasicServlet {
             }
            
             
-            ArrayList<String> thesaurusVector = new ArrayList<>();
-            ArrayList<String> allHierarchies = new ArrayList<>();
-            ArrayList<String> allGuideTerms = new ArrayList<>();
+            ArrayList<String> thesaurusVector = new ArrayList();
+            ArrayList<String> allHierarchies = new ArrayList();
+            HashMap<String,Integer> allGuideTerms = new HashMap();
             
             // Get the existing Thesaurus in DB
             thesaurusVector = dbGen.GetExistingThesaurus(false, thesaurusVector,Q,sis_session);        
             
             //Get Hierarchies of current thesaurus
-            dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo,Q,sis_session,allHierarchies,allGuideTerms);
+            dbGen.getDBAdminHierarchiesStatusesAndGuideTermsWithStatisticsXML(SessionUserInfo,Q,sis_session,allHierarchies,allGuideTerms);
         
             //end query and close connection
             Q.free_all_sets();
@@ -127,7 +127,7 @@ public class Admin_Thesaurus extends ApplicationBasicServlet {
             dbGen.CloseDBConnection(Q, null, sis_session, null, false);
             
             xml.append(u.getXMLStart(ConstantParameters.LMENU_THESAURI, SessionUserInfo.UILang));  
-            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
+            xml.append(u.getDBAdminHierarchiesStatusesAndGuideTermsWithStatisticsXML(SessionUserInfo, allHierarchies,allGuideTerms,targetLocale));
             xml.append(getXMLMiddle(CurrentShownDIV,thesaurusVector));
             xml.append(u.getXMLUserInfo(SessionUserInfo));
             xml.append(u.getXMLEnd());

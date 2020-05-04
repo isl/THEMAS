@@ -632,6 +632,8 @@ function callEditGuideTermServlet( mode ){
     
     var newGuideTerm        = document.getElementById("newGuideTerm");
     var deleteGuideTerm     = document.getElementById("deleteGuideTerm");
+    var deleteGuideTermEvenIfInUse     = document.getElementById("idFordeleteEvenIfContainsTerms");
+    
     var renameGuideTermFrom = document.getElementById("renameGuideTermFrom");
     var renameGuideTermTo   = document.getElementById("renameGuideTermTo");
     
@@ -641,6 +643,9 @@ function callEditGuideTermServlet( mode ){
     
     if(deleteGuideTerm.selectedIndex >-1){
         params +=    "&deleteGuideTerm=" + escape(encodeURIComponent(deleteGuideTerm.options[deleteGuideTerm.selectedIndex].value));
+        if(deleteGuideTermEvenIfInUse && deleteGuideTermEvenIfInUse.checked){
+            params += "&deleteEvenIfContainsTerms=true";
+        }
     }
     if(renameGuideTermFrom.selectedIndex >-1){
         params +=    "&renameGuideTermFrom=" + escape(encodeURIComponent(renameGuideTermFrom.options[renameGuideTermFrom.selectedIndex].value));
@@ -652,24 +657,25 @@ function callEditGuideTermServlet( mode ){
     
     xmlHttp.onreadystatechange=function() {
 
-        if(xmlHttp.readyState==4){
-            DisplayPleaseWaitScreen(false);
+        if(xmlHttp.readyState===4){
+            //DisplayPleaseWaitScreen(false);
             var txt = xmlHttp.responseText;
             var response = txt.replace(/^\s+|\s+$/g,'');
-            if (response == "SYSTEM LOCKED") {
+            if (response === "SYSTEM LOCKED") {
               window.location = 'SystemIsUnderMaintenance';
             }
-            else if(response =="Session Invalidate"){
+            else if(response ==="Session Invalidate"){
                 window.location = 'Index?logout=true';
             }
-            else if(response =='Success'){
-                window.location='Admin_Thesaurus?DIV=EditGuideTerms_DIV'
+            else if(response ==='Success'){
+                window.location='Admin_Thesaurus?DIV=EditGuideTerms_DIV';
             } else {
                 response = response.slice(7);
                 alert(response);
+                DisplayPleaseWaitScreen(false);
             }            
         }
-    }    
+    }; 
   
     DisplayPleaseWaitScreen(true);
     xmlHttp.open("GET",'EditGuideTerms' + params, true);

@@ -868,7 +868,7 @@ public class DBAdminUtilities {
         ArrayList<String> guideTerms = dbGen.collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session);
         for (int i = 0; i < guideTerms.size(); i++) {
             String GuideTermForDeletion = guideTerms.get(i);
-            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, errorMsg, SessionUserInfo.UILang);
+            editGuideTerms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session, GuideTermForDeletion, true, errorMsg, SessionUserInfo.UILang);
             if (errorMsg.getValue().equals("") == false) {
                 return;
             }

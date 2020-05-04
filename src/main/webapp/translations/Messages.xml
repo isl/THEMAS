@@ -877,6 +877,12 @@
                 <option lang="en">Deletion failure of guide term: '%s'.</option>
                 <option lang="el">Αποτυχία διαγραφής της ετικέτας δεσμού: '%s'.</option>
             </GeneralError>
+            <GuideTermInUse>
+                <!-- sync with translations.xml // deteteEvenIfInUse option-->
+                <option lang="en">Guide term: '%s' is currently used by '%s' terms. In order to proceed with deletion select the option about 'Deletion of guide term even if in use'.</option>
+                <option lang="el">Η ετικέτα δεσμού: '%s' χρησιμοποιείται ήδη από '%s' όρους. Για να προχωρήσετε στην διαγραφή της θα πρέπει να επιλέξετε την επιλογή '	
+Διαγραφή ετικέτας ακόμη και όταν είναι σε χρήση'.</option>
+            </GuideTermInUse>
         </Delete>
         <Rename>
             <LongName>

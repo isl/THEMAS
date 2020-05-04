@@ -210,8 +210,8 @@ public class CreateThesaurus extends ApplicationBasicServlet {
                 }
             }
 
-            ArrayList<String> allHierarchies = new ArrayList<>();
-            ArrayList<String> allGuideTerms = new ArrayList<>();
+            ArrayList<String> allHierarchies = new ArrayList();
+            ArrayList<String> allGuideTerms = new ArrayList();
 
             // open SIS and TMS connection
             Q = new neo4j_sisapi.QClass(); TMSAPIClass TA = new TMSAPIClass();
@@ -229,7 +229,7 @@ public class CreateThesaurus extends ApplicationBasicServlet {
 
             dbGen.getDBAdminHierarchiesStatusesAndGuideTermsXML(SessionUserInfo, Q, sis_session, allHierarchies,allGuideTerms);
 
-            ArrayList<String> status = new ArrayList<>();
+            ArrayList<String> status = new ArrayList();
             status.addAll(dbGen.returnResults(SessionUserInfo, Parameters.UnclassifiedTermsLogicalname, ConstantParameters.status_kwd,Q, TA,sis_session));
 
 

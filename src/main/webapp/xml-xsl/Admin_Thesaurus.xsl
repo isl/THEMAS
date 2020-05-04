@@ -334,9 +334,14 @@ This file is part of the THEMAS system.
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="."/>
+                                    <xsl:if test="./@card != '' ">
+                                        <xsl:text> (</xsl:text>
+                                        <xsl:value-of select="./@card"/>
+                                        <xsl:text>)</xsl:text>
+                                    </xsl:if>
                                 </option>
                             </xsl:for-each>
-                        </select>
+                        </select>                        
                     </td>
                     <td align="left">
                         <input type="button" class="button" onclick="callEditGuideTermServlet( 'delete' ); ">
@@ -349,6 +354,20 @@ This file is part of the THEMAS system.
                             </xsl:attribute>
                         </input>
                     </td>
+                </tr>
+                <tr>
+                    <td align="right" width="200"/>                          
+                    <td width="350">
+                        <label for="idFordeleteEvenIfContainsTerms">
+                            <xsl:call-template name="getTranslationMessage"> 
+                                <xsl:with-param name="targetLangElements" select="$specificlocale/deteteEvenIfInUse/option"/> 
+                                <xsl:with-param name="targetLang" select="$lang"/> 
+                                <xsl:with-param name="disableEscape" select="'no'"/> 
+                            </xsl:call-template>    
+                        </label>
+                        <input type="checkbox" name="deleteEvenIfContainsTerms" id="idFordeleteEvenIfContainsTerms"/>
+                    </td>
+                    <td align="left"/>
                 </tr>
                 <tr>
                     <td colspan="3">
@@ -388,6 +407,11 @@ This file is part of the THEMAS system.
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="."/>
+                                    <xsl:if test="./@card != '' ">
+                                        <xsl:text> (</xsl:text>
+                                        <xsl:value-of select="./@card"/>
+                                        <xsl:text>)</xsl:text>
+                                    </xsl:if>
                                 </option>
                             </xsl:for-each>
                         </select>
@@ -558,7 +582,7 @@ This file is part of the THEMAS system.
                     <tr>
                         <td colspan="2" style="text-align: right;">
                             
-                            <a href="./help-files/THEMAS_XML_schema_v_2.0.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
+                            <a href="./help-files/THEMAS_XML_schema_v1.4.1.xsd" target="_blank" style="text-decoration: underline; font-style: italic; color:blue;">
                                 <xsl:call-template name="getTranslationMessage"> 
                                     <xsl:with-param name="targetLangElements" select="$specificlocale/xmlschemalink/option"/> 
                                     <xsl:with-param name="targetLang" select="$lang"/> 

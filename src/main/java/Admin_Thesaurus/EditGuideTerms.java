@@ -104,6 +104,8 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             String mode = u.getDecodedParameterValue(request.getParameter("mode"));
             String newGuideTerm = u.getDecodedParameterValue(request.getParameter("newGuideTerm"));
             String deleteGuideTerm = u.getDecodedParameterValue(request.getParameter("deleteGuideTerm"));
+            String deleteEvenIfContainsTermsStr = u.getDecodedParameterValue(request.getParameter("deleteEvenIfContainsTerms"));
+            
             String renameGuideTermFrom = u.getDecodedParameterValue(request.getParameter("renameGuideTermFrom"));
             String renameGuideTermTo = u.getDecodedParameterValue(request.getParameter("renameGuideTermTo"));
             String language = getServletContext().getInitParameter("LocaleLanguage");
@@ -112,6 +114,12 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             
 
 
+            boolean deleteEvenIfContaintsTerms = false;
+            if(deleteEvenIfContainsTermsStr!=null && 
+                    (deleteEvenIfContainsTermsStr.toLowerCase().equals("yes") || deleteEvenIfContainsTermsStr.toLowerCase().equals("true") ) ){
+                deleteEvenIfContaintsTerms = true;
+            }
+            
             DBGeneral dbGen = new DBGeneral();
 
             //result
@@ -132,7 +140,7 @@ public class EditGuideTerms extends ApplicationBasicServlet {
             }
             
             if (mode.compareTo("delete") == 0) {
-                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,errorMsg, SessionUserInfo.UILang);
+                operationSucceded = dbEdit_Guide_Terms.deleteGuideTerm(SessionUserInfo.selectedThesaurus, Q, sis_session,deleteGuideTerm,deleteEvenIfContaintsTerms, errorMsg, SessionUserInfo.UILang);
             }
             
             if (mode.compareTo("rename") == 0) {
