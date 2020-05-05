@@ -2306,14 +2306,40 @@ public class Utilities {
 
                 dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
                 
-                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
                 
                 
                 //writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
                 //writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                
+                //this causes refIds of bts or nts to be lost not suitbale for rdf export
+                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
+                HashMap<String,Long> addtionalTermIds = null;
+                if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)){
+                    final ArrayList<String> targetKeywords = new ArrayList(Arrays.asList(ConstantParameters.bt_kwd,ConstantParameters.nt_kwd,ConstantParameters.topterm_kwd, ConstantParameters.rt_kwd));
+                    addtionalTermIds = new HashMap();
+                    for(NodeInfoSortItemContainer sItem : termsInfo.values()){
+                        
+                        for(String targetKeyword : targetKeywords){
+                            if(sItem.descriptorInfo.containsKey(targetKeyword)){
+                                ArrayList<SortItem> vals = sItem.descriptorInfo.get(targetKeyword);
+                                
+                                for(SortItem val : vals){
+                                    if(!termsInfoStr.containsKey(val.log_name) && !addtionalTermIds.containsKey(val.log_name)){
+                                        addtionalTermIds.put(val.getLogName(), val.getThesaurusReferenceId());
+                                    }
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                }
                 writer.WriteTerms(logFileWriter, 
                         exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat,
-                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null);
+                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null, addtionalTermIds);
+                
                 
                 /* WriteGuideTerms for SKOS export format it only writes in comments
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);

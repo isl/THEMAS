@@ -238,7 +238,7 @@ public class DBexportData {
 
                 writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
                 writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
-                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null);
+                writer.WriteTerms(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat, termsInfo, XMLguideTermsRelations,termExtLinks, null, null);
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
                 writer.WriteSources(logFileWriter, exportSchemaName, XMLsources);
                 writer.WriteExtVocabularies(logFileWriter, exportSchemaName, vocabularyIdentifiers);
@@ -246,10 +246,7 @@ public class DBexportData {
             }catch (Exception e) {
                 Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + ".Exception catched in DBexportData exportThesaurusActions() Message:" + e.getMessage());
                 Utils.StaticClass.handleException(e);
-
             }
-
-
     }
     
     private void recursivelyConstructHierarchicalUri(String str, ArrayList<String> hierarchicalUrls, HashMap<String, NodeInfoStringContainer> termsInfo)

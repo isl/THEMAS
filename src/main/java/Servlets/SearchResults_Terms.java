@@ -427,6 +427,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     String SkosExportConceptScheme = u.getSkosExportConceptScheme(request,SessionUserInfo.selectedThesaurus);
                     String SkosExportBaseNameSpace = u.getSkosBaseName(request,SessionUserInfo.selectedThesaurus);
                     
+                    //missing some refids
                     u.writeResultsInRDFFile(SessionUserInfo, 
                             Q, TA, sis_session,
                             SkosExportConceptScheme, SkosExportBaseNameSpace,

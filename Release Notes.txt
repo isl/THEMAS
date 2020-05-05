@@ -40,6 +40,8 @@ THEMAS 1.4.1
 
 - Use of Neo4j-sisapi 1.4.1 resolving bug with regex characters search
 
+- Quick fix for including bt / nts / rts / topterm uris in partial skos exports
+
 =============================================================================
 THEMAS 1.4
 =============================================================================

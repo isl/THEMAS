@@ -894,7 +894,7 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
             HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             HashMap<String, ArrayList<ExternalLink>> termExtLinks,
-            ArrayList<String> TermsFilter) throws IOException {
+            ArrayList<String> TermsFilter, HashMap<String, Long> additionalTermsRefIds) throws IOException {
 
         //should add sources
         /*
@@ -1159,9 +1159,14 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
                             Utils.StaticClass.handleException(ex);
                         }
                     }
+                    else if (additionalTermsRefIds.containsKey(btTermName)){
+                        termId = additionalTermsRefIds.get(btTermName);
+                    }
+                    
                     if (termId > 0) {
                         uriVal = getSkosUri(false,schemePrefix,termId) ;
                     }
+                    
 
                     logFileWriter.append("\t\t<"+ConstantParameters.XML_skos_broader+" rdf:resource=\"" + uriVal + "\"/> <!-- " + Utilities.escapeXMLComment(btTermName) + " -->\n");
 
@@ -1253,6 +1258,10 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
                                 Utils.StaticClass.handleException(ex);
                             }                            
                         }
+                        else if (additionalTermsRefIds.containsKey(ntStr)){
+                            ntId = additionalTermsRefIds.get(ntStr);
+                        }
+
                         if (ntId> 0) {
                             ntUriVal = getSkosUri(false,schemePrefix,ntId) ;
                         }
@@ -1336,6 +1345,10 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
                             Utils.StaticClass.handleException(ex);
                         }                            
                     }
+                    else if (additionalTermsRefIds.containsKey(termName)){
+                        termId = additionalTermsRefIds.get(termName);
+                    }
+                    
                     if (termId> 0) {
                         rtUriVal = getSkosUri(false,schemePrefix,termId) ;
                     }
@@ -1695,7 +1708,7 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
             if (exportScheme.equals(ConstantParameters.xmlschematype_skos)) {
 
                 for (SortItem hierarchySortItem : allHierarchies) {                    
-                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, hierarchySortItem, true, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
+                    WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, hierarchySortItem, true, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter, null /* this is only called in full export so everything is contained in search results*/);
                 }
 
             } else if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
@@ -1791,15 +1804,20 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
      * @param TermsFilter
      * @throws IOException 
      */
-    public void WriteTerms(OutputStreamWriter logFileWriter, String exportScheme, String importThesaurusName,
-            HashMap<String, ArrayList<String>> hierarchyFacets, HashMap<String, NodeInfoStringContainer> termsInfo,
+    public void WriteTerms(OutputStreamWriter logFileWriter, 
+            String exportScheme, 
+            String importThesaurusName,
+            HashMap<String, ArrayList<String>> hierarchyFacets, 
+            HashMap<String, NodeInfoStringContainer> termsInfo,
             HashMap<String, ArrayList<SortItem>> XMLguideTermsRelations,
             HashMap<String, ArrayList<ExternalLink>> termExtLinks,
-            ArrayList<String> TermsFilter) throws IOException {
+            ArrayList<String> TermsFilter,
+            HashMap<String, Long> additionalTermsRefIds
+    ) throws IOException {
 
         Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting Terms");
 
-        ArrayList<String> termsFilter = new ArrayList<String>();
+        ArrayList<String> termsFilter = new ArrayList();
 
         if (TermsFilter != null && TermsFilter.size() > 0) {
             termsFilter.addAll(TermsFilter);
@@ -1827,7 +1845,7 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
                     }
                     //avoid case of double writing (as topConcept and as simple concept)
                     if(!allHierarchies.contains(termName)){
-                        WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter);
+                        WriteTHEMASTermToSkosConceptSortItem(logFileWriter, importThesaurusName, termItem, false, termsInfo, XMLguideTermsRelations, termExtLinks, termsFilter, additionalTermsRefIds);
                     }
                 }
 
