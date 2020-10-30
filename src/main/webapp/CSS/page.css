@@ -258,6 +258,12 @@ fieldset {
     text-align:left;
     border: 1px solid  #666666;
 }
+
+fieldset#QuickSearchTermsForm, fieldset#searchTermsForm, fieldset#searchHierarchiesForm, fieldset#searchFacetsForm, fieldset#searchSourcesForm{
+    display: flex;    
+    /*     display: -webkit-box; */
+}
+
 @-moz-document url-prefix() {
     a {
         margin: 0;
@@ -280,6 +286,17 @@ fieldset.index {
     margin-right:auto;
     
 }
+
+td.displayHierFirstCol, td.displayFacetFirstCol{
+    
+    width:auto;
+    min-width: 160px;
+    
+}
+td.displayHierSecondCol, td.displayFacetSecondCol{
+    width:100%;
+}
+
 
 legend {
     /*background-color: #F2F2F2;*/

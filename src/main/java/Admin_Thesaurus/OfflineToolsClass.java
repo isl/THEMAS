@@ -251,7 +251,21 @@ public class OfflineToolsClass {
             }
             else{
                 //set default mode for test
-                //mode = importXMLMode;
+                mode = importFromTsvMode;
+                arguements.add("C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2");
+                //arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\Generic.tsv");
+                //arguements.add("true");
+                arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\ReducedGeneric.tsv");
+                arguements.add("true");
+                //arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\Specific.tsv");
+                //arguements.add("false");
+                arguements.add("true");
+                /*
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) Full path to the TSV to be loaded.");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
+            Utils.StaticClass.webAppSystemOutPrintln("5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).");        
+                */
                 //arguements.add("C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\_THEMAS_ProjectFolder\\Development\\THEMAS\\target\\THEMAS-2.0-SNAPSHOT");
                 //arguements.add("NEWTHES2");
                 //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\Export_Thesaurus_NEWTHESAURUS_2018-12-04_19-18-59-872.xml");

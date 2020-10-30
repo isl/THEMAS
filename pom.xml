@@ -4,7 +4,7 @@
 
     <groupId>gr.forth.ics.isl</groupId>
     <artifactId>THEMAS</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2-SNAPSHOT</version>
     <name>THEMAS</name>
     <packaging>war</packaging>     
     <licenses>

@@ -43,6 +43,7 @@
 -->
     <xsl:template name="DisplayStatisticsAndPagingInfo_Terms_Systematic">
         <xsl:param name="paginglocale" />
+        <xsl:param name="idsuffix" />
         <xsl:variable name="ServletName" select="//results/paging_info/ServletName"/>
         <xsl:variable name="query_results_time" select="//results/paging_info/query_results_time"/>
         <xsl:variable name="query_results_count" select="//results/paging_info/pagingQueryResultsCount"/>
@@ -51,9 +52,17 @@
         <xsl:variable name="pagingLast" select="//results/paging_info/pagingLast"/>
         
         <tr width="100%">
+            <xsl:if test="$idsuffix='bottom'">
+                <xsl:attribute name="id">
+                    <xsl:text>bottomPaging</xsl:text>
+                </xsl:attribute>
+            </xsl:if>
             <!-- _____________ row with statistics _____________ -->
             <!-- <td class="resultRow" align="center" colspan="5"> -->
             <td class="PagingInfo" colspan="3">
+                <xsl:if test="$idsuffix='bottom'">
+                    <hr/>
+                </xsl:if>
                 <b>
                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/statisticspart1/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                 </b>
@@ -81,6 +90,7 @@
                 <xsl:value-of select="ceiling($query_results_count div $pagingListStep)"/>
                 <xsl:text> </xsl:text>&#160;&#160;&#160;&#160;
                 <xsl:call-template name="SearchResultsPaging_Terms_Systematic">
+                    <xsl:with-param name="idsuffix" select="$idsuffix" />
                     <xsl:with-param name="ServletName" select="$ServletName"/>
                     <xsl:with-param name="pagingQueryResultsCount" select="$query_results_count"/>
                     <xsl:with-param name="pagingListStep" select="$pagingListStep"/>
@@ -102,12 +112,15 @@
                              </img>
                         </a>
                     
-                <hr></hr>
+                <xsl:if test="$idsuffix='top'">
+                    <hr/>
+                </xsl:if>
             </td>
         </tr>
     </xsl:template>
     
     <xsl:template name="SearchResultsPaging_Terms_Systematic">
+        <xsl:param name="idsuffix" />
         <xsl:param name="ServletName"/>
         <xsl:param name="pagingQueryResultsCount"/>
         <xsl:param name="pagingListStep"/>
@@ -216,11 +229,14 @@
         <xsl:if test="$pagingQueryResultsCount &gt; $pagingListStep">
 			&#160;&#160;<xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$paginglocale/pageinputprompt/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
             <!-- input for specific page number -->
-            <input id="go_to_specific_page_input_term_systematic" name="go_to_specific_page_input_term_systematic" style="font-size: 8pt; width: 25pt">
+            <input name="go_to_specific_page_input_term_systematic" style="font-size: 8pt; width: 25pt">
+                <xsl:attribute name="id">
+                    <xsl:text>go_to_specific_page_input_term_systematic_</xsl:text><xsl:value-of select="$idsuffix"/>                    
+                </xsl:attribute>
                <xsl:attribute name="onKeyPress">
                     if(event.keyCode == 13) {
 						DisplayPleaseWaitScreen(true);
-						checkPageNumber('SearchResults_Terms_Systematic', '<xsl:value-of select="$pagingListStep"/>',document.getElementById('go_to_specific_page_input_term_systematic').value);
+						checkPageNumber('SearchResults_Terms_Systematic', '<xsl:value-of select="$pagingListStep"/>',document.getElementById('go_to_specific_page_input_term_systematic_<xsl:value-of select="$idsuffix"/>').value);
 					}
                 </xsl:attribute>
             </input>&#160;
@@ -230,7 +246,7 @@
                 </xsl:attribute>
                 <xsl:attribute name="onClick">
 					DisplayPleaseWaitScreen(true);
-                    checkPageNumber('SearchResults_Terms_Systematic', '<xsl:value-of select="$pagingListStep"/>',document.getElementById('go_to_specific_page_input_term_systematic').value);
+                    checkPageNumber('SearchResults_Terms_Systematic', '<xsl:value-of select="$pagingListStep"/>',document.getElementById('go_to_specific_page_input_term_systematic_<xsl:value-of select="$idsuffix"/>').value);
                 </xsl:attribute>
             </input>
         </xsl:if>

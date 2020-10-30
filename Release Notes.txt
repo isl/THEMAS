@@ -26,6 +26,16 @@ Authors: Elias Tzortzakakis <tzortzak@ics.forth.gr>
 This file is part of the THEMAS system.
 
 =============================================================================
+THEMAS 1.4.2
+=============================================================================
+- Minor ui issues due to user agent stylesheet fixed
+- added paging in the bottom of search results if scrolling is enabled
+- avoided session creation through simple login page url visit
+- extended quicksearch with uf translations (they are entry terms after all)
+- manual review + removal of draft
+
+
+=============================================================================
 THEMAS 1.4.1
 =============================================================================
 - Guide Terms Editing

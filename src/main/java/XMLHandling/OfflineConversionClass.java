@@ -55,14 +55,14 @@ public class OfflineConversionClass {
     public static void main(String[] args) {
 
         //Utils.StaticClass.webAppSystemOutPrintln(OfflineConversionClass.class.getResource("OfflineConversionClass.class"));
-        String basePath = null;
-        try {
+        String basePath = "C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2\\WEB-INF\\classes\\XMLHandling\\";
+        /*try {
             basePath = URLDecoder.decode(OfflineConversionClass.class.getResource("TestConversionClass.class").getFile(), "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             Utils.StaticClass.webAppSystemOutPrintln(ex.getMessage());
             Utils.StaticClass.handleException(ex);
             
-        }
+        }*/
         if(basePath!=null){
             
             basePath = basePath.substring(0,basePath.indexOf("WEB-INF")-1).toLowerCase().replaceAll("\\\\", "/");
@@ -93,10 +93,10 @@ public class OfflineConversionClass {
         
 
         //State arguments        
-        String inputFilePath = "C:\\local_users\\tzortzak\\Projects\\THEMAS\\Code\\ThesaurusFileConverter\\test_examples\\Original Files\\AAT.xml";
+        String inputFilePath = "C:\\_DevData\\THEMAS\\AAT_FULL_Load\\AAT.xml";
         //String inputFilePath = "C:\\Documents and Settings\\tzortzak\\Desktop\\results.xml";
         //String outputFilePath = "C:\\Documents and Settings\\tzortzak\\Desktop\\results3.rdf";
-        String outputFilePath = "C:\\Documents and Settings\\tzortzak\\Desktop\\results.xml";
+        String outputFilePath = "C:\\_DevData\\THEMAS\\AAT_FULL_Load\\AAT_FOR_THEMAS.xml";
 
         ConstantParameters.filterBts_Nts_Rts = false;
 

@@ -809,4 +809,10 @@ function GuideTermsCollectFunction() {
 
 }
 
- 
+function manageBottomPagingVisibility(){
+    if ( (document.getElementById('centralDiv').scrollHeight - $('#centralDiv').height()) >20 ) {
+        $('#bottomPaging').show(); 
+    } else{
+        $('#bottomPaging').hide(); 
+    }
+}

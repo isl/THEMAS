@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<!-- Version 2.0 Dev -->
+	<!-- Version 1.4.2 -->
 	<!-- Is it possible to declare that only one of the facets/hierarchies/terms will be used for the Unclassfied terms? -->
 	<!--  Define thesaurus primary language used. This is just informative - it will not be used during import-->
 	<!-- Status enumeration according to primary thesaurus language (Status nodes in the database are always stored with specific names. The translation used here though is defined in 
@@ -35,7 +35,8 @@
 					<xs:documentation>Attribute containing the name of the target Thesaurus.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="exportDate" type="xs:string" use="required">
+                        <!-- use="required"-->
+			<xs:attribute name="exportDate" type="xs:string" >
 				<xs:annotation>
 					<xs:documentation>Attribute containing the timestamp of the target Thesaurus export.</xs:documentation>
 				</xs:annotation>
@@ -326,7 +327,8 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute ref="referenceId" use="required"/>
+                                                            <!-- use="required"-->
+								<xs:attribute ref="referenceId" />
 							</xs:extension>
 							<!-- restriction that this reference id should be included in the terms/term/descriptor/@referenceId -->
 							<!--
