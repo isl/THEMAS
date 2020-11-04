@@ -100,7 +100,7 @@ public class EditActions_Term extends ApplicationBasicServlet {
             //data
             String targetTerm = u.getDecodedParameterValue(request.getParameter("targetTerm"));           
             String targetField = u.getDecodedParameterValue(request.getParameter("targetEditField"));
-            String translationSeperator = u.getDecodedParameterValue(request.getParameter("translationSeperator")); // case of translation
+            String translationSeperator = u.getDecodedParameterValue(request.getParameter("translationSeparator")); // case of translation
             String NewtargetField = targetField;
             String pathToErrorsXML = context.getRealPath("/translations/Consistencies_Error_Codes.xml");
             

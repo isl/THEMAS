@@ -44,29 +44,27 @@
     <xsl:template match="/page" name="search_results_users">
         <xsl:param name="paginglocale" />
         <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
-        <!--<fieldset class="links">
-            <legend>
-                <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$userslocale/tableresults/legend/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
-            </legend>
-            -->
+   
         <table width="100%">
             <xsl:if test="//results/paging_info">
-                    <xsl:call-template name="DisplayStatisticsAndPagingInfo_Users">
-                        <xsl:with-param name="paginglocale" select="$paginglocale" />
-                    </xsl:call-template>
-                </xsl:if>
+                <xsl:call-template name="DisplayStatisticsAndPagingInfo_Users">
+                    <xsl:with-param name="paginglocale" select="$paginglocale" />
+                    <xsl:with-param name="idsuffix" >
+                        <xsl:text>top</xsl:text>
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
         </table>
-        
-            <table width="100%" style="padding-left:5px; overflow:auto;">
+
+        <table width="100%" style="padding-left:5px; overflow:auto;">
+            
+            <tr width="100%">
+                <xsl:attribute name="style">
+                    <xsl:text>background-color: </xsl:text>
+                    <xsl:value-of select="$alternateRowsColor1"/> 
+                    <xsl:text>;</xsl:text>
+                </xsl:attribute>
                 
-                <tr width="100%">
-                    <xsl:attribute name="style">
-                        <xsl:text>background-color: </xsl:text>
-                        <xsl:value-of select="$alternateRowsColor1"/> 
-                        <xsl:text>;</xsl:text>
-                        <!--<xsl:text>; text-align:center;</xsl:text>-->
-                        <!--<xsl:text>background-color: #E2E2E2;</xsl:text>-->
-                    </xsl:attribute>                 
                     <xsl:choose>
                         <xsl:when test="count(//results/user)=0">
                             <td align="left" valign="top" colspan="5">
@@ -263,9 +261,19 @@
                     </tr>
                 </xsl:for-each>
             </table>
-            <!--</form>-->
-        <!--</fieldset>-->
-        <!--  </body>
-        </html>-->
+            
+        <table width="100%">
+            <xsl:if test="//results/paging_info">
+                <xsl:call-template name="DisplayStatisticsAndPagingInfo_Users">
+                    <xsl:with-param name="paginglocale" select="$paginglocale" />
+                    <xsl:with-param name="idsuffix" >
+                        <xsl:text>bottom</xsl:text>
+                    </xsl:with-param>
+                </xsl:call-template>
+                <script type="text/javascript">
+                    <xsl:text>manageBottomPagingVisibility();</xsl:text>
+                </script>
+            </xsl:if>
+        </table>
     </xsl:template>
 </xsl:stylesheet>

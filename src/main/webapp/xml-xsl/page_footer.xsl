@@ -53,21 +53,27 @@ This file is part of the THEMAS system.
                     <xsl:choose>
                         <xsl:when test="//THEMASUserInfo/name">
                             <i>
+                                <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
+                                <xsl:call-template name="getTranslationMessage"> 
+                                    <xsl:with-param name="targetLangElements" select="$locale/usergroups/node()[name()=$THEMASUserInfo_userGroup]/option"/> 
+                                    <xsl:with-param name="targetLang" select="$lang"/> 
+                                    <xsl:with-param name="disableEscape" select="'no'"/> 
+                                </xsl:call-template> 
+                                
                                 <xsl:choose>
-                                    <xsl:when test="//THEMASUserInfo/userGroup = 'READER'">
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'READER'">
+                                        <xsl:text>: </xsl:text>
                                         <xsl:value-of select="//THEMASUserInfo/name"/>
-                                        <xsl:text>, </xsl:text>
+                                        <br/>
                                     </xsl:when>
-                                    <xsl:when test="//THEMASUserInfo/userGroup = 'EXTERNALREADER'">
-                                                    
+                                    <xsl:when test="$THEMASUserInfo_userGroup = 'EXTERNALREADER'">
+                                        <br/>    
                                     </xsl:when>
                                     <xsl:otherwise>
-                                                
-                                        <xsl:call-template name="getTranslationMessage"> 
-                                            <xsl:with-param name="targetLangElements" select="$locale/footer/userprefix/option"/> 
-                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                        </xsl:call-template>    
+                                           
+                                        <xsl:text>: </xsl:text>
+                                        
+                                          
                                         <a href="#" style="color:#898a5e; text-decoration:underline;" title="Αλλαγή κωδικού">
                                             <xsl:attribute name="onClick">
                                                 <xsl:text>showEditFieldCard('','change_password','EditDisplays_User');</xsl:text>
@@ -77,12 +83,7 @@ This file is part of the THEMAS system.
                                         <br/>
                                     </xsl:otherwise>
                                 </xsl:choose>					
-                                <xsl:variable name="THEMASUserInfo_userGroup" select="//THEMASUserInfo/userGroup"/>
-                                    <xsl:call-template name="getTranslationMessage"> 
-                                            <xsl:with-param name="targetLangElements" select="$locale/usergroups/node()[name()=$THEMASUserInfo_userGroup]/option"/> 
-                                            <xsl:with-param name="targetLang" select="$lang"/> 
-                                            <xsl:with-param name="disableEscape" select="'no'"/> 
-                                        </xsl:call-template>    
+                                 
                                 <!--<xsl:value-of select="$locale/usergroups/node()[name()=$THEMASUserInfo_userGroup]/option[@lang=$lang]"/>-->
                                 <xsl:text> </xsl:text>
                                 <xsl:value-of select="//THEMASUserInfo/selectedThesaurus"/>

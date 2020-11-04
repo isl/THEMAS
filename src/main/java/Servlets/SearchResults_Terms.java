@@ -36,7 +36,6 @@ package Servlets;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
-import Users.UsersClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 import Utils.SearchCriteria;
@@ -427,6 +426,7 @@ public class SearchResults_Terms extends ApplicationBasicServlet {
                     String SkosExportConceptScheme = u.getSkosExportConceptScheme(request,SessionUserInfo.selectedThesaurus);
                     String SkosExportBaseNameSpace = u.getSkosBaseName(request,SessionUserInfo.selectedThesaurus);
                     
+                    //missing some refids
                     u.writeResultsInRDFFile(SessionUserInfo, 
                             Q, TA, sis_session,
                             SkosExportConceptScheme, SkosExportBaseNameSpace,

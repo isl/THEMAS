@@ -133,9 +133,9 @@
                         </tr>
                     </xsl:when>
                 </xsl:choose>
-                </table>              
+                <!--</table>              
                        
-                <table style="padding-right:20px; padding-left:20px; ">
+                <table style="padding-right:20px; padding-left:20px; ">-->
                 <xsl:choose>
                     <xsl:when test="//errorMsg ">
                         <tr>

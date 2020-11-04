@@ -1,3 +1,29 @@
+2020-11-04
+=======================================
+- Minor ui issues due to user agent stylesheet fixed
+- added paging in the bottom of search results if scrolling is enabled
+- avoided session creation through simple login page url visit
+- extended quicksearch with uf translations (they are entry terms after all)
+- Greek and English manual review
+- minor xsd changes (removal of required attributes that actually are not required)
+- Offline tools extended with csv export files option (implemented Neo4j-sisapi 1.4.2)
+- release of 1.4.2 version
+
+2020-05-04
+=======================================
+- Guide Terms Editing
+- - display in parentheses the number of usages
+- - alert in case of trying to delete a guide term with usage
+- - added checkbox option to allow deletion even if it is used
+- Edit Terms 
+- - Ability for Admin and Thesaurus Committee to edit a term's node Labels of an 
+    'Approved' Term without having to turn it to 'Under construction' first and 
+     without modifying it's Last modified date
+- Use of Neo4j-sisapi 1.4.1 resolving bug with regex characters search
+- Quick fix for including bt / nts / rts / topterm uris in partial skos exports
+- release of 1.4.1 version
+
+
 2020-02-14
 =======================================
 - updated the obsolete dependency commons-fileupload from 1.0 to 1.3.3 with the necessary adjustments

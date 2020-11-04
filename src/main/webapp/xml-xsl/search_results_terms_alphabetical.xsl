@@ -69,6 +69,9 @@ This file is part of the THEMAS system.
         <table width="100%" style="padding-left:5px;">
             <xsl:call-template name="DisplayStatisticsAndPagingInfo_Alphabetical">
                 <xsl:with-param name="paginglocale" select="$paginglocale" />
+                <xsl:with-param name="idsuffix" >
+                    <xsl:text>top</xsl:text>
+                </xsl:with-param>
                 <xsl:with-param name="lang2" select="$lang2" />
             </xsl:call-template>
         </table>
@@ -83,6 +86,18 @@ This file is part of the THEMAS system.
                 </td>
             </tr>
         </table>
+        <table width="100%" style="padding-left:5px;">
+            <xsl:call-template name="DisplayStatisticsAndPagingInfo_Alphabetical">
+                <xsl:with-param name="paginglocale" select="$paginglocale" />
+                <xsl:with-param name="idsuffix" >
+                    <xsl:text>bottom</xsl:text>
+                </xsl:with-param>
+                <xsl:with-param name="lang2" select="$lang2" />
+            </xsl:call-template>
+        </table>
+        <script type="text/javascript">
+            <xsl:text>manageBottomPagingVisibility();</xsl:text>
+        </script>
         <!--</fieldset>-->
     </xsl:template>
     

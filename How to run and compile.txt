@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the Licence for the specific language governing permissions and limitations
 under the Licence.
 
-Contact:  POBox 1385, Heraklio Crete, GR-700 13 GREECE
+Contact:  POBox 1385, Heraklion Crete, GR-700 13 GREECE
 Tel:+30-2810-391632
 Fax: +30-2810-391638
 E-mail: isl@ics.forth.gr
@@ -38,7 +38,7 @@ How to run for the first time
 - iff in linux then make sure that e.g. tomcat user is defined as owner 
   of the DB folder and the webapp folder recursively
 
-- if everything ready then login with admin/admin123
+- if everything ready then login with admin/admin
 - Navigate to (Left menu) Thesauri / gear icon / 3rd tab thesauri management
 - Create a Thesaurus with initialize db option (only needed for the first time)
 - Navigate to LoginAdmin in order to edit its translations e.g. EN -> English 
@@ -59,7 +59,7 @@ IDE: Netbeans 11.0 IDE
 Java: jdk1.8.0_231 64 bit
 Server: Apache Tomcat 9.0.19 (coming with Netbeans 11.0)
 
-THEMAS: version used 1.4
+THEMAS: version used 1.4.2
 
 1) In Netbeans 11.0 menu open Team > Git > Clone -> Repository Url: https://github.com/isl/THEMAS.git
 
@@ -83,14 +83,14 @@ THEMAS: version used 1.4
    -Dfile.encoding=UTF8
 
 7) Build Project - Run and enjoy! 
-   Use admin/admin123 as username/password  (similar for other default users)
+   Use admin/admin as username/password  (similar for other default users)
    Start by creating a new thesaurus
    with initialize db option 
    (left menu > Thesauri > Top menu > Thesauri management > 
    Create Thesaurus with "Initialize the database" option checked)
 
    * in case dependency Neo4j-sisapi is not resolved you can downloaded it directly from 
-     https://github.com/isl/Neo4j-sisapi/releases/tag/1.4
+     https://github.com/isl/Neo4j-sisapi/releases/tag/1.4.2
 	 
    * in case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
      dependencies cannot be resolved, you can find copies of these jars in libs folder  	 

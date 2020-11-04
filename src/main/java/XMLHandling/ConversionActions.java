@@ -142,7 +142,7 @@ public class ConversionActions {
 
             writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
-            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations,null, filterTerms);
+            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations,null, filterTerms, null);
 
             writer.WriteFileEnd(logFileWriter, outputScheme);
 
@@ -245,7 +245,7 @@ public class ConversionActions {
 
             writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
-            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms);
+            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms, null);
 
             writer.WriteFileEnd(logFileWriter, outputScheme);
 
@@ -432,7 +432,7 @@ public class ConversionActions {
 
             writer.ConversionActionWriteHierarchies(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, filterFacets, filterTerms);
 
-            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms);
+            writer.WriteTerms(logFileWriter, outputScheme, importThesaurusName, hierarchyFacets, termsInfo, XMLguideTermsRelations, null, filterTerms, null);
 
             writer.WriteFileEnd(logFileWriter, outputScheme);
 

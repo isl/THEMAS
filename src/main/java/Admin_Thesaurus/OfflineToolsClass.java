@@ -72,6 +72,7 @@ public class OfflineToolsClass {
     private static String fixDbMode = "FixDB";    
     private static String importFromTsvMode = "ImportFromTSV";
     private static String exportToTsvMode = "ExportToTSV";
+    private static String exportToCsvFiles = "ExportToCsvFiles";
     
 
     static void printAvailableModes(){
@@ -84,7 +85,9 @@ public class OfflineToolsClass {
         Utils.StaticClass.webAppSystemOutPrintln(fixDbMode);
         Utils.StaticClass.webAppSystemOutPrintln(importFromTsvMode);
         Utils.StaticClass.webAppSystemOutPrintln(exportToTsvMode);
+        Utils.StaticClass.webAppSystemOutPrintln(exportToCsvFiles);
     }
+    
     static void printExpectedParametersAccordingToMode(String mode){
         if(mode.equals(importXMLMode)){
             
@@ -103,8 +106,7 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln("1) "+exportXMLMode);
             Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
             Utils.StaticClass.webAppSystemOutPrintln("3) ThesaurusName (Thesaurus must exist or use value: XXXXXX in order to export all existing thesauri)");
-            Utils.StaticClass.webAppSystemOutPrintln("4) Export XML Full Folder Path ");
-            
+            Utils.StaticClass.webAppSystemOutPrintln("4) Export XML Full Folder Path ");            
             return;
         }
         if(mode.equals(mergeMode)){
@@ -150,6 +152,9 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln("5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).");        
             return;
         }    
+        
+        
+                
         if(mode.equals(exportToTsvMode)){
             Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ exportToTsvMode+" the expected arguments are:");
             Utils.StaticClass.webAppSystemOutPrintln("1) "+exportToTsvMode);
@@ -157,7 +162,15 @@ public class OfflineToolsClass {
             Utils.StaticClass.webAppSystemOutPrintln("3) Boolean value true or false that determines if the TSV will ONLY contain Generic data or Not.");
             Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV will skip Generic data or Not.\r\n"
                                                    + "   If previous value was set tot true then this argument is just ignored.");
-            Utils.StaticClass.webAppSystemOutPrintln("5) Full Path To TSV outPutFolder (optional variable if noe is used then TSVs folder will be selected.");
+            Utils.StaticClass.webAppSystemOutPrintln("5) Full Path To TSV outPutFolder (optional variable if none is used then TSVs folder will be selected).");
+            return;
+        }   
+        
+        if(mode.equals(exportToCsvFiles)){
+            Utils.StaticClass.webAppSystemOutPrintln("For mode: "+ exportToCsvFiles+" the expected arguments are:");
+            Utils.StaticClass.webAppSystemOutPrintln("1) "+exportToCsvFiles);
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) Full Path To TSV outPutFolder (optional variable if none is used then TSVs folder will be selected).");
             return;
         }   
         
@@ -250,8 +263,21 @@ public class OfflineToolsClass {
                 }
             }
             else{
+                /* TSV import example
                 //set default mode for test
-                //mode = importXMLMode;
+                mode = importFromTsvMode;
+                arguements.add("C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2");
+                arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\ReducedGeneric.tsv");
+                arguements.add("true");
+                arguements.add("true");
+                */
+                
+                /*
+            Utils.StaticClass.webAppSystemOutPrintln("2) Web Application Base Path");
+            Utils.StaticClass.webAppSystemOutPrintln("3) Full path to the TSV to be loaded.");
+            Utils.StaticClass.webAppSystemOutPrintln("4) Boolean value true or false that determines if the TSV contains Generic Definitions or Not.");
+            Utils.StaticClass.webAppSystemOutPrintln("5) Boolean value true or false that determines if the transliteration properties should be recomputed or Not (keeping only the ones defined in the tsv file).");        
+                */
                 //arguements.add("C:\\Users\\Elias\\BackupFiles\\Projects\\THEMAS_RELATED\\_THEMAS_ProjectFolder\\Development\\THEMAS\\target\\THEMAS-2.0-SNAPSHOT");
                 //arguements.add("NEWTHES2");
                 //arguements.add("C:\\Users\\Elias\\BackupFiles\\Desktop\\del\\Export_Thesaurus_NEWTHESAURUS_2018-12-04_19-18-59-872.xml");
@@ -259,6 +285,13 @@ public class OfflineToolsClass {
                 
                 //add default arguments if needed
                 //arguements.add()
+                
+                mode = exportToCsvFiles;
+                arguements.add("C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2");
+                //arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\ReducedGeneric.tsv");
+                //arguements.add("true");
+                //arguements.add("true");
+                
             }
             
             String basePath = arguements.get(0);
@@ -648,6 +681,7 @@ public class OfflineToolsClass {
             }    
             // </editor-fold> 
             
+           
             // <editor-fold defaultstate="collapsed" desc="tsvExport">
             if(mode.equals(exportToTsvMode)){
                 
@@ -706,6 +740,79 @@ public class OfflineToolsClass {
             // </editor-fold> 
             
             
+            // <editor-fold defaultstate="collapsed" desc="csvFilesExport">
+            if(mode.equals(exportToCsvFiles)){
+                
+                if(arguements.size()!=1 && arguements.size()!=2){
+                    printExpectedParametersAccordingToMode(mode);
+                    return;
+                }
+                
+                //String baseDatabaseFolderPath = getFolderPathOrExit(basePath, true);
+                String dataBaseBasePath = config.GetConfigurationValue("Neo4j_DB_FOLDER_PATH");
+                String dbSubPath = config.GetConfigurationValue("Neo4j_DB_PATH");
+                String tsvExportFolder = "";
+                if(arguements.size()==2){
+                    tsvExportFolder = getFolderPathOrExit(arguements.get(1), true);
+                }
+                else{
+                    tsvExportFolder = dataBaseBasePath + config.GetConfigurationValue("Neo4j_ExportFileDirectory");
+                }
+                
+                DB_Admin.CsvExports csvExps = new DB_Admin.CsvExports();
+                
+                
+                File f2 = new File(dataBaseBasePath+dbSubPath);
+                if(f2.exists()==false || f2.isDirectory()==false){
+                    
+                    Utils.StaticClass.webAppSystemOutPrintln("Database Folder path does not exist: " + dataBaseBasePath+dbSubPath);
+                    return;
+                }                
+                File f3 = new File(tsvExportFolder);
+                if(f3.exists()==false || f3.isDirectory()==false){
+
+                    Utils.StaticClass.webAppSystemOutPrintln("Export Folder path does not exist: " + tsvExportFolder);
+                    return;
+                }
+                
+                
+                //open connection and start Query
+                if (dbGen.openConnectionAndStartQueryOrTransaction(Q, TA, sis_session, null, null, true) == QClass.APIFail) {
+                    Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ TestImportClass (export choice)");
+                    return;
+                }
+
+                ArrayList<String> allthesauriNames = new ArrayList();
+                dbGen.GetExistingThesaurus(false, allthesauriNames, Q, sis_session);
+                
+                Q.free_all_sets();
+                Q.TEST_end_query();
+                dbGen.CloseDBConnection(Q, null, sis_session, null, false);
+                
+                boolean exportCompleted = csvExps.globalCsvExportToFolder(tsvExportFolder, neo4j_sisapi.Utilities.CsvExportMode.ALL);
+                if(exportCompleted==false){
+                    //TODO: Translate message
+                    //FixDBResultMessage.setValue("Error occured while exporting");
+                    Utils.StaticClass.webAppSystemOutPrintln("Export Failed");
+                    return;
+                }
+                
+                /*
+                for(String thesName : allthesauriNames){
+                    
+                    exportCompleted = csvExps.globalCsvExportToFolder(tsvExportFolder,false,thesName);//StartSISexport();
+                    if(exportCompleted==false){
+                        //TODO: Translate message
+                        //FixDBResultMessage.setValue("Error occured while exporting");
+                        Utils.StaticClass.webAppSystemOutPrintln("Export Failed");
+                        return;
+                    }
+                }
+                */
+                Utils.StaticClass.webAppSystemOutPrintln("Export Succedded!");          
+                return;
+            }    
+            // </editor-fold> 
             
             
             

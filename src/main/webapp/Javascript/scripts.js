@@ -761,7 +761,7 @@ function GuideTermsCollectFunction() {
 
         if (xmlHttp.readyState == 4) {
 
-            DisplayPleaseWaitScreen(false);
+            //DisplayPleaseWaitScreen(false);
 
             var txt = xmlHttp.responseText;
             var check = false;
@@ -789,6 +789,7 @@ function GuideTermsCollectFunction() {
                 else {
                     response = response.slice(7);
                     document.getElementById('resultOf_Edit').innerHTML = response;
+                    //DisplayPleaseWaitScreen(false);
                     cancelAction();
                 }
             }
@@ -808,4 +809,10 @@ function GuideTermsCollectFunction() {
 
 }
 
- 
+function manageBottomPagingVisibility(){
+    if ( (document.getElementById('centralDiv').scrollHeight - $('#centralDiv').height()) >20 ) {
+        $('#bottomPaging').show(); 
+    } else{
+        $('#bottomPaging').hide(); 
+    }
+}

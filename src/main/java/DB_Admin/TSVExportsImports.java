@@ -49,6 +49,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 import neo4j_sisapi.Configs;
+import neo4j_sisapi.Configs.Attributes;
+import neo4j_sisapi.Configs.Labels;
+import neo4j_sisapi.Configs.Rels;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.TMSAPIClass;
@@ -57,7 +60,6 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 
@@ -95,23 +97,15 @@ public class TSVExportsImports {
         
     
     
-    enum Rels implements RelationshipType {
-
-        RELATION, ISA, INSTANCEOF
-    }
-    enum Labels implements Label {
-
-        Type_Attribute, Type_Individual, M1_Class, M2_Class, M3_Class, M4_Class, S_Class, Token, PrimitiveClass, Common, Generic
-    }
 
     private void writeNodeInfoInTsvFile(Node n, OutputStreamWriter out, boolean onlyGeneric, boolean skipGeneric) throws IOException{
      
-        String nodeId = n.getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+        String nodeId = n.getProperty(Attributes.Neo4j_Id.name()).toString();
         //long nodeId = n.getId();
-        String logicalname = n.getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+        String logicalname = n.getProperty(Attributes.Logicalname.name()).toString();
         if(n.hasLabel(Labels.Generic)){
-            if(n.hasProperty(Configs.Neo4j_Key_For_Neo4j_Id)){
-                out.append(nodeId+"\t"+Configs.Neo4j_Key_For_Neo4j_Id+"\t"+n.getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString()+"\r\n");
+            if(n.hasProperty(Attributes.Neo4j_Id.name())){
+                out.append(nodeId+"\t"+Attributes.Neo4j_Id.name()+"\t"+n.getProperty(Attributes.Neo4j_Id.name()).toString()+"\r\n");
             }
         }
         else{
@@ -119,34 +113,34 @@ public class TSVExportsImports {
                 return;
             }
             else{
-                if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id)){
-                    out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Neo4j_Id).toString()+"\r\n");
+                if(n.hasProperty(Attributes.Neo4j_Id.name())){
+                    out.append(nodeId+"\t"+Attributes.Neo4j_Id.name()+"\t"+n.getProperty(Attributes.Neo4j_Id.name()).toString()+"\r\n");
                 }
             }
         }
         
-        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname)){
-            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Logicalname).toString()+"\r\n");
+        if(n.hasProperty(Attributes.Logicalname.name())){
+            out.append(nodeId+"\t"+Attributes.Logicalname.name()+"\t"+n.getProperty(Attributes.Logicalname.name()).toString()+"\r\n");
         }        
-        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration)){
-            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_Transliteration).toString()+"\r\n");
+        if(n.hasProperty(Attributes.Transliteration.name())){
+            out.append(nodeId+"\t"+Attributes.Transliteration.name()+"\t"+n.getProperty(Attributes.Transliteration.name()).toString()+"\r\n");
         }
-        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId)){
-            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_ThesaurusReferenceId).toString()+"\r\n");
+        if(n.hasProperty(Attributes.ThesaurusReferenceId.name())){
+            out.append(nodeId+"\t"+Attributes.ThesaurusReferenceId.name()+"\t"+n.getProperty(Attributes.ThesaurusReferenceId.name()).toString()+"\r\n");
         }
         
-        if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId)){
-            out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxNeo4jId).toString()+"\t\t<!-- Just exporting the data found. It will be calculated again during import -->\r\n");
+        if(n.hasProperty(Attributes.MaxNeo4j_Id.name())){
+            out.append(nodeId+"\t"+Attributes.MaxNeo4j_Id.name()+"\t"+n.getProperty(Attributes.MaxNeo4j_Id.name()).toString()+"\t\t<!-- Just exporting the data found. It will be calculated again during import -->\r\n");
         }
         if(n.hasProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId)){
             out.append(nodeId+"\t"+neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId+"\t"+n.getProperty(neo4j_sisapi.Configs.Neo4j_Key_For_MaxThesaurusReferenceId).toString()+"\t\t<!-- Just exporting the data found. It will be calculated again during import -->\r\n");
         }
         
-        if(n.hasProperty(Configs.Key_Primitive_Value_Type)){
-            out.append(nodeId+"\t"+Configs.Key_Primitive_Value_Type+"\t"+n.getProperty(Configs.Key_Primitive_Value_Type).toString()+"\r\n");
+        if(n.hasProperty(Attributes.Type.name())){
+            out.append(nodeId+"\t"+Attributes.Type.name()+"\t"+n.getProperty(Attributes.Type.name()).toString()+"\r\n");
         }
-        if(n.hasProperty(Configs.Key_Primitive_Value)){
-            out.append(nodeId+"\t"+Configs.Key_Primitive_Value+"\t"+n.getProperty(Configs.Key_Primitive_Value).toString().replace("\r\n", " ").replace("\n", " ").replace("\r", " ").replace("\t", " ")+"\r\n");
+        if(n.hasProperty(Attributes.Value.name())){
+            out.append(nodeId+"\t"+Attributes.Value.name()+"\t"+n.getProperty(Attributes.Value.name()).toString().replace("\r\n", " ").replace("\n", " ").replace("\r", " ").replace("\t", " ")+"\r\n");
         }
         
         
@@ -163,13 +157,13 @@ public class TSVExportsImports {
             ArrayList<String> outputLines = new ArrayList<>();
             for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Attributes.Logicalname.name()).toString();
                 outputLines.add(nodeId+"\t"+Rels.INSTANCEOF.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.INSTANCEOF.name()+"\t"+endlogicalname+" -->\r\n");
             }
             
@@ -185,11 +179,11 @@ public class TSVExportsImports {
             if(n.hasRelationship(Rels.INSTANCEOF, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.INSTANCEOF, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Attributes.Logicalname.name()).toString();
                     outputLines.add(genericStartNodeId+"\t"+Rels.INSTANCEOF.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.INSTANCEOF.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -202,13 +196,13 @@ public class TSVExportsImports {
             ArrayList<String> outputLines = new ArrayList<>();
             for(Relationship rel: n.getRelationships(Rels.ISA, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Attributes.Logicalname.name()).toString();
                 outputLines.add(nodeId+"\t"+Rels.ISA.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.ISA.name()+"\t"+endlogicalname+" -->\r\n");
             }
             Collections.sort(outputLines);
@@ -219,15 +213,15 @@ public class TSVExportsImports {
         if(skipGeneric){
             //get ingoing relationships that might be lost 
             //generic pointing to non generic
-            ArrayList<String> outputLines = new ArrayList<String>();
+            ArrayList<String> outputLines = new ArrayList();
             if(n.hasRelationship(Rels.ISA, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.ISA, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Attributes.Logicalname.name()).toString();
                      outputLines.add(genericStartNodeId+"\t"+Rels.ISA.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.ISA.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -240,13 +234,13 @@ public class TSVExportsImports {
             ArrayList<String> outputLines = new ArrayList<String>();
             for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.OUTGOING)){
                 //long endNodeId = rel.getEndNode().getId();
-                String endNodeId = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                String endNodeId = rel.getEndNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                 if(onlyGeneric){
                     if(rel.getEndNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
                 }
-                String endlogicalname = rel.getEndNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                String endlogicalname = rel.getEndNode().getProperty(Attributes.Logicalname.name()).toString();
                 outputLines.add(nodeId+"\t"+Rels.RELATION.name()+"\t"+endNodeId+"\t\t<!-- "+logicalname+"\t"+Rels.RELATION.name()+"\t"+endlogicalname+" -->\r\n");
             }
             Collections.sort(outputLines);
@@ -261,11 +255,11 @@ public class TSVExportsImports {
              if(n.hasRelationship(Rels.RELATION, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.RELATION, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
-                    String genericStartNodeId = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Neo4j_Id).toString();
+                    String genericStartNodeId = rel.getStartNode().getProperty(Attributes.Neo4j_Id.name()).toString();
                     if(rel.getStartNode().hasLabel(Labels.Generic)==false){
                         continue;
                     }
-                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Configs.Neo4j_Key_For_Logicalname).toString();
+                    String genericStartNodelogicalname = rel.getStartNode().getProperty(Attributes.Logicalname.name()).toString();
                     outputLines.add(genericStartNodeId+"\t"+Rels.RELATION.name()+"\t"+nodeId+"\t\t<!-- "+genericStartNodelogicalname+"\t"+Rels.RELATION.name()+"\t"+logicalname+" -->\r\n");
                 }
             }
@@ -291,11 +285,11 @@ public class TSVExportsImports {
             
             String query = "";
             if(onlyGeneric){
-                query="Match (n:"+Configs.GenericLabelName+") return n";
+                query="Match (n:"+Configs.Labels.Generic.name()+") return n";
             }
             else{
                 if(skipGeneric){
-                    query="Match (n) WHERE NOT(\""+ Configs.GenericLabelName+"\" in labels(n)) return n";
+                    query="Match (n) WHERE NOT(\""+ Configs.Labels.Generic.name()+"\" in labels(n)) return n";
                 }
                 else{
                     query="Match (n) return n";
@@ -389,7 +383,7 @@ public class TSVExportsImports {
             
             
             try(Transaction tx = graphDb.beginTx()){
-                String query = "MATCH(n:"+Configs.GenericLabelName+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
+                String query = "MATCH(n:"+Configs.Labels.Generic.name()+") return max (n."+Attributes.Neo4j_Id.name()+") as newVal " ;
                 Result res = graphDb.execute(query);
 
                 try{
@@ -408,7 +402,7 @@ public class TSVExportsImports {
                     res = null;
                 }
                 
-                String query1 = "MATCH(n:"+Configs.CommonLabelName+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
+                String query1 = "MATCH(n:"+Configs.Labels.Common.name()+") return max (n."+Attributes.Neo4j_Id.name()+") as newVal " ;
                 Result res1 = graphDb.execute(query1);
 
                 try{
@@ -462,10 +456,10 @@ public class TSVExportsImports {
                     }
                     HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
                     
-                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
+                    String logName = strVals.get(Attributes.Logicalname.name()).get(0);
                     if(logName.length()>0){
                         
-                        graphDb.findNodes(Label.label(Configs.CommonLabelName), Configs.Neo4j_Key_For_Logicalname, logName).stream().forEach((n) -> {
+                        graphDb.findNodes(Label.label(Configs.CommonLabelName), Attributes.Logicalname.name(), logName).stream().forEach((n) -> {
                             if(n!=null){
                                 System.out.println("deleting node: "+ logName);
                                 n.getRelationships().forEach((rel)->{
@@ -499,7 +493,7 @@ public class TSVExportsImports {
 
                     
 
-                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
+                    String logName = strVals.get(Attributes.Logicalname.name()).get(0);
                     String type = "";
                     String value = "";
                     long neo4jId = -1;
@@ -511,8 +505,8 @@ public class TSVExportsImports {
                     
                     Node newNode = null;
                     boolean alreadyExisted = false;
-                    if(labels.contains(Configs.UniqueInDBLabelName)){
-                        Optional<Node> existing = graphDb.findNodes(Label.label(Configs.CommonLabelName), Configs.Neo4j_Key_For_Logicalname,logName).stream().findFirst();
+                    if(labels.contains(Configs.Labels.UniqueInDB.name())){
+                        Optional<Node> existing = graphDb.findNodes(Label.label(Configs.Labels.Common.name()), Attributes.Logicalname.name(),logName).stream().findFirst();
                         if(existing.isPresent()){
                             alreadyExisted = true;
                             newNode = existing.get();
@@ -531,13 +525,13 @@ public class TSVExportsImports {
                     }
                     
                     if(alreadyExisted){
-                        tsvToNeo4jIds.put(nodeId, (Long)newNode.getProperty(Configs.Neo4j_Key_For_Neo4j_Id));
+                        tsvToNeo4jIds.put(nodeId, (Long)newNode.getProperty(Attributes.Neo4j_Id.name()));
                     }
                     else{
                         neo4jId = maxNeo4jId++;
-                        newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
+                        newNode.setProperty(Attributes.Neo4j_Id.name(), neo4jId);
                         tsvToNeo4jIds.put(nodeId, neo4jId);
-                        newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
+                        newNode.setProperty(Attributes.Logicalname.name(), logName);
                     }
                     
                     //keep the same transliteration if recompute transliteration for all that do not have any value
@@ -545,21 +539,21 @@ public class TSVExportsImports {
                         // for all individuals
                         if(labels.contains(Labels.Type_Individual.name())){
                             String transliterationName = Utilities.getTransliterationString(logName,true);
-                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration,transliterationName);
+                            newNode.setProperty(Attributes.Transliteration.name(),transliterationName);
                         }
                     }
                     else{
-                        if(strVals.containsKey(Configs.Neo4j_Key_For_Transliteration)){
-                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration, strVals.get(Configs.Neo4j_Key_For_Transliteration).get(0));
+                        if(strVals.containsKey(Attributes.Transliteration.name())){
+                            newNode.setProperty(Attributes.Transliteration.name(), strVals.get(Attributes.Transliteration.name()).get(0));
                         }
                     }      
-                    if(strVals.containsKey(Configs.Neo4j_Key_For_ThesaurusReferenceId) && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0)!=null && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0).length()>0){
+                    if(strVals.containsKey(Attributes.ThesaurusReferenceId.name()) && strVals.get(Attributes.ThesaurusReferenceId.name()).get(0)!=null && strVals.get(Attributes.ThesaurusReferenceId.name()).get(0).length()>0){
                         try{
-                            long refId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
-                            newNode.setProperty(Configs.Neo4j_Key_For_ThesaurusReferenceId,refId);
+                            long refId = Long.parseLong(strVals.get(Attributes.ThesaurusReferenceId.name()).get(0));
+                            newNode.setProperty(Attributes.ThesaurusReferenceId.name(),refId);
                         }
                         catch(NumberFormatException ex){
-                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Attributes.ThesaurusReferenceId.name()).get(0));
                             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
                             Utils.StaticClass.handleException(ex);
                             return false;
@@ -573,15 +567,15 @@ public class TSVExportsImports {
                         newNode.setProperty(Configs.Neo4j_Key_For_MaxThesaurusReferenceId, maxRefId);
                     }
                     
-                    if(strVals.containsKey(Configs.Key_Primitive_Value_Type)){
-                        newNode.setProperty(Configs.Key_Primitive_Value_Type, strVals.get(Configs.Key_Primitive_Value_Type).get(0));
+                    if(strVals.containsKey(Attributes.Type.name())){
+                        newNode.setProperty(Attributes.Type.name(), strVals.get(Attributes.Type.name()).get(0));
                     }
-                    if(strVals.containsKey(Configs.Key_Primitive_Value)){
-                        if(strVals.get(Configs.Key_Primitive_Value_Type).get(0).equals("INT")){
-                            newNode.setProperty(Configs.Key_Primitive_Value, Integer.parseInt(strVals.get(Configs.Key_Primitive_Value).get(0)));
+                    if(strVals.containsKey(Attributes.Value.name())){
+                        if(strVals.get(Attributes.Type.name()).get(0).equals("INT")){
+                            newNode.setProperty(Attributes.Value.name(), Integer.parseInt(strVals.get(Attributes.Value.name()).get(0)));
                         }
                         else{
-                            newNode.setProperty(Configs.Key_Primitive_Value, strVals.get(Configs.Key_Primitive_Value).get(0));
+                            newNode.setProperty(Attributes.Value.name(), strVals.get(Attributes.Value.name()).get(0));
                         }
                     }
 
@@ -597,9 +591,9 @@ public class TSVExportsImports {
                     long startNodeNeo4jId = tsvToNeo4jIds.get(nodeId);
                     HashMap<String,ArrayList<String>> strVals = nodeInfo.get(nodeId);
                     
-                    ArrayList<Long> isA = new ArrayList<Long>();
-                    ArrayList<Long> relation = new ArrayList<Long>();
-                    ArrayList<Long> instanceOf = new ArrayList<Long>();
+                    ArrayList<Long> isA = new ArrayList();
+                    ArrayList<Long> relation = new ArrayList();
+                    ArrayList<Long> instanceOf = new ArrayList();
                     
                     if(strVals.containsKey(Rels.ISA.name())){
                         ArrayList<String> stringVals = strVals.get(Rels.ISA.name());
@@ -823,8 +817,8 @@ public class TSVExportsImports {
                     }
                     
                     //if(labels.contains(GenericLabel)){
-                        neo4jId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_Neo4j_Id).get(0));
-                        newNode.setProperty(Configs.Neo4j_Key_For_Neo4j_Id, neo4jId);
+                        neo4jId = Long.parseLong(strVals.get(Attributes.Neo4j_Id.name()).get(0));
+                        newNode.setProperty(Attributes.Neo4j_Id.name(), neo4jId);
                       //  tsvToNeo4jIds.put(nodeId, neo4jId);
                     //}
                     //else{
@@ -833,29 +827,29 @@ public class TSVExportsImports {
                         //tsvToNeo4jIds.put(nodeId, neo4jId);
                     //}
                     
-                    String logName = strVals.get(Configs.Neo4j_Key_For_Logicalname).get(0);
-                    newNode.setProperty(Configs.Neo4j_Key_For_Logicalname, logName);
+                    String logName = strVals.get(Attributes.Logicalname.name()).get(0);
+                    newNode.setProperty(Attributes.Logicalname.name(), logName);
                     
                     //keep the same transliteration if recompute transliteration for all that do not have any value
                     if(recomputeTransliteration){ 
                         // for all individuals
                         if(labels.contains(Labels.Type_Individual.name())){
                             String transliterationName = Utilities.getTransliterationString(logName,true);
-                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration,transliterationName);
+                            newNode.setProperty(Attributes.Transliteration.name(),transliterationName);
                         }
                     }
                     else{
-                        if(strVals.containsKey(Configs.Neo4j_Key_For_Transliteration)){
-                            newNode.setProperty(Configs.Neo4j_Key_For_Transliteration, strVals.get(Configs.Neo4j_Key_For_Transliteration).get(0));
+                        if(strVals.containsKey(Attributes.Transliteration.name())){
+                            newNode.setProperty(Attributes.Transliteration.name(), strVals.get(Attributes.Transliteration.name()).get(0));
                         }
                     }      
-                    if(strVals.containsKey(Configs.Neo4j_Key_For_ThesaurusReferenceId) && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0)!=null && strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0).length()>0){
+                    if(strVals.containsKey(Attributes.ThesaurusReferenceId.name()) && strVals.get(Attributes.ThesaurusReferenceId.name()).get(0)!=null && strVals.get(Attributes.ThesaurusReferenceId.name()).get(0).length()>0){
                         try{
-                            long refId = Long.parseLong(strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
-                            newNode.setProperty(Configs.Neo4j_Key_For_ThesaurusReferenceId,refId);
+                            long refId = Long.parseLong(strVals.get(Attributes.ThesaurusReferenceId.name()).get(0));
+                            newNode.setProperty(Attributes.ThesaurusReferenceId.name(),refId);
                         }
                         catch(NumberFormatException ex){
-                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Configs.Neo4j_Key_For_ThesaurusReferenceId).get(0));
+                            Utils.StaticClass.webAppSystemOutPrintln("Exception while trying to parseLong from String value: "+strVals.get(Attributes.ThesaurusReferenceId.name()).get(0));
                             Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
                             Utils.StaticClass.handleException(ex);
                             return false;
@@ -867,15 +861,15 @@ public class TSVExportsImports {
                         newNode.setProperty(Configs.Neo4j_Key_For_MaxThesaurusReferenceId, maxRefId);
                     }
                     
-                    if(strVals.containsKey(Configs.Key_Primitive_Value_Type)){
-                        newNode.setProperty(Configs.Key_Primitive_Value_Type, strVals.get(Configs.Key_Primitive_Value_Type).get(0));
+                    if(strVals.containsKey(Attributes.Type.name())){
+                        newNode.setProperty(Attributes.Type.name(), strVals.get(Attributes.Type.name()).get(0));
                     }
-                    if(strVals.containsKey(Configs.Key_Primitive_Value)){
-                        if(strVals.get(Configs.Key_Primitive_Value_Type).get(0).equals("INT")){
-                            newNode.setProperty(Configs.Key_Primitive_Value, Integer.parseInt(strVals.get(Configs.Key_Primitive_Value).get(0)));
+                    if(strVals.containsKey(Attributes.Value.name())){
+                        if(strVals.get(Attributes.Type.name()).get(0).equals("INT")){
+                            newNode.setProperty(Attributes.Value.name(), Integer.parseInt(strVals.get(Attributes.Value.name()).get(0)));
                         }
                         else{
-                            newNode.setProperty(Configs.Key_Primitive_Value, strVals.get(Configs.Key_Primitive_Value).get(0));
+                            newNode.setProperty(Attributes.Value.name(), strVals.get(Attributes.Value.name()).get(0));
                         }
                     }
 
@@ -1126,7 +1120,7 @@ public class TSVExportsImports {
     Node getSingleNodesByNeo4jId(long neo4jId, GraphDatabaseService graphDb){
         Node returnNode = null;
         
-        String query = "MATCH(n:"+Configs.CommonLabelName+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+neo4jId+"}) RETURN n";
+        String query = "MATCH(n:"+Configs.Labels.Common.name()+"{"+Attributes.Neo4j_Id.name()+":"+neo4jId+"}) RETURN n";
         Result res = graphDb.execute(query);
         try {
             while (res.hasNext()) {
@@ -1170,11 +1164,11 @@ public class TSVExportsImports {
             String query = "";
             
             if(subSetofIds.size()==1){
-                query = "MATCH(n:"+Configs.CommonLabelName+"{"+Configs.Neo4j_Key_For_Neo4j_Id+":"+subSetofIds.get(0)+"}) RETURN n";
+                query = "MATCH(n:"+Configs.Labels.Common.name()+"{"+Attributes.Neo4j_Id.name()+":"+subSetofIds.get(0)+"}) RETURN n";
                 
             }
             else{
-                query = " Match (n:"+Configs.CommonLabelName+") WHERE n."+Configs.Neo4j_Key_For_Neo4j_Id+" IN " + subSetofIds.toString() + " "+
+                query = " Match (n:"+Configs.Labels.Common.name()+") WHERE n."+Attributes.Neo4j_Id.name()+" IN " + subSetofIds.toString() + " "+
                         " RETURN n ";
             }
             

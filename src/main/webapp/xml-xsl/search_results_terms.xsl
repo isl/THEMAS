@@ -51,6 +51,9 @@
                 <xsl:if test="//results/paging_info">
                     <xsl:call-template name="DisplayStatisticsAndPagingInfo_Terms">
                         <xsl:with-param name="paginglocale" select="$paginglocale" />
+                        <xsl:with-param name="idsuffix" >
+                            <xsl:text>top</xsl:text>
+                        </xsl:with-param>
                     </xsl:call-template>
                 </xsl:if>
                 <tr width="100%">
@@ -418,6 +421,20 @@
                         </td>
                     </tr>
                 </xsl:for-each>
+                
+               
+                <xsl:if test="//results/paging_info">
+                    
+                    <xsl:call-template name="DisplayStatisticsAndPagingInfo_Terms">
+                        <xsl:with-param name="paginglocale" select="$paginglocale" />
+                        <xsl:with-param name="idsuffix" >
+                            <xsl:text>bottom</xsl:text>
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:if>
+                <script type="text/javascript">
+                    <xsl:text>manageBottomPagingVisibility();</xsl:text>
+                </script>
             </table>
 			
         <!--</fieldset>-->

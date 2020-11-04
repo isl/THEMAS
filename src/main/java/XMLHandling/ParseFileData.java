@@ -1071,7 +1071,7 @@ public class ParseFileData {
             if (xmlSchemaType.equals(ConstantParameters.xmlschematype_aat)) {
             } // <editor-fold defaultstate="collapsed" desc="skos case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_skos)) {
-                HashMap<String, String> idsToNames = new HashMap<String, String>();
+                HashMap<String, String> idsToNames = new HashMap();
 
                 // <editor-fold defaultstate="collapsed" desc="parse All ids">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1146,7 +1146,7 @@ public class ParseFileData {
                 xpp = factory.newPullParser();
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
-                this.parseTermNodes(xpp, xmlSchemaType, termsInfo, Parameters.TRANSLATION_SEPERATOR, output, idsToNames, languageSelections);
+                this.parseTermNodes(xpp, xmlSchemaType, termsInfo, /*Parameters.TRANSLATION_SEPERATOR, */output, idsToNames, languageSelections);
                 // </editor-fold>
 
                 // <editor-fold defaultstate="collapsed" desc="Abandoned convert ids to names">
@@ -1154,13 +1154,16 @@ public class ParseFileData {
                 // </editor-fold>
             } // </editor-fold>
             //</editor-fold>
+            
             // <editor-fold defaultstate="collapsed" desc="themas case">
             else if (xmlSchemaType.equals(ConstantParameters.xmlschematype_THEMAS)) {
-                String translationSeparator = "";
+                
 
 
                 // <editor-fold defaultstate="collapsed" desc="find translations seperator">
 
+                /* No actual need to be specified during import - it is just for internal use - does not specify something important
+                String translationSeparator = "";
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
@@ -1174,9 +1177,14 @@ public class ParseFileData {
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals("TranslationCategories") || openingTagName.equals("data")) {
-                            translationSeparator = this.parseSpecificAttibuteValue("translationSeperator", xpp);
+                            translationSeparator = this.parseSpecificAttibuteValue("translationSeparator", xpp);
+                            
                             if (translationSeparator != null && translationSeparator.trim().length() > 0) {
-                                break;
+                                //also check previous version schema - mispelled attribute
+                                translationSeparator = this.parseSpecificAttibuteValue("translationSeperator", xpp);
+                                if (translationSeparator != null && translationSeparator.trim().length() > 0) {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1186,23 +1194,24 @@ public class ParseFileData {
                 if (translationSeparator == null || translationSeparator.trim().length() == 0) {
                     translationSeparator = Parameters.TRANSLATION_SEPERATOR;
                 }
+                */
                 // </editor-fold>
 
                 // <editor-fold defaultstate="collapsed" desc="parse terms">
                 factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
                 factory.setNamespaceAware(true);
-                xpp = factory.newPullParser();
+                XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput(new InputStreamReader(new FileInputStream(xmlFilePath), "UTF-8"));
 
 
-                eventType = xpp.getEventType();
+                int eventType = xpp.getEventType();
 
                 while (eventType != xpp.END_DOCUMENT) {
 
                     if (eventType == xpp.START_TAG) {
                         String openingTagName = this.openingTagEncoutered(xpp, null);
                         if (openingTagName.equals(ConstantParameters.XMLTermsWrapperElementName)) {
-                            return this.parseTermNodes(xpp, xmlSchemaType, termsInfo, translationSeparator, output, null, languageSelections);                            
+                            return this.parseTermNodes(xpp, xmlSchemaType, termsInfo,  output, null, languageSelections);                            
                         }
                     }
                     eventType = xpp.next();
@@ -3641,11 +3650,13 @@ public class ParseFileData {
      */
     private boolean parseTermNodes(XmlPullParser xpp, String xmlSchemaType, 
             HashMap<String, NodeInfoStringContainer> termsInfo, 
-            String translationSeparator, 
+            /*String translationSeparator, */
             String[] output, 
             HashMap<String, String> idsToNames,
             HashMap<String, String> languageSelections) {
 
+        String translationSeparator = Parameters.TRANSLATION_SEPERATOR;
+        //no need to be something specific during import
         try {
 
             // <editor-fold defaultstate="collapsed" desc="Skos Case">

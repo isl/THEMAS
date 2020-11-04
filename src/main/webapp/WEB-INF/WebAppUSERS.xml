@@ -35,26 +35,26 @@
 <WebAppUsers>
     <user>
         <name>admin</name>
-        <password>0192023a7bbd73250516f069df18b500</password>
+        <password>21232f297a57a5a743894a0e4a801fc3</password>
         <thesaurus group="ADMINISTRATOR"/>
         <description>Administrator WITHOUT thesaurus limitations</description>
     </user>
         
     <user>
         <name>com</name>
-        <password>1f15caa4dc0b8e50415b228c650424d8</password>
+        <password>4d236d9a2d102c5fe6ad1c50da4bec50</password>
         <thesaurus group="THESAURUS_COMMITTEE">*</thesaurus>
         <description>Thesaurus Committee user for all thesauri</description>
     </user>
     <user>
         <name>team</name>
-        <password>3c00a48802fb8fc05502942b1d146f48</password>
+        <password>f894427cc1c571f79da49605ef8b112f</password>
         <thesaurus group="THESAURUS_TEAM">*</thesaurus>        
         <description>Thesaurus Team user for all thesauri</description>
     </user>
     <user>
         <name>lib</name>
-        <password>152ed960b613b67008ca54c756b4ced0</password>
+        <password>e8acc63b1e238f3255c900eed37254b8</password>
         <thesaurus group="LIBRARY">*</thesaurus>
         <description>Library user for all thesauri</description>
     </user>
@@ -63,5 +63,11 @@
         <password>d41d8cd98f00b204e9800998ecf8427e</password>
         <thesaurus group="READER">*</thesaurus>
         <description>Reader user for all thesauri, viewing only Published Terms</description>
-    </user>   
+    </user> 
+    <user>
+        <name>ExtReader</name>
+        <password>d41d8cd98f00b204e9800998ecf8427e</password>
+        <thesaurus group="EXTERNALREADER">*</thesaurus>
+        <description>External Reader user for all thesauri, viewing all Terms</description>
+    </user>     
 </WebAppUsers>

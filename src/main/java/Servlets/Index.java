@@ -73,11 +73,17 @@ public class Index extends ApplicationBasicServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
-        
         if (SystemIsLockedForAdministrativeJobs(request, response)) return;
         
         HttpSession session = request.getSession();
         SessionWrapperClass sessionInstance = new SessionWrapperClass();
+        
+        String basePath = session.getServletContext().getRealPath("");
+        ConfigDBadmin config = new ConfigDBadmin(basePath);
+        String SystemOutPrefix = getServletContext().getServletContextName()+" Logs: "; //instead of Parameters.LogFilePrefix which is not initialized before Sucessfull login
+        String restoreBackupTxtFilePath = Paths.get(basePath).resolve("MonitorAutomaticBackups").resolve("RestorationNeeded.txt").toString();
+        HashMap<String,String> supportedLangVals = Parameters.getAvailableUICodes(session.getServletContext(),false);
+        
         init(request, response, sessionInstance);
         
         String overrideUILangParameter = request.getParameter("lang");
@@ -85,10 +91,8 @@ public class Index extends ApplicationBasicServlet {
         PrintWriter out = response.getWriter();
         
         
-        String basePath = request.getSession().getServletContext().getRealPath("");
-        ConfigDBadmin config = new ConfigDBadmin(basePath);
-        String SystemOutPrefix = getServletContext().getServletContextName()+" Logs: "; //instead of Parameters.LogFilePrefix which is not initialized before Sucessfull login
-        String restoreBackupTxtFilePath = Paths.get(basePath).resolve("MonitorAutomaticBackups").resolve("RestorationNeeded.txt").toString();
+        
+        
 
         Utilities u = new Utilities();
         
@@ -140,9 +144,9 @@ public class Index extends ApplicationBasicServlet {
             //parameters has not been initialized yet in order to check the SupportedUILangCodes value
             if(overrideUILangParameter!=null && overrideUILangParameter.trim().length()>0){
                 overrideUILangParameter = overrideUILangParameter.trim().toLowerCase();
-                HashMap<String,String> supportedVals = Parameters.getAvailableUICodes(request.getSession().getServletContext(),false);
-                if(supportedVals.containsKey(overrideUILangParameter)){
-                    uiLang = supportedVals.get(overrideUILangParameter);
+                
+                if(supportedLangVals.containsKey(overrideUILangParameter)){
+                    uiLang = supportedLangVals.get(overrideUILangParameter);
                 }
             }
             if(uiLang==null || uiLang.trim().length()==0){
@@ -155,7 +159,7 @@ public class Index extends ApplicationBasicServlet {
             Utils.StaticClass.handleException(e);
         }finally {
             out.close();
-            sessionInstance.writeBackToSession(session);
+            //sessionInstance.writeBackToSession(session);            
         }
 
     }

@@ -42,7 +42,7 @@
     <Neo4j_GenericTSVFile>/TSVs/System/Generic.tsv</Neo4j_GenericTSVFile>
     <Neo4j_SpecificTSVFile>/TSVs/System/Specific.tsv</Neo4j_SpecificTSVFile>	
     -->    
-    <Neo4j_DB_FOLDER_PATH>C:\Projects\THEMAS\DBFolder</Neo4j_DB_FOLDER_PATH>
+    <Neo4j_DB_FOLDER_PATH>C:\_DevData\THEMAS\DBFolder</Neo4j_DB_FOLDER_PATH>
     <Neo4j_DB_PATH>\Database</Neo4j_DB_PATH>
     <Neo4j_DB_Backups_SubPATH>\Backups\db_backups</Neo4j_DB_Backups_SubPATH>
     <Neo4j_XML_Backups_SubPATH>\Backups\xml_backups</Neo4j_XML_Backups_SubPATH>
@@ -84,7 +84,7 @@
     
     <BehaviorConfigs>        
         <AbilityToExpandSearchResultsWithRNTs>
-            <configvalue>false</configvalue>
+            <configvalue>true</configvalue>
             <description>AbilityToExpandSearchResultsWithRNTs: boolean value used in order to present
                 in search terms cards 2 options. a) the ability to extend search results with all recursive nts
                 of the terms that satisfy the search criteria and b) the ability to stop this recursion if term
@@ -110,7 +110,7 @@
                 Default value: false</description>
         </DisplayCreatorInAlphabeticalTerm>
         <DisplayExternalLinkUrls>
-            <configvalue>false</configvalue>
+            <configvalue>true</configvalue>
             <description>DisplayExternalLinkUrls: boolean value that determines if the copy 
                 external link image will appear in Term/Hierarchy/Facet cards. 
                 Default value: false</description>

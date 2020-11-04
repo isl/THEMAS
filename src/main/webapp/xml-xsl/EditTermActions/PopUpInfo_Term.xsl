@@ -690,7 +690,7 @@ This file is part of the THEMAS system.
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td >
+                                    <td>
                                         <xsl:choose>
                                             <xsl:when test="count(//term/nt) = 0">
                                                 <xsl:text>
@@ -957,12 +957,44 @@ This file is part of the THEMAS system.
                             </a>
                         </td>
                     </tr>
+                    <xsl:if test="//THEMASUserInfo/userGroup/text() = 'THESAURUS_COMMITTEE' or //THEMASUserInfo/userGroup/text() = 'ADMINISTRATOR'">
+                        
+                    
+                    <tr>
+                        <td>
+                            <xsl:choose>
+                                            <xsl:when test="count(//term/nt) = 0">
+                                                <xsl:text>
+                                                    <a class="disabled">
+                                                        <xsl:call-template name="getTranslationMessage"> 
+                                                            <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> 
+                                                            <xsl:with-param name="targetLang" select="$lang"/> 
+                                                            <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                        </xsl:call-template>    
+                                                    </a>
+                                                </xsl:text>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <a href="#">
+                                                    <xsl:attribute name="onClick">
+                                                        <xsl:text>showEditFieldCard('</xsl:text>
+                                                        <xsl:value-of select="$termName"/>
+                                                        <xsl:text>','guide_terms','EditDisplays_Term');</xsl:text>
+                                                    </xsl:attribute>
+                                                    <xsl:call-template name="getTranslationMessage"> 
+                                                        <xsl:with-param name="targetLangElements" select="$termcardlocale/guideterms/prompttitle/option"/> 
+                                                        <xsl:with-param name="targetLang" select="$lang"/> 
+                                                        <xsl:with-param name="disableEscape" select="'yes'"/> 
+                                                    </xsl:call-template>    
+                                                </a>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                        </td>
+                    </tr>
+                    </xsl:if>
                 </table>
                 </xsl:otherwise>
             </xsl:choose>
-            
-            
-            
             
         </xsl:if>
     </xsl:template>

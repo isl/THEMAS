@@ -484,7 +484,7 @@ function getServletResult(servletName ,targetFieldSetID , resultArea, selectsSel
     }
     if(targetFieldSetID=='edit_term_translations_scope_note'){
 
-        var trsep = document.getElementById('translationSeperator').value;
+        var trsep = document.getElementById('translationSeparator').value;
         
         var table = document.getElementById('trsnstable');
         var rowCount = table.rows.length;

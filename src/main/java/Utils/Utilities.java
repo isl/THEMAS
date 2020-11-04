@@ -2215,6 +2215,37 @@ public class Utilities {
 
         return dataNeeded;
     }
+    
+    public StringBuffer getDBAdminHierarchiesStatusesAndGuideTermsWithStatisticsXML(UserInfoClass SessionUserInfo, ArrayList<String> allHierarcies, 
+            HashMap<String,Integer> allGuideTerms, Locale targetLocale) {
+
+        StringBuffer dataNeeded = new StringBuffer();
+        Collections.sort(allHierarcies, new StringLocaleComparator(targetLocale));
+        dataNeeded.append("<availableHierarchies>");
+        for (int i = 0; i < allHierarcies.size(); i++) {
+            dataNeeded.append("<hierarchy>" + escapeXML(allHierarcies.get(i)) + "</hierarchy>");
+        }
+        dataNeeded.append("</availableHierarchies>");
+
+        dataNeeded.append("<availableStatuses>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Under_Construction, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Approval, SessionUserInfo) + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_For_Insertion, SessionUserInfo) + "</status>");
+        //dataNeeded.append("<status>" + dbGen.Status_For_Reinspection + "</status>");
+        dataNeeded.append("<status>" + Parameters.getStatusRepresentation_ForDisplay(Parameters.Status_Approved, SessionUserInfo) + "</status>");
+        dataNeeded.append("</availableStatuses>");
+
+        ArrayList<String> gTerms = new ArrayList();
+        gTerms.addAll(allGuideTerms.keySet());
+        Collections.sort(gTerms, new StringLocaleComparator(targetLocale));
+        dataNeeded.append("<availableGuideTerms>");
+        for (String gTerm : gTerms) {
+            dataNeeded.append("<GuideTerm card=\""+allGuideTerms.get(gTerm)+"\">" + escapeXML(gTerm) + "</GuideTerm>");
+        }
+        dataNeeded.append("</availableGuideTerms>");
+
+        return dataNeeded;
+    }
 
     /*
     public void writeResultsInOutputStream(){
@@ -2275,14 +2306,40 @@ public class Utilities {
 
                 dbMerge.ReadThesaurusExternalLinksAndVocabularies(SessionUserInfo, Q,TA, sis_session, exprortThesaurus,null, termExtLinks,vocabularyIdentifiers);
                 
-                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
                 
                 
                 //writer.WriteFacetsFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, xmlFacetsInSortItem, hierarchyFacets, termsInfo, null, null);
                 //writer.WriteHierarchiesFromSortItems(logFileWriter, exportSchemaName, exprortThesaurus, hierarchyFacets, termsInfo, XMLguideTermsRelations, termExtLinks, null, null);
+                
+                //this causes refIds of bts or nts to be lost not suitbale for rdf export
+                HashMap<String, NodeInfoStringContainer> termsInfoStr = this.getStringContainerFromSortItemContainer(termsInfo);
+                
+                HashMap<String,Long> addtionalTermIds = null;
+                if (exportSchemaName.equals(ConstantParameters.xmlschematype_skos)){
+                    final ArrayList<String> targetKeywords = new ArrayList(Arrays.asList(ConstantParameters.bt_kwd,ConstantParameters.nt_kwd,ConstantParameters.topterm_kwd, ConstantParameters.rt_kwd));
+                    addtionalTermIds = new HashMap();
+                    for(NodeInfoSortItemContainer sItem : termsInfo.values()){
+                        
+                        for(String targetKeyword : targetKeywords){
+                            if(sItem.descriptorInfo.containsKey(targetKeyword)){
+                                ArrayList<SortItem> vals = sItem.descriptorInfo.get(targetKeyword);
+                                
+                                for(SortItem val : vals){
+                                    if(!termsInfoStr.containsKey(val.log_name) && !addtionalTermIds.containsKey(val.log_name)){
+                                        addtionalTermIds.put(val.getLogName(), val.getThesaurusReferenceId());
+                                    }
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                }
                 writer.WriteTerms(logFileWriter, 
                         exportSchemaName, exprortThesaurus, hierarchyFacetsStrFormat,
-                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null);
+                        termsInfoStr, XMLguideTermsRelations,termExtLinks, null, addtionalTermIds);
+                
                 
                 /* WriteGuideTerms for SKOS export format it only writes in comments
                 writer.WriteGuideTerms(logFileWriter, exportSchemaName, guideTerms);
@@ -2741,7 +2798,7 @@ public class Utilities {
 
     public String writeXMLTranslations(String targetThesaurus, HashMap<String, String> translationHash, String extraTranslationXML) {
         String returnXML = "";
-        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeparator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
 
         if (translationHash != null) {
             Iterator<String> languagesEnumeration = translationHash.keySet().iterator();

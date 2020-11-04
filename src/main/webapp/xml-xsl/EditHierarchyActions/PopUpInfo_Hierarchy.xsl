@@ -136,8 +136,8 @@
                         </tr>
                     </xsl:when>
                 </xsl:choose>
-                </table>
-                <table style="padding-right:20px; padding-left:20px; ">
+                <!--</table>
+                <table style="padding-right:20px; padding-left:20px; ">-->
                 <xsl:choose>
                     <xsl:when test="//errorMsg ">
                         <tr>
@@ -150,7 +150,7 @@
                         <!-- Display info of hierarchy-->
                        
                         <tr valign="top">
-                            <td>
+                            <td class="displayHierFirstCol">
                                 <span class="headerThes_normal">
                                     <b>
                                         <xsl:call-template name="getTranslationMessage"> 
@@ -161,7 +161,7 @@
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td  class="displayHierSecondCol">
                                 <span class="headerThes_normal"><xsl:value-of select="//current/hierarchy/name"/></span>         
                                 
                             </td>
@@ -169,7 +169,7 @@
                         
                         <xsl:if test="$showReferenceUri='yes' and //current/hierarchy/name/@referenceId[.!='']">
                         <tr valign="top">
-                            <td>
+                            <td class="displayHierFirstCol">
                                 <br/>                       
                                 <span class="headerThes_normal">
                                     <b>
@@ -181,7 +181,7 @@
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td class="displayHierSecondCol">
                                 <br/>                       
                                <span class="headerThes_normal">
                                                         <xsl:value-of select="//current/hierarchy/name/@referenceId"/>
@@ -218,13 +218,13 @@
                         </tr>
                         </xsl:if>
                         <tr valign="top">
-                            <td>
+                            <td class="displayHierFirstCol">
                                 <br/>
                                 <span class="headerThes_normal"><b>
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/showtoptermlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </b></span>
                             </td>
-                            <td>
+                            <td class="displayHierSecondCol">
                                 <br/>
                                 <xsl:variable name="Slash">\</xsl:variable>
                                 <xsl:variable name="SlashJS">\\</xsl:variable>
@@ -258,13 +258,13 @@
                             </td>
                         </tr>
                         <tr valign="top">
-                            <td>
+                            <td class="displayHierFirstCol">
                                 <br/>
                                 <span class="headerThes_normal"><b>
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/facets/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </b></span>
                             </td>
-                            <td>
+                            <td class="displayHierSecondCol">
                                 <br/>
                                 <xsl:choose>
                                     <xsl:when test="count(//facet/name)=0">
@@ -310,13 +310,13 @@
                             </td>
                         </tr>
                         <tr valign="top">
-                            <td>
+                            <td class="displayHierFirstCol">
                                 <br/>
                                 <span class="headerThes_normal"><b>
                                     <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$hierarchycardlocale/termspresentations/title/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                 </b></span>
                             </td>
-                            <td valign="top">
+                            <td valign="top" class="displayHierSecondCol">
                                 <br/>
                                 <xsl:variable name="Slash">\</xsl:variable>
                                 <xsl:variable name="SlashJS">\\</xsl:variable>

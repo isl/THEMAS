@@ -5555,6 +5555,22 @@ public class DBGeneral {
         allGuideTerms.addAll(collectGuideLinks(SessionUserInfo.selectedThesaurus, Q, sis_session));
 
     }
+    
+    public void getDBAdminHierarchiesStatusesAndGuideTermsWithStatisticsXML(UserInfoClass SessionUserInfo, QClass Q, IntegerObject sis_session, ArrayList<String> allHierarcies, HashMap<String,Integer> allGuideTerms) {
+
+        Q.reset_name_scope();
+
+        int index = Parameters.CLASS_SET.indexOf("HIERARCHY");
+        String[] HierarchiesClasses = new String[SessionUserInfo.CLASS_SET_INCLUDE.get(index).size()];
+        SessionUserInfo.CLASS_SET_INCLUDE.get(index).toArray(HierarchiesClasses);
+
+        int set_allhiers = get_Instances_Set(HierarchiesClasses, Q, sis_session);
+        Q.reset_set(set_allhiers);
+        allHierarcies.addAll(get_Node_Names_Of_Set(set_allhiers, true, Q, sis_session));
+        Q.free_set(set_allhiers);
+        allGuideTerms.putAll(collectGuideLinksWithUsage(SessionUserInfo.selectedThesaurus, Q, sis_session));        
+
+    }
 
     public ArrayList<String> getAllSearchSources(UserInfoClass SessionUserInfo, String[] input, String[] operators, String[] inputValues, String globalOperator, QClass Q,
             TMSAPIClass TA, IntegerObject sis_session) {
@@ -6807,6 +6823,67 @@ public class DBGeneral {
 
     }
 
+    public HashMap<String,Integer> collectGuideLinksWithUsage(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
+
+        HashMap<String,Integer>  resultVec = new HashMap();
+        StringObject BTClassObj = new StringObject();
+        StringObject BTLinkObj = new StringObject();
+
+        getKeywordPair(selectedThesaurus, ConstantParameters.bt_kwd, BTClassObj, BTLinkObj, Q, sis_session);
+
+        long retL = Q.reset_name_scope();
+        if (retL == QClass.APIFail) {
+            return resultVec;
+        }
+
+        retL = Q.set_current_node(BTClassObj);
+        if (retL == QClass.APIFail) {
+            return resultVec;
+        }
+
+        retL = Q.set_current_node(BTLinkObj);
+        if (retL == QClass.APIFail) {
+            return resultVec;
+        }
+
+        int set_bts = Q.get_subclasses(0);
+        Q.reset_set(set_bts);
+
+        //StringObject label = new StringObject();
+        ArrayList<String> tempNames = new ArrayList();
+
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList();
+        if (Q.bulk_return_nodes(set_bts, retVals) != QClass.APIFail) {
+            for (Return_Nodes_Row row : retVals) {
+                tempNames.add(row.get_v1_cls_logicalname());
+            }
+        }
+        /*while (Q.retur_nodes(set_bts, label) != QClass.APIFail) {
+         tempNames.add(label.getValue());
+         }*/
+
+        Q.free_set(set_bts);
+
+        for(String str : tempNames) {
+            int cardinality =0;
+            
+            Q.reset_name_scope();
+            Q.set_current_node(BTClassObj);
+            Q.set_current_node(new StringObject(str));
+            int setInstance = Q.get_all_instances(0);
+            Q.reset_set(setInstance);
+            cardinality = Q.set_get_card(setInstance);
+            Q.free_set(setInstance);
+            
+            resultVec.put(str.replaceFirst(BTLinkObj.getValue(), ""),cardinality);
+        }
+        
+        
+
+        //Utils.StaticClass.webAppSystemOutPrintln(resultVec.toString());
+        return resultVec;
+    }
+    
     public ArrayList<String> collectGuideLinks(String selectedThesaurus, QClass Q, IntegerObject sis_session) {
 
         ArrayList<String> resultVec = new ArrayList<String>();
@@ -6834,9 +6911,9 @@ public class DBGeneral {
         Q.reset_set(set_bts);
 
         //StringObject label = new StringObject();
-        ArrayList<String> tempNames = new ArrayList<String>();
+        ArrayList<String> tempNames = new ArrayList();
 
-        ArrayList<Return_Nodes_Row> retVals = new ArrayList<Return_Nodes_Row>();
+        ArrayList<Return_Nodes_Row> retVals = new ArrayList();
         if (Q.bulk_return_nodes(set_bts, retVals) != QClass.APIFail) {
             for (Return_Nodes_Row row : retVals) {
                 tempNames.add(row.get_v1_cls_logicalname());

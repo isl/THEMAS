@@ -138,8 +138,8 @@
                         </tr>
                     </xsl:when>
                 </xsl:choose>
-                </table>
-                <table style="padding-right:20px; padding-left:20px; ">
+                <!--</table>
+                <table style="padding-right:20px; padding-left:20px; ">-->
                 <xsl:choose>
                     <xsl:when test="//errorMsg ">
                         <tr>
@@ -156,20 +156,20 @@
                         <xsl:variable name="AposJS">\'</xsl:variable>
                         
                         <tr>
-                            <td>
+                            <td class="displayFacetFirstCol">
                                 <span class="headerThes_normal">
                                     <b>
                                         <xsl:call-template name="getTranslationMessage"> <xsl:with-param name="targetLangElements" select="$facetcardlocale/facetlabel/option"/> <xsl:with-param name="targetLang" select="$lang"/> <xsl:with-param name="disableEscape" select="'no'"/> </xsl:call-template>    
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td class="displayFacetSecondCol">
                                 <span class="headerThes_normal"><xsl:value-of select="//facetName"/></span>
                             </td>
                         </tr>
                         <xsl:if test="$showReferenceUri='yes' and //facets/facet/name/@referenceId[.!='']">
                         <tr valign="top">
-                            <td>
+                            <td class="displayFacetFirstCol">
                                 <br/>                       
                                 <span class="headerThes_normal">
                                     <b>
@@ -181,7 +181,7 @@
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td class="displayFacetSecondCol">
                                 <br/>                       
                                <span class="headerThes_normal">
                                                         <xsl:value-of select="//facets/facet/name/@referenceId"/>
@@ -218,7 +218,7 @@
                         </tr>
                         </xsl:if>
                         <tr valign="top">
-                            <td>
+                            <td class="displayFacetFirstCol">
                                 <br/>
                                 <span class="headerThes_normal">
                                     <b>
@@ -226,7 +226,7 @@
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td class="displayFacetSecondCol">
                                 
                                 <xsl:choose>
                                     <xsl:when test="count(//hierarchy)=0">
@@ -264,7 +264,7 @@
                             </td>
                         </tr>
                         <tr valign="middle">
-                            <td style="text-align:right; vertical-align: top;">
+                            <td class="displayFacetFirstCol">
                                 <br/>
                                 <span class="headerThes_normal">
                                     <b>
@@ -272,7 +272,7 @@
                                     </b>
                                 </span>
                             </td>
-                            <td>
+                            <td class="displayFacetSecondCol">
                                 <br/>
                                 <xsl:variable name="currentJS0">
                                     <xsl:call-template name="replace-string-for-PopUpInfo_Facet">
