@@ -157,7 +157,7 @@ xml:base="https://www.ics.forth.gr/isl/CRM/">
 
         if (exportScheme.equals(ConstantParameters.xmlschematype_THEMAS)) {
             Utils.StaticClass.webAppSystemOutPrintln(Parameters.LogFilePrefix + "Exporting translation categories");
-            logFileWriter.write("\n\t<TranslationCategories translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">\n");
+            logFileWriter.write("\n\t<TranslationCategories translationSeparator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">\n");
 
             ArrayList<String> sortedTrCategs = new ArrayList<String>(translationPairs.keySet());
             Collections.sort(sortedTrCategs);

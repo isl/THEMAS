@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 import neo4j_sisapi.Configs;
+import neo4j_sisapi.Configs.Labels;
+import neo4j_sisapi.Configs.Rels;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
 import neo4j_sisapi.TMSAPIClass;
@@ -57,7 +59,6 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 
@@ -95,14 +96,6 @@ public class TSVExportsImports {
         
     
     
-    enum Rels implements RelationshipType {
-
-        RELATION, ISA, INSTANCEOF
-    }
-    enum Labels implements Label {
-
-        Type_Attribute, Type_Individual, M1_Class, M2_Class, M3_Class, M4_Class, S_Class, Token, PrimitiveClass, Common, Generic
-    }
 
     private void writeNodeInfoInTsvFile(Node n, OutputStreamWriter out, boolean onlyGeneric, boolean skipGeneric) throws IOException{
      
@@ -219,7 +212,7 @@ public class TSVExportsImports {
         if(skipGeneric){
             //get ingoing relationships that might be lost 
             //generic pointing to non generic
-            ArrayList<String> outputLines = new ArrayList<String>();
+            ArrayList<String> outputLines = new ArrayList();
             if(n.hasRelationship(Rels.ISA, Direction.INCOMING)){
                 for(Relationship rel: n.getRelationships(Rels.ISA, Direction.INCOMING)){
                     //long genericStartNodeId = rel.getStartNode().getId();
@@ -291,11 +284,11 @@ public class TSVExportsImports {
             
             String query = "";
             if(onlyGeneric){
-                query="Match (n:"+Configs.GenericLabelName+") return n";
+                query="Match (n:"+Configs.Labels.Generic.name()+") return n";
             }
             else{
                 if(skipGeneric){
-                    query="Match (n) WHERE NOT(\""+ Configs.GenericLabelName+"\" in labels(n)) return n";
+                    query="Match (n) WHERE NOT(\""+ Configs.Labels.Generic.name()+"\" in labels(n)) return n";
                 }
                 else{
                     query="Match (n) return n";
@@ -389,7 +382,7 @@ public class TSVExportsImports {
             
             
             try(Transaction tx = graphDb.beginTx()){
-                String query = "MATCH(n:"+Configs.GenericLabelName+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
+                String query = "MATCH(n:"+Configs.Labels.Generic.name()+") return max (n."+Configs.Neo4j_Key_For_Neo4j_Id+") as newVal " ;
                 Result res = graphDb.execute(query);
 
                 try{
@@ -511,7 +504,7 @@ public class TSVExportsImports {
                     
                     Node newNode = null;
                     boolean alreadyExisted = false;
-                    if(labels.contains(Configs.UniqueInDBLabelName)){
+                    if(labels.contains(Configs.Labels.UniqueInDB.name())){
                         Optional<Node> existing = graphDb.findNodes(Label.label(Configs.CommonLabelName), Configs.Neo4j_Key_For_Logicalname,logName).stream().findFirst();
                         if(existing.isPresent()){
                             alreadyExisted = true;

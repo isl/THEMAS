@@ -33,7 +33,7 @@ THEMAS 1.4.2
 - avoided session creation through simple login page url visit
 - extended quicksearch with uf translations (they are entry terms after all)
 - manual review + removal of draft
-
+- Offline tools extended with csv export files option (implemented Neo4j-sisapi 1.4.2)
 
 =============================================================================
 THEMAS 1.4.1

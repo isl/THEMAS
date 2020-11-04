@@ -41,7 +41,7 @@
 					<xs:documentation>Attribute containing the timestamp of the target Thesaurus export.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="schemaversion" type="xs:string" use="required">
+			<xs:attribute name="schemaVersion" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>Attribute declaring the version of THEMAS XML export schema that is followed in current file.</xs:documentation>
 				</xs:annotation>
@@ -62,10 +62,10 @@
 			<xs:sequence>
 				<xs:element ref="TranslationPair" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="translationSeperator" type="xs:string" use="required">
+			<xs:attribute name="translationSeparator" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>The separator delimeter character used in order to separate translation language identifier from the translation term. Preferrably single Character.</xs:documentation>
-					<xs:documentation>E.g. translationSeperator set to character ':' means that term EN: word should be split using : and the first part i.e. EN will serve as the language identifier while the second part i.e. "word" (trimmed) serves as the translation term</xs:documentation>
+					<xs:documentation>E.g. translationSeparator set to character ':' means that term EN: word should be split using : and the first part i.e. EN will serve as the language identifier while the second part i.e. "word" (trimmed) serves as the translation term</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute ref="count"/>

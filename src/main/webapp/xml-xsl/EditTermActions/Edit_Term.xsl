@@ -1161,12 +1161,12 @@
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="@linkClass"/>
-                                        <xsl:value-of select="//Translations/@translationSeperator"/>
+                                        <xsl:value-of select="//Translations/@translationSeparator"/>
                                         <xsl:text> </xsl:text>
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="@linkClass"/>
-                                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                                    <xsl:value-of select="//Translations/@translationSeparator"/>
                                     <xsl:text> </xsl:text>
                                     <xsl:value-of select="."/>
                                 </option>
@@ -1202,7 +1202,7 @@
                         </select>
                         &#160;
                         <input type="text" style="width:500px;" id="additionalInput"/>&#160;&#160;&#160;
-                        <input type="button" class="button" value="+" onclick="addNewTranslationValue('newValue_Id','language_identifier_field','translationSeperator', 'additionalInput')"/>&#160;&#160;&#160;
+                        <input type="button" class="button" value="+" onclick="addNewTranslationValue('newValue_Id','language_identifier_field','translationSeparator', 'additionalInput')"/>&#160;&#160;&#160;
                         <input type="button" class="button" value="-" onclick="removeSelectedOption('newValue_Id','false');"/>
                     </td>
                     <!--<td>
@@ -1211,12 +1211,12 @@
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="@linkClass"/>
-                                        <xsl:value-of select="//Translations/@translationSeperator"/>
+                                        <xsl:value-of select="//Translations/@translationSeparator"/>
                                         <xsl:text> </xsl:text>
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="@linkClass"/>
-                                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                                    <xsl:value-of select="//Translations/@translationSeparator"/>
                                     <xsl:text> </xsl:text>
                                     <xsl:value-of select="."/>
                                 </option>
@@ -1227,9 +1227,9 @@
             </table>
 
 
-            <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput" >
+            <input type="text" id="translationSeparator" name="translationSeparator" class="hiddenInput" >
                 <xsl:attribute name="value">
-                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                    <xsl:value-of select="//Translations/@translationSeparator"/>
                     <xsl:text> </xsl:text>
                 </xsl:attribute>
             </input>
@@ -1448,12 +1448,12 @@
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="@linkClass"/>
-                                        <xsl:value-of select="//Translations/@translationSeperator"/>
+                                        <xsl:value-of select="//Translations/@translationSeparator"/>
                                         <xsl:text> </xsl:text>
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="@linkClass"/>
-                                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                                    <xsl:value-of select="//Translations/@translationSeparator"/>
                                     <xsl:text> </xsl:text>
                                     <xsl:value-of select="."/>
                                 </option>
@@ -1489,10 +1489,10 @@
                         </select>
                         &#160;
                         <!--                        <input type="text" style="width:250px;" id="additionalInput"/>
-                                                <input type="button" class="button" value="+" onclick="if (CheckUserInput('additionalInput', 'LOGINAM') == true) addNewTranslationValue('newValue_Id','language_identifier_field','translationSeperator', 'additionalInput')"/>
+                                                <input type="button" class="button" value="+" onclick="if (CheckUserInput('additionalInput', 'LOGINAM') == true) addNewTranslationValue('newValue_Id','language_identifier_field','translationSeparator', 'additionalInput')"/>
                         -->
                         <input type="text" style="width:550px;" id="additionalInput"/>&#160;&#160;&#160;
-                        <input type="button" class="button" value="+" onclick="addNewTranslationValue('newValue_Id','language_identifier_field','translationSeperator', 'additionalInput')"/>&#160;&#160;&#160;
+                        <input type="button" class="button" value="+" onclick="addNewTranslationValue('newValue_Id','language_identifier_field','translationSeparator', 'additionalInput')"/>&#160;&#160;&#160;
                         <input type="button" class="button" value="-" onclick="removeSelectedOption('newValue_Id','false');"/>
                     </td>
                     <!--<td>
@@ -1501,12 +1501,12 @@
                                 <option>
                                     <xsl:attribute name="value">
                                         <xsl:value-of select="@linkClass"/>
-                                        <xsl:value-of select="//Translations/@translationSeperator"/>
+                                        <xsl:value-of select="//Translations/@translationSeparator"/>
                                         <xsl:text> </xsl:text>
                                         <xsl:value-of select="."/>
                                     </xsl:attribute>
                                     <xsl:value-of select="@linkClass"/>
-                                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                                    <xsl:value-of select="//Translations/@translationSeparator"/>
                                     <xsl:text> </xsl:text>
                                     <xsl:value-of select="."/>
                                 </option>
@@ -1516,9 +1516,9 @@
                 </tr>
             </table>
 
-            <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput">
+            <input type="text" id="translationSeparator" name="translationSeparator" class="hiddenInput">
                 <xsl:attribute name="value">
-                    <xsl:value-of select="//Translations/@translationSeperator"/>
+                    <xsl:value-of select="//Translations/@translationSeparator"/>
                     <xsl:text> </xsl:text>
                 </xsl:attribute>
             </input>
@@ -2076,9 +2076,9 @@
                         </select>
                         &#160;
                         <input type="button" class="button" value="+" onclick="addTranslationScopeNote('trsnstable', 'language_identifier_field')"/>
-                        <input type="text" id="translationSeperator" name="translationSeperator" class="hiddenInput">
+                        <input type="text" id="translationSeparator" name="translationSeparator" class="hiddenInput">
                             <xsl:attribute name="value">
-                                <xsl:value-of select="//Translations/@translationSeperator"/>
+                                <xsl:value-of select="//Translations/@translationSeparator"/>
                                 <xsl:text></xsl:text>
                             </xsl:attribute>
                         </input>

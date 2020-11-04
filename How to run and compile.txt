@@ -90,7 +90,7 @@ THEMAS: version used 1.4.2
    Create Thesaurus with "Initialize the database" option checked)
 
    * in case dependency Neo4j-sisapi is not resolved you can downloaded it directly from 
-     https://github.com/isl/Neo4j-sisapi/releases/tag/1.4.1
+     https://github.com/isl/Neo4j-sisapi/releases/tag/1.4.2
 	 
    * in case commons-fileupload-1.0.jar and kxml2-2.3.0.jar 
      dependencies cannot be resolved, you can find copies of these jars in libs folder  	 

@@ -2798,7 +2798,7 @@ public class Utilities {
 
     public String writeXMLTranslations(String targetThesaurus, HashMap<String, String> translationHash, String extraTranslationXML) {
         String returnXML = "";
-        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeperator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
+        returnXML += "<Translations thesaurus=\"" + targetThesaurus + "\" translationSeparator=\"" + Parameters.TRANSLATION_SEPERATOR + "\">";
 
         if (translationHash != null) {
             Iterator<String> languagesEnumeration = translationHash.keySet().iterator();
