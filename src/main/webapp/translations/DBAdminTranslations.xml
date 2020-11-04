@@ -123,7 +123,7 @@
             <option lang="el">Επαναφορά</option>
         </RestoreButton>
         
-        <!-- ABOUT INFO -->
+        <!-- ABOUT INFO 
         <About1>
             <option lang="en">COPYRIGHT (c) 2015 by Institute of Computer Science Version 1.0</option>
             <option lang="el">COPYRIGHT (c) 2015 Ινστιτούτο Πληροφορικής Έκδοση 1.0</option>
@@ -133,10 +133,10 @@
             <option lang="el">Ίδρυμα Τεχνολογίας και Έρευνας</option>
         </About2>
         <About3>
-            <option lang="en">POBox 1385, Heraklio Crete, GR-711 10 GREECE</option>
+            <option lang="en">POBox 1385, Heraklion Crete, GR-711 10 GREECE</option>
             <option lang="el">Ταχ. θυρ. 1385, 711 10 Ηράκλειο Κρήτη, ΕΛΛΑΔΑ </option>
         </About3>
-        
+        -->
         <!-- MESSAGES -->
         <Message>
             <option lang="en">Message</option>
