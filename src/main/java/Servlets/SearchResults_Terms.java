@@ -36,7 +36,6 @@ package Servlets;
 import DB_Classes.DBGeneral;
 import DB_Classes.DBThesaurusReferences;
 import Users.UserInfoClass;
-import Users.UsersClass;
 import Utils.ConstantParameters;
 import Utils.SessionWrapperClass;
 import Utils.SearchCriteria;

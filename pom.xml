@@ -4,7 +4,7 @@
 
     <groupId>gr.forth.ics.isl</groupId>
     <artifactId>THEMAS</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <name>THEMAS</name>
     <packaging>war</packaging>     
     <licenses>
@@ -32,7 +32,7 @@
             <!--<groupId>com.github.isl</groupId>-->
             <groupId>gr.forth.ics.isl</groupId>
             <artifactId>Neo4j-sisapi</artifactId>
-            <version>1.4.2-SNAPSHOT</version>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>

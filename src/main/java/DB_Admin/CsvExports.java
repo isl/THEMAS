@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import neo4j_sisapi.Configs;
 import neo4j_sisapi.IntegerObject;
 import neo4j_sisapi.QClass;
@@ -60,44 +62,11 @@ public class CsvExports {
         IntegerObject sis_session = new IntegerObject();
         neo4j_sisapi.Utilities apiUtils = new neo4j_sisapi.Utilities();
         
-        Map<Configs.Labels, ArrayList<Long>> labelIds = new HashMap();
-        Map<Configs.Rels, Map<Long, ArrayList<Long>>> relIds = new HashMap();
+        //Map<Configs.Labels, ArrayList<Long>> labelIds = new HashMap();
+        //Map<Configs.Rels, LinkedHashMap<Long, ArrayList<Long>>> relIds = new HashMap();
         
-        Map<Configs.Attributes, Map<Long, ArrayList<Object>>> attrVals = new HashMap();
+        Map<Configs.Attributes, LinkedHashMap<Long, ArrayList<Object>>> attrVals = new HashMap();
         
-        
-        //open connection and start Query
-        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
-        {
-            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class " + CsvExports.class.getName());
-            return false;
-        }
-
-        
-        for(Configs.Labels lbl : Configs.Labels.values()){
-            ArrayList<Long> lblIds = apiUtils.csv_export_GetLabelIds(Q,lbl, csvMode);
-            labelIds.put(lbl, lblIds);
-        }
-        
-        
-        for(Configs.Rels rel : Configs.Rels.values()){
-            Map<Long, ArrayList<Long>> rIds = apiUtils.csv_export_GetRelIds(Q, rel, csvMode);
-            relIds.put(rel, rIds);
-        }
-        
-        for(Configs.Attributes attr : Configs.Attributes.values()){
-            if(attr.equals(Configs.Attributes.Neo4j_Id)){
-                continue;
-            }
-            Map<Long, ArrayList<Object>> targetAttrVals = apiUtils.csv_export_GetProperty(Q,attr, csvMode);
-            attrVals.put(attr, targetAttrVals);
-        }
-
-
-        //end query and close connection
-        Q.free_all_sets();
-        Q.TEST_end_query();
-        dbGen.CloseDBConnection(Q, null, sis_session, null, false);
         
         String exportBaseName = "";
         switch(csvMode){
@@ -118,36 +87,175 @@ public class CsvExports {
             }
         }
         
-        
         if(exportBaseName.isEmpty()){
             return false;
         }
         
-        for(Map.Entry<Configs.Labels, ArrayList<Long>> x : labelIds.entrySet()){
-            if(x.getValue().isEmpty()){
-                continue;
-            }
-            
-            String fName = exportBaseName+"_label_"+x.getKey().name()+".csv";
-            try{
-                OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(folderPath+fName)), "UTF-8");
-                
-                out.append(Configs.Attributes.Neo4j_Id.name()+System.lineSeparator());
-                for(Long l : x.getValue()){
-                    out.append(l+System.lineSeparator());
-                }
-                out.flush();
-                out.close();
-            } catch(Exception ex){
-                Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
-                Utils.StaticClass.handleException(ex);
+        //open connection and start Query
+        if(dbGen.openConnectionAndStartQueryOrTransaction(Q, null, sis_session, null, null, true)==QClass.APIFail)
+        {
+            Utils.StaticClass.webAppSystemOutPrintln("OPEN CONNECTION ERROR @ class " + CsvExports.class.getName());
+            return false;
+        }
 
-                return false;
-            }           
+        try{
+
+            for(Configs.Labels lbl : Configs.Labels.values()){
+                LinkedHashSet<Long> lblIds = apiUtils.csv_export_GetLabelIds(Q,lbl, csvMode);
+                //labelIds.put(lbl, lblIds);
+      /*          for(Map.Entry<Configs.Labels, ArrayList<Long>> x : labelIds.entrySet()){
+
+    */
+                if(lblIds.isEmpty()){
+                    continue;
+                }
+                String fName = exportBaseName+"_label_"+lbl.name()+".csv";
+                try{
+                    OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(folderPath+fName)), "UTF-8");
+
+                    out.append(Configs.Attributes.Neo4j_Id.name()+System.lineSeparator());
+                    for(Long l : lblIds){
+                        out.append(l+System.lineSeparator());
+                    }
+                    out.flush();
+                    out.close();
+                } catch(Exception ex){
+                    Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                    Utils.StaticClass.handleException(ex);
+
+                    return false;
+                }           
+                //}
+            }
+
+
+            for(Configs.Rels rel : Configs.Rels.values()){
+                LinkedHashMap<Long, LinkedHashSet<Long>> rIds = apiUtils.csv_export_GetRelIds(Q, rel, csvMode);
+                if(rIds.isEmpty()){
+                    continue;
+                }
+                String fName = exportBaseName+"_rel_"+rel.name()+".csv";
+                try{
+                    OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(folderPath+fName)), "UTF-8");
+
+                    out.append(Configs.csvExportFromNodeLabel+","+Configs.csvExportToNodeLabel+System.lineSeparator());
+                    for(Map.Entry<Long, LinkedHashSet<Long>> l : rIds.entrySet()){
+                        for(Long toVal : l.getValue()){
+                            out.append(l.getKey()+","+toVal+System.lineSeparator());
+                        }                    
+                    }
+                    out.flush();
+                    out.close();
+                } catch(Exception ex){
+                    Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                    Utils.StaticClass.handleException(ex);
+
+                    return false;
+                } 
+            }
+
+            for(Configs.Attributes attr : Configs.Attributes.values()){
+                if(attr.equals(Configs.Attributes.Neo4j_Id)){
+                    continue;
+                }
+                LinkedHashMap<Long, ArrayList<Object>> targetAttrVals = apiUtils.csv_export_GetProperty(Q,attr, csvMode);
+                //attrVals.put(attr, targetAttrVals);
+
+                if(targetAttrVals.isEmpty()){
+                    continue;
+                }
+                if(attr.equals(Configs.Attributes.Value)){
+                    ArrayList<String> supportedTypes = new ArrayList();
+                    supportedTypes.add("INT");
+                    supportedTypes.add("LONG");
+                    supportedTypes.add("STR");
+                    for(String type : supportedTypes){
+
+                        ArrayList<Object> flatList = new ArrayList();
+                        targetAttrVals.values().forEach(x -> flatList.addAll(x));
+
+                        if(type.equals("STR") && !flatList.stream().anyMatch(x -> x instanceof String)){
+                            continue;
+                        }
+                        if(type.equals("INT") && !flatList.stream().anyMatch(x -> x instanceof Integer)){
+                            continue;
+                        }
+                        if(type.equals("LONG") && !flatList.stream().anyMatch(x -> x instanceof Long)){
+                            continue;
+                        }
+                        String fName = exportBaseName+"_prop_"+attr.name()+"_"+type+"_.csv";
+                        try{
+                            OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(folderPath+fName)), "UTF-8");
+
+                            out.append(Configs.Attributes.Neo4j_Id.name()+","+attr.name()+System.lineSeparator());
+                            for(Map.Entry<Long, ArrayList<Object>> l : targetAttrVals.entrySet()){
+                                for(Object toVal : l.getValue()){
+                                    if(type.equals("STR") && toVal instanceof String){
+                                        out.append(l.getKey()+",\""+toVal.toString().replace("\"", "\\\"")+"\""+System.lineSeparator());
+                                    }
+                                    else if(type.equals("INT") && toVal instanceof Integer){
+                                        out.append(l.getKey()+","+Integer.parseInt(toVal.toString())+System.lineSeparator());
+                                    }
+                                    else if(type.equals("LONG") && toVal instanceof Long){
+                                        out.append(l.getKey()+","+Long.parseLong(toVal.toString())+System.lineSeparator());
+                                    }                        
+                                }                    
+                            }
+                            out.flush();
+                            out.close();
+                        } catch(Exception ex){
+                            Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                            Utils.StaticClass.handleException(ex);
+
+                            return false;
+                        }       
+                    }
+                }
+                else{
+                    String fName = exportBaseName+"_prop_"+attr.name()+".csv";
+                    try{
+                        OutputStreamWriter out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(folderPath+fName)), "UTF-8");
+
+                        out.append(Configs.Attributes.Neo4j_Id.name()+","+attr.name()+System.lineSeparator());
+                        for(Map.Entry<Long, ArrayList<Object>> l : targetAttrVals.entrySet()){
+                            for(Object toVal : l.getValue()){
+                                if(toVal instanceof String){
+                                    out.append(l.getKey()+",\""+toVal.toString().replace("\"", "\\\"")+"\""+System.lineSeparator());
+                                }
+                                else if(toVal instanceof Integer){
+                                    out.append(l.getKey()+","+Integer.parseInt(toVal.toString())+System.lineSeparator());
+                                }
+                                else if(toVal instanceof Long){
+                                    out.append(l.getKey()+","+Long.parseLong(toVal.toString())+System.lineSeparator());
+                                }                        
+                            }                    
+                        }
+                        out.flush();
+                        out.close();
+                    } catch(Exception ex){
+                        Utils.StaticClass.webAppSystemOutPrintln(ex.getClass() +" " + ex.getMessage());
+                        Utils.StaticClass.handleException(ex);
+
+                        return false;
+                    }        
+                }
+            }
+
+        }
+        finally{
+            //end query and close connection
+            Q.free_all_sets();
+            Q.TEST_end_query();
+            dbGen.CloseDBConnection(Q, null, sis_session, null, false);
         }
         
         
-         for(Map.Entry<Configs.Rels, Map<Long, ArrayList<Long>>> y : relIds.entrySet()){
+        
+        
+        
+        
+        /*
+         for(Map.Entry<Configs.Rels, LinkedHashMap<Long, ArrayList<Long>>> y : relIds.entrySet()){
             if(y.getValue().isEmpty()){
                 continue;
             }
@@ -171,8 +279,9 @@ public class CsvExports {
                 return false;
             }           
         }
+
         
-        for(Map.Entry<Configs.Attributes, Map<Long, ArrayList<Object>>> z : attrVals.entrySet()){
+        for(Map.Entry<Configs.Attributes, LinkedHashMap<Long, ArrayList<Object>>> z : attrVals.entrySet()){
             if(z.getValue().isEmpty()){
                 continue;
             }
@@ -253,7 +362,7 @@ public class CsvExports {
             }
             //(z.getKey().equals(Configs.AttributesOfTypeString.Value)? "_STR_":"")
                
-        }
+        }*/
         
         
         return true;

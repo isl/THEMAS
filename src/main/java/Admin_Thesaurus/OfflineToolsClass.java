@@ -287,7 +287,7 @@ public class OfflineToolsClass {
                 //arguements.add()
                 
                 mode = exportToCsvFiles;
-                arguements.add("C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2-SNAPSHOT");
+                arguements.add("C:\\Users\\tzortzak\\Documents\\BackupFiles\\Projects\\Themas\\Code\\ThemasV1\\THEMAS\\target\\THEMAS-1.4.2");
                 //arguements.add("C:\\_DevData\\THEMAS\\DBFolder\\TSVs\\System\\ReducedGeneric.tsv");
                 //arguements.add("true");
                 //arguements.add("true");
